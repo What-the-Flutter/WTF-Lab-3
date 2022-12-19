@@ -53,11 +53,23 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Widget? get _floatingActionButton {
+    if (_selectedPage == 0) {
+      return FloatingActionButton(
+        onPressed: () { },
+        child: const Icon(Icons.add),
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          (_destinations[_selectedPage] as NavigationDestination).label
+        ),
       ),
       body: _pages[_selectedPage],
       bottomNavigationBar: NavigationBar(
@@ -65,10 +77,7 @@ class _HomePageState extends State<HomePage> {
         selectedIndex: _selectedPage,
         destinations: _destinations,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () { },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _floatingActionButton,
     );
   }
 }
