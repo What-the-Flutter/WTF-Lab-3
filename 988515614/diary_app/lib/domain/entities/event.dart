@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 
 class Event {
+  bool isFavorite = false;
+  bool isSelected = false;
   final bool isMessage;
-
   final DateTime dateTime;
   final String message;
   final Image? image;

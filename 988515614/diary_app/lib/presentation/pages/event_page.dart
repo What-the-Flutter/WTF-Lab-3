@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:diary_app/domain/entities/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -19,7 +21,7 @@ class _EventPageState extends State<EventPage> {
       isMessage: false,
       dateTime: DateTime.now(),
       message: 'Today',
-    ),
+    )..isFavorite = true,
     Event(
       isMessage: true,
       dateTime: DateTime.now(),
@@ -36,10 +38,14 @@ class _EventPageState extends State<EventPage> {
       dateTime: DateTime.now(),
       message: 'Event 3',
     ),
-  ];
+  ]; // Mocked data
 
   final TextEditingController _controller = TextEditingController();
   bool _isEditing = false;
+  bool _selectionMode = false;
+  bool _messageEditMode = false;
+  bool _bookmarkMode = false;
+  int _messageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -56,32 +62,104 @@ class _EventPageState extends State<EventPage> {
     return AppBar(
       elevation: 0,
       centerTitle: true,
-      leading: IconButton(
-        splashRadius: 20,
-        icon: const Icon(CarbonIcons.arrow_left),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
+      leading: _selectionMode
+          ? IconButton(
+              splashRadius: 20,
+              icon: const Icon(CarbonIcons.close),
+              onPressed: () {
+                _turnOffSelectionMode();
+              },
+            )
+          : IconButton(
+              splashRadius: 20,
+              icon: const Icon(CarbonIcons.arrow_left),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
       title: const Text(
         'Travel',
         style: TextStyle(
           fontWeight: FontWeight.normal,
         ),
       ),
-      actions: [
-        IconButton(
-          splashRadius: 20,
-          icon: const Icon(CarbonIcons.search),
-          onPressed: () {},
-        ),
-        IconButton(
-          splashRadius: 20,
-          icon: const Icon(CarbonIcons.bookmark),
-          onPressed: () {},
-        ),
-      ],
+      actions: _buildAppbarActions(),
     );
+  }
+
+  List<Widget> _buildAppbarActions() {
+    return _selectionMode
+        ? _buildSelectionModeActions()
+        : _buildDefaultModeActions();
+  }
+
+  List<Widget> _buildSelectionModeActions() {
+    return [
+      IconButton(
+        splashRadius: 20,
+        icon: const Icon(CarbonIcons.delete),
+        onPressed: () {
+          setState(() {
+            _events.removeWhere((element) => element.isSelected);
+          });
+          _turnOffSelectionMode();
+        },
+      ),
+      IconButton(
+        splashRadius: 20,
+        icon: _bookmarkMode
+            ? const Icon(CarbonIcons.favorite_half)
+            : const Icon(CarbonIcons.favorite),
+        onPressed: () {
+          setState(() {
+            if (_bookmarkMode) {
+              for (var e in _events) {
+                if (e.isSelected) {
+                  e.isFavorite = false;
+                }
+              }
+            } else {
+              for (var e in _events) {
+                if (e.isSelected) {
+                  e.isFavorite = true;
+                }
+              }
+            }
+          });
+          _turnOffSelectionMode();
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _buildDefaultModeActions() {
+    return [
+      IconButton(
+        splashRadius: 20,
+        icon: const Icon(CarbonIcons.search),
+        onPressed: () {},
+      ),
+      IconButton(
+        splashRadius: 20,
+        icon: _bookmarkMode
+            ? const Icon(CarbonIcons.bookmark_filled)
+            : const Icon(CarbonIcons.bookmark),
+        onPressed: () {
+          setState(() {
+            _bookmarkMode = !_bookmarkMode;
+          });
+        },
+      ),
+    ];
+  }
+
+  void _turnOffSelectionMode() {
+    setState(() {
+      _selectionMode = false;
+      for (var e in _events) {
+        e.isSelected = false;
+      }
+    });
   }
 
   Widget _buildBody() {
@@ -144,27 +222,7 @@ class _EventPageState extends State<EventPage> {
             child: _buildTextField(),
           ),
           _isEditing
-              ? IconButton(
-                  splashRadius: 20,
-                  icon: const Icon(
-                    CarbonIcons.send,
-                    size: 30,
-                  ),
-                  color: Colors.teal,
-                  onPressed: () {
-                    if (_controller.text.isEmpty) return;
-                    setState(() {
-                      _events.add(
-                        Event(
-                          isMessage: true,
-                          dateTime: DateTime.now(),
-                          message: _controller.text.toString(),
-                        ),
-                      );
-                    });
-                    _controller.clear();
-                  },
-                )
+              ? _buildSendButtonVariants()
               : IconButton(
                   splashRadius: 20,
                   icon: const Icon(
@@ -172,8 +230,8 @@ class _EventPageState extends State<EventPage> {
                     size: 30,
                   ),
                   color: Colors.teal,
-                  onPressed: () async {
-                    await _showImageDialog();
+                  onPressed: () {
+                    _showImageDialog();
                   },
                 ),
         ],
@@ -181,8 +239,72 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Future<void> _showImageDialog() async {
-    final dialog = AlertDialog(
+  Widget _buildSendButtonVariants() {
+    return _messageEditMode ? _buildEditButton() : _buildSendButton();
+  }
+
+  Widget _buildEditButton() {
+    return IconButton(
+      splashRadius: 20,
+      icon: const Icon(
+        CarbonIcons.change_catalog,
+        size: 30,
+      ),
+      color: Colors.teal,
+      onPressed: () {
+        if (_controller.text.isEmpty) return;
+        setState(() {
+          _events[_messageIndex] = Event(
+            isMessage: true,
+            dateTime: DateTime.now(),
+            message: _controller.text.toString(),
+          );
+        });
+        _controller.clear();
+        setState(() {
+          _messageEditMode = false;
+          _messageIndex = 0;
+        });
+      },
+    );
+  }
+
+  Widget _buildSendButton() {
+    return IconButton(
+      splashRadius: 20,
+      icon: const Icon(
+        CarbonIcons.send,
+        size: 30,
+      ),
+      color: Colors.teal,
+      onPressed: () {
+        if (_controller.text.isEmpty) return;
+        setState(() {
+          _events.add(
+            Event(
+              isMessage: true,
+              dateTime: DateTime.now(),
+              message: _controller.text.toString(),
+            ),
+          );
+        });
+        _controller.clear();
+      },
+    );
+  }
+
+  void _showImageDialog() {
+    final dialog = _buildImageDialog();
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return dialog;
+        });
+  }
+
+  Widget _buildImageDialog() {
+    return AlertDialog(
       title: const Text('Choose image from'),
       actions: [
         TextButton(
@@ -223,12 +345,6 @@ class _EventPageState extends State<EventPage> {
         ),
       ],
     );
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          return dialog;
-        });
   }
 
   void _createEventWithPicture(XFile? pickedFile) {
@@ -249,109 +365,152 @@ class _EventPageState extends State<EventPage> {
   }
 
   Widget _buildEventsList() {
+    return _events.isEmpty ? _buildIntro() : _buildEvents();
+  }
+
+  Widget _buildIntro() {
+    return Center(
+      child: Flexible(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.lime.shade200,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'This is the page where You can track'
+                '\neverything about "Travel"!',
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Add first event to "Travel" page by\n'
+                'entering the text in the text box below\n'
+                'and tapping send button',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.justify,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEvents() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Flexible(
-          child: ListView.separated(
-            reverse: true,
-            shrinkWrap: true,
-            itemCount: _events.length,
-            itemBuilder: (context, index) {
-              return _buildEventListItem(_events[_events.length - 1 - index]);
-            },
-            separatorBuilder: ((context, index) {
-              return const SizedBox(
-                height: 10,
-              );
-            }),
-          ),
-        ),
+        _bookmarkMode ? _buildBookmarkedEvents() : _buildAllEvents(),
       ],
     );
   }
 
-  Widget _buildEventListItem(Event event) {
+  Widget _buildBookmarkedEvents() {
+    return Flexible(
+      child: ListView.builder(
+        padding: const EdgeInsets.only(top: 10),
+        reverse: true,
+        shrinkWrap: true,
+        itemCount: _events.length,
+        itemBuilder: (context, index) {
+          return _events[_events.length - 1 - index].isFavorite
+              ? _buildEventListItem(
+                  _events[_events.length - 1 - index],
+                  _events.length - 1 - index,
+                )
+              : Container();
+        },
+      ),
+    );
+  }
+
+  Widget _buildAllEvents() {
+    return Flexible(
+      child: ListView.builder(
+        padding: const EdgeInsets.only(top: 10),
+        reverse: true,
+        shrinkWrap: true,
+        itemCount: _events.length,
+        itemBuilder: (context, index) {
+          return _buildEventListItem(
+            _events[_events.length - 1 - index],
+            _events.length - 1 - index,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildEventListItem(Event event, int eventIndex) {
     final timeMark = DateFormat('hh:mm a').format(event.dateTime);
 
     if (event.isMessage) {
       return event.image == null
-          ? Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 350,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                margin: const EdgeInsets.only(left: 5),
-                decoration: BoxDecoration(
-                  color: Colors.lime.shade200,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(event.message),
-                    const SizedBox(height: 3),
-                    Text(
-                      timeMark,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 350,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                margin: const EdgeInsets.only(left: 5),
-                decoration: BoxDecoration(
-                  color: Colors.lime.shade200,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      constraints: const BoxConstraints(
-                        maxWidth: 300,
-                        maxHeight: 200,
-                      ),
-                      child: Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: event.image,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      timeMark,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+          ? _buildMessageEvent(event, eventIndex, timeMark)
+          : _buildPictureEvent(event, eventIndex, timeMark);
     } else {
-      return Align(
-        alignment: Alignment.centerLeft,
+      return _buildTimeEvent(event);
+    }
+  }
+
+  Widget _buildTimeEvent(Event event) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 350,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 7,
+        ),
+        margin: const EdgeInsets.only(left: 5, bottom: 7),
+        decoration: BoxDecoration(
+          color: Colors.deepOrange.shade200,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(event.message),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPictureEvent(Event event, int eventIndex, String timeMark) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onLongPress: () {
+          setState(() {
+            if (!_selectionMode) {
+              _selectionMode = true;
+              _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
+            }
+          });
+        },
+        onTap: () async {
+          if (_selectionMode) {
+            setState(() {
+              _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
+            });
+          }
+        },
         child: Container(
           constraints: const BoxConstraints(
             maxWidth: 350,
@@ -360,19 +519,109 @@ class _EventPageState extends State<EventPage> {
             horizontal: 10,
             vertical: 7,
           ),
-          margin: const EdgeInsets.only(left: 5),
+          margin: const EdgeInsets.only(left: 5, bottom: 7),
           decoration: BoxDecoration(
-            color: Colors.deepOrange.shade200,
+            color: event.isSelected ? Colors.amber : Colors.lime.shade200,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Colors.amber,
+                constraints: const BoxConstraints(
+                  minWidth: 100,
+                  minHeight: 200,
+                  maxWidth: 300,
+                  maxHeight: 200,
+                ),
+                child: event.image,
+              ),
+              const SizedBox(height: 3),
+              Text(
+                timeMark,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageEvent(Event event, int eventIndex, String timeMark) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onLongPress: () {
+          setState(() {
+            if (!_selectionMode) {
+              _selectionMode = true;
+              _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
+            }
+          });
+        },
+        onTap: () async {
+          if (_selectionMode) {
+            setState(() {
+              _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
+            });
+          } else {
+            await Clipboard.setData(
+              ClipboardData(
+                text: event.message,
+              ),
+            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  backgroundColor: Colors.teal,
+                  duration: Duration(milliseconds: 300),
+                  content: Text('Copied to clipboard'),
+                ),
+              );
+            }
+          }
+        },
+        onHorizontalDragEnd: (_) {
+          setState(() {
+            _messageEditMode = true;
+            _messageIndex = eventIndex;
+          });
+          _controller.text = event.message;
+        },
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: 350,
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 7,
+          ),
+          margin: const EdgeInsets.only(left: 5, bottom: 7),
+          decoration: BoxDecoration(
+            color: event.isSelected ? Colors.amber : Colors.lime.shade200,
             borderRadius: BorderRadius.circular(5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(event.message),
+              const SizedBox(height: 3),
+              Text(
+                timeMark,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 10,
+                ),
+              ),
             ],
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 }
