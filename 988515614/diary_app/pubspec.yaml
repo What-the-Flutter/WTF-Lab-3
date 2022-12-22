@@ -34,6 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.5+1
+  image_picker: ^0.8.6
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0

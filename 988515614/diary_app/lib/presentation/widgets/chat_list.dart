@@ -1,3 +1,4 @@
+import 'package:diary_app/presentation/pages/event_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/chat.dart';
@@ -11,16 +12,10 @@ class ChatList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: chats.length * 2 - 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index % 2 == 1) {
-          return const Divider(
-            color: Colors.black,
-          );
-        }
-
-        final Chat chatData = chats[index ~/ 2];
+    return ListView.separated(
+      itemCount: chats.length,
+      itemBuilder: (context, index) {
+        final chatData = chats[index];
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: TextButton(
@@ -28,6 +23,11 @@ class ChatList extends StatelessWidget {
               padding: const EdgeInsets.all(0),
             ),
             onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) {
+                  return const EventPage();
+                }),
+              );
               // Toggle some function to open chat for
               // the current TextButton index
             },
@@ -40,6 +40,11 @@ class ChatList extends StatelessWidget {
               subtitle: const Text('No events. Click to create one'),
             ),
           ),
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const Divider(
+          color: Colors.black,
         );
       },
     );

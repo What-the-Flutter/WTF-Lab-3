@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'features/main_screen/presentation/pages/main_screen.dart';
+import 'presentation/pages/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Material App',
-      home: MainScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      title: 'Diary app',
+      home: const MainScreen(),
     );
   }
 }
