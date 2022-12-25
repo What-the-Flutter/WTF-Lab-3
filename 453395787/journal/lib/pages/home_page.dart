@@ -15,11 +15,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedPage = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     ChatList(),
-    EmptyPage(),
-    EmptyPage(),
-    EmptyPage(),
+    const EmptyPage(),
+    const EmptyPage(),
+    const EmptyPage(),
   ];
 
   final List<Widget> _destinations = const [
