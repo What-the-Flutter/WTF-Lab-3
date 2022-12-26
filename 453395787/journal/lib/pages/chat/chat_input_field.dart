@@ -21,7 +21,7 @@ class ChatInput extends StatelessWidget {
           ),
           child: Column(
             children: [
-              if (chat.message.hasImages) _buildImageList(chat),
+              if (chat.message.hasImages) _SelectedImagesList(chat: chat),
               Row(
                 children: [
                   const IconButton(
@@ -70,8 +70,18 @@ class ChatInput extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildImageList(ChatProvider chat) {
+class _SelectedImagesList extends StatelessWidget {
+  final ChatProvider chat;
+
+  const _SelectedImagesList({
+    Key? key,
+    required this.chat,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
       child: Padding(

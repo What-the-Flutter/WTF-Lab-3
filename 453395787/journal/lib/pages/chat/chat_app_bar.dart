@@ -12,20 +12,56 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Consumer<ChatProvider>(
       builder: (context, chat, child) {
         if (chat.isEditMode) {
-          return _buildAppBarWithExitButton(chat);
+          return _AppBarWithCancelButton(
+            chat: chat,
+          );
         } else if (chat.hasSelected) {
-          return _buildAppBarWithActions(chat, context);
+          return _AppBarWithActions(
+            chat: chat,
+          );
         } else {
-          return _buildDefaultAppBar(chat);
+          return _DefaultAppBar(
+            chat: chat,
+          );
         }
       },
     );
   }
 
-  Widget _buildDefaultAppBar(ChatProvider chat) =>
-      AppBar(title: Text(chat.name));
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
 
-  Widget _buildAppBarWithActions(ChatProvider chat, BuildContext context) {
+class _AppBarWithCancelButton extends StatelessWidget {
+  final ChatProvider chat;
+
+  const _AppBarWithCancelButton({
+    Key? key,
+    required this.chat,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      leading: IconButton(
+        onPressed: chat.endEditMode,
+        icon: const Icon(Icons.close),
+      ),
+      title: Text(chat.name),
+    );
+  }
+}
+
+class _AppBarWithActions extends StatelessWidget {
+  final ChatProvider chat;
+
+  const _AppBarWithActions({
+    Key? key,
+    required this.chat,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
       leading: IconButton(
         onPressed: chat.resetSelected,
@@ -70,19 +106,18 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
+}
 
-  Widget _buildAppBarWithExitButton(ChatProvider chat) {
-    return AppBar(
-      leading: IconButton(
-        onPressed: chat.endEditMode,
-        icon: const Icon(Icons.close),
-      ),
-      title: Text(chat.name),
-    );
-  }
+class _DefaultAppBar extends StatelessWidget {
+  final ChatProvider chat;
+
+  const _DefaultAppBar({
+    Key? key,
+    required this.chat,
+  }) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Widget build(BuildContext context) => AppBar(title: Text(chat.name));
 }
 
 Future<bool?> showConfirmationDialog({

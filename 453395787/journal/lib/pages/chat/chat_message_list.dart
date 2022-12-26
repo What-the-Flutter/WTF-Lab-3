@@ -139,79 +139,121 @@ class MessageItem extends StatelessWidget {
               ),
             LimitedBox(
               maxWidth: MediaQuery.of(context).size.width * _widthScaleFactor,
-              child: _buildMessageCard(),
+              child: Card(
+                color: isSelected ? Colors.blue[200] : null,
+                margin: const EdgeInsets.symmetric(
+                  vertical: Insets.extraSmall,
+                  horizontal: Insets.large,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                    Radius.medium,
+                  ),
+                ),
+                child: InkWell(
+                  onTap: () => onTap(
+                    message,
+                    isSelected,
+                  ),
+                  onLongPress: () => onLongPress(
+                    message,
+                    isSelected,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    Radius.medium,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(
+                      Insets.extraSmall,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (message.images.isNotEmpty)
+                          _MessageImages(
+                            message: message,
+                          ),
+                        if (message.text.isNotEmpty)
+                          _MessageText(
+                            text: message.text,
+                          ),
+                        _MessageTime(
+                          time: message.time,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         );
       }),
     );
   }
+}
 
-  Card _buildMessageCard() {
-    return Card(
-      color: isSelected ? Colors.blue[200] : null,
-      margin: const EdgeInsets.symmetric(
-        vertical: Insets.extraSmall,
-        horizontal: Insets.large,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          Radius.medium,
-        ),
-      ),
-      child: InkWell(
-        onTap: () => onTap(
-          message,
-          isSelected,
-        ),
-        onLongPress: () => onLongPress(
-          message,
-          isSelected,
-        ),
-        borderRadius: BorderRadius.circular(
-          Radius.medium,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(
-            Insets.extraSmall,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (message.images.isNotEmpty) _buildImages(),
-              if (message.text.isNotEmpty) _buildText(),
-              _buildTime(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class _MessageImages extends StatelessWidget {
+  final Message message;
 
-  Widget _buildImages() {
+  const _MessageImages({
+    Key? key,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     if (message.hasSingleImage) {
-      return _buildSingleImage();
+      return _SingleImage(
+        image: message.images.first,
+      );
     } else if (message.images.length.isEven) {
-      return _buildEvenAmountOfImages();
+      return _EvenAmountOfImages(
+        images: message.images,
+      );
     } else {
-      return _buildOddAmountOfImages();
+      return _OddAmountOfImages(
+        images: message.images,
+      );
     }
   }
+}
 
-  Widget _buildSingleImage() {
+class _SingleImage extends StatelessWidget {
+  final String image;
+
+  const _SingleImage({
+    Key? key,
+    required this.image,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(
         Radius.medium,
       ),
       child: Image.file(
-        File(message.images.first),
+        File(image),
         fit: BoxFit.cover,
       ),
     );
   }
+}
 
-  Widget _buildEvenAmountOfImages({bool skipFirst = false}) {
-    var imageAmount = message.images.length;
+class _EvenAmountOfImages extends StatelessWidget {
+  final List<String> images;
+  final bool skipFirst;
+
+  const _EvenAmountOfImages({
+    Key? key,
+    required this.images,
+    this.skipFirst = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var imageAmount = images.length;
     if (skipFirst) imageAmount--;
 
     return GridView.count(
@@ -224,13 +266,14 @@ class MessageItem extends StatelessWidget {
             padding: const EdgeInsets.all(
               Insets.extraSmall,
             ),
+            // TODO _SingleImage here?
             child: ClipRRect(
               borderRadius: BorderRadius.circular(
                 Radius.medium,
               ),
               child: Image.file(
                 File(
-                  message.images[skipFirst ? index + 1 : index],
+                  images[skipFirst ? index + 1 : index],
                 ),
                 fit: BoxFit.cover,
               ),
@@ -240,17 +283,40 @@ class MessageItem extends StatelessWidget {
       }),
     );
   }
+}
 
-  Widget _buildOddAmountOfImages() {
+class _OddAmountOfImages extends StatelessWidget {
+  final List<String> images;
+
+  const _OddAmountOfImages({
+    Key? key,
+    required this.images,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSingleImage(),
-        _buildEvenAmountOfImages(skipFirst: true),
+        _SingleImage(image: images.first),
+        _EvenAmountOfImages(
+          images: images,
+          skipFirst: true,
+        ),
       ],
     );
   }
+}
 
-  Widget _buildText() {
+class _MessageText extends StatelessWidget {
+  final String text;
+
+  const _MessageText({
+    Key? key,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
         left: Insets.medium,
@@ -259,7 +325,7 @@ class MessageItem extends StatelessWidget {
         bottom: Insets.none,
       ),
       child: Text(
-        message.text,
+        text,
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -267,13 +333,23 @@ class MessageItem extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildTime() {
+class _MessageTime extends StatelessWidget {
+  final String time;
+
+  const _MessageTime({
+    Key? key,
+    required this.time,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(
         Insets.extraSmall,
       ),
-      child: Text(message.time),
+      child: Text(time),
     );
   }
 }
