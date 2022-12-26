@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../chat_repository.dart';
+import '../../utils/styles.dart';
 import 'chat_provider.dart';
 
 class ChatInput extends StatelessWidget {
@@ -23,7 +24,10 @@ class ChatInput extends StatelessWidget {
               if (chat.message.hasImages) _buildImageList(chat),
               Row(
                 children: [
-                  const IconButton(onPressed: null, icon: Icon(Icons.add)),
+                  const IconButton(
+                    onPressed: null,
+                    icon: Icon(Icons.add),
+                  ),
                   Expanded(
                     child: TextFormField(
                       controller: chat.inputTextController,
@@ -72,7 +76,7 @@ class ChatInput extends StatelessWidget {
       height: 200,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          vertical: 8,
+          vertical: Insets.medium,
         ),
         child: ListView.builder(
           shrinkWrap: true,
@@ -85,9 +89,13 @@ class ChatInput extends StatelessWidget {
                   chat.message = chat.message..images.removeAt(index);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(
+                    Insets.small,
+                  ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(
+                      Radius.medium,
+                    ),
                     child: Image.file(
                       File(
                         chat.message.images[index],
@@ -98,7 +106,9 @@ class ChatInput extends StatelessWidget {
               );
             }
             return IconButton(
-              padding: const EdgeInsets.all(40),
+              padding: const EdgeInsets.all(
+                Insets.extraLarge,
+              ),
               onPressed: () async {
                 final images = await ImagePicker().pickMultiImage();
                 chat.message = chat.message
@@ -153,7 +163,9 @@ class ChatInputMutableButton extends StatelessWidget {
               chat.message = chat.message.copyWith(images: imagePaths);
             },
             child: const Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(
+                Insets.medium,
+              ),
               child: Icon(
                 Icons.photo_album_outlined,
               ),

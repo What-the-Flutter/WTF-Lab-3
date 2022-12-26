@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../chat_repository.dart';
+import '../utils/styles.dart';
 import 'chat/chat_page.dart';
 
 class ChatList extends StatelessWidget {
@@ -31,8 +32,8 @@ class ChatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: 16,
+        vertical: Insets.medium,
+        horizontal: Insets.large,
       ),
       child: ListTile(
         leading: Icon(

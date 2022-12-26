@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/styles.dart';
 import 'chat_provider.dart';
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -105,22 +106,22 @@ Future<bool?> showConfirmationDialog({
         ),
       ],
       titlePadding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 0,
+        left: Insets.large,
+        right: Insets.large,
+        top: Insets.large,
+        bottom: Insets.none,
       ),
       contentPadding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 8,
-        bottom: 0,
+        left: Insets.large,
+        right: Insets.large,
+        top: Insets.medium,
+        bottom: Insets.none,
       ),
       actionsPadding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 0,
-        bottom: 8,
+        left: Insets.large,
+        right: Insets.large,
+        top: Insets.none,
+        bottom: Insets.medium,
       ),
     ),
   );

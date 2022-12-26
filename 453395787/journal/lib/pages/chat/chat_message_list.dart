@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../chat_repository.dart';
+import '../../utils/styles.dart';
 import 'chat_provider.dart';
 
 class ChatMessageList extends StatelessWidget {
@@ -48,7 +49,9 @@ class ChatMessageList extends StatelessWidget {
       position: const RelativeRect.fromLTRB(0, 200, 0, 0),
       color: Colors.blue[50],
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(
+          Radius.large,
+        ),
       ),
       items: [
         PopupMenuItem(
@@ -148,11 +151,13 @@ class MessageItem extends StatelessWidget {
     return Card(
       color: isSelected ? Colors.blue[200] : null,
       margin: const EdgeInsets.symmetric(
-        vertical: 2,
-        horizontal: 16,
+        vertical: Insets.extraSmall,
+        horizontal: Insets.large,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(
+          Radius.medium,
+        ),
       ),
       child: InkWell(
         onTap: () => onTap(
@@ -163,9 +168,13 @@ class MessageItem extends StatelessWidget {
           message,
           isSelected,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(
+          Radius.medium,
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(2),
+          padding: const EdgeInsets.all(
+            Insets.extraSmall,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -191,7 +200,9 @@ class MessageItem extends StatelessWidget {
 
   Widget _buildSingleImage() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(
+        Radius.medium,
+      ),
       child: Image.file(
         File(message.images.first),
         fit: BoxFit.cover,
@@ -210,9 +221,13 @@ class MessageItem extends StatelessWidget {
       children: List.generate(imageAmount, (index) {
         return Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(
+              Insets.extraSmall,
+            ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(
+                Radius.medium,
+              ),
               child: Image.file(
                 File(
                   message.images[skipFirst ? index + 1 : index],
@@ -238,10 +253,10 @@ class MessageItem extends StatelessWidget {
   Widget _buildText() {
     return Padding(
       padding: const EdgeInsets.only(
-        left: 8,
-        top: 8,
-        right: 8,
-        bottom: 0,
+        left: Insets.medium,
+        top: Insets.medium,
+        right: Insets.medium,
+        bottom: Insets.none,
       ),
       child: Text(
         message.text,
@@ -255,7 +270,9 @@ class MessageItem extends StatelessWidget {
 
   Widget _buildTime() {
     return Padding(
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(
+        Insets.extraSmall,
+      ),
       child: Text(message.time),
     );
   }
