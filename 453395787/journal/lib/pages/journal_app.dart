@@ -14,7 +14,9 @@ class JournalApp extends StatelessWidget {
         colorSchemeSeed: Colors.blue,
         brightness: Brightness.light,
       ),
-      home: const HomePage(title: 'Home'),
+      home: const HomePage(
+        title: 'Home',
+      ),
     );
   }
 }

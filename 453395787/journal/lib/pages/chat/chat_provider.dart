@@ -49,7 +49,6 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   bool get canBeSended => _canBeSended;
   set canBeSended(bool value) {
     _canBeSended = value;
@@ -67,9 +66,11 @@ class ChatProvider extends ChangeNotifier {
     messages.remove(message);
     notifyListeners();
   }
-  
+
   void removeSelected() {
-    messages.removeWhere((m) => selected.contains(m.id));
+    messages.removeWhere(
+      (m) => selected.contains(m.id),
+    );
     selected.clear();
     notifyListeners();
   }
@@ -133,30 +134,54 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copyToClipboard(Message message) async {
-    Fluttertoast.showToast(msg: 'Text copied to clipboard');
-    await Clipboard.setData(ClipboardData(text: message.text));
+    Fluttertoast.showToast(
+      msg: 'Text copied to clipboard',
+    );
+    await Clipboard.setData(
+      ClipboardData(
+        text: message.text,
+      ),
+    );
   }
 
   void copySelectedToClipboard() async {
-    Fluttertoast.showToast(msg: 'Text copied to clipboard');
+    Fluttertoast.showToast(
+      msg: 'Text copied to clipboard',
+    );
     final text = selectedMessages.map((e) => e.text).join('\n');
-    await Clipboard.setData(ClipboardData(text: text));
+    await Clipboard.setData(
+      ClipboardData(
+        text: text,
+      ),
+    );
   }
 
   void addToFavorites(Message message) {
-    _update(message.copyWith(isFavorite: true));
+    _update(
+      message.copyWith(
+        isFavorite: true,
+      ),
+    );
     notifyListeners();
   }
 
   void removeFromFavorites(Message message) {
-    _update(message.copyWith(isFavorite: false));
+    _update(
+      message.copyWith(
+        isFavorite: false,
+      ),
+    );
     notifyListeners();
   }
 
   void addSelectedToFavorites() {
     final selected = selectedMessages;
     for (final m in selected) {
-      _update(m.copyWith(isFavorite: true));
+      _update(
+        m.copyWith(
+          isFavorite: true,
+        ),
+      );
     }
     notifyListeners();
   }
@@ -164,7 +189,11 @@ class ChatProvider extends ChangeNotifier {
   void removeSelectedFromFavorites() {
     final selected = selectedMessages;
     for (final m in selected) {
-      _update(m.copyWith(isFavorite: false));
+      _update(
+        m.copyWith(
+          isFavorite: false,
+        ),
+      );
     }
     notifyListeners();
   }

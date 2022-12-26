@@ -7,11 +7,13 @@ import 'chat_input_field.dart';
 import 'chat_message_list.dart';
 import 'chat_provider.dart';
 
-
 class ChatPage extends StatelessWidget {
   final Chat chat;
 
-  const ChatPage({required this.chat, Key? key}) : super(key: key);
+  const ChatPage({
+    required this.chat,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class ChatPage extends StatelessWidget {
             Expanded(child: ChatMessageList()),
             ChatInput(),
           ],
-        )
+        ),
       ),
     );
   }

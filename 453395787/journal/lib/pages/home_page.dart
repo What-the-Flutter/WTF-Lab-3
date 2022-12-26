@@ -23,10 +23,22 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<Widget> _destinations = const [
-    NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-    NavigationDestination(icon: Icon(Icons.view_day_outlined), label: 'Daily'),
-    NavigationDestination(icon: Icon(Icons.timeline), label: 'Timeline'),
-    NavigationDestination(icon: Icon(Icons.explore), label: 'Explore'),
+    NavigationDestination(
+      icon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.view_day_outlined),
+      label: 'Daily',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.timeline),
+      label: 'Timeline',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.explore),
+      label: 'Explore',
+    ),
   ];
 
   void _onBottomNavigationTap(int index) {
@@ -38,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   Widget? get _floatingActionButton {
     if (_selectedPage == 0) {
       return FloatingActionButton(
-        onPressed: () { },
+        onPressed: () {},
         child: const Icon(Icons.add),
       );
     }
@@ -50,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            (_destinations[_selectedPage] as NavigationDestination).label
+          (_destinations[_selectedPage] as NavigationDestination).label,
         ),
       ),
       body: _pages[_selectedPage],

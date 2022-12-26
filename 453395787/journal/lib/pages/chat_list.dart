@@ -12,7 +12,9 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: repo.chats.length,
-      itemBuilder: (_, index) => ChatItem(chat: repo.chats[index]),
+      itemBuilder: (_, index) => ChatItem(
+        chat: repo.chats[index],
+      ),
     );
   }
 }
@@ -22,18 +24,28 @@ class ChatItem extends StatelessWidget {
 
   const ChatItem({
     required this.chat,
-    Key? key
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: 16,
+      ),
       child: ListTile(
-        leading: Icon(chat.icon),
-        title: Text(chat.name),
-        subtitle: Text(chat.lastMessage.text),
-        trailing: Text(chat.lastMessage.time,
+        leading: Icon(
+          chat.icon,
+        ),
+        title: Text(
+          chat.name,
+        ),
+        subtitle: Text(
+          chat.lastMessage.text,
+        ),
+        trailing: Text(
+          chat.lastMessage.time,
           style: const TextStyle(
             fontSize: 14,
             color: Colors.grey,
@@ -41,7 +53,9 @@ class ChatItem extends StatelessWidget {
         ),
         onTap: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => ChatPage(chat: chat))
+            MaterialPageRoute(
+              builder: (context) => ChatPage(chat: chat),
+            ),
           );
         },
       ),
