@@ -133,7 +133,9 @@ class ChatInputMutableButton extends StatelessWidget {
             icon: const Icon(Icons.photo_album_outlined),
             onPressed: () async {
               final images = await ImagePicker().pickMultiImage();
-              chat.message = chat.message..images.addAll(images.map((e) => e.path));
+              var imagePaths = images.map((e) => e.path).toList();
+              imagePaths.addAll(chat.message.images);
+              chat.message = chat.message.copyWith(images: imagePaths);
             },
           );
         }   
