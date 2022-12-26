@@ -41,7 +41,7 @@ class ChatMessageList extends StatelessWidget {
     return await showMenu(
       context: context,
       position: const RelativeRect.fromLTRB(0, 200, 0, 0),
-      color: Colors.grey,
+      color: Colors.blue[50],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -110,7 +110,12 @@ class MessageItem extends StatelessWidget {
           return Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (message.isFavorite) const Icon(Icons.star),
+              if (message.isFavorite) 
+                Icon(
+                  Icons.star, color: 
+                  Colors.blue[400],
+                  size: 32,
+                ),
               LimitedBox(
                 maxWidth: MediaQuery.of(context).size.width * _widthScaleFactor,
                 child: _buildMessageCard(),
@@ -124,7 +129,7 @@ class MessageItem extends StatelessWidget {
 
   Card _buildMessageCard() {
     return Card(
-      color: isSelected ? Colors.red[900] : null,
+      color: isSelected ? Colors.blue[200] : null,
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),

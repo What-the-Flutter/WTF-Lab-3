@@ -8,13 +8,12 @@ import '../../chat_repository.dart';
 class ChatProvider extends ChangeNotifier {
   ChatProvider(this.chat);
 
+  final inputTextController = TextEditingController();
   final Chat chat;
   final _selected = <int>{};
   var _message = Message();
   var _isEditMode = false;
   var _canBeSended = false;
-  String? _inputInitialValue;
-
 
   String get name => chat.name;
   QueueList<Message> get messages => chat.messages;
@@ -47,7 +46,6 @@ class ChatProvider extends ChangeNotifier {
   Message get message => _message;
   set message(Message message) {
     _message = message;
-    _inputInitialValue = message.text.isEmpty ? null : message.text;
     notifyListeners();
   }
 
@@ -57,14 +55,6 @@ class ChatProvider extends ChangeNotifier {
     _canBeSended = value;
     notifyListeners();
   }
-
-  String? get inputInitialValue {
-    var value = _inputInitialValue;
-    _inputInitialValue = null;
-    return value;
-  }
-  set inputInitialValue(String? value) => _inputInitialValue = value;
-
 
   void add(Message message) {
     if (!_update(message)) {
@@ -95,7 +85,7 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = true;
     _selected.add(message.id);
     _message = message;
-    _inputInitialValue = message.text;
+    inputTextController.text = message.text;
     notifyListeners();
   }
 
@@ -108,7 +98,7 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = false;
     _selected.clear();
     message = Message();
-    _inputInitialValue = null;
+    inputTextController.text = '';
     notifyListeners();
   }
 
@@ -148,6 +138,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copySelectedToClipboard() async {
+    Fluttertoast.showToast(msg: 'Text copied to clipboard');
     final text = selectedMessages.map((e) => e.text).join('\n');
     await Clipboard.setData(ClipboardData(text: text));
   }

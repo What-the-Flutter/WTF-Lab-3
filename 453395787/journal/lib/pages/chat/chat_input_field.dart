@@ -8,7 +8,6 @@ import '../../chat_repository.dart';
 import 'chat_provider.dart';
 
 class ChatInput extends StatelessWidget {
-  final _textController = TextEditingController();
 
   ChatInput({Key? key}) : super(key: key);
 
@@ -16,11 +15,6 @@ class ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (context, chat, child) {
-        var text = chat.inputInitialValue;
-        if (text != null) {
-          _textController.text = text;
-        }
-
         return DecoratedBox(
           decoration: BoxDecoration(
             color: Theme.of(context).hoverColor,
@@ -33,7 +27,7 @@ class ChatInput extends StatelessWidget {
                   const IconButton(onPressed: null, icon: Icon(Icons.add)),
                   Expanded(
                     child: TextFormField(
-                      controller: _textController,
+                      controller: chat.inputTextController,
                       decoration: const InputDecoration(
                         isCollapsed: true,
                         hintText: 'Message',
@@ -51,10 +45,10 @@ class ChatInput extends StatelessWidget {
                   ChatInputMutableButton(
                     onSendPressed: () {
                         chat.add(chat.message.copyWith(
-                          text: _textController.text
+                          text: chat.inputTextController.text
                         ));
 
-                        _textController.clear();
+                        chat.inputTextController.clear();
                         if (chat.isEditMode) {
                           chat.endEditMode();
                         } else {
@@ -84,16 +78,16 @@ class ChatInput extends StatelessWidget {
           itemBuilder: (_, index) {
             if (index != chat.message.images.length) {
               return GestureDetector(
-                  onDoubleTap: () {
-                    chat.message = chat.message..images.removeAt(index);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(File(chat.message.images[index]))
-                    ),
-                  )
+                onDoubleTap: () {
+                  chat.message = chat.message..images.removeAt(index);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(File(chat.message.images[index]))
+                  ),
+                )
               );
             }
             return IconButton(
@@ -129,14 +123,23 @@ class ChatInputMutableButton extends StatelessWidget {
             onPressed: onSendPressed,
           );
         } else {
-          return IconButton(
-            icon: const Icon(Icons.photo_album_outlined),
-            onPressed: () async {
+          return InkWell(
+            onLongPress: () async {
+              final image = await ImagePicker().pickImage(source: ImageSource.camera);
+              if (image != null) {
+                chat.message = chat.message.copyWith(images: [image.path]);
+              } 
+            },
+            onTap: () async {
               final images = await ImagePicker().pickMultiImage();
               var imagePaths = images.map((e) => e.path).toList();
               imagePaths.addAll(chat.message.images);
               chat.message = chat.message.copyWith(images: imagePaths);
             },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.photo_album_outlined),
+            ),
           );
         }   
       }),
