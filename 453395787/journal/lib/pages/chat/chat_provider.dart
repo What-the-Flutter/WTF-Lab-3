@@ -32,7 +32,7 @@ class ChatProvider extends ChangeNotifier {
     var staredAmount = 0;
     var otherAmount = 0;
 
-    for (final m in selectedMessages) {
+    for (var m in selectedMessages) {
       if (m.isFavorite) {
         staredAmount++;
       } else {
@@ -176,7 +176,7 @@ class ChatProvider extends ChangeNotifier {
 
   void addSelectedToFavorites() {
     final selected = selectedMessages;
-    for (final m in selected) {
+    for (var m in selected) {
       _update(
         m.copyWith(
           isFavorite: true,
@@ -188,7 +188,7 @@ class ChatProvider extends ChangeNotifier {
 
   void removeSelectedFromFavorites() {
     final selected = selectedMessages;
-    for (final m in selected) {
+    for (var m in selected) {
       _update(
         m.copyWith(
           isFavorite: false,
