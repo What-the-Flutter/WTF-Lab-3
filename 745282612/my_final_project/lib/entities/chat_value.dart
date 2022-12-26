@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../custom_icons/custom_icons.dart';
+
+import '../ui/screens/travel_screen.dart';
+import '../utils/custom_icons/custom_icons.dart';
 
 import 'chat.dart';
 
@@ -8,6 +10,8 @@ class ChatValue {
     Chat(
       icon: const Icon(CustomIcons.departure),
       title: 'Travel',
+      // url: const TravelChat(),
+      url: const TravelScreen(),
     ),
     Chat(
       icon: const Icon(CustomIcons.users),
