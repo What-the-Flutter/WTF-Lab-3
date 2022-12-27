@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../utils/theme.dart';
 import 'chat_list.dart';
 import 'empty_page.dart';
 
@@ -59,11 +60,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var appTheme = ThemeChanger.of(context).appTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           (_destinations[_selectedPage] as NavigationDestination).label,
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              appTheme.toggleThemeMode();
+            },
+            icon: Icon(
+              appTheme.isDarkMode
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
+            ),
+          ),
+        ],
       ),
       body: _pages[_selectedPage],
       bottomNavigationBar: NavigationBar(
