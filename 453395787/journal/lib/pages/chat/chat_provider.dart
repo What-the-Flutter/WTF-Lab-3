@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 import '../../chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
-  ChatProvider(this.chat);
+  ChatProvider(int chatId) {
+    chat = ChatRepository.get().chats.firstWhere((e) => e.id == chatId);
+  }
 
-  Chat chat;
+  late Chat chat;
   final _selected = <int>{};
   var _message = Message();
   var _isEditMode = false;

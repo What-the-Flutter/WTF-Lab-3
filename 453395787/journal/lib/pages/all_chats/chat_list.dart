@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../chat_repository.dart';
-import '../utils/styles.dart';
-import 'chat/chat_page.dart';
+import '../../chat_repository.dart';
+import '../../utils/styles.dart';
+import '../chat/chat_page.dart';
 
 class ChatList extends StatelessWidget {
   ChatList({Key? key}) : super(key: key);
 
-  final repo = ChatRepository();
+  final repo = ChatRepository.get();
 
   @override
   Widget build(BuildContext context) {
@@ -42,20 +42,26 @@ class ChatItem extends StatelessWidget {
         title: Text(
           chat.name,
         ),
-        subtitle: Text(
-          chat.lastMessage.text,
-        ),
-        trailing: Text(
-          chat.lastMessage.time,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
+        subtitle: chat.lastMessage != null
+            ? Text(
+                chat.lastMessage!.text,
+              )
+            : null,
+        trailing: chat.lastMessage != null
+            ? Text(
+                chat.lastMessage!.time,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              )
+            : null,
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ChatPage(chat: chat),
+              builder: (context) => ChatPage(
+                chatId: chat.id,
+              ),
             ),
           );
         },

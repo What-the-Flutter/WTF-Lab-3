@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../utils/theme.dart';
-import 'chat_list.dart';
+import 'all_chats/add_chat_page.dart';
+import 'all_chats/chat_list.dart';
 import 'empty_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -48,10 +49,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget? get _floatingActionButton {
+  Widget? _floatingActionButton(BuildContext context) {
     if (_selectedPage == 0) {
       return FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return const AddChatPage();
+            }),
+          );
+        },
         child: const Icon(Icons.add),
       );
     }
@@ -86,7 +94,7 @@ class _HomePageState extends State<HomePage> {
         selectedIndex: _selectedPage,
         destinations: _destinations,
       ),
-      floatingActionButton: _floatingActionButton,
+      floatingActionButton: _floatingActionButton(context),
     );
   }
 }

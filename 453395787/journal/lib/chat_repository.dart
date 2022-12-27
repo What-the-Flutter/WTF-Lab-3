@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
@@ -6,7 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ChatRepository {
-  List<Chat> chats = [
+  static final _instance = ChatRepository._internal();
+
+  ChatRepository._internal();
+  
+  factory ChatRepository.get() => _instance;
+
+  IList<Chat> chats = [
     Chat(
       id: 0,
       name: 'All',
@@ -69,7 +74,7 @@ class ChatRepository {
         ],
       ),
     ),
-  ];
+  ].lock;
 }
 
 class Chat {
@@ -85,7 +90,7 @@ class Chat {
     required this.messages,
   });
 
-  Message get lastMessage => messages.first;
+  Message? get lastMessage => messages.isEmpty ? null : messages.last;
 
   Chat copyWith({
     int? id,
