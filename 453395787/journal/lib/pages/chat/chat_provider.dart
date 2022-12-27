@@ -1,14 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
   ChatProvider(this.chat);
 
-  final inputTextController = TextEditingController();
   final Chat chat;
   final _selected = <int>{};
   var _message = Message();
@@ -55,6 +53,13 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? _initialText;
+  String? get initialText {
+    var buffer = _initialText;
+    _initialText = null;
+    return buffer;
+  }
+
   void add(Message message) {
     if (!_update(message)) {
       messages.addFirst(message);
@@ -86,7 +91,7 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = true;
     _selected.add(message.id);
     _message = message;
-    inputTextController.text = message.text;
+    _initialText = message.text;
     notifyListeners();
   }
 
@@ -99,7 +104,7 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = false;
     _selected.clear();
     message = Message();
-    inputTextController.text = '';
+    _initialText = null;
     notifyListeners();
   }
 
@@ -134,9 +139,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copyToClipboard(Message message) async {
-    Fluttertoast.showToast(
-      msg: 'Text copied to clipboard',
-    );
     await Clipboard.setData(
       ClipboardData(
         text: message.text,
@@ -145,9 +147,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copySelectedToClipboard() async {
-    Fluttertoast.showToast(
-      msg: 'Text copied to clipboard',
-    );
     final text = selectedMessages.map((e) => e.text).join('\n');
     await Clipboard.setData(
       ClipboardData(

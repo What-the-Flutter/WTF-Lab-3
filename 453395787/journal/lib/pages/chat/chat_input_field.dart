@@ -11,10 +11,17 @@ import 'chat_provider.dart';
 class ChatInput extends StatelessWidget {
   ChatInput({Key? key}) : super(key: key);
 
+  final _inputController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (context, chat, child) {
+        var initialText = chat.initialText;
+        if (initialText != null) {
+          _inputController.text = initialText;
+        }
+
         return DecoratedBox(
           decoration: BoxDecoration(
             color: Theme.of(context).hoverColor,
@@ -30,7 +37,7 @@ class ChatInput extends StatelessWidget {
                   ),
                   Expanded(
                     child: TextFormField(
-                      controller: chat.inputTextController,
+                      controller: _inputController,
                       decoration: const InputDecoration(
                         isCollapsed: true,
                         hintText: 'Message',
@@ -49,11 +56,11 @@ class ChatInput extends StatelessWidget {
                     onSendPressed: () {
                       chat.add(
                         chat.message.copyWith(
-                          text: chat.inputTextController.text,
+                          text: _inputController.text,
                         ),
                       );
 
-                      chat.inputTextController.clear();
+                      _inputController.clear();
                       if (chat.isEditMode) {
                         chat.endEditMode();
                       } else {
