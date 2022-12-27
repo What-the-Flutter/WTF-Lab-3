@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 import 'chat_provider.dart';
 
@@ -64,7 +63,7 @@ class ChatInput extends StatelessWidget {
                       if (chat.isEditMode) {
                         chat.endEditMode();
                       } else {
-                        chat.message = Message();
+                        chat.clearInputMessage();
                       }
                       chat.canBeSended = false;
                     },
@@ -103,7 +102,7 @@ class _SelectedImagesList extends StatelessWidget {
             if (index != chat.message.images.length) {
               return GestureDetector(
                 onDoubleTap: () {
-                  chat.message = chat.message..images.removeAt(index);
+                  chat.removeImageFromSelectedMessage(index);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(
@@ -128,10 +127,9 @@ class _SelectedImagesList extends StatelessWidget {
               ),
               onPressed: () async {
                 final images = await ImagePicker().pickMultiImage();
-                chat.message = chat.message
-                  ..images.addAll(
-                    images.map((e) => e.path),
-                  );
+                chat.addImagesToInputMessage(
+                  images.map((e) => e.path),
+                );
               },
               icon: const Icon(
                 Icons.add,
@@ -168,16 +166,14 @@ class ChatInputMutableButton extends StatelessWidget {
                 source: ImageSource.camera,
               );
               if (image != null) {
-                chat.message = chat.message.copyWith(
-                  images: [image.path],
-                );
+                chat.setImagesToInputMessage([image.path]);
               }
             },
             onTap: () async {
               final images = await ImagePicker().pickMultiImage();
               var imagePaths = images.map((e) => e.path).toList();
               imagePaths.addAll(chat.message.images);
-              chat.message = chat.message.copyWith(images: imagePaths);
+              chat.setImagesToInputMessage(imagePaths);
             },
             child: const Padding(
               padding: EdgeInsets.all(

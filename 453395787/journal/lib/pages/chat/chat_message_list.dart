@@ -215,11 +215,11 @@ class _MessageImages extends StatelessWidget {
       );
     } else if (message.images.length.isEven) {
       return _EvenAmountOfImages(
-        images: message.images,
+        images: message.images.toList(),
       );
     } else {
       return _OddAmountOfImages(
-        images: message.images,
+        images: message.images.toList(),
       );
     }
   }

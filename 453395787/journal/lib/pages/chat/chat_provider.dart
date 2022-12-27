@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -7,14 +7,14 @@ import '../../chat_repository.dart';
 class ChatProvider extends ChangeNotifier {
   ChatProvider(this.chat);
 
-  final Chat chat;
+  Chat chat;
   final _selected = <int>{};
   var _message = Message();
   var _isEditMode = false;
   var _canBeSended = false;
 
   String get name => chat.name;
-  QueueList<Message> get messages => chat.messages;
+  List<Message> get messages => chat.messages.toList();
   Set<int> get selected => _selected;
 
   Iterable<Message> get selectedMessages =>
@@ -42,10 +42,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Message get message => _message;
-  set message(Message message) {
-    _message = message;
-    notifyListeners();
-  }
 
   bool get canBeSended => _canBeSended;
   set canBeSended(bool value) {
@@ -62,19 +58,26 @@ class ChatProvider extends ChangeNotifier {
 
   void add(Message message) {
     if (!_update(message)) {
-      messages.addFirst(message);
+      chat = chat.copyWith(
+        messages: chat.messages.insert(0, message),
+      );
     }
     notifyListeners();
   }
 
   void remove(Message message) {
     messages.remove(message);
+    chat = chat.copyWith(
+      messages: chat.messages.remove(message),
+    );
     notifyListeners();
   }
 
   void removeSelected() {
-    messages.removeWhere(
-      (m) => selected.contains(m.id),
+    chat = chat.copyWith(
+      messages: chat.messages.removeWhere(
+        (e) => selected.contains(e.id),
+      ),
     );
     selected.clear();
     notifyListeners();
@@ -83,7 +86,11 @@ class ChatProvider extends ChangeNotifier {
   bool _update(Message message) {
     var index = messages.indexWhere((m) => m.id == message.id);
     if (index == -1) return false;
-    messages[index] = message;
+
+    chat = chat.copyWith(
+      messages: chat.messages.updateById([message], (item) => item.id),
+    );
+
     return true;
   }
 
@@ -96,14 +103,14 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void startEditModeForSelected() {
-    var message = messages.firstWhere((e) => e.id == _selected.first);
+    var message = chat.messages.firstWhere((e) => e.id == _selected.first);
     startEditMode(message);
   }
 
   void endEditMode() {
     _isEditMode = false;
     _selected.clear();
-    message = Message();
+    _message = Message();
     _initialText = null;
     notifyListeners();
   }
@@ -194,6 +201,32 @@ class ChatProvider extends ChangeNotifier {
         ),
       );
     }
+    notifyListeners();
+  }
+
+  void addImagesToInputMessage(Iterable<String> images) {
+    _message = _message.copyWith(
+      images: _message.images.addAll(images),
+    );
+    notifyListeners();
+  }
+
+  void setImagesToInputMessage(Iterable<String> images) {
+    _message = _message.copyWith(
+      images: images.toIList(),
+    );
+    notifyListeners();
+  }
+
+  void removeImageFromSelectedMessage(int index) {
+    _message = message.copyWith(
+      images: message.images.removeAt(index),
+    );
+    notifyListeners();
+  }
+
+  void clearInputMessage() {
+    _message = Message();
     notifyListeners();
   }
 }
