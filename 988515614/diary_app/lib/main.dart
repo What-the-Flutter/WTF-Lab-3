@@ -1,9 +1,14 @@
+import 'package:diary_app/themes.dart';
 import 'package:flutter/material.dart';
 
+import 'custom_theme.dart';
 import 'presentation/pages/main_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CustomTheme(
+    initialThemeKey: MyThemesKeys.light,
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -13,9 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
+      theme: CustomTheme.of(context),
       title: 'Diary app',
       home: const MainScreen(),
     );

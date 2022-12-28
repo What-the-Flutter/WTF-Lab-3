@@ -1,3 +1,5 @@
+import 'package:diary_app/custom_theme.dart';
+
 import 'home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class MainScreen extends HookWidget {
   const MainScreen({super.key});
   static const _tabNames = ['Home', 'Daily', 'Timeline', 'Explore'];
-  final List<Widget> _pages = const [
+  final _pages = const [
     HomePage(), // Home
     Text('2nd'), // Daily
     Text('3rd'), // Timeline
@@ -19,21 +21,21 @@ class MainScreen extends HookWidget {
     final currentTab = useState(_tabNames[currentIndex.value]);
 
     return Scaffold(
-      appBar: _buildAppBar(currentTab),
-      body: _buildBody(currentIndex),
-      bottomNavigationBar: _buildBottomNavBar(
+      appBar: _appBar(context, currentTab),
+      body: _body(currentIndex),
+      bottomNavigationBar: _bottomNavBar(
         currentIndex,
         currentTab,
       ),
     );
   }
 
-  Widget _buildBottomNavBar(
+  Widget _bottomNavBar(
       ValueNotifier<int> currentIndex, ValueNotifier<String> currentTab) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex.value,
-      selectedItemColor: Colors.teal.shade800,
+      selectedItemColor: Colors.yellow.shade900,
       unselectedItemColor: Colors.grey.shade700,
       selectedFontSize: 12,
       unselectedFontSize: 12,
@@ -64,11 +66,11 @@ class MainScreen extends HookWidget {
     );
   }
 
-  Widget _buildBody(ValueNotifier<int> currentIndex) {
-    return _pages.elementAt(currentIndex.value);
-  }
+  Widget _body(ValueNotifier<int> currentIndex) =>
+      _pages.elementAt(currentIndex.value);
 
-  PreferredSizeWidget _buildAppBar(ValueNotifier<String> currentTab) {
+  PreferredSizeWidget _appBar(
+      BuildContext context, ValueNotifier<String> currentTab) {
     return AppBar(
       elevation: 0,
       centerTitle: true,
@@ -87,7 +89,9 @@ class MainScreen extends HookWidget {
         IconButton(
           splashRadius: 20,
           icon: const Icon(CupertinoIcons.drop_fill),
-          onPressed: () {},
+          onPressed: () {
+            CustomTheme.changeTheme(context);
+          },
         ),
       ],
     );

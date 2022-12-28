@@ -1,22 +1,24 @@
 import 'dart:io';
-
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:diary_app/domain/entities/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+  final String title;
+  const EventPage({
+    super.key,
+    required this.title,
+  });
 
   @override
   State<EventPage> createState() => _EventPageState();
 }
 
 class _EventPageState extends State<EventPage> {
-  final List<Event> _events = [
+  final _events = [
     Event(
       isMessage: false,
       dateTime: DateTime.now(),
@@ -40,29 +42,29 @@ class _EventPageState extends State<EventPage> {
     ),
   ]; // Mocked data
 
-  final TextEditingController _controller = TextEditingController();
-  bool _isEditing = false;
-  bool _selectionMode = false;
-  bool _messageEditMode = false;
-  bool _bookmarkMode = false;
-  int _messageIndex = 0;
+  final _controller = TextEditingController();
+  var _isEditing = false;
+  var _isSelectionMode = false;
+  var _isMessageEditMode = false;
+  var _isBookmarkMode = false;
+  var _messageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: _buildAppBar(context),
-        body: _buildBody(),
+        appBar: _appBar(context),
+        body: _body(),
       ),
     );
   } // Mocked data
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
       centerTitle: true,
-      leading: _selectionMode
+      leading: _isSelectionMode
           ? IconButton(
               splashRadius: 20,
               icon: const Icon(CarbonIcons.close),
@@ -77,23 +79,20 @@ class _EventPageState extends State<EventPage> {
                 Navigator.of(context).pop();
               },
             ),
-      title: const Text(
-        'Travel',
-        style: TextStyle(
+      title: Text(
+        widget.title,
+        style: const TextStyle(
           fontWeight: FontWeight.normal,
         ),
       ),
-      actions: _buildAppbarActions(),
+      actions: _appbarActions(),
     );
   }
 
-  List<Widget> _buildAppbarActions() {
-    return _selectionMode
-        ? _buildSelectionModeActions()
-        : _buildDefaultModeActions();
-  }
+  List<Widget> _appbarActions() =>
+      _isSelectionMode ? _selectionModeActions() : _defaultModeActions();
 
-  List<Widget> _buildSelectionModeActions() {
+  List<Widget> _selectionModeActions() {
     return [
       IconButton(
         splashRadius: 20,
@@ -107,12 +106,12 @@ class _EventPageState extends State<EventPage> {
       ),
       IconButton(
         splashRadius: 20,
-        icon: _bookmarkMode
+        icon: _isBookmarkMode
             ? const Icon(CarbonIcons.favorite_half)
             : const Icon(CarbonIcons.favorite),
         onPressed: () {
           setState(() {
-            if (_bookmarkMode) {
+            if (_isBookmarkMode) {
               for (var e in _events) {
                 if (e.isSelected) {
                   e.isFavorite = false;
@@ -132,7 +131,7 @@ class _EventPageState extends State<EventPage> {
     ];
   }
 
-  List<Widget> _buildDefaultModeActions() {
+  List<Widget> _defaultModeActions() {
     return [
       IconButton(
         splashRadius: 20,
@@ -141,39 +140,37 @@ class _EventPageState extends State<EventPage> {
       ),
       IconButton(
         splashRadius: 20,
-        icon: _bookmarkMode
+        icon: _isBookmarkMode
             ? const Icon(CarbonIcons.bookmark_filled)
             : const Icon(CarbonIcons.bookmark),
-        onPressed: () {
-          setState(() {
-            _bookmarkMode = !_bookmarkMode;
-          });
-        },
+        onPressed: () => setState(() {
+          _isBookmarkMode = !_isBookmarkMode;
+        }),
       ),
     ];
   }
 
   void _turnOffSelectionMode() {
     setState(() {
-      _selectionMode = false;
+      _isSelectionMode = false;
       for (var e in _events) {
         e.isSelected = false;
       }
     });
   }
 
-  Widget _buildBody() {
+  Widget _body() {
     return Column(
       children: [
         Flexible(
-          child: _buildEventsList(),
+          child: _eventsList(),
         ),
-        _buildMessagePanel(),
+        _messagePanel(),
       ],
     );
   }
 
-  Widget _buildTextField() {
+  Widget _textField() {
     return Focus(
       onFocusChange: (value) {
         setState(() {
@@ -182,6 +179,9 @@ class _EventPageState extends State<EventPage> {
       },
       child: TextField(
         controller: _controller,
+        style: const TextStyle(
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -203,7 +203,7 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Widget _buildMessagePanel() {
+  Widget _messagePanel() {
     return Container(
       padding: const EdgeInsets.only(bottom: 5),
       margin: const EdgeInsets.only(top: 10),
@@ -219,10 +219,10 @@ class _EventPageState extends State<EventPage> {
             color: Colors.teal,
           ),
           Expanded(
-            child: _buildTextField(),
+            child: _textField(),
           ),
           _isEditing
-              ? _buildSendButtonVariants()
+              ? _sendButtonVariants()
               : IconButton(
                   splashRadius: 20,
                   icon: const Icon(
@@ -239,11 +239,10 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Widget _buildSendButtonVariants() {
-    return _messageEditMode ? _buildEditButton() : _buildSendButton();
-  }
+  Widget _sendButtonVariants() =>
+      _isMessageEditMode ? _editButton() : _sendButton();
 
-  Widget _buildEditButton() {
+  Widget _editButton() {
     return IconButton(
       splashRadius: 20,
       icon: const Icon(
@@ -262,14 +261,14 @@ class _EventPageState extends State<EventPage> {
         });
         _controller.clear();
         setState(() {
-          _messageEditMode = false;
+          _isMessageEditMode = false;
           _messageIndex = 0;
         });
       },
     );
   }
 
-  Widget _buildSendButton() {
+  Widget _sendButton() {
     return IconButton(
       splashRadius: 20,
       icon: const Icon(
@@ -294,7 +293,7 @@ class _EventPageState extends State<EventPage> {
   }
 
   void _showImageDialog() {
-    final dialog = _buildImageDialog();
+    final dialog = _imageDialog();
 
     showDialog(
         context: context,
@@ -303,7 +302,7 @@ class _EventPageState extends State<EventPage> {
         });
   }
 
-  Widget _buildImageDialog() {
+  Widget _imageDialog() {
     return AlertDialog(
       title: const Text('Choose image from'),
       actions: [
@@ -364,11 +363,9 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
-  Widget _buildEventsList() {
-    return _events.isEmpty ? _buildIntro() : _buildEvents();
-  }
+  Widget _eventsList() => _events.isEmpty ? _intro() : _eventsViews();
 
-  Widget _buildIntro() {
+  Widget _intro() {
     return Center(
       child: Flexible(
         child: Container(
@@ -409,16 +406,16 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Widget _buildEvents() {
+  Widget _eventsViews() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _bookmarkMode ? _buildBookmarkedEvents() : _buildAllEvents(),
+        _isBookmarkMode ? _bookmarkedEvents() : _allEvents(),
       ],
     );
   }
 
-  Widget _buildBookmarkedEvents() {
+  Widget _bookmarkedEvents() {
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.only(top: 10),
@@ -426,8 +423,9 @@ class _EventPageState extends State<EventPage> {
         shrinkWrap: true,
         itemCount: _events.length,
         itemBuilder: (context, index) {
+          // Display events in reverse order
           return _events[_events.length - 1 - index].isFavorite
-              ? _buildEventListItem(
+              ? _eventListItem(
                   _events[_events.length - 1 - index],
                   _events.length - 1 - index,
                 )
@@ -437,7 +435,7 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Widget _buildAllEvents() {
+  Widget _allEvents() {
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.only(top: 10),
@@ -445,7 +443,7 @@ class _EventPageState extends State<EventPage> {
         shrinkWrap: true,
         itemCount: _events.length,
         itemBuilder: (context, index) {
-          return _buildEventListItem(
+          return _eventListItem(
             _events[_events.length - 1 - index],
             _events.length - 1 - index,
           );
@@ -454,19 +452,19 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  Widget _buildEventListItem(Event event, int eventIndex) {
+  Widget _eventListItem(Event event, int eventIndex) {
     final timeMark = DateFormat('hh:mm a').format(event.dateTime);
 
     if (event.isMessage) {
       return event.image == null
-          ? _buildMessageEvent(event, eventIndex, timeMark)
-          : _buildPictureEvent(event, eventIndex, timeMark);
+          ? _messageEvent(event, eventIndex, timeMark)
+          : _pictureEvent(event, eventIndex, timeMark);
     } else {
-      return _buildTimeEvent(event);
+      return _timeEvent(event);
     }
   }
 
-  Widget _buildTimeEvent(Event event) {
+  Widget _timeEvent(Event event) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -485,87 +483,95 @@ class _EventPageState extends State<EventPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(event.message),
+            Text(
+              event.message,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPictureEvent(Event event, int eventIndex, String timeMark) {
+  Widget _pictureEvent(Event event, int eventIndex, String timeMark) {
     return Align(
       alignment: Alignment.centerLeft,
       child: GestureDetector(
         onLongPress: () {
           setState(() {
-            if (!_selectionMode) {
-              _selectionMode = true;
+            if (!_isSelectionMode) {
+              _isSelectionMode = true;
               _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
             }
           });
         },
         onTap: () async {
-          if (_selectionMode) {
+          if (_isSelectionMode) {
             setState(() {
               _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
             });
           }
         },
-        child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 350,
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 7,
-          ),
-          margin: const EdgeInsets.only(left: 5, bottom: 7),
-          decoration: BoxDecoration(
-            color: event.isSelected ? Colors.amber : Colors.lime.shade200,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                color: Colors.amber,
-                constraints: const BoxConstraints(
-                  minWidth: 100,
-                  minHeight: 200,
-                  maxWidth: 300,
-                  maxHeight: 200,
-                ),
-                child: event.image,
-              ),
-              const SizedBox(height: 3),
-              Text(
-                timeMark,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 10,
-                ),
-              ),
-            ],
-          ),
-        ),
+        child: _pictureEventContent(event, timeMark),
       ),
     );
   }
 
-  Widget _buildMessageEvent(Event event, int eventIndex, String timeMark) {
+  Widget _pictureEventContent(Event event, String timeMark) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxWidth: 350,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 7,
+      ),
+      margin: const EdgeInsets.only(left: 5, bottom: 7),
+      decoration: BoxDecoration(
+        color: event.isSelected ? Colors.amber : Colors.lime.shade200,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            constraints: const BoxConstraints(
+              minWidth: 100,
+              minHeight: 200,
+              maxWidth: 300,
+              maxHeight: 200,
+            ),
+            child: event.image,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            timeMark,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _messageEvent(Event event, int eventIndex, String timeMark) {
     return Align(
       alignment: Alignment.centerLeft,
       child: GestureDetector(
         onLongPress: () {
           setState(() {
-            if (!_selectionMode) {
-              _selectionMode = true;
+            if (!_isSelectionMode) {
+              _isSelectionMode = true;
               _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
             }
           });
         },
         onTap: () async {
-          if (_selectionMode) {
+          if (_isSelectionMode) {
             setState(() {
               _events[eventIndex].isSelected = !_events[eventIndex].isSelected;
             });
@@ -588,39 +594,46 @@ class _EventPageState extends State<EventPage> {
         },
         onHorizontalDragEnd: (_) {
           setState(() {
-            _messageEditMode = true;
+            _isMessageEditMode = true;
             _messageIndex = eventIndex;
           });
           _controller.text = event.message;
         },
-        child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 350,
+        child: _messageEventBody(event, timeMark),
+      ),
+    );
+  }
+
+  Widget _messageEventBody(Event event, String timeMark) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxWidth: 350,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 7,
+      ),
+      margin: const EdgeInsets.only(left: 5, bottom: 7),
+      decoration: BoxDecoration(
+        color: event.isSelected ? Colors.amber : Colors.lime.shade200,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(event.message,
+              style: const TextStyle(
+                color: Colors.black,
+              )),
+          const SizedBox(height: 3),
+          Text(
+            timeMark,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 10,
+            ),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 7,
-          ),
-          margin: const EdgeInsets.only(left: 5, bottom: 7),
-          decoration: BoxDecoration(
-            color: event.isSelected ? Colors.amber : Colors.lime.shade200,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(event.message),
-              const SizedBox(height: 3),
-              Text(
-                timeMark,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 10,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
