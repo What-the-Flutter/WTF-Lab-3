@@ -29,11 +29,12 @@ class TravelScreenBody extends StatefulWidget {
 }
 
 class _TravelScreenBodyState extends State<TravelScreenBody> {
-  final controller = TextEditingController();
+  late final TextEditingController controller;
   bool _isCamera = true;
 
   @override
   void initState() {
+    controller = TextEditingController();
     controller.addListener(_onInputText);
     super.initState();
   }
@@ -48,13 +49,17 @@ class _TravelScreenBodyState extends State<TravelScreenBody> {
     setState(
       () {
         controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: controller.text.length));
+          TextPosition(offset: controller.text.length),
+        );
         controller.text.isEmpty ? _isCamera = true : _isCamera = false;
       },
     );
   }
 
-  void addMessage({required String content, required String type}) {
+  void addMessage({
+    required String content,
+    required String type,
+  }) {
     if (!_isCamera) {
       setState(
         () {
@@ -77,13 +82,16 @@ class _TravelScreenBodyState extends State<TravelScreenBody> {
   void onEventSelected(int index) {
     setState(
       () {
-        var event = widget.listEvent[index];
+        final event = widget.listEvent[index];
         widget.listEvent[index] = event.copyWith(isSelected: !event.isSelected);
       },
     );
   }
 
-  void addPicterMessage({required XFile? pickedFile, required String type}) {
+  void addPicterMessage({
+    required XFile? pickedFile,
+    required String type,
+  }) {
     if (pickedFile != null) {
       setState(
         () {
@@ -102,7 +110,7 @@ class _TravelScreenBodyState extends State<TravelScreenBody> {
           );
         },
       );
-      Provider.of<ProviderChat>(context, listen: false).isUpdate();
+      Provider.of<ChatProvider>(context, listen: false).isUpdate();
     }
   }
 

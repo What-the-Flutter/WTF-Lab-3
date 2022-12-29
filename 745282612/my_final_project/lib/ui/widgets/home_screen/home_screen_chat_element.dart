@@ -14,7 +14,7 @@ class HomeScreenChatElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final listNew = Provider.of<ProviderChat>(context).takeListChat;
+    final listNew = Provider.of<ChatProvider>(context).takeListChat;
     final theme = Theme.of(context).brightness == Brightness.light;
 
     return ListView.builder(
@@ -48,8 +48,9 @@ class HomeScreenChatElement extends StatelessWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => TravelScreen(
-                            listEvent: itemChat.listEvent,
-                            title: itemChat.title),
+                          listEvent: itemChat.listEvent,
+                          title: itemChat.title,
+                        ),
                       ),
                     );
                   },

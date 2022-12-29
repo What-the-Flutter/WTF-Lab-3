@@ -18,9 +18,7 @@ class _MenuState extends State<Menu> {
   void onSelected(int index) {
     if (index == _selected) return;
     setState(
-      () {
-        _selected = index;
-      },
+      () => _selected = index,
     );
   }
 

@@ -19,7 +19,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   void _changeFavorite() {
     setState(
       () {
-        var index =
+        final index =
             widget.listMessage.indexWhere((element) => element.isSelected);
         widget.listMessage[index] = widget.listMessage[index].copyWith(
           isSelected: !widget.listMessage[index].isSelected,

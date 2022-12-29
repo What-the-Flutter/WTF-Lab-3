@@ -28,12 +28,12 @@ class AddPageFloatingButton extends StatelessWidget {
       onPressed: () {
         if (result) {
           editStatus
-              ? Provider.of<ProviderChat>(context, listen: false)
+              ? Provider.of<ChatProvider>(context, listen: false)
                   .modifyChat(icon: selected!, title: controller.text)
-              : Provider.of<ProviderChat>(context, listen: false)
+              : Provider.of<ChatProvider>(context, listen: false)
                   .addNewChat(icon: selected!, title: controller.text);
         } else {
-          Provider.of<ProviderChat>(context, listen: false).endModify();
+          Provider.of<ChatProvider>(context, listen: false).endModify();
         }
         Navigator.of(context).pop();
       },

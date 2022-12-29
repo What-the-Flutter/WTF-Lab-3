@@ -18,9 +18,7 @@ class _HoverButtonState extends State<HoverButton> {
 
   void onEntered(bool hover) {
     setState(
-      () {
-        isHovered = hover;
-      },
+      () => isHovered = hover,
     );
   }
 

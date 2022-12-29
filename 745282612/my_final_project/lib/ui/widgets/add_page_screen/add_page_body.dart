@@ -19,10 +19,11 @@ class AddPageBody extends StatefulWidget {
 
 class _AddPageBodyState extends State<AddPageBody> {
   final listIcon = AppPageIcon.listIcon;
+  Icon? iconSeleted;
 
   @override
   Widget build(BuildContext context) {
-    var iconSeleted = AddNewScreen.of(context).selectedIcon;
+    iconSeleted = AddNewScreen.of(context).selectedIcon;
 
     return Padding(
       padding: const EdgeInsets.all(20.0),

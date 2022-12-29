@@ -34,7 +34,8 @@ class _TravelScreenState extends State<TravelScreen> {
       () {
         _isSelected = !_isSelected;
         _isCamera = false;
-        for (var element in widget.listEvent) {
+        late Event element;
+        for (element in widget.listEvent) {
           if (element.isSelected && element.messageImage != null) {
             _isCamera = true;
           }
@@ -46,7 +47,7 @@ class _TravelScreenState extends State<TravelScreen> {
   void clearSelected() {
     setState(
       () {
-        var index =
+        final index =
             widget.listEvent.indexWhere((element) => element.isSelected);
         widget.listEvent[index] = widget.listEvent[index]
             .copyWith(isSelected: !widget.listEvent[index].isSelected);
@@ -60,7 +61,8 @@ class _TravelScreenState extends State<TravelScreen> {
   void redact() {
     setState(
       () {
-        for (var i = 0; i < widget.listEvent.length; i++) {
+        late int i;
+        for (i = 0; i < widget.listEvent.length; i++) {
           if (widget.listEvent[i].isSelected) {
             redactText = widget.listEvent[i].messageContent;
           }
@@ -72,7 +74,7 @@ class _TravelScreenState extends State<TravelScreen> {
   void editMessage(String newText) {
     setState(
       () {
-        var index =
+        final index =
             widget.listEvent.indexWhere((element) => element.isSelected);
         widget.listEvent[index] = widget.listEvent[index].copyWith(
             isSelected: !widget.listEvent[index].isSelected,
@@ -130,9 +132,7 @@ class _TravelScreenState extends State<TravelScreen> {
                 TextButton(
                   onPressed: () {
                     setState(
-                      () {
-                        _isFavorite = !_isFavorite;
-                      },
+                      () => _isFavorite = !_isFavorite,
                     );
                   },
                   child: Icon(

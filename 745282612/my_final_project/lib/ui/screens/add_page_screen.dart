@@ -19,19 +19,24 @@ class AddNewScreen extends StatefulWidget {
 class _AddNewScreenState extends State<AddNewScreen> {
   bool isStatus = false;
   Icon? selectedIcon;
-  final inputController = TextEditingController();
+  late final TextEditingController inputController;
 
   @override
   void initState() {
+    inputController = TextEditingController();
     inputController.addListener(listenerController);
     super.initState();
   }
 
+  @override
+  void dispose() {
+    inputController.removeListener(listenerController);
+    super.dispose();
+  }
+
   void changeSelectedIcon(Icon? icon) {
     setState(
-      () {
-        selectedIcon = icon;
-      },
+      () => selectedIcon = icon,
     );
   }
 
@@ -49,8 +54,8 @@ class _AddNewScreenState extends State<AddNewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final editMode = Provider.of<ProviderChat>(context).isEditeMode;
-    final editController = Provider.of<ProviderChat>(context).inputController;
+    final editMode = Provider.of<ChatProvider>(context).isEditeMode;
+    final editController = Provider.of<ChatProvider>(context).inputController;
 
     return Scaffold(
       appBar: AddPageAppBar(

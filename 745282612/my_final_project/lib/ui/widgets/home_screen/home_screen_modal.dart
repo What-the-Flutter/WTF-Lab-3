@@ -26,7 +26,7 @@ class HomeScreenModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).brightness == Brightness.light;
-    var colorIcon = theme ? AppColors.colorNormalGrey : Colors.white;
+    final colorIcon = theme ? AppColors.colorNormalGrey : Colors.white;
 
     return Wrap(
       children: [
@@ -56,7 +56,7 @@ class HomeScreenModal extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Provider.of<ProviderChat>(context, listen: false)
+            Provider.of<ChatProvider>(context, listen: false)
                 .changePin(index: index);
             Navigator.pop(context);
           },
@@ -80,12 +80,11 @@ class HomeScreenModal extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Provider.of<ProviderChat>(context, listen: false).startEditeMode(
+            Provider.of<ChatProvider>(context, listen: false).startEditeMode(
               title: title,
               index: index,
               icon: icon,
             );
-
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const AddNewScreen(),
@@ -102,7 +101,7 @@ class HomeScreenModal extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Provider.of<ProviderChat>(context, listen: false)
+            Provider.of<ChatProvider>(context, listen: false)
                 .deleteChat(index: index);
             Navigator.pop(context);
           },

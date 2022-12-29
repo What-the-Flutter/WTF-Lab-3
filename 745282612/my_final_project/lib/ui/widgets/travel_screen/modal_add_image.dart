@@ -41,7 +41,10 @@ class MyDialog extends StatelessWidget {
             final pickedFile = await ImagePicker().pickImage(
               source: ImageSource.camera,
             );
-            addPicter(pickedFile: pickedFile, type: type);
+            addPicter(
+              pickedFile: pickedFile,
+              type: type,
+            );
           },
         ),
         TextButton(
@@ -54,8 +57,11 @@ class MyDialog extends StatelessWidget {
             final pickedFile = await ImagePicker().pickImage(
               source: ImageSource.gallery,
             );
-            addPicter(pickedFile: pickedFile, type: type);
-            Provider.of<ProviderChat>(context, listen: false).isUpdate();
+            addPicter(
+              pickedFile: pickedFile,
+              type: type,
+            );
+            Provider.of<ChatProvider>(context, listen: false).isUpdate();
           },
         ),
         TextButton(

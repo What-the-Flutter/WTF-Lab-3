@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/entities/chat_value.dart';
 
-class ProviderChat extends ChangeNotifier {
+class ChatProvider extends ChangeNotifier {
   final List<Chat> listChat = ChatValue.listChat;
   final inputController = TextEditingController();
   bool isStatus = false;

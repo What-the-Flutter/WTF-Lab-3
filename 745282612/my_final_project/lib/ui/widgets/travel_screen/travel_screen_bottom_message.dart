@@ -33,16 +33,14 @@ class TravelScreenBottomMessage extends StatefulWidget {
 }
 
 class _TravelScreenBottomMessageState extends State<TravelScreenBottomMessage> {
-  void eventOnLongPressed({
-    required String editMessage,
-  }) {
+  void eventOnLongPressed({required String editMessage}) {
     if (editMessage != '') {
     } else {
       widget.isCamera
           ? _showMyDialog('recipient')
           : widget.addMessage(
               content: widget.controller.text, type: 'recipient');
-      Provider.of<ProviderChat>(context, listen: false).isUpdate();
+      Provider.of<ChatProvider>(context, listen: false).isUpdate();
     }
   }
 
@@ -52,12 +50,12 @@ class _TravelScreenBottomMessageState extends State<TravelScreenBottomMessage> {
   }) {
     if (editMessage != '') {
       TravelScreen.of(context).editMessage(editText);
-      Provider.of<ProviderChat>(context, listen: false).isUpdate();
+      Provider.of<ChatProvider>(context, listen: false).isUpdate();
     } else {
       widget.isCamera
           ? _showMyDialog('sender')
           : widget.addMessage(content: widget.controller.text, type: 'sender');
-      Provider.of<ProviderChat>(context, listen: false).isUpdate();
+      Provider.of<ChatProvider>(context, listen: false).isUpdate();
     }
   }
 
@@ -112,7 +110,9 @@ class _TravelScreenBottomMessageState extends State<TravelScreenBottomMessage> {
             TextButton(
               onLongPress: () => eventOnLongPressed(editMessage: editMessage),
               onPressed: () => eventOnPressed(
-                  editText: editController.text, editMessage: editMessage),
+                editText: editController.text,
+                editMessage: editMessage,
+              ),
               child: Icon(
                 editMessage != ''
                     ? Icons.send

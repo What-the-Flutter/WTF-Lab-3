@@ -23,7 +23,7 @@ class _DeleteButtonState extends State<DeleteButton> {
       () {
         widget.listMessage.removeWhere((element) => element.isSelected);
         TravelScreen.of(context).isSelected();
-        Provider.of<ProviderChat>(context, listen: false).isUpdate();
+        Provider.of<ChatProvider>(context, listen: false).isUpdate();
       },
     );
   }

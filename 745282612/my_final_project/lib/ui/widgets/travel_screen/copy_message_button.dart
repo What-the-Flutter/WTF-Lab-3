@@ -18,11 +18,11 @@ class CopyMessageButton extends StatefulWidget {
 
 class _CopyMessageButtonState extends State<CopyMessageButton> {
   void copyMessage() async {
-    var copyText = '';
+    late final String copyText;
 
     setState(
       () {
-        var index =
+        final index =
             widget.listMessage.indexWhere((element) => element.isSelected);
 
         widget.listMessage[index] = widget.listMessage[index].copyWith(
