@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../entities/message.dart';
-import '../widgets/travel_screen/copy_message_button.dart';
-import '../widgets/travel_screen/delete_button.dart';
-import '../widgets/travel_screen/favorite_button.dart';
-import '../widgets/travel_screen/travel_screen_body.dart';
+import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/copy_message_button.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/delete_button.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/favorite_button.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/travel_screen_body.dart';
 
 class TravelScreen extends StatefulWidget {
-  const TravelScreen({super.key});
+  final List<Event> listEvent;
+  final String title;
+
+  const TravelScreen({
+    super.key,
+    required this.listEvent,
+    required this.title,
+  });
 
   @override
   State<TravelScreen> createState() => _TravelScreenState();
@@ -16,19 +23,18 @@ class TravelScreen extends StatefulWidget {
 }
 
 class _TravelScreenState extends State<TravelScreen> {
-  List<Message> listMessage = [];
-  List<Message> listFavoriteMesage = [];
   bool _isFavorite = false;
   bool _isSelected = false;
   bool _isCamera = false;
   String redactText = '';
   String pasteValue = '';
+
   void isSelected() {
     setState(
       () {
         _isSelected = !_isSelected;
         _isCamera = false;
-        for (var element in listMessage) {
+        for (var element in widget.listEvent) {
           if (element.isSelected && element.messageImage != null) {
             _isCamera = true;
           }
@@ -40,11 +46,10 @@ class _TravelScreenState extends State<TravelScreen> {
   void clearSelected() {
     setState(
       () {
-        for (var element in listMessage) {
-          if (element.isSelected) {
-            element.isSelected = !element.isSelected;
-          }
-        }
+        var index =
+            widget.listEvent.indexWhere((element) => element.isSelected);
+        widget.listEvent[index] = widget.listEvent[index]
+            .copyWith(isSelected: !widget.listEvent[index].isSelected);
         _isSelected = !_isSelected;
         redactText = '';
         _isCamera = false;
@@ -55,9 +60,9 @@ class _TravelScreenState extends State<TravelScreen> {
   void redact() {
     setState(
       () {
-        for (var i = 0; i < listMessage.length; i++) {
-          if (listMessage[i].isSelected) {
-            redactText = listMessage[i].messageContent;
+        for (var i = 0; i < widget.listEvent.length; i++) {
+          if (widget.listEvent[i].isSelected) {
+            redactText = widget.listEvent[i].messageContent;
           }
         }
       },
@@ -67,12 +72,11 @@ class _TravelScreenState extends State<TravelScreen> {
   void editMessage(String newText) {
     setState(
       () {
-        for (var i = 0; i < listMessage.length; i++) {
-          if (listMessage[i].isSelected) {
-            listMessage[i].messageContent = newText;
-            listMessage[i].isSelected = !listMessage[i].isSelected;
-          }
-        }
+        var index =
+            widget.listEvent.indexWhere((element) => element.isSelected);
+        widget.listEvent[index] = widget.listEvent[index].copyWith(
+            isSelected: !widget.listEvent[index].isSelected,
+            messageContent: newText);
         isSelected();
         redactText = '';
       },
@@ -102,20 +106,18 @@ class _TravelScreenState extends State<TravelScreen> {
                       )
                     : const SizedBox(),
                 !_isCamera
-                    ? CopyMessageButton(
-                        listMessage: listMessage,
-                      )
+                    ? CopyMessageButton(listMessage: widget.listEvent)
                     : const SizedBox(),
                 DeleteButton(
-                  listMessage: listMessage,
+                  listMessage: widget.listEvent,
                 ),
                 FavoriteButton(
-                  listMessage: listMessage,
+                  listMessage: widget.listEvent,
                 ),
               ],
             )
           : AppBar(
-              title: const Text('Travel'),
+              title: Text(widget.title),
               centerTitle: true,
               actions: [
                 TextButton(
@@ -143,6 +145,8 @@ class _TravelScreenState extends State<TravelScreen> {
       body: TravelScreenBody(
         isFavorite: _isFavorite,
         isSelected: _isSelected,
+        listEvent: widget.listEvent,
+        title: widget.title,
       ),
     );
   }

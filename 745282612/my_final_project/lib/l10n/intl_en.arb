@@ -1,0 +1,37 @@
+{
+  "title_instruction" : "This is the page where you can track everything about \"{rate}\"!",
+  "@title_instruction":{
+    "placeholders": {
+    "rate": {
+            "type":"String"
+            }
+          }
+       }, 
+  "body_instruction" : "Add your first event to \"{rate}\" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.",
+  "@body_instruction":{
+    "placeholders": {
+    "rate": {
+            "type":"String"
+            }
+          }
+       }, 
+  "no_event" : "No Events. Click to create one",
+  "create_page" : "Create a new Page",
+  "questionnaire": "Questionnaire bot",
+  "home_label" : "Home",
+  "daily_label": "Daily",
+  "timeline_label" : "Timeline",
+  "explore_label" : "Explore",
+  "add_new_event" : "Add new event",
+  "content_add_image" : "If you click on the  camera icon, you can add an image from the camera, if you click on the photo icon, you can add an image from the phone.",
+  "title_add_image" : "Add image",
+  "edit_page" : "Edit Page",
+  "name_of_the_page" : "Name of the page",
+  "info" : "Info",
+  "pin_unpin" : "Pin/Unpin Page",
+  "archive_page" : "Archive Page",
+  "delete_page" : "Delete Page",
+  "created" : "Created",
+  "last_event" : "Last Event",
+  "ok" : "OK"
+}

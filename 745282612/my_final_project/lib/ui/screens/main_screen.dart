@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/main_screen/main_screen_appbar.dart';
-import '../widgets/main_screen/main_screen_body.dart';
-import '../widgets/main_screen/main_screen_bottom.dart';
-import '../widgets/main_screen/main_screen_floating_button.dart';
+import 'package:my_final_project/ui/widgets/main_screen/main_screen_appbar.dart';
+import 'package:my_final_project/ui/widgets/main_screen/main_screen_body.dart';
+import 'package:my_final_project/ui/widgets/main_screen/main_screen_bottom.dart';
+import 'package:my_final_project/ui/widgets/main_screen/main_screen_floating_button.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});

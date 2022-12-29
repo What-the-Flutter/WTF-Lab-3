@@ -1,26 +1,27 @@
-import 'message.dart';
+import 'package:my_final_project/entities/event.dart';
 
-class MessageValue {
-  static final List<Message> listMessage = [
-    Message(
+class EventValue {
+  static final List<Event> listMessage = [
+    Event(
       messageContent: 'Hello Maksim',
       messageType: 'sender',
       messageTime: DateTime.now(),
-    )..isFavorit = true,
-    Message(
+      isFavorit: true,
+      isSelected: false,
+    ),
+    Event(
       messageContent: 'Hello Sasha r322222222222222222222222222222222r332r',
       messageType: 'recipient',
       messageTime: DateTime.now(),
+      isFavorit: false,
+      isSelected: false,
     ),
-    Message(
+    Event(
       messageContent: 'Hello Vlada225523748321',
       messageType: 'sender',
       messageTime: DateTime.now(),
+      isFavorit: false,
+      isSelected: false,
     ),
-    Message(
-      messageContent: 'Today',
-      messageType: 'sender',
-      messageTime: DateTime.now(),
-    )..isDay = true,
   ];
 }

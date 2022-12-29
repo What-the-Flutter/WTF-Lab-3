@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/app_colors.dart';
-import '../../../utils/custom_icons/custom_icons.dart';
+import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/custom_icons/custom_icons.dart';
 
 class HomeScreenQuestionButton extends StatelessWidget {
   const HomeScreenQuestionButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).brightness == Brightness.light;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: AppColors.colorLisgtTurquoise,
+          backgroundColor:
+              theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -23,19 +27,19 @@ class HomeScreenQuestionButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 CustomIcons.robot,
-                color: Colors.black,
+                color: theme ? Colors.black : Colors.white,
               ),
               const SizedBox(
                 width: 25,
               ),
-              const Text(
-                'Questionnarie bot',
+              Text(
+                S.of(context).questionnaire,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: theme ? Colors.black : Colors.white,
                 ),
               ),
             ],
