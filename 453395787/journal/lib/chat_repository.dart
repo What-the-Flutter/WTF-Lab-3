@@ -119,7 +119,7 @@ class Chat {
   })  : isPinned = isPinned ?? false,
         creationDate = creationDate ?? DateTime.now();
 
-  Message? get lastMessage => messages.isEmpty ? null : messages.last;
+  Message? get lastMessage => messages.isEmpty ? null : messages.first;
 
   Chat copyWith({
     int? id,

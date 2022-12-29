@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 import '../chat/chat_page.dart';
@@ -8,15 +10,14 @@ import 'bottom_action_sheet.dart';
 class ChatList extends StatelessWidget {
   ChatList({Key? key}) : super(key: key);
 
-  final repo = ChatRepository.get();
-
   @override
   Widget build(BuildContext context) {
-    var orderedChats = repo.orderedChats;
-    return ListView.builder(
-      itemCount: orderedChats.length,
-      itemBuilder: (_, index) => ChatItem(
-        chat: orderedChats[index],
+    return Consumer<ChatListProvider>(
+      builder: (context, chatList, child) => ListView.builder(
+        itemCount: chatList.repository.chats.length,
+        itemBuilder: (_, index) => ChatItem(
+          chat: chatList.repository.orderedChats[index],
+        ),
       ),
     );
   }
@@ -38,7 +39,9 @@ class ChatItem extends StatelessWidget {
         horizontal: Insets.large,
       ),
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radius.large)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radius.large),
+        ),
         tileColor: chat.isPinned
             ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
             : null,

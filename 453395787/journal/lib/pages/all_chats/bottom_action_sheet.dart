@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
+import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 import '../chat/chat_app_bar.dart';
@@ -95,29 +97,24 @@ class BottomActionSheet extends StatelessWidget {
             title: Text(chat.isPinned ? 'Unpin' : 'Pin'),
             leading: const Icon(Icons.attach_file_outlined),
             onTap: () {
+              Provider.of<ChatListProvider>(context, listen: false)
+                  .togglePin(chat);
               Navigator.of(context).pop();
-              var repo = ChatRepository.get();
-              repo.chats = repo.chats.updateById(
-                [chat.copyWith(isPinned: !chat.isPinned)],
-                (item) => item.id == chat.id,
-              );
             },
           ),
           ListTile(
             title: const Text('Delete'),
             leading: const Icon(Icons.delete),
             onTap: () async {
-              Navigator.of(context).pop();
               var isConfirmed = await showConfirmationDialog(
                 title: 'Delete "${chat.name}" chat',
                 content: 'Are you sure you want to delete this chat?',
                 context: context,
               );
               if (isConfirmed != null && isConfirmed) {
-                var repo = ChatRepository.get();
-                repo.chats = repo.chats.removeWhere(
-                  (e) => e.id == chat.id,
-                );
+                Provider.of<ChatListProvider>(context, listen: false)
+                    .remove(chat);
+                Navigator.of(context).pop();
               }
             },
           )
@@ -150,8 +147,11 @@ class FloatingModal extends StatelessWidget {
   final Widget child;
   final Color? backgroundColor;
 
-  const FloatingModal({Key? key, required this.child, this.backgroundColor})
-      : super(key: key);
+  const FloatingModal({
+    Key? key,
+    required this.child,
+    this.backgroundColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

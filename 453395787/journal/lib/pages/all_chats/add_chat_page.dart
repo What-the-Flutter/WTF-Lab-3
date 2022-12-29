@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 
@@ -140,23 +142,21 @@ class _AddChatPageState extends State<AddChatPage> {
           ? FloatingActionButton(
               child: const Icon(Icons.add),
               onPressed: () {
-                var repo = ChatRepository.get();
                 if (widget.forEdit == null) {
-                  repo.chats = repo.chats.add(Chat(
-                    id: Random().nextInt(1000),
-                    icon: _icons[_selectedIcon!],
-                    messages: IList([]),
-                    name: _textEditingController.text,
-                  ));
+                  Provider.of<ChatListProvider>(context, listen: false).add(
+                    Chat(
+                      id: Random().nextInt(1000),
+                      icon: _icons[_selectedIcon!],
+                      messages: IList([]),
+                      name: _textEditingController.text,
+                    ),
+                  );
                 } else {
-                  repo.chats = repo.chats.updateById(
-                    [
-                      widget.forEdit!.copyWith(
-                        icon: _icons[_selectedIcon!],
-                        name: _textEditingController.text,
-                      )
-                    ],
-                    (item) => item.id,
+                  Provider.of<ChatListProvider>(context, listen: false).update(
+                    widget.forEdit!.copyWith(
+                      icon: _icons[_selectedIcon!],
+                      name: _textEditingController.text,
+                    ),
                   );
                 }
 

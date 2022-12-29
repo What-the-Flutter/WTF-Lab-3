@@ -2,14 +2,18 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
-  ChatProvider(int chatId) {
-    chat = ChatRepository.get().chats.firstWhere((e) => e.id == chatId);
-  }
+  ChatProvider({
+    required this.chatListProvider,
+    required this.chatId,
+  });
 
-  late Chat chat;
+  final ChatListProvider chatListProvider;
+  final int chatId;
+  Chat get chat => chatListProvider.findById(chatId);
   final _selected = <int>{};
   var _message = Message();
   var _isEditMode = false;
@@ -60,8 +64,10 @@ class ChatProvider extends ChangeNotifier {
 
   void add(Message message) {
     if (!_update(message)) {
-      chat = chat.copyWith(
-        messages: chat.messages.insert(0, message),
+      chatListProvider.update(
+        chat.copyWith(
+          messages: chat.messages.insert(0, message),
+        ),
       );
     }
     notifyListeners();
@@ -69,16 +75,20 @@ class ChatProvider extends ChangeNotifier {
 
   void remove(Message message) {
     messages.remove(message);
-    chat = chat.copyWith(
-      messages: chat.messages.remove(message),
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.remove(message),
+      ),
     );
     notifyListeners();
   }
 
   void removeSelected() {
-    chat = chat.copyWith(
-      messages: chat.messages.removeWhere(
-        (e) => selected.contains(e.id),
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.removeWhere(
+          (e) => selected.contains(e.id),
+        ),
       ),
     );
     selected.clear();
@@ -89,8 +99,10 @@ class ChatProvider extends ChangeNotifier {
     var index = messages.indexWhere((m) => m.id == message.id);
     if (index == -1) return false;
 
-    chat = chat.copyWith(
-      messages: chat.messages.updateById([message], (item) => item.id),
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.updateById([message], (item) => item.id),
+      ),
     );
 
     return true;

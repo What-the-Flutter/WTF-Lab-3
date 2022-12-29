@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../chat_list_provider.dart';
 import 'chat_app_bar.dart';
 import 'chat_input_field.dart';
 import 'chat_message_list.dart';
@@ -17,7 +18,10 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ChatProvider>(
-      create: (_) => ChatProvider(chatId),
+      create: (context) => ChatProvider(
+        chatListProvider: Provider.of<ChatListProvider>(context, listen: false,),
+        chatId: chatId,
+      ),
       child: Scaffold(
         appBar: const ChatAppBar(),
         body: Column(
