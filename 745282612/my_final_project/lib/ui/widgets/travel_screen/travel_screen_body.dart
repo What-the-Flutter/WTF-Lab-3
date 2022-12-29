@@ -3,21 +3,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../entities/message.dart';
-import '../../../entities/message_value.dart';
-import '../../screens/travel_screen.dart';
-import 'travel_screen_bottom_message.dart';
-import 'travel_screen_instruction.dart';
-import 'travel_screen_list_message.dart';
+import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/entities/provider_chat.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/travel_screen_bottom_message.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/travel_screen_instruction.dart';
+import 'package:my_final_project/ui/widgets/travel_screen/travel_screen_list_message.dart';
+import 'package:provider/provider.dart';
 
 class TravelScreenBody extends StatefulWidget {
+  final String title;
+  final bool isFavorite;
+  final bool isSelected;
+  final List<Event> listEvent;
+
   const TravelScreenBody({
     super.key,
     required this.isFavorite,
     required this.isSelected,
+    required this.listEvent,
+    required this.title,
   });
-  final bool isFavorite;
-  final bool isSelected;
+
   @override
   State<TravelScreenBody> createState() => _TravelScreenBodyState();
 }
@@ -25,6 +31,7 @@ class TravelScreenBody extends StatefulWidget {
 class _TravelScreenBodyState extends State<TravelScreenBody> {
   final controller = TextEditingController();
   bool _isCamera = true;
+
   @override
   void initState() {
     controller.addListener(_onInputText);
@@ -38,35 +45,40 @@ class _TravelScreenBodyState extends State<TravelScreenBody> {
   }
 
   void _onInputText() {
-    setState(() {
-      controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: controller.text.length));
-      controller.text.isEmpty ? _isCamera = true : _isCamera = false;
-    });
+    setState(
+      () {
+        controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: controller.text.length));
+        controller.text.isEmpty ? _isCamera = true : _isCamera = false;
+      },
+    );
   }
 
   void addMessage({required String content, required String type}) {
     if (!_isCamera) {
       setState(
         () {
-          TravelScreen.of(context).listMessage.insert(
-                0,
-                Message(
-                  messageContent: content,
-                  messageType: type,
-                  messageTime: DateTime.now(),
-                ),
-              );
+          widget.listEvent.insert(
+            0,
+            Event(
+              messageContent: content,
+              messageType: type,
+              messageTime: DateTime.now(),
+              isFavorit: false,
+              isSelected: false,
+            ),
+          );
           controller.text = '';
         },
       );
     }
   }
 
-  void onEventSelected(Message message) {
+  void onEventSelected(int index) {
     setState(
       () {
-        message.isSelected = !message.isSelected;
+        var event = widget.listEvent[index];
+        widget.listEvent[index] = event.copyWith(isSelected: !event.isSelected);
       },
     );
   }
@@ -75,37 +87,37 @@ class _TravelScreenBodyState extends State<TravelScreenBody> {
     if (pickedFile != null) {
       setState(
         () {
-          TravelScreen.of(context).listMessage.insert(
-                0,
-                Message(
-                  messageContent: '',
-                  messageType: type,
-                  messageTime: DateTime.now(),
-                  messageImage: Image.file(
-                    File(pickedFile.path),
-                  ),
-                ),
-              );
+          widget.listEvent.insert(
+            0,
+            Event(
+              messageContent: 'Image Entry',
+              messageType: type,
+              messageTime: DateTime.now(),
+              messageImage: Image.file(
+                File(pickedFile.path),
+              ),
+              isFavorit: false,
+              isSelected: false,
+            ),
+          );
         },
       );
+      Provider.of<ProviderChat>(context, listen: false).isUpdate();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    TravelScreen.of(context).listMessage = MessageValue.listMessage;
-    TravelScreen.of(context).listFavoriteMesage = TravelScreen.of(context)
-        .listMessage
-        .where((element) => element.isFavorit == true)
-        .toList();
     return Stack(
       children: [
-        TravelScreen.of(context).listMessage.length <= 1
-            ? const TravelScreenInstruction()
+        widget.listEvent.isEmpty
+            ? Instruction(title: widget.title)
             : TravelScreenListMessage(
                 listMessage: widget.isFavorite
-                    ? TravelScreen.of(context).listFavoriteMesage
-                    : TravelScreen.of(context).listMessage,
+                    ? widget.listEvent
+                        .where((element) => element.isFavorit)
+                        .toList()
+                    : widget.listEvent,
                 isSelected: widget.isSelected,
                 onSelected: onEventSelected,
               ),

@@ -1,35 +1,38 @@
 import 'package:flutter/material.dart';
 
+import 'package:my_final_project/generated/l10n.dart';
+
 class MainScreenBottomNavigation extends StatelessWidget {
+  final int index;
+  final Function(int) selected;
+
   const MainScreenBottomNavigation({
     super.key,
     required this.index,
     required this.selected,
   });
-  final int index;
-  final Function(int) selected;
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: index,
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.class_),
-          label: 'Home',
+          icon: const Icon(Icons.class_),
+          label: S.of(context).home_label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.assessment),
-          label: 'Daily',
+          icon: const Icon(Icons.assessment),
+          label: S.of(context).daily_label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Timeline',
+          icon: const Icon(Icons.map),
+          label: S.of(context).timeline_label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore),
-          label: 'Explore',
+          icon: const Icon(Icons.explore),
+          label: S.of(context).explore_label,
         ),
       ],
       onTap: selected,

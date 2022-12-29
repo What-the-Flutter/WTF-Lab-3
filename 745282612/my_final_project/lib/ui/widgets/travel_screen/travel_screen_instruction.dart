@@ -1,9 +1,53 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/app_colors.dart';
+import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/utils/constants/app_colors.dart';
+
+class Instruction extends StatelessWidget {
+  final String title;
+
+  const Instruction({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth > 600) {
+          return TravelScreenInstruction(
+            heightContrainer: 380,
+            headerSize: 40,
+            contentSize: 20,
+            title: title,
+          );
+        } else {
+          return TravelScreenInstruction(
+            heightContrainer: 240,
+            headerSize: 17,
+            contentSize: 15,
+            title: title,
+          );
+        }
+      },
+    );
+  }
+}
 
 class TravelScreenInstruction extends StatelessWidget {
-  const TravelScreenInstruction({super.key});
+  final String title;
+  final double heightContrainer;
+  final double headerSize;
+  final double contentSize;
+
+  const TravelScreenInstruction({
+    super.key,
+    required this.heightContrainer,
+    required this.headerSize,
+    required this.contentSize,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,28 +55,28 @@ class TravelScreenInstruction extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
       child: Container(
         color: AppColors.colorLisgtTurquoise,
-        height: 240,
+        height: heightContrainer,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               textAlign: TextAlign.center,
-              'This is the page where you can track everything about "Travel"!',
+              S.of(context).title_instruction(title),
               style: TextStyle(
-                fontSize: 17,
+                fontSize: headerSize,
               ),
             ),
             const SizedBox(
-              height: 16,
+              height: 3,
             ),
-            const Text(
+            Text(
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 17,
-                color: AppColors.colorLightGrey,
+                fontSize: contentSize,
+                color: AppColors.colorNormalGrey,
               ),
-              'Add your first event to "Travel" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
+              S.of(context).body_instruction(title),
             ),
           ],
         ),
