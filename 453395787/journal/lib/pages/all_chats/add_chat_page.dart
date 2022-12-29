@@ -7,7 +7,9 @@ import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 
 class AddChatPage extends StatefulWidget {
-  const AddChatPage({super.key});
+  final Chat? forEdit;
+
+  const AddChatPage({super.key, this.forEdit});
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -16,6 +18,15 @@ class AddChatPage extends StatefulWidget {
 class _AddChatPageState extends State<AddChatPage> {
   final _textEditingController = TextEditingController();
   int? _selectedIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.forEdit != null) {
+      _textEditingController.text = widget.forEdit!.name;
+      _selectedIcon = _icons.indexOf(widget.forEdit!.icon);
+    }
+  }
 
   bool get canBeAdded =>
       _textEditingController.text.isNotEmpty && _selectedIcon != null;
@@ -62,6 +73,10 @@ class _AddChatPageState extends State<AddChatPage> {
     Icons.call_outlined,
     Icons.camera_outlined,
     Icons.category_outlined,
+    Icons.sports_volleyball_outlined,
+    Icons.science_outlined,
+    Icons.stadium_outlined,
+    Icons.all_inclusive_outlined,
   ];
 
   @override
@@ -126,12 +141,25 @@ class _AddChatPageState extends State<AddChatPage> {
               child: const Icon(Icons.add),
               onPressed: () {
                 var repo = ChatRepository.get();
-                repo.chats = repo.chats.add(Chat(
-                  id: Random().nextInt(1000),
-                  icon: _icons[_selectedIcon!],
-                  messages: IList([]),
-                  name: _textEditingController.text,
-                ));
+                if (widget.forEdit == null) {
+                  repo.chats = repo.chats.add(Chat(
+                    id: Random().nextInt(1000),
+                    icon: _icons[_selectedIcon!],
+                    messages: IList([]),
+                    name: _textEditingController.text,
+                  ));
+                } else {
+                  repo.chats = repo.chats.updateById(
+                    [
+                      widget.forEdit!.copyWith(
+                        icon: _icons[_selectedIcon!],
+                        name: _textEditingController.text,
+                      )
+                    ],
+                    (item) => item.id,
+                  );
+                }
+
                 Navigator.pop(context);
               },
             )
@@ -163,7 +191,9 @@ class _SelectableIconState extends State<_SelectableIcon> {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: widget.isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.4) : null,
+        color: widget.isSelected
+            ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
+            : null,
         shape: BoxShape.circle,
       ),
       child: InkWell(

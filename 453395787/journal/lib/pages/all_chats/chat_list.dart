@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../chat_repository.dart';
 import '../../utils/styles.dart';
 import '../chat/chat_page.dart';
+import 'bottom_action_sheet.dart';
 
 class ChatList extends StatelessWidget {
   ChatList({Key? key}) : super(key: key);
@@ -11,10 +12,11 @@ class ChatList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var orderedChats = repo.orderedChats;
     return ListView.builder(
-      itemCount: repo.chats.length,
+      itemCount: orderedChats.length,
       itemBuilder: (_, index) => ChatItem(
-        chat: repo.chats[index],
+        chat: orderedChats[index],
       ),
     );
   }
@@ -32,10 +34,14 @@ class ChatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: Insets.medium,
+        vertical: Insets.small,
         horizontal: Insets.large,
       ),
       child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radius.large)),
+        tileColor: chat.isPinned
+            ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+            : null,
         leading: Icon(
           chat.icon,
         ),
@@ -63,6 +69,16 @@ class ChatItem extends StatelessWidget {
                 chatId: chat.id,
               ),
             ),
+          );
+        },
+        onLongPress: () {
+          showFloatingModalBottomSheet(
+            context: context,
+            builder: ((context) {
+              return BottomActionSheet(
+                chat: chat,
+              );
+            }),
           );
         },
       ),
