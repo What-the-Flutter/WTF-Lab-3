@@ -1,16 +1,8 @@
 # chat_journal
 
-A new Flutter project.
+A new Flutter chat journal application.
 
-## Getting Started
+The main layout looks like:
 
-This project is a starting point for a Flutter application.
+<img src="https://user-images.githubusercontent.com/71211299/210174178-6e6a1201-08c1-4948-a870-4b25393d3c91.png" width=200><img src="https://user-images.githubusercontent.com/71211299/210174183-e6f2d72f-879c-404c-b029-2eca993359d9.png" width=200>
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
