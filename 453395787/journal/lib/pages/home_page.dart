@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../utils/styles.dart';
 import '../utils/theme.dart';
 import 'all_chats/add_chat_page.dart';
+import 'all_chats/bottom_action_sheet.dart';
 import 'all_chats/chat_list.dart';
+import 'choose_color_page.dart';
 import 'empty_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,14 +79,26 @@ class _HomePageState extends State<HomePage> {
           (_destinations[_selectedPage] as NavigationDestination).label,
         ),
         actions: [
-          IconButton(
-            onPressed: () {
+          InkWell(
+            borderRadius: BorderRadius.circular(
+              Radius.extraLarge,
+            ),
+            onTap: () {
               appTheme.toggleThemeMode();
             },
-            icon: Icon(
-              appTheme.isDarkMode
-                  ? Icons.light_mode_outlined
-                  : Icons.dark_mode_outlined,
+            onLongPress: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => ChooseColorSheet(),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(Insets.medium),
+              child: Icon(
+                appTheme.isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
+              ),
             ),
           ),
         ],

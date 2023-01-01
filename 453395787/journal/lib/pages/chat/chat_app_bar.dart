@@ -72,7 +72,7 @@ class _AppBarWithActions extends StatelessWidget {
       actions: [
         IconButton(
           icon: Icon(
-            chat.canAddSelectedToFavorites ? Icons.star : Icons.star_outline,
+            chat.canAddSelectedToFavorites ? Icons.bookmark : Icons.bookmark_outline,
           ),
           onPressed: () {
             if (chat.canAddSelectedToFavorites) {

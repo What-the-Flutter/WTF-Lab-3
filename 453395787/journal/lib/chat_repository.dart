@@ -1,9 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+import 'utils/extensions.dart';
 
 class ChatRepository {
   static final _instance = ChatRepository._internal();
@@ -17,25 +17,30 @@ class ChatRepository {
         name: 'All',
         icon: Icons.all_inclusive_outlined,
         creationDate: DateTime.parse('2022-12-19 12:29:00'),
+        isPinned: true,
         messages: IList(
           [
             Message(
-                id: 1,
-                dateTime: DateTime.parse('2022-12-19 12:30:00'),
-                text: 'Hello'),
+              id: 1,
+              dateTime: DateTime.parse('2022-12-19 12:30:00'),
+              text: 'Hello',
+            ),
             Message(
-                id: 2,
-                dateTime: DateTime.parse('2022-12-20 13:30:00'),
-                text: 'Some long message'),
+              id: 2,
+              dateTime: DateTime.parse('2022-12-20 13:30:00'),
+              text: 'Some long message',
+            ),
             Message(
-                id: 3,
-                dateTime: DateTime.parse('2022-12-21 17:15:00'),
-                text: 'Another message',
-                isFavorite: true),
+              id: 3,
+              dateTime: DateTime.parse('2022-12-21 17:15:00'),
+              text: 'Another message',
+              isFavorite: true,
+            ),
             Message(
-                id: 4,
-                dateTime: DateTime.parse('2022-12-21 17:16:24'),
-                text: 'message with chips'),
+              id: 4,
+              dateTime: DateTime.parse('2022-12-21 17:16:24'),
+              text: 'message with chips',
+            ),
           ],
         ),
       ),
@@ -160,7 +165,7 @@ class Message {
         tags = tags ?? <String>[].lock,
         dateTime = dateTime ?? DateTime.now();
 
-  String get time => DateFormat.jm().format(dateTime);
+  String get time => dateTime.formatTime;
   bool get hasImages => images.isNotEmpty;
   bool get hasSingleImage => images.length == 1;
 

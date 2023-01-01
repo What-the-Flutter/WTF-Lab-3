@@ -17,24 +17,36 @@ class ChatMessageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (context, chat, child) {
+        final messagesWithDates = chat.messagesWithDates.reversed.toList();
+
         return ListView.builder(
           reverse: true,
           shrinkWrap: true,
-          itemCount: chat.messages.length,
-          itemBuilder: (context, index) => MessageItem(
-            message: chat.messages[index],
-            onTap: (message, isSelected) {
-              chat.hasSelected
-                  ? chat.toggleSelection(message)
-                  : _showActionMenu(context, message, chat);
-            },
-            onLongPress: (message, isSelected) {
-              chat.toggleSelection(message);
-            },
-            isSelected: chat.isSelected(
-              chat.messages[index],
-            ),
+          padding: const EdgeInsets.only(
+            bottom: Insets.small,
           ),
+          itemCount: messagesWithDates.length,
+          itemBuilder: (context, index) {
+            final item = messagesWithDates[index];
+            if (item is String) {
+              return TimeItem(text: messagesWithDates[index] as String);
+            }
+
+            return MessageItem(
+              message: item as Message,
+              onTap: (message, isSelected) {
+                chat.hasSelected
+                    ? chat.toggleSelection(message)
+                    : _showActionMenu(context, message, chat);
+              },
+              onLongPress: (message, isSelected) {
+                chat.toggleSelection(message);
+              },
+              isSelected: chat.isSelected(
+                item,
+              ),
+            );
+          },
         );
       },
     );
@@ -48,7 +60,7 @@ class ChatMessageList extends StatelessWidget {
     return await showMenu(
       context: context,
       position: const RelativeRect.fromLTRB(0, 200, 0, 0),
-      color: Colors.blue[50],
+      color: Theme.of(context).colorScheme.surfaceVariant,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
           Radius.large,
@@ -113,6 +125,34 @@ class ChatMessageList extends StatelessWidget {
   }
 }
 
+class TimeItem extends StatelessWidget {
+  const TimeItem({
+    required this.text,
+    super.key,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: Insets.small,
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: Chip(
+          label: Text(text),
+          labelPadding: const EdgeInsets.symmetric(
+            vertical: Insets.none,
+            horizontal: Insets.large,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MessageItem extends StatelessWidget {
   final Message message;
   final void Function(Message message, bool isSelected) onTap;
@@ -137,16 +177,12 @@ class MessageItem extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (message.isFavorite)
-              Icon(
-                Icons.star,
-                color: Colors.blue[400],
-                size: 32,
-              ),
             LimitedBox(
               maxWidth: MediaQuery.of(context).size.width * _widthScaleFactor,
               child: Card(
-                color: isSelected ? Colors.blue[200] : null,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : Theme.of(context).colorScheme.onPrimary,
                 margin: const EdgeInsets.symmetric(
                   vertical: Insets.extraSmall,
                   horizontal: Insets.large,
@@ -183,8 +219,20 @@ class MessageItem extends StatelessWidget {
                           _MessageText(
                             text: message.text,
                           ),
-                        _MessageTime(
-                          time: message.time,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (message.isFavorite)
+                              Icon(
+                                Icons.bookmark,
+                                color: Colors.yellow[600],
+                                size: 18,
+                              ),
+                            _MessageTime(
+                              time: message.time,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -266,27 +314,19 @@ class _EvenAmountOfImages extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 2,
-      children: List.generate(imageAmount, (index) {
-        return Expanded(
-          child: Padding(
+      children: List.generate(
+        imageAmount,
+        (index) {
+          return Padding(
             padding: const EdgeInsets.all(
               Insets.extraSmall,
             ),
-            // TODO _SingleImage here?
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(
-                Radius.medium,
-              ),
-              child: Image.file(
-                File(
-                  images[skipFirst ? index + 1 : index],
-                ),
-                fit: BoxFit.cover,
-              ),
+            child: _SingleImage(
+              image: images[skipFirst ? index + 1 : index],
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -355,7 +395,10 @@ class _MessageTime extends StatelessWidget {
       padding: const EdgeInsets.all(
         Insets.extraSmall,
       ),
-      child: Text(time),
+      child: Text(
+        time,
+        style: const TextStyle(color: Colors.grey),
+      ),
     );
   }
 }

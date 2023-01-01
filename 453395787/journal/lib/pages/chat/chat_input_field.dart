@@ -35,20 +35,28 @@ class ChatInput extends StatelessWidget {
                     icon: Icon(Icons.add),
                   ),
                   Expanded(
-                    child: TextFormField(
-                      controller: _inputController,
-                      decoration: const InputDecoration(
-                        isCollapsed: true,
-                        hintText: 'Message',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
+                    child: LimitedBox(
+                      maxHeight: MediaQuery.of(context).size.width * 0.2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(Insets.medium),
+                        child: TextFormField(
+                          controller: _inputController,
+                          textCapitalization: TextCapitalization.sentences,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            isCollapsed: true,
+                            hintText: 'Message',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          onChanged: (text) {
+                            if (chat.canBeSended != text.isNotEmpty) {
+                              chat.canBeSended = text.isNotEmpty;
+                            }
+                          },
                         ),
                       ),
-                      onChanged: (text) {
-                        if (chat.canBeSended != text.isNotEmpty) {
-                          chat.canBeSended = text.isNotEmpty;
-                        }
-                      },
                     ),
                   ),
                   ChatInputMutableButton(
@@ -156,7 +164,10 @@ class ChatInputMutableButton extends StatelessWidget {
       builder: (context, chat, child) {
         if (!chat.isInputImagesEmpty || chat.canBeSended) {
           return IconButton(
-            icon: const Icon(Icons.send),
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             onPressed: onSendPressed,
           );
         } else {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'preferences.dart';
+
 class AppTheme extends StatefulWidget {
   final Widget child;
 
@@ -8,18 +10,40 @@ class AppTheme extends StatefulWidget {
     required this.child,
   });
 
+  static final colors = <Color>[
+    Colors.pink,
+    Colors.red,
+    Colors.deepOrange,
+    Colors.orange,
+    Colors.amber,
+    Colors.yellow,
+    Colors.lime,
+    Colors.lightGreen,
+    Colors.green,
+    Colors.teal,
+    Colors.cyan,
+    Colors.lightBlue,
+    Colors.blue,
+    Colors.indigo,
+    Colors.purple,
+    Colors.deepPurple,
+    Colors.blueGrey,
+    Colors.brown,
+  ];
+
   @override
   _AppThemeState createState() => _AppThemeState();
 }
 
 class _AppThemeState extends State<AppTheme> {
-  bool _isDarkMode = false;
-  Color _color = Colors.red;
+  bool _isDarkMode = ThemePreferences.get().isDarkMode;
+  Color _color = ThemePreferences.get().color;
 
   bool get isDarkMode => _isDarkMode;
   set isDarkMode(bool value) {
     if (_isDarkMode != value) {
       setState(() => _isDarkMode = value);
+      ThemePreferences.get().isDarkMode = value;
     }
   }
 
@@ -27,6 +51,7 @@ class _AppThemeState extends State<AppTheme> {
   set color(Color value) {
     if (value != _color) {
       setState(() => _color = value);
+      ThemePreferences.get().color = value;
     }
   }
 

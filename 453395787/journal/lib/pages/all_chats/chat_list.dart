@@ -38,52 +38,104 @@ class ChatItem extends StatelessWidget {
         vertical: Insets.small,
         horizontal: Insets.large,
       ),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Radius.large),
-        ),
-        tileColor: chat.isPinned
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
-            : null,
-        leading: Icon(
-          chat.icon,
-        ),
-        title: Text(
-          chat.name,
-        ),
-        subtitle: chat.lastMessage != null
-            ? Text(
-                chat.lastMessage!.text,
-              )
-            : null,
-        trailing: chat.lastMessage != null
-            ? Text(
-                chat.lastMessage!.time,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: Insets.small,
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(Radius.large),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      chatId: chat.id,
+                    ),
+                  ),
+                );
+              },
+              onLongPress: () {
+                showFloatingModalBottomSheet(
+                  context: context,
+                  builder: ((context) {
+                    return BottomActionSheet(
+                      chat: chat,
+                    );
+                  }),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Insets.large,
+                  vertical: Insets.medium,
                 ),
-              )
-            : null,
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ChatPage(
-                chatId: chat.id,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: Insets.large,
+                      ),
+                      child: Icon(chat.icon),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                chat.name,
+                                style: DefaultTextStyle.of(context)
+                                    .style
+                                    .copyWith(fontSize: 18),
+                              ),
+                              Text(
+                                chat.lastMessage != null
+                                    ? chat.lastMessage!.time
+                                    : '',
+                                style: DefaultTextStyle.of(context)
+                                    .style
+                                    .copyWith(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  chat.lastMessage != null
+                                      ? chat.lastMessage!.text
+                                      : 'Write your first message!',
+                                  textAlign: TextAlign.start,
+                                  style: DefaultTextStyle.of(context)
+                                      .style
+                                      .copyWith(color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  maxLines: 1,
+                                ),
+                              ),
+                              if (chat.isPinned)
+                                const Icon(
+                                  Icons.push_pin_outlined,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          );
-        },
-        onLongPress: () {
-          showFloatingModalBottomSheet(
-            context: context,
-            builder: ((context) {
-              return BottomActionSheet(
-                chat: chat,
-              );
-            }),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

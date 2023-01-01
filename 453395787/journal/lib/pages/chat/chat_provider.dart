@@ -1,9 +1,12 @@
+import 'dart:core';
+
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
+import '../../utils/extensions.dart';
 
 class ChatProvider extends ChangeNotifier {
   ChatProvider({
@@ -20,7 +23,7 @@ class ChatProvider extends ChangeNotifier {
   var _canBeSended = false;
 
   String get name => chat.name;
-  List<Message> get messages => chat.messages.toList();
+  IList<Message> get messages => chat.messages;
   Set<int> get selected => _selected;
 
   Iterable<Message> get selectedMessages =>
@@ -62,11 +65,26 @@ class ChatProvider extends ChangeNotifier {
     return buffer;
   }
 
+  List<Object> get messagesWithDates {
+    var lastDate = messages.first.dateTime;
+    var list = <Object>[lastDate.formatMonthDay, messages.first];
+
+    for (var message in messages) {
+      if (!message.dateTime.isSameDay(lastDate)) {
+        list.add(message.dateTime.formatMonthDay);
+        lastDate = message.dateTime;
+      }
+      list.add(message);
+    }
+
+    return list;
+  }
+
   void add(Message message) {
     if (!_update(message)) {
       chatListProvider.update(
         chat.copyWith(
-          messages: chat.messages.insert(0, message),
+          messages: chat.messages.add(message),
         ),
       );
     }
@@ -125,7 +143,7 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = false;
     _selected.clear();
     _message = Message();
-    _initialText = null;
+    _initialText = '';
     notifyListeners();
   }
 
