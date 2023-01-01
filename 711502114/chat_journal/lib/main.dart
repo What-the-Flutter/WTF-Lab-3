@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'l10n/l10n.dart';
 import 'theme/colors.dart';
 import 'theme/theme_model.dart';
 import 'ui/bottom_nav_bar.dart';
@@ -18,6 +21,13 @@ class MyApp extends StatelessWidget {
         builder: (context, themeNotifier, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            supportedLocales: L10n.all,
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
             theme: themeNotifier.isDark
                 ? CustomTheme.darkTheme
                 : CustomTheme.lightTheme,

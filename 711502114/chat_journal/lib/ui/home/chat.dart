@@ -3,7 +3,7 @@ class Chat {
 
   Chat({
     required this.title,
-    this.description = 'No events. Click to create one.',
+    required this.description,
     required this.assetsLink,
   });
 }

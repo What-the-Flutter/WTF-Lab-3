@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -15,19 +16,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _chats = <Chat>[
-    Chat(title: 'Travel', assetsLink: 'assets/plane.svg'),
-    Chat(title: 'Family', assetsLink: 'assets/sofa.svg'),
-    Chat(title: 'Sports', assetsLink: 'assets/gym.svg'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    var local = AppLocalizations.of(context);
+    var desc = local?.chatDescription ?? '';
+
+    final _chats = <Chat>[
+      Chat(title: 'Travel', description: desc, assetsLink: 'assets/plane.svg'),
+      Chat(title: 'Family', description: desc, assetsLink: 'assets/sofa.svg'),
+      Chat(title: 'Sports', description: desc, assetsLink: 'assets/gym.svg'),
+    ];
+
     return Consumer<ThemeModel>(
       builder: (context, themeNotifier, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Home'),
+            title: Text(local?.homePage ?? ''),
             centerTitle: true,
             leading: const Icon(Icons.menu_sharp),
             actions: <Widget>[
@@ -51,14 +55,14 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _createBotBox(context),
                 const SizedBox(height: 5),
-                _createMessagesList(),
+                _createMessagesList(_chats),
               ],
             ),
           ),
-          floatingActionButton: const FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
             onPressed: null,
-            tooltip: 'Increment',
-            child: Icon(Icons.add),
+            tooltip: local?.increaseButtonHint,
+            child: const Icon(Icons.add),
           ),
         );
       },
@@ -83,9 +87,9 @@ class _HomePageState extends State<HomePage> {
             color: iconColor,
           ),
           const SizedBox(width: 28),
-          const Text(
-            'Questionnaire Bot',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)?.bot ?? '',
+            style: const TextStyle(
               fontSize: 18,
               fontFamily: 'Bold',
               fontWeight: FontWeight.bold,
@@ -96,15 +100,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Expanded _createMessagesList() {
+  Expanded _createMessagesList(List<Chat> chats) {
     return Expanded(
       child: ListView.separated(
-        itemCount: _chats.length,
+        itemCount: chats.length,
         itemBuilder: (context, index) {
           return InkWell(
             hoverColor: hoverElementColor,
             onTap: () => print('TAP'),
-            child: ChatCard(chat: _chats[index]),
+            child: ChatCard(chat: chats[index]),
           );
         },
         separatorBuilder: (context, index) {

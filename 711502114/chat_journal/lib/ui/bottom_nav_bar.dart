@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'daily/daily_page.dart';
 import 'explore/explore_page.dart';
@@ -30,17 +31,30 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocalizations.of(context);
     return Scaffold(
       body: Center(
         child: _pages[_pageIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Daily'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Timeline'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.book),
+            label: local?.homePage,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.assignment),
+            label: local?.dailyPage,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map),
+            label: local?.timelinePage,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.explore),
+            label: local?.explorePage,
+          ),
         ],
         currentIndex: _pageIndex,
         onTap: _onItemTapped,
