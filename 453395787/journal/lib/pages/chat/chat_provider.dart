@@ -1,22 +1,29 @@
-import 'package:collection/collection.dart';
+import 'dart:core';
+
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../chat_list_provider.dart';
 import '../../chat_repository.dart';
+import '../../utils/extensions.dart';
 
 class ChatProvider extends ChangeNotifier {
-  ChatProvider(this.chat);
+  ChatProvider({
+    required this.chatListProvider,
+    required this.chatId,
+  });
 
-  final inputTextController = TextEditingController();
-  final Chat chat;
+  final ChatListProvider chatListProvider;
+  final int chatId;
+  Chat get chat => chatListProvider.findById(chatId);
   final _selected = <int>{};
   var _message = Message();
   var _isEditMode = false;
   var _canBeSended = false;
 
   String get name => chat.name;
-  QueueList<Message> get messages => chat.messages;
+  IList<Message> get messages => chat.messages;
   Set<int> get selected => _selected;
 
   Iterable<Message> get selectedMessages =>
@@ -32,7 +39,7 @@ class ChatProvider extends ChangeNotifier {
     var staredAmount = 0;
     var otherAmount = 0;
 
-    for (final m in selectedMessages) {
+    for (var m in selectedMessages) {
       if (m.isFavorite) {
         staredAmount++;
       } else {
@@ -44,11 +51,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Message get message => _message;
-  set message(Message message) {
-    _message = message;
-    notifyListeners();
-  }
-
 
   bool get canBeSended => _canBeSended;
   set canBeSended(bool value) {
@@ -56,20 +58,57 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? _initialText;
+  String? get initialText {
+    var buffer = _initialText;
+    _initialText = null;
+    return buffer;
+  }
+
+  List<Object> get messagesWithDates {
+    var lastDate = messages.first.dateTime;
+    var list = <Object>[lastDate.formatMonthDay, messages.first];
+
+    for (var message in messages) {
+      if (!message.dateTime.isSameDay(lastDate)) {
+        list.add(message.dateTime.formatMonthDay);
+        lastDate = message.dateTime;
+      }
+      list.add(message);
+    }
+
+    return list;
+  }
+
   void add(Message message) {
     if (!_update(message)) {
-      messages.addFirst(message);
+      chatListProvider.update(
+        chat.copyWith(
+          messages: chat.messages.add(message),
+        ),
+      );
     }
     notifyListeners();
   }
 
   void remove(Message message) {
     messages.remove(message);
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.remove(message),
+      ),
+    );
     notifyListeners();
   }
-  
+
   void removeSelected() {
-    messages.removeWhere((m) => selected.contains(m.id));
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.removeWhere(
+          (e) => selected.contains(e.id),
+        ),
+      ),
+    );
     selected.clear();
     notifyListeners();
   }
@@ -77,7 +116,13 @@ class ChatProvider extends ChangeNotifier {
   bool _update(Message message) {
     var index = messages.indexWhere((m) => m.id == message.id);
     if (index == -1) return false;
-    messages[index] = message;
+
+    chatListProvider.update(
+      chat.copyWith(
+        messages: chat.messages.updateById([message], (item) => item.id),
+      ),
+    );
+
     return true;
   }
 
@@ -85,20 +130,20 @@ class ChatProvider extends ChangeNotifier {
     _isEditMode = true;
     _selected.add(message.id);
     _message = message;
-    inputTextController.text = message.text;
+    _initialText = message.text;
     notifyListeners();
   }
 
   void startEditModeForSelected() {
-    var message = messages.firstWhere((e) => e.id == _selected.first);
+    var message = chat.messages.firstWhere((e) => e.id == _selected.first);
     startEditMode(message);
   }
 
   void endEditMode() {
     _isEditMode = false;
     _selected.clear();
-    message = Message();
-    inputTextController.text = '';
+    _message = Message();
+    _initialText = '';
     notifyListeners();
   }
 
@@ -133,39 +178,87 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copyToClipboard(Message message) async {
-    Fluttertoast.showToast(msg: 'Text copied to clipboard');
-    await Clipboard.setData(ClipboardData(text: message.text));
+    await Clipboard.setData(
+      ClipboardData(
+        text: message.text,
+      ),
+    );
   }
 
   void copySelectedToClipboard() async {
-    Fluttertoast.showToast(msg: 'Text copied to clipboard');
     final text = selectedMessages.map((e) => e.text).join('\n');
-    await Clipboard.setData(ClipboardData(text: text));
+    await Clipboard.setData(
+      ClipboardData(
+        text: text,
+      ),
+    );
   }
 
   void addToFavorites(Message message) {
-    _update(message.copyWith(isFavorite: true));
+    _update(
+      message.copyWith(
+        isFavorite: true,
+      ),
+    );
     notifyListeners();
   }
 
   void removeFromFavorites(Message message) {
-    _update(message.copyWith(isFavorite: false));
+    _update(
+      message.copyWith(
+        isFavorite: false,
+      ),
+    );
     notifyListeners();
   }
 
   void addSelectedToFavorites() {
     final selected = selectedMessages;
-    for (final m in selected) {
-      _update(m.copyWith(isFavorite: true));
+    for (var m in selected) {
+      _update(
+        m.copyWith(
+          isFavorite: true,
+        ),
+      );
     }
     notifyListeners();
   }
 
   void removeSelectedFromFavorites() {
     final selected = selectedMessages;
-    for (final m in selected) {
-      _update(m.copyWith(isFavorite: false));
+    for (var m in selected) {
+      _update(
+        m.copyWith(
+          isFavorite: false,
+        ),
+      );
     }
+    notifyListeners();
+  }
+
+  void addImagesToInputMessage(Iterable<String> images) {
+    _message = _message.copyWith(
+      images: _message.images.addAll(images),
+    );
+    notifyListeners();
+  }
+
+  void setImagesToInputMessage(Iterable<String> images) {
+    _message = _message.copyWith(
+      images: images.toIList(),
+    );
+    notifyListeners();
+  }
+
+  void removeImageFromSelectedMessage(int index) {
+    _message = message.copyWith(
+      images: message.images.removeAt(index),
+    );
+    notifyListeners();
+  }
+
+  void clearInputMessage() {
+    _message = Message();
     notifyListeners();
   }
 }

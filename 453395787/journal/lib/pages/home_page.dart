@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'chat_list.dart';
+import '../utils/styles.dart';
+import '../utils/theme.dart';
+import 'all_chats/add_chat_page.dart';
+import 'all_chats/bottom_action_sheet.dart';
+import 'all_chats/chat_list.dart';
+import 'choose_color_page.dart';
 import 'empty_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,10 +28,22 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<Widget> _destinations = const [
-    NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-    NavigationDestination(icon: Icon(Icons.view_day_outlined), label: 'Daily'),
-    NavigationDestination(icon: Icon(Icons.timeline), label: 'Timeline'),
-    NavigationDestination(icon: Icon(Icons.explore), label: 'Explore'),
+    NavigationDestination(
+      icon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.view_day_outlined),
+      label: 'Daily',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.timeline),
+      label: 'Timeline',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.explore),
+      label: 'Explore',
+    ),
   ];
 
   void _onBottomNavigationTap(int index) {
@@ -35,10 +52,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget? get _floatingActionButton {
+  Widget? _floatingActionButton(BuildContext context) {
     if (_selectedPage == 0) {
       return FloatingActionButton(
-        onPressed: () { },
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return const AddChatPage();
+            }),
+          );
+        },
         child: const Icon(Icons.add),
       );
     }
@@ -47,11 +71,37 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var appTheme = ThemeChanger.of(context).appTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            (_destinations[_selectedPage] as NavigationDestination).label
+          (_destinations[_selectedPage] as NavigationDestination).label,
         ),
+        actions: [
+          InkWell(
+            borderRadius: BorderRadius.circular(
+              Radius.extraLarge,
+            ),
+            onTap: () {
+              appTheme.toggleThemeMode();
+            },
+            onLongPress: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => ChooseColorSheet(),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(Insets.medium),
+              child: Icon(
+                appTheme.isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
+              ),
+            ),
+          ),
+        ],
       ),
       body: _pages[_selectedPage],
       bottomNavigationBar: NavigationBar(
@@ -59,7 +109,7 @@ class _HomePageState extends State<HomePage> {
         selectedIndex: _selectedPage,
         destinations: _destinations,
       ),
-      floatingActionButton: _floatingActionButton,
+      floatingActionButton: _floatingActionButton(context),
     );
   }
 }
