@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/entities/event.dart';
-import 'package:my_final_project/ui/screens/travel_screen.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 
 class CopyMessageButton extends StatefulWidget {
   final List<Event> listMessage;
@@ -19,19 +20,14 @@ class CopyMessageButton extends StatefulWidget {
 class _CopyMessageButtonState extends State<CopyMessageButton> {
   void copyMessage() async {
     late final String copyText;
-
-    setState(
-      () {
-        final index =
-            widget.listMessage.indexWhere((element) => element.isSelected);
-
-        widget.listMessage[index] = widget.listMessage[index].copyWith(
-          isSelected: !widget.listMessage[index].isSelected,
-        );
-        copyText = widget.listMessage[index].messageContent;
-        TravelScreen.of(context).isSelected();
-      },
+    final index =
+        widget.listMessage.indexWhere((element) => element.isSelected);
+    widget.listMessage[index] = widget.listMessage[index].copyWith(
+      isSelected: !widget.listMessage[index].isSelected,
     );
+    copyText = widget.listMessage[index].messageContent;
+    context.read<EventCubit>().changeSelected();
+
     await Clipboard.setData(
       ClipboardData(
         text: copyText,

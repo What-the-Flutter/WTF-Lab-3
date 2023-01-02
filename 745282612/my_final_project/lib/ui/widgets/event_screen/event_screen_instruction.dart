@@ -16,14 +16,14 @@ class Instruction extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 600) {
-          return TravelScreenInstruction(
+          return EventScreenInstruction(
             heightContrainer: 380,
             headerSize: 40,
             contentSize: 20,
             title: title,
           );
         } else {
-          return TravelScreenInstruction(
+          return EventScreenInstruction(
             heightContrainer: 240,
             headerSize: 17,
             contentSize: 15,
@@ -35,13 +35,13 @@ class Instruction extends StatelessWidget {
   }
 }
 
-class TravelScreenInstruction extends StatelessWidget {
+class EventScreenInstruction extends StatelessWidget {
   final String title;
   final double heightContrainer;
   final double headerSize;
   final double contentSize;
 
-  const TravelScreenInstruction({
+  const EventScreenInstruction({
     super.key,
     required this.heightContrainer,
     required this.headerSize,

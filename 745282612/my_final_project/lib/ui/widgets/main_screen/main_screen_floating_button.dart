@@ -15,7 +15,9 @@ class MainScreenFloatingButton extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const AddNewScreen(),
+              builder: (context) => const AddNewScreen(
+                textController: '',
+              ),
             ),
           );
         },
