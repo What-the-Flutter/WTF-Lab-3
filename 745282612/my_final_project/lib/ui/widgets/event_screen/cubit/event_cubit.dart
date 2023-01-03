@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
-// EventState
 class EventCubit extends Cubit<EventState> {
   EventCubit() : super(EventState(listEvent: [], listSearch: []));
 
@@ -19,12 +18,16 @@ class EventCubit extends Cubit<EventState> {
     required String content,
     required String type,
   }) {
+    final selectedIcon = state.sectionIcon;
+    final sectionTitle = state.sectionTitle;
     final event = Event(
       messageContent: content,
       messageType: type,
       messageTime: DateTime.now(),
       isFavorit: false,
       isSelected: false,
+      sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
+      sectionTitle: sectionTitle != 'Cancel' ? sectionTitle : null,
     );
     final newListEvent = state.listEvent;
     newListEvent.insert(
@@ -146,13 +149,26 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
-  void searchElement(String text) {
-    final list = state.listEvent;
-    emit(state.copyWith(
-        listEvent: list
-            .where((element) =>
-                element.messageContent.toLowerCase().contains(text))
-            .toList()));
+  void changeSection() {
+    emit(state.copyWith(isSection: !state.isSection));
+  }
+
+  void search(String text) {
+    state.listSearch.clear();
+    final newListSearch = state.listEvent
+        .where((element) =>
+            element.messageContent.toLowerCase().contains(text.toLowerCase()))
+        .toList();
+    // for (var i = 0; i < state.listEvent.length; i++) {
+    //   if (state.listEvent
+    //       .elementAt(i)
+    //       .messageContent
+    //       .toLowerCase()
+    //       .contains(text.toLowerCase())) {
+    //     state.listSearch.add(state.listEvent.elementAt(i));
+    //   }
+    // }
+    emit(state.copyWith(listSearch: newListSearch));
   }
 
   void changeCountSelected() {
@@ -161,6 +177,26 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(countSelected: listSelected.length));
     if (state.countSelected == 0) {
       changeSelected();
+    }
+  }
+
+  void changeSectionIcon({
+    required IconData icon,
+    required String sectionTitle,
+  }) {
+    final iconCancel = Icons.cancel;
+    if (icon == iconCancel) {
+      emit(state.copyWith(
+        sectionIcon: Icons.bubble_chart,
+        sectionTitle: 'Cancel',
+      ));
+      changeSection();
+    } else {
+      emit(state.copyWith(
+        sectionIcon: icon,
+        sectionTitle: sectionTitle,
+      ));
+      changeSection();
     }
   }
 }

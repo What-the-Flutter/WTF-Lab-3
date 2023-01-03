@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,7 +29,7 @@ class _EventScreenState extends State<EventScreen> {
   final eventCubit = EventCubit();
   String pasteValue = '';
   late final TextEditingController controllerSearch;
-  List<Event> listSearch = [];
+  final List<Event> listSearch = [];
 
   // void searchEvent() {
   //   final searchText = controllerSearch.text;
@@ -46,16 +44,11 @@ class _EventScreenState extends State<EventScreen> {
   //   setState(() {});
   // }
 
-  void _changed() {
-    eventCubit.searchElement(controllerSearch.text);
-  }
-
   @override
   void initState() {
     super.initState();
-    listSearch = widget.listEvent;
     controllerSearch = TextEditingController();
-    controllerSearch.addListener(_changed);
+    // controllerSearch.addListener(_changed);
     BlocProvider.of<EventCubit>(context).initializer(widget.listEvent);
   }
 
@@ -63,7 +56,7 @@ class _EventScreenState extends State<EventScreen> {
   void dispose() {
     super.dispose();
     controllerSearch.dispose();
-    controllerSearch.removeListener(_changed);
+    // controllerSearch.removeListener(_changed);
   }
 
   PreferredSizeWidget appBar({
@@ -141,6 +134,8 @@ class _EventScreenState extends State<EventScreen> {
           ),
           title: TextField(
             controller: controllerSearch,
+            onChanged: (value) =>
+                BlocProvider.of<EventCubit>(context).search(value),
             decoration: const InputDecoration(
               filled: true,
               border: InputBorder.none,
@@ -207,8 +202,7 @@ class _EventScreenState extends State<EventScreen> {
           body: EventScreenBody(
             isFavorite: stateEvent.isFavorite,
             isSelected: stateEvent.isSelected,
-            listEvent: stateEvent.listEvent,
-            // stateEvent.isSearch ? listSearch :
+            listEvent: stateEvent.isSearch ? listSearch : stateEvent.listEvent,
             title: widget.title,
             isSearch: stateEvent.isSearch,
           ),

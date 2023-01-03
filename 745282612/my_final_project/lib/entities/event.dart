@@ -7,6 +7,8 @@ class Event {
   final String messageType;
   final DateTime messageTime;
   final Image? messageImage;
+  final IconData? sectionIcon;
+  final String? sectionTitle;
 
   Event({
     required this.messageContent,
@@ -15,6 +17,8 @@ class Event {
     required this.isFavorit,
     required this.isSelected,
     this.messageImage,
+    this.sectionIcon,
+    this.sectionTitle,
   });
 
   Event copyWith({
@@ -24,6 +28,8 @@ class Event {
     String? messageType,
     DateTime? messageTime,
     Image? messageImage,
+    IconData? sectionIcon,
+    String? sectionTitle,
   }) {
     return Event(
       isFavorit: isFavorit ?? this.isFavorit,
@@ -32,6 +38,8 @@ class Event {
       messageType: messageType ?? this.messageType,
       messageTime: messageTime ?? this.messageTime,
       messageImage: messageImage ?? this.messageImage,
+      sectionIcon: sectionIcon ?? this.sectionIcon,
+      sectionTitle: sectionTitle ?? this.sectionTitle,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'package:my_final_project/entities/event.dart';
 
 class EventState {
@@ -10,6 +12,9 @@ class EventState {
   final bool isPicter;
   final bool isSearch;
   final int countSelected;
+  final bool isSection;
+  final IconData sectionIcon;
+  final String sectionTitle;
 
   EventState({
     required this.listEvent,
@@ -20,7 +25,10 @@ class EventState {
     this.editText = '',
     this.isSearch = false,
     this.countSelected = 0,
+    this.isSection = false,
     required this.listSearch,
+    this.sectionIcon = Icons.bubble_chart,
+    this.sectionTitle = 'Cancel',
   });
 
   EventState copyWith({
@@ -33,6 +41,9 @@ class EventState {
     bool? isPicter,
     bool? isSearch,
     int? countSelected,
+    bool? isSection,
+    IconData? sectionIcon,
+    String? sectionTitle,
   }) {
     return EventState(
       isSelected: isSelected ?? this.isSelected,
@@ -44,6 +55,9 @@ class EventState {
       isPicter: isPicter ?? this.isPicter,
       isSearch: isSearch ?? this.isSearch,
       countSelected: countSelected ?? this.countSelected,
+      isSection: isSection ?? this.isSection,
+      sectionIcon: sectionIcon ?? this.sectionIcon,
+      sectionTitle: sectionTitle ?? this.sectionTitle,
     );
   }
 }

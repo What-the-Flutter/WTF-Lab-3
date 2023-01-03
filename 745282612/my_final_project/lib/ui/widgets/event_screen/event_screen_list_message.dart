@@ -26,7 +26,10 @@ class EventScreenListMessage extends StatelessWidget {
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
         return ListView.builder(
-          padding: EdgeInsets.only(bottom: isSearch ? 10 : 70),
+          padding: EdgeInsets.only(
+              bottom: state.isSection
+                  ? MediaQuery.of(context).size.height * 0.2
+                  : MediaQuery.of(context).size.height * 0.1),
           reverse: true,
           itemCount: listMessage.length,
           itemBuilder: (context, index) {
@@ -88,6 +91,15 @@ class EventScreenListMessage extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
+                        const SizedBox(height: 3),
+                        indexMessage.sectionIcon != null
+                            ? Row(
+                                children: [
+                                  Icon(indexMessage.sectionIcon),
+                                  Text(indexMessage.sectionTitle!),
+                                ],
+                              )
+                            : Container(),
                         const SizedBox(height: 3),
                         Align(
                           alignment: Alignment.bottomLeft,
