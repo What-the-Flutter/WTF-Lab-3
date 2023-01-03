@@ -9,7 +9,7 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart'
 
 // EventState
 class EventCubit extends Cubit<EventState> {
-  EventCubit() : super(EventState(listEvent: []));
+  EventCubit() : super(EventState(listEvent: [], listSearch: []));
 
   void initializer(List<Event> event) {
     emit(state.copyWith(listEvent: event));
@@ -102,11 +102,15 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
-  void deleteEvent() {
+  void deleteEvent([int index = -1]) {
     final listEvent = state.listEvent;
-    listEvent.removeWhere((element) => element.isSelected);
-    emit(state.copyWith(listEvent: listEvent));
-    changeSelected();
+    if (index == -1) {
+      listEvent.removeWhere((element) => element.isSelected);
+      emit(state.copyWith(listEvent: listEvent));
+      changeSelected();
+    } else {
+      listEvent.removeAt(index);
+    }
   }
 
   void changeEditText() {
@@ -132,5 +136,31 @@ class EventCubit extends Cubit<EventState> {
     }
     emit(state.copyWith(listEvent: listEvent));
     changeSelected();
+  }
+
+  void changeSearch() {
+    if (state.isSearch) {
+      emit(state.copyWith(isSearch: false));
+    } else {
+      emit(state.copyWith(isSearch: true));
+    }
+  }
+
+  void searchElement(String text) {
+    final list = state.listEvent;
+    emit(state.copyWith(
+        listEvent: list
+            .where((element) =>
+                element.messageContent.toLowerCase().contains(text))
+            .toList()));
+  }
+
+  void changeCountSelected() {
+    final listElement = state.listEvent;
+    final listSelected = listElement.where((element) => element.isSelected);
+    emit(state.copyWith(countSelected: listSelected.length));
+    if (state.countSelected == 0) {
+      changeSelected();
+    }
   }
 }

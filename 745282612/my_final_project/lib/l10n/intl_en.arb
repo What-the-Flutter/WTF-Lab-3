@@ -33,5 +33,9 @@
   "delete_page" : "Delete Page",
   "created" : "Created",
   "last_event" : "Last Event",
-  "ok" : "OK"
+  "ok" : "OK",
+  "exit": "Exit",
+  "no_search_body" : "No entries match the given search query. Please try again",
+  "no_search_title" : "No search result available",
+  "event_modal_title" : "Select the page you want to migrate the selected event to!"
 }

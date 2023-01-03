@@ -39,6 +39,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "daily_label": MessageLookupByLibrary.simpleMessage("Daily"),
         "delete_page": MessageLookupByLibrary.simpleMessage("Delete Page"),
         "edit_page": MessageLookupByLibrary.simpleMessage("Edit Page"),
+        "event_modal_title": MessageLookupByLibrary.simpleMessage(
+            "Select the page you want to migrate the selected event to!"),
+        "exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "explore_label": MessageLookupByLibrary.simpleMessage("Explore"),
         "home_label": MessageLookupByLibrary.simpleMessage("Home"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
@@ -47,6 +50,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Name of the page"),
         "no_event": MessageLookupByLibrary.simpleMessage(
             "No Events. Click to create one"),
+        "no_search_body": MessageLookupByLibrary.simpleMessage(
+            "No entries match the given search query. Please try again"),
+        "no_search_title":
+            MessageLookupByLibrary.simpleMessage("No search result available"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":

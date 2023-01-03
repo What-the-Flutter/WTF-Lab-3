@@ -10,6 +10,7 @@ class EventScreenBody extends StatefulWidget {
   final bool isFavorite;
   final bool isSelected;
   final List<Event> listEvent;
+  final bool isSearch;
 
   const EventScreenBody({
     super.key,
@@ -17,6 +18,7 @@ class EventScreenBody extends StatefulWidget {
     required this.isSelected,
     required this.listEvent,
     required this.title,
+    required this.isSearch,
   });
 
   @override
@@ -64,11 +66,14 @@ class _EventScreenBodyState extends State<EventScreenBody> {
                         .toList()
                     : widget.listEvent,
                 isSelected: widget.isSelected,
+                isSearch: widget.isSearch,
               ),
-        EventScreenBottomMessage(
-          controller: controller,
-          isCamera: _isCamera,
-        ),
+        widget.isSearch
+            ? const SizedBox()
+            : EventScreenBottomMessage(
+                controller: controller,
+                isCamera: _isCamera,
+              ),
       ],
     );
   }

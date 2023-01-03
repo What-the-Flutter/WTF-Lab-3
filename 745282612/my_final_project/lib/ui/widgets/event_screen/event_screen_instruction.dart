@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 
 class Instruction extends StatelessWidget {
@@ -13,23 +16,27 @@ class Instruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 600) {
-          return EventScreenInstruction(
-            heightContrainer: 380,
-            headerSize: 40,
-            contentSize: 20,
-            title: title,
-          );
-        } else {
-          return EventScreenInstruction(
-            heightContrainer: 240,
-            headerSize: 17,
-            contentSize: 15,
-            title: title,
-          );
-        }
+    return BlocBuilder<EventCubit, EventState>(
+      builder: (context, state) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 600) {
+              return EventScreenInstruction(
+                heightContrainer: 380,
+                headerSize: 40,
+                contentSize: 20,
+                title: title,
+              );
+            } else {
+              return EventScreenInstruction(
+                heightContrainer: state.isSearch ? 120 : 240,
+                headerSize: 17,
+                contentSize: 15,
+                title: title,
+              );
+            }
+          },
+        );
       },
     );
   }
@@ -51,36 +58,44 @@ class EventScreenInstruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-      child: Container(
-        color: AppColors.colorLisgtTurquoise,
-        height: heightContrainer,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              textAlign: TextAlign.center,
-              S.of(context).title_instruction(title),
-              style: TextStyle(
-                fontSize: headerSize,
-              ),
+    return BlocBuilder<EventCubit, EventState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+          child: Container(
+            color: AppColors.colorLisgtTurquoise,
+            height: heightContrainer,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  textAlign: TextAlign.center,
+                  state.isSearch
+                      ? S.of(context).no_search_title
+                      : S.of(context).title_instruction(title),
+                  style: TextStyle(
+                    fontSize: headerSize,
+                  ),
+                ),
+                const SizedBox(
+                  height: 3,
+                ),
+                Text(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: contentSize,
+                    color: AppColors.colorNormalGrey,
+                  ),
+                  state.isSearch
+                      ? S.of(context).no_search_body
+                      : S.of(context).body_instruction(title),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 3,
-            ),
-            Text(
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: contentSize,
-                color: AppColors.colorNormalGrey,
-              ),
-              S.of(context).body_instruction(title),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
