@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../chat_list_provider.dart';
-import '../../chat_repository.dart';
-import '../../utils/styles.dart';
-import '../chat/chat_app_bar.dart';
-import 'add_chat_page.dart';
+import '../../model/chat.dart';
+import '../../utils/confirmation_dialog.dart';
+import '../../utils/insets.dart';
+import '../../utils/text_styles.dart';
+import '../add_chat_page/add_chat_page.dart';
 
 class BottomActionSheet extends StatelessWidget {
   const BottomActionSheet({
@@ -33,49 +33,19 @@ class BottomActionSheet extends StatelessWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        text: 'Created: ',
-                        style: DefaultTextStyle.of(context)
-                            .style
-                            .copyWith(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: DateFormat.yMMMd('en_US')
-                                .add_jm()
-                                .format(chat.creationDate),
-                            style: DefaultTextStyle.of(context).style,
-                          ),
-                        ],
-                      ),
+                    _ChatInfoText(
+                      bold: 'Created: ',
+                      remaining: DateFormat.yMMMd('en_US')
+                          .add_jm()
+                          .format(chat.creationDate),
                     ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Active: ',
-                        style: DefaultTextStyle.of(context)
-                            .style
-                            .copyWith(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: _durationScienceLastMessage(),
-                            style: DefaultTextStyle.of(context).style,
-                          ),
-                        ],
-                      ),
+                    _ChatInfoText(
+                      bold: 'Active: ',
+                      remaining: _durationScienceLastMessage(),
                     ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Messages: ',
-                        style: DefaultTextStyle.of(context)
-                            .style
-                            .copyWith(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: chat.messages.length.toString(),
-                            style: DefaultTextStyle.of(context).style,
-                          ),
-                        ],
-                      ),
+                    _ChatInfoText(
+                      bold: 'Messages: ',
+                      remaining: chat.messages.length.toString(),
                     ),
                   ],
                 ),
@@ -105,10 +75,7 @@ class BottomActionSheet extends StatelessWidget {
             ListTile(
               title: Text(
                 'Delete',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(color: Colors.red),
+                style: TextStyles.bodyRed(context),
               ),
               leading: const Icon(
                 Icons.delete,
@@ -153,46 +120,29 @@ class BottomActionSheet extends StatelessWidget {
   }
 }
 
-class FloatingModal extends StatelessWidget {
-  final Widget child;
-  final Color? backgroundColor;
+class _ChatInfoText extends StatelessWidget {
+  const _ChatInfoText({
+    super.key,
+    required this.bold,
+    required this.remaining,
+  });
 
-  const FloatingModal({
-    Key? key,
-    required this.child,
-    this.backgroundColor,
-  }) : super(key: key);
+  final String bold;
+  final String remaining;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(Insets.large),
-        child: Material(
-          color: backgroundColor,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(Radius.large),
-          child: child,
-        ),
+    return RichText(
+      text: TextSpan(
+        text: bold,
+        style: TextStyles.defaultBold(context),
+        children: [
+          TextSpan(
+            text: remaining,
+            style: TextStyles.defaultStyle(context),
+          ),
+        ],
       ),
     );
   }
-}
-
-Future<T> showFloatingModalBottomSheet<T>({
-  required BuildContext context,
-  required WidgetBuilder builder,
-  Color? backgroundColor,
-}) async {
-  final result = await showCustomModalBottomSheet(
-      context: context,
-      builder: builder,
-      containerWidget: (_, animation, child) {
-        return FloatingModal(
-          child: child,
-        );
-      },
-      expand: false);
-
-  return result;
 }

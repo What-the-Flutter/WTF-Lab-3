@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'chat_repository.dart';
+import 'model/chat.dart';
 
 class ChatListProvider extends ChangeNotifier {
-  final _repository = ChatRepository.get();
+  final ChatRepository _repository = ChatRepository.get();
 
   ChatRepository get repository => _repository;
 

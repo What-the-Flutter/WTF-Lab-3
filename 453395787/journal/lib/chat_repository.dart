@@ -1,12 +1,11 @@
-import 'dart:math';
-
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
-import 'utils/extensions.dart';
+import 'model/chat.dart';
+import 'model/message.dart';
 
 class ChatRepository {
-  static final _instance = ChatRepository._internal();
+  static final ChatRepository _instance = ChatRepository._internal();
 
   factory ChatRepository.get() => _instance;
 
@@ -103,87 +102,5 @@ class ChatRepository {
       );
     }
     return chats;
-  }
-}
-
-class Chat {
-  final int id;
-  final String name;
-  final IconData icon;
-  final DateTime creationDate;
-  final bool isPinned;
-  final IList<Message> messages;
-
-  Chat({
-    required this.id,
-    required this.name,
-    required this.icon,
-    bool? isPinned,
-    DateTime? creationDate,
-    required this.messages,
-  })  : isPinned = isPinned ?? false,
-        creationDate = creationDate ?? DateTime.now();
-
-  Message? get lastMessage => messages.isEmpty ? null : messages.first;
-
-  Chat copyWith({
-    int? id,
-    String? name,
-    IconData? icon,
-    IList<Message>? messages,
-    bool? isPinned,
-    DateTime? creationDate,
-  }) {
-    return Chat(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      icon: icon ?? this.icon,
-      messages: messages ?? this.messages,
-      isPinned: isPinned ?? this.isPinned,
-      creationDate: creationDate ?? this.creationDate,
-    );
-  }
-}
-
-class Message {
-  final int id;
-  final DateTime dateTime;
-  final String text;
-  final IList<String> images;
-  final IList<String> tags;
-  final bool isFavorite;
-
-  Message({
-    int? id,
-    DateTime? dateTime,
-    this.text = '',
-    IList<String>? images,
-    IList<String>? tags,
-    this.isFavorite = false,
-  })  : id = id ?? Random().nextInt(1000),
-        images = images ?? <String>[].lock,
-        tags = tags ?? <String>[].lock,
-        dateTime = dateTime ?? DateTime.now();
-
-  String get time => dateTime.formatTime;
-  bool get hasImages => images.isNotEmpty;
-  bool get hasSingleImage => images.length == 1;
-
-  Message copyWith({
-    int? id,
-    DateTime? dateTime,
-    String? text,
-    IList<String>? images,
-    IList<String>? tags,
-    bool? isFavorite,
-  }) {
-    return Message(
-      id: id ?? this.id,
-      dateTime: dateTime ?? this.dateTime,
-      text: text ?? this.text,
-      images: images ?? this.images,
-      tags: tags ?? this.tags,
-      isFavorite: isFavorite ?? this.isFavorite,
-    );
   }
 }

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'preferences.dart';
 
 class AppTheme extends StatefulWidget {
-  final Widget child;
-
   AppTheme({
     super.key,
     required this.child,
   });
 
-  static final colors = <Color>[
+  final Widget child;
+
+  static const List<Color> colors = [
     Colors.pink,
     Colors.red,
     Colors.deepOrange,
@@ -67,13 +67,13 @@ class _AppThemeState extends State<AppTheme> {
 }
 
 class ThemeChanger extends InheritedWidget {
-  final _AppThemeState appTheme;
-
   ThemeChanger({
     super.key,
     required super.child,
     required this.appTheme,
   });
+
+  final _AppThemeState appTheme;
 
   static ThemeChanger of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<ThemeChanger>()!;

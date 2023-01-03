@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
-import '../utils/styles.dart';
+import '../utils/floating_bottom_sheet.dart';
+import '../utils/insets.dart';
+import '../utils/radius.dart';
 import '../utils/theme.dart';
-import 'all_chats/add_chat_page.dart';
-import 'all_chats/bottom_action_sheet.dart';
+import 'add_chat_page/add_chat_page.dart';
 import 'all_chats/chat_list.dart';
 import 'choose_color_page.dart';
 import 'empty_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({
+    super.key,
+    required this.title,
+  });
 
   final String title;
 

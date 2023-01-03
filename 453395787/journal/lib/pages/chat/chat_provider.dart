@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../chat_list_provider.dart';
-import '../../chat_repository.dart';
+import '../../model/chat.dart';
+import '../../model/message.dart';
 import '../../utils/extensions.dart';
 
 class ChatProvider extends ChangeNotifier {
@@ -16,6 +17,7 @@ class ChatProvider extends ChangeNotifier {
 
   final ChatListProvider chatListProvider;
   final int chatId;
+
   Chat get chat => chatListProvider.findById(chatId);
   final _selected = <int>{};
   var _message = Message();

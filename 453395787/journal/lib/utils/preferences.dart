@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemePreferences {
-  static final _instance = ThemePreferences._();
+  static final ThemePreferences _instance = ThemePreferences._internal();
 
-  static late SharedPreferences _prefs;
-  final _colorKey = 'themeColor';
-  final _isDarkModeKey = 'isDarkMode';
-
-  ThemePreferences._();
+  ThemePreferences._internal();
 
   factory ThemePreferences.get() => _instance;
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
+
+  static late SharedPreferences _prefs;
+  static const String _colorKey = 'themeColor';
+  static const String _isDarkModeKey = 'isDarkMode';
 
   Color get color {
     final colorCode = _prefs.getInt(_colorKey);

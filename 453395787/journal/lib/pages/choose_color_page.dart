@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../chat_repository.dart';
-import '../utils/styles.dart';
+import '../model/message.dart';
+import '../utils/insets.dart';
+import '../utils/radius.dart';
 import '../utils/theme.dart';
-import 'chat/chat_message_list.dart';
+import 'chat/message_list/items/message_item.dart';
 
 class ChooseColorSheet extends StatefulWidget {
-  ChooseColorSheet({
-    super.key,
-  });
+  ChooseColorSheet({super.key});
 
   @override
   State<ChooseColorSheet> createState() => _ChooseColorSheetState();
@@ -31,16 +30,12 @@ class _ChooseColorSheetState extends State<ChooseColorSheet> {
                 message: Message(
                   text: 'Some long example message',
                 ),
-                onTap: (_, __) {},
-                onLongPress: (_, __) {},
-                isSelected: false,
               ),
               MessageItem(
                 message: Message(
-                    text: 'Some selected and favorite message',
-                    isFavorite: true),
-                onTap: (_, __) {},
-                onLongPress: (_, __) {},
+                  text: 'Some selected and favorite message',
+                  isFavorite: true,
+                ),
                 isSelected: true,
               ),
               GridView.builder(

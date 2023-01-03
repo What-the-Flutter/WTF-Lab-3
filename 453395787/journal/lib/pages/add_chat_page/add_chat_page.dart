@@ -5,35 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../chat_list_provider.dart';
-import '../../chat_repository.dart';
-import '../../utils/styles.dart';
+import '../../model/chat.dart';
+import '../../utils/insets.dart';
+
+part 'selectable_icon.dart';
 
 class AddChatPage extends StatefulWidget {
-  final Chat? forEdit;
+  const AddChatPage({
+    super.key,
+    this.forEdit,
+  });
 
-  const AddChatPage({super.key, this.forEdit});
+  final Chat? forEdit;
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
 }
 
 class _AddChatPageState extends State<AddChatPage> {
-  final _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
   int? _selectedIcon;
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.forEdit != null) {
-      _textEditingController.text = widget.forEdit!.name;
-      _selectedIcon = _icons.indexOf(widget.forEdit!.icon);
-    }
-  }
-
-  bool get canBeAdded =>
-      _textEditingController.text.isNotEmpty && _selectedIcon != null;
-
-  final _icons = <IconData>[
+  static const List<IconData> _icons = [
     Icons.notes,
     Icons.work_outline,
     Icons.featured_play_list_outlined,
@@ -81,6 +74,24 @@ class _AddChatPageState extends State<AddChatPage> {
     Icons.all_inclusive_outlined,
   ];
 
+  bool get canBeAdded =>
+      _textEditingController.text.isNotEmpty && _selectedIcon != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.forEdit != null) {
+      _textEditingController.text = widget.forEdit!.name;
+      _selectedIcon = _icons.indexOf(widget.forEdit!.icon);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _textEditingController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +127,7 @@ class _AddChatPageState extends State<AddChatPage> {
                 mainAxisSpacing: Insets.medium,
                 crossAxisSpacing: Insets.medium,
               ),
-              itemBuilder: ((context, index) {
+              itemBuilder: (context, index) {
                 return _SelectableIcon(
                   index: index,
                   icon: _icons[index],
@@ -133,7 +144,7 @@ class _AddChatPageState extends State<AddChatPage> {
                     }
                   },
                 );
-              }),
+              },
             ),
           ),
         ],
@@ -164,47 +175,6 @@ class _AddChatPageState extends State<AddChatPage> {
               },
             )
           : null,
-    );
-  }
-}
-
-class _SelectableIcon extends StatefulWidget {
-  final int index;
-  final IconData icon;
-  final bool isSelected;
-  final void Function(bool isSelected, int index) onTap;
-
-  const _SelectableIcon({
-    super.key,
-    required this.index,
-    required this.isSelected,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  State<_SelectableIcon> createState() => _SelectableIconState();
-}
-
-class _SelectableIconState extends State<_SelectableIcon> {
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: widget.isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
-            : null,
-        shape: BoxShape.circle,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(50),
-        onTap: () {
-          widget.onTap(widget.isSelected, widget.index);
-        },
-        child: Icon(
-          widget.icon,
-        ),
-      ),
     );
   }
 }

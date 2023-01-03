@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../chat_list_provider.dart';
-import '../../chat_repository.dart';
-import '../../utils/styles.dart';
+import '../../model/chat.dart';
+import '../../utils/floating_bottom_sheet.dart';
+import '../../utils/insets.dart';
+import '../../utils/radius.dart';
+import '../../utils/text_styles.dart';
 import '../chat/chat_page.dart';
 import 'bottom_action_sheet.dart';
 
 class ChatList extends StatelessWidget {
-  ChatList({Key? key}) : super(key: key);
+  ChatList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +27,12 @@ class ChatList extends StatelessWidget {
 }
 
 class ChatItem extends StatelessWidget {
-  final Chat chat;
-
   const ChatItem({
+    super.key,
     required this.chat,
-    Key? key,
-  }) : super(key: key);
+  });
+
+  final Chat chat;
 
   @override
   Widget build(BuildContext context) {
@@ -87,17 +90,13 @@ class ChatItem extends StatelessWidget {
                             children: [
                               Text(
                                 chat.name,
-                                style: DefaultTextStyle.of(context)
-                                    .style
-                                    .copyWith(fontSize: 18),
+                                style: TextStyles.defaultMedium(context),
                               ),
                               Text(
                                 chat.lastMessage != null
                                     ? chat.lastMessage!.time
                                     : '',
-                                style: DefaultTextStyle.of(context)
-                                    .style
-                                    .copyWith(color: Colors.grey),
+                                style: TextStyles.defaultGrey(context),
                               ),
                             ],
                           ),
@@ -111,9 +110,7 @@ class ChatItem extends StatelessWidget {
                                       ? chat.lastMessage!.text
                                       : 'Write your first message!',
                                   textAlign: TextAlign.start,
-                                  style: DefaultTextStyle.of(context)
-                                      .style
-                                      .copyWith(color: Colors.grey),
+                                  style: TextStyles.defaultGrey(context),
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: true,
                                   maxLines: 1,
