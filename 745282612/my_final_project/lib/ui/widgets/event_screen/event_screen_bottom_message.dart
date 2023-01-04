@@ -18,8 +18,7 @@ class EventScreenBottomMessage extends StatefulWidget {
   });
 
   @override
-  State<EventScreenBottomMessage> createState() =>
-      _EventScreenBottomMessageState();
+  State<EventScreenBottomMessage> createState() => _EventScreenBottomMessageState();
 }
 
 class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
@@ -32,9 +31,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     } else if (widget.isCamera) {
       _showMyDialog('recipient');
     } else {
-      context
-          .read<EventCubit>()
-          .addEvent(content: widget.controller.text, type: 'recipient');
+      context.read<EventCubit>().addEvent(content: widget.controller.text, type: 'recipient');
       widget.controller.clear();
     }
   }
@@ -48,9 +45,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     } else if (widget.isCamera) {
       _showMyDialog('sender');
     } else {
-      context
-          .read<EventCubit>()
-          .addEvent(content: widget.controller.text, type: 'sender');
+      context.read<EventCubit>().addEvent(content: widget.controller.text, type: 'sender');
       widget.controller.clear();
     }
   }
@@ -99,18 +94,15 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                             itemBuilder: (context, index) {
                               final items = AppSection.listSection[index];
                               return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
                                   children: [
                                     TextButton(
                                       onPressed: () {
-                                        context
-                                            .read<EventCubit>()
-                                            .changeSectionIcon(
-                                                icon: items.iconSection,
-                                                sectionTitle:
-                                                    items.titleSection);
+                                        context.read<EventCubit>().changeSectionIcon(
+                                              icon: items.iconSection,
+                                              sectionTitle: items.titleSection,
+                                            );
                                       },
                                       child: CircleAvatar(
                                         backgroundColor: theme
@@ -132,21 +124,16 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () {
-                          context.read<EventCubit>().changeSection();
-                        },
+                        onPressed: () => context.read<EventCubit>().changeSection(),
                         child: Icon(
                           sectionIcon,
                           size: 30,
-                          color:
-                              theme ? AppColors.colorTurquoise : Colors.white,
+                          color: theme ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                       Expanded(
                         child: TextField(
-                          controller: editMessage != ''
-                              ? editController
-                              : widget.controller,
+                          controller: editMessage != '' ? editController : widget.controller,
                           decoration: const InputDecoration(
                             filled: true,
                             border: InputBorder.none,
@@ -170,8 +157,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                   ? Icons.camera_enhance
                                   : Icons.send,
                           size: 30,
-                          color:
-                              theme ? AppColors.colorTurquoise : Colors.white,
+                          color: theme ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                     ],

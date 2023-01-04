@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -8,7 +9,7 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  EventCubit() : super(EventState(listEvent: [], listSearch: []));
+  EventCubit() : super(EventState(listEvent: []));
 
   void initializer(List<Event> event) {
     emit(state.copyWith(listEvent: event));
@@ -20,7 +21,9 @@ class EventCubit extends Cubit<EventState> {
   }) {
     final selectedIcon = state.sectionIcon;
     final sectionTitle = state.sectionTitle;
+    final newListEvent = state.listEvent;
     final event = Event(
+      id: state.listEvent.length,
       messageContent: content,
       messageType: type,
       messageTime: DateTime.now(),
@@ -29,7 +32,6 @@ class EventCubit extends Cubit<EventState> {
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
       sectionTitle: sectionTitle != 'Cancel' ? sectionTitle : null,
     );
-    final newListEvent = state.listEvent;
     newListEvent.insert(
       0,
       event,
@@ -70,15 +72,16 @@ class EventCubit extends Cubit<EventState> {
     changeSelected();
   }
 
-  void changeSelectedItem(int index) {
+  void changeSelectedItem(int id) {
     final newlistEvent = state.listEvent;
-    final event = state.listEvent[index];
-    newlistEvent[index] =
-        event.copyWith(isSelected: !newlistEvent[index].isSelected);
-    if (newlistEvent[index].messageImage != null) {
+    final indexEvent = newlistEvent.indexWhere((element) => element.id == id);
+    final event = state.listEvent.firstWhere((element) => element.id == id);
+    newlistEvent[indexEvent] = event.copyWith(isSelected: !newlistEvent[indexEvent].isSelected);
+    if (newlistEvent[indexEvent].messageImage != null) {
       emit(state.copyWith(isPicter: !state.isPicter));
     }
     emit(state.copyWith(listEvent: newlistEvent));
+    _changeCountSelected();
   }
 
   void addPicterMessage({
@@ -87,6 +90,7 @@ class EventCubit extends Cubit<EventState> {
   }) {
     if (pickedFile != null) {
       final event = Event(
+        id: state.listEvent.length,
         messageContent: 'Image Entry',
         messageType: type,
         messageTime: DateTime.now(),
@@ -105,15 +109,15 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
-  void deleteEvent([int index = -1]) {
+  void deleteEvent([int id = -1]) {
     final listEvent = state.listEvent;
-    if (index == -1) {
-      listEvent.removeWhere((element) => element.isSelected);
-      emit(state.copyWith(listEvent: listEvent));
-      changeSelected();
+    if (id != -1) {
+      listEvent.removeWhere((element) => element.id == id);
     } else {
-      listEvent.removeAt(index);
+      listEvent.removeWhere((element) => element.isSelected);
     }
+    emit(state.copyWith(listEvent: listEvent));
+    changeSelected();
   }
 
   void changeEditText() {
@@ -143,7 +147,7 @@ class EventCubit extends Cubit<EventState> {
 
   void changeSearch() {
     if (state.isSearch) {
-      emit(state.copyWith(isSearch: false));
+      emit(state.copyWith(isSearch: false, searchText: ''));
     } else {
       emit(state.copyWith(isSearch: true));
     }
@@ -153,25 +157,7 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(isSection: !state.isSection));
   }
 
-  void search(String text) {
-    state.listSearch.clear();
-    final newListSearch = state.listEvent
-        .where((element) =>
-            element.messageContent.toLowerCase().contains(text.toLowerCase()))
-        .toList();
-    // for (var i = 0; i < state.listEvent.length; i++) {
-    //   if (state.listEvent
-    //       .elementAt(i)
-    //       .messageContent
-    //       .toLowerCase()
-    //       .contains(text.toLowerCase())) {
-    //     state.listSearch.add(state.listEvent.elementAt(i));
-    //   }
-    // }
-    emit(state.copyWith(listSearch: newListSearch));
-  }
-
-  void changeCountSelected() {
+  void _changeCountSelected() {
     final listElement = state.listEvent;
     final listSelected = listElement.where((element) => element.isSelected);
     emit(state.copyWith(countSelected: listSelected.length));
@@ -198,5 +184,27 @@ class EventCubit extends Cubit<EventState> {
       ));
       changeSection();
     }
+  }
+
+  void copyClipboard() async {
+    final event = state.listEvent.firstWhere((element) => element.isSelected);
+    final copyText = event.messageContent;
+    await Clipboard.setData(
+      ClipboardData(
+        text: copyText,
+      ),
+    );
+    changeSelected();
+  }
+
+  List<Event> searchListEvent() {
+    final list = state.listEvent
+        .where((element) => element.messageContent.toLowerCase().contains(state.searchText))
+        .toList();
+    return list;
+  }
+
+  void searchText(String text) {
+    emit(state.copyWith(searchText: text));
   }
 }

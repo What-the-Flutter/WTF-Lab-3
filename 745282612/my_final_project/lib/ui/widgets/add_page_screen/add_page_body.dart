@@ -56,14 +56,11 @@ class _AddPageBodyState extends State<AddPageBody> {
                       child: Container(
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color:
-                              AppColors.colorNormalGrey, // inner circle color
+                          color: AppColors.colorNormalGrey,
                         ),
                         child: IconButton(
                           icon: element,
-                          onPressed: () => context
-                              .read<HomeCubit>()
-                              .changeSelectedIcon(element),
+                          onPressed: () => context.read<HomeCubit>().changeSelectedIcon(element),
                           color: widget.selectedIcon == element
                               ? AppColors.colorTurquoise
                               : Colors.white,

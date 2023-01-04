@@ -39,6 +39,7 @@ class _EventScreenBodyState extends State<EventScreenBody> {
   @override
   void dispose() {
     controller.removeListener(_onInputText);
+    controller.dispose();
     super.dispose();
   }
 
@@ -61,9 +62,7 @@ class _EventScreenBodyState extends State<EventScreenBody> {
             ? Instruction(title: widget.title)
             : EventScreenListMessage(
                 listMessage: widget.isFavorite
-                    ? widget.listEvent
-                        .where((element) => element.isFavorit)
-                        .toList()
+                    ? widget.listEvent.where((element) => element.isFavorit).toList()
                     : widget.listEvent,
                 isSelected: widget.isSelected,
                 isSearch: widget.isSearch,

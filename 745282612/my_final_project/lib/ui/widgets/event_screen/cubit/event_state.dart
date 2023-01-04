@@ -4,7 +4,6 @@ import 'package:my_final_project/entities/event.dart';
 
 class EventState {
   final List<Event> listEvent;
-  final List<Event> listSearch;
   final bool isFavorite;
   final bool isSelected;
   final bool isEdit;
@@ -15,6 +14,7 @@ class EventState {
   final bool isSection;
   final IconData sectionIcon;
   final String sectionTitle;
+  final String searchText;
 
   EventState({
     required this.listEvent,
@@ -26,16 +26,16 @@ class EventState {
     this.isSearch = false,
     this.countSelected = 0,
     this.isSection = false,
-    required this.listSearch,
     this.sectionIcon = Icons.bubble_chart,
     this.sectionTitle = 'Cancel',
+    this.searchText = '',
   });
 
   EventState copyWith({
+    String? searchText,
     bool? isSelected,
     bool? isFavorite,
     List<Event>? listEvent,
-    List<Event>? listSearch,
     bool? isEdit,
     String? editText,
     bool? isPicter,
@@ -48,7 +48,6 @@ class EventState {
     return EventState(
       isSelected: isSelected ?? this.isSelected,
       listEvent: listEvent ?? this.listEvent,
-      listSearch: listSearch ?? this.listSearch,
       isFavorite: isFavorite ?? this.isFavorite,
       isEdit: isEdit ?? this.isEdit,
       editText: editText ?? this.editText,
@@ -58,6 +57,7 @@ class EventState {
       isSection: isSection ?? this.isSection,
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
+      searchText: searchText ?? this.searchText,
     );
   }
 }

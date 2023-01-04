@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_final_project/entities/event.dart';
 
+import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
@@ -24,14 +24,17 @@ class _EventScreenModalState extends State<EventScreenModal> {
   String selectedRadioTile = '';
 
   void setSelectedRadioTile(String val) {
-    setState(() {
-      selectedRadioTile = val;
-    });
+    setState(
+      () {
+        selectedRadioTile = val;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).brightness == Brightness.light;
+
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return AlertDialog(
@@ -47,9 +50,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                   value: element.title,
                   groupValue: selectedRadioTile,
                   title: Text(element.title),
-                  onChanged: (val) {
-                    setSelectedRadioTile(val!);
-                  },
+                  onChanged: (val) => setSelectedRadioTile(val!),
                 );
               },
             ),
@@ -57,9 +58,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
           actions: [
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: theme
-                    ? AppColors.colorLisgtTurquoise
-                    : AppColors.colorLightGrey,
+                backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -74,9 +73,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: theme
-                    ? AppColors.colorLisgtTurquoise
-                    : AppColors.colorLightGrey,
+                backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -88,8 +85,9 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 ),
               ),
               onPressed: () {
-                context.read<HomeCubit>().repetEvent(
-                    listEvent: widget.listEvent, title: selectedRadioTile);
+                context
+                    .read<HomeCubit>()
+                    .repetEvent(listEvent: widget.listEvent, title: selectedRadioTile);
                 Navigator.of(context).pop();
                 context.read<EventCubit>().deleteEvent();
               },

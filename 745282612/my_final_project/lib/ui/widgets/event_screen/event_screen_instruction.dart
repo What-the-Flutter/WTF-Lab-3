@@ -22,7 +22,7 @@ class Instruction extends StatelessWidget {
           builder: (context, constraints) {
             if (constraints.maxWidth > 600) {
               return EventScreenInstruction(
-                heightContrainer: 380,
+                heightContrainer: state.isSearch ? 190 : 380,
                 headerSize: 40,
                 contentSize: 20,
                 title: title,

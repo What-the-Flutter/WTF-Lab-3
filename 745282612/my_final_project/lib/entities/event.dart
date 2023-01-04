@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Event {
+  final int id;
   final bool isFavorit;
   final bool isSelected;
   final String messageContent;
@@ -11,6 +12,7 @@ class Event {
   final String? sectionTitle;
 
   Event({
+    required this.id,
     required this.messageContent,
     required this.messageType,
     required this.messageTime,
@@ -22,6 +24,7 @@ class Event {
   });
 
   Event copyWith({
+    int? id,
     bool? isFavorit,
     bool? isSelected,
     String? messageContent,
@@ -32,6 +35,7 @@ class Event {
     String? sectionTitle,
   }) {
     return Event(
+      id: id ?? this.id,
       isFavorit: isFavorit ?? this.isFavorit,
       isSelected: isSelected ?? this.isSelected,
       messageContent: messageContent ?? this.messageContent,

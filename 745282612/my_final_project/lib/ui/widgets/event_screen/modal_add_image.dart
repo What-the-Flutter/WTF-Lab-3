@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:image_picker/image_picker.dart';
+
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
@@ -36,9 +36,10 @@ class MyDialog extends StatelessWidget {
             final pickedFile = await ImagePicker().pickImage(
               source: ImageSource.camera,
             );
-            context
-                .read<EventCubit>()
-                .addPicterMessage(pickedFile: pickedFile, type: type);
+            context.read<EventCubit>().addPicterMessage(
+                  pickedFile: pickedFile,
+                  type: type,
+                );
             Navigator.of(context).pop();
           },
         ),
@@ -51,9 +52,10 @@ class MyDialog extends StatelessWidget {
             final pickedFile = await ImagePicker().pickImage(
               source: ImageSource.gallery,
             );
-            context
-                .read<EventCubit>()
-                .addPicterMessage(pickedFile: pickedFile, type: type);
+            context.read<EventCubit>().addPicterMessage(
+                  pickedFile: pickedFile,
+                  type: type,
+                );
             Navigator.of(context).pop();
           },
         ),

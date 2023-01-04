@@ -19,6 +19,16 @@ class EventScreenListMessage extends StatelessWidget {
     required this.isSearch,
   });
 
+  double sizePaddingBottom(BuildContext context, EventState state) {
+    if (state.isSection) {
+      return MediaQuery.of(context).size.height * 0.2;
+    } else if (state.isSearch) {
+      return MediaQuery.of(context).size.height * 0;
+    } else {
+      return MediaQuery.of(context).size.height * 0.1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).brightness == Brightness.light;
@@ -26,10 +36,7 @@ class EventScreenListMessage extends StatelessWidget {
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
         return ListView.builder(
-          padding: EdgeInsets.only(
-              bottom: state.isSection
-                  ? MediaQuery.of(context).size.height * 0.2
-                  : MediaQuery.of(context).size.height * 0.1),
+          padding: EdgeInsets.only(bottom: sizePaddingBottom(context, state)),
           reverse: true,
           itemCount: listMessage.length,
           itemBuilder: (context, index) {
@@ -38,36 +45,34 @@ class EventScreenListMessage extends StatelessWidget {
               key: UniqueKey(),
               onDismissed: (direction) {
                 if (direction == DismissDirection.endToStart) {
-                  context.read<EventCubit>().deleteEvent(index);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
+                  context.read<EventCubit>().deleteEvent(indexMessage.id);
+                  context.read<EventCubit>().changeSelected();
                   final snackBar = const SnackBar(
                     content: Text('Delete element!'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 if (direction == DismissDirection.startToEnd) {
-                  context.read<EventCubit>().changeSelectedItem(index);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                   context.read<EventCubit>().changeSelected();
-                  context.read<EventCubit>().changeCountSelected();
                   context.read<EventCubit>().changeEditText();
                 }
               },
               child: GestureDetector(
                 onLongPress: () {
                   if (!isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(index);
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                     context.read<EventCubit>().changeSelected();
-                    context.read<EventCubit>().changeCountSelected();
                   }
                 },
                 onTap: () {
                   if (isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(index);
-                    context.read<EventCubit>().changeCountSelected();
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                   }
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                   alignment: (indexMessage.messageType == 'sender'
                       ? Alignment.bottomLeft
                       : Alignment.bottomRight),
@@ -114,8 +119,7 @@ class EventScreenListMessage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                DateFormat('hh:mm a')
-                                    .format(indexMessage.messageTime),
+                                DateFormat('hh:mm a').format(indexMessage.messageTime),
                                 style: const TextStyle(
                                   color: AppColors.colorNormalGrey,
                                 ),
