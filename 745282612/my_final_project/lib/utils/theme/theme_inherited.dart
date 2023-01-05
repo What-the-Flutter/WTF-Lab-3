@@ -46,6 +46,8 @@ class CustomThemeState extends State<CustomTheme> {
     );
   }
 
+  bool isBrightnessLight() => themeData == AppTheme.lightTheme;
+
   @override
   Widget build(BuildContext context) {
     return CustomThemeInherited(

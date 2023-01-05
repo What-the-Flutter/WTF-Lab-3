@@ -7,6 +7,7 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart'
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenModal extends StatefulWidget {
   final List<Event> listEvent;
@@ -33,7 +34,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -69,7 +70,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                   color: theme ? Colors.black : Colors.white,
                 ),
               ),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: Navigator.of(context).pop,
             ),
             TextButton(
               style: TextButton.styleFrom(

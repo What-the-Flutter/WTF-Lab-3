@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_app_bar.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_body.dart';
 
@@ -38,23 +39,22 @@ class _EventScreenState extends State<EventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        final stateEvent = context.watch<EventCubit>().state;
+    return BlocBuilder<EventCubit, EventState>(
+      builder: (context, state) {
         final listSearch = context.read<EventCubit>().searchListEvent();
         return Scaffold(
           appBar: EventScreenAppBar(
-            eventState: stateEvent,
+            eventState: state,
             listEvent: widget.listEvent,
             title: widget.title,
             controller: controllerSearch,
           ),
           body: EventScreenBody(
-            isFavorite: stateEvent.isFavorite,
-            isSelected: stateEvent.isSelected,
-            listEvent: stateEvent.isSearch ? listSearch : stateEvent.listEvent,
+            isFavorite: state.isFavorite,
+            isSelected: state.isSelected,
+            listEvent: state.isSearch ? listSearch : state.listEvent,
             title: widget.title,
-            isSearch: stateEvent.isSearch,
+            isSearch: state.isSearch,
           ),
         );
       },

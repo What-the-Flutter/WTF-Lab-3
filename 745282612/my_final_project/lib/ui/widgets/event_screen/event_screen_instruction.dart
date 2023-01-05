@@ -5,6 +5,7 @@ import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class Instruction extends StatelessWidget {
   final String title;
@@ -58,12 +59,14 @@ class EventScreenInstruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
           child: Container(
-            color: AppColors.colorLisgtTurquoise,
+            color: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
             height: heightContrainer,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(

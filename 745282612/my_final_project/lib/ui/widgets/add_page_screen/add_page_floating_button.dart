@@ -23,6 +23,7 @@ class AddPageFloatingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final result = controller.text.isNotEmpty && selected != null;
+
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return FloatingActionButton(
@@ -30,11 +31,10 @@ class AddPageFloatingButton extends StatelessWidget {
           onPressed: () {
             if (result) {
               editMode
-                  ? context.read<HomeCubit>().editChat(
-                      icon: selected!, title: controller.text, index: editIndex)
-                  : context
+                  ? context
                       .read<HomeCubit>()
-                      .addChat(icon: selected!, title: controller.text);
+                      .editChat(icon: selected!, title: controller.text, index: editIndex)
+                  : context.read<HomeCubit>().addChat(icon: selected!, title: controller.text);
             }
             Navigator.of(context).pop();
           },

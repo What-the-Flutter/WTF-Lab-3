@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class InfoPage extends StatelessWidget {
   final Icon icon;
@@ -20,7 +21,7 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return AlertDialog(
       title: Row(
@@ -61,9 +62,7 @@ class InfoPage extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: theme
-                ? AppColors.colorLisgtTurquoise
-                : AppColors.colorLightGrey,
+            backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -74,7 +73,7 @@ class InfoPage extends StatelessWidget {
               color: theme ? Colors.black : Colors.white,
             ),
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: Navigator.of(context).pop,
         ),
       ],
     );

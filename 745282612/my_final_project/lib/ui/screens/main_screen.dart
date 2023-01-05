@@ -15,14 +15,14 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MenuCubit, MenuState>(
       builder: (context, state) {
-        final indexing = state.index;
+        final changeIndex = context.read<MenuCubit>().changeIndex;
         return Scaffold(
-          appBar: MainScreenAppBar(index: indexing),
-          body: MainScreenBody(index: indexing),
+          appBar: MainScreenAppBar(index: state.index),
+          body: MainScreenBody(index: state.index),
           floatingActionButton: const MainScreenFloatingButton(),
           bottomNavigationBar: MainScreenBottomNavigation(
-            index: indexing,
-            selected: context.read<MenuCubit>().changeIndex,
+            index: state.index,
+            selected: changeIndex,
           ),
         );
       },

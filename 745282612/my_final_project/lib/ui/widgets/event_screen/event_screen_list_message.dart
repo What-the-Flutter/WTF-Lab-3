@@ -6,6 +6,7 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenListMessage extends StatelessWidget {
   final List<Event> listMessage;
@@ -31,7 +32,7 @@ class EventScreenListMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {

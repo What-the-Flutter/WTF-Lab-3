@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 import 'package:provider/provider.dart';
 
 class MyDialog extends StatelessWidget {
@@ -17,7 +18,7 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return AlertDialog(
       title: Text(
@@ -64,9 +65,7 @@ class MyDialog extends StatelessWidget {
             Icons.exit_to_app,
             color: theme ? AppColors.colorTurquoise : Colors.white,
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: Navigator.of(context).pop,
         ),
       ],
     );

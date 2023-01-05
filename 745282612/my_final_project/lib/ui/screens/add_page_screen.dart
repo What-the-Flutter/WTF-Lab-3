@@ -55,21 +55,19 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final editMode = state.isEdit;
-        final selectedIcon = state.iconSeleted;
         return Scaffold(
           appBar: AddPageAppBar(
-            status: editMode,
+            status: state.isEdit,
           ),
           body: AddPageBody(
             controller: inputController,
-            selectedIcon: selectedIcon,
+            selectedIcon: state.iconSeleted,
           ),
           floatingActionButton: AddPageFloatingButton(
             status: isStatus,
-            selected: selectedIcon,
+            selected: state.iconSeleted,
             controller: inputController,
-            editMode: editMode,
+            editMode: state.isEdit,
             editIndex: widget.editIndex,
           ),
         );

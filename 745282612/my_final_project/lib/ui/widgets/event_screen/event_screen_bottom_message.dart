@@ -6,6 +6,7 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart'
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 import 'package:my_final_project/utils/constants/app_section.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
@@ -22,6 +23,20 @@ class EventScreenBottomMessage extends StatefulWidget {
 }
 
 class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
+  late final TextEditingController editController;
+
+  @override
+  void initState() {
+    editController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    editController.dispose();
+    super.dispose();
+  }
+
   void eventOnLongPressed({
     required String editMessage,
     required String editText,
@@ -64,12 +79,11 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final editMessage = state.editText;
-        final sectionIcon = state.sectionIcon;
-        late final editController = TextEditingController(text: editMessage);
+        editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
           child: Container(
@@ -124,16 +138,16 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () => context.read<EventCubit>().changeSection(),
+                        onPressed: context.read<EventCubit>().changeSection,
                         child: Icon(
-                          sectionIcon,
+                          state.sectionIcon,
                           size: 30,
                           color: theme ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                       Expanded(
                         child: TextField(
-                          controller: editMessage != '' ? editController : widget.controller,
+                          controller: state.editText != '' ? editController : widget.controller,
                           decoration: const InputDecoration(
                             filled: true,
                             border: InputBorder.none,
@@ -143,15 +157,15 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                       ),
                       TextButton(
                         onLongPress: () => eventOnLongPressed(
-                          editMessage: editMessage,
+                          editMessage: state.editText,
                           editText: editController.text,
                         ),
                         onPressed: () => eventOnPressed(
-                          editMessage: editMessage,
+                          editMessage: state.editText,
                           editText: editController.text,
                         ),
                         child: Icon(
-                          editMessage != ''
+                          state.editText != ''
                               ? Icons.send
                               : widget.isCamera
                                   ? Icons.camera_enhance

@@ -34,6 +34,7 @@ class _AddPageBodyState extends State<AddPageBody> {
             children: [
               TextField(
                 controller: widget.controller,
+                maxLength: 12,
                 decoration: InputDecoration(
                   filled: true,
                   border: InputBorder.none,

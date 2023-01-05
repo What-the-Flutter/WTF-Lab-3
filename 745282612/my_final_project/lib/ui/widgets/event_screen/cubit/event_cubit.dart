@@ -23,7 +23,7 @@ class EventCubit extends Cubit<EventState> {
     final sectionTitle = state.sectionTitle;
     final newListEvent = state.listEvent;
     final event = Event(
-      id: state.listEvent.length,
+      id: UniqueKey().hashCode,
       messageContent: content,
       messageType: type,
       messageTime: DateTime.now(),
@@ -101,10 +101,12 @@ class EventCubit extends Cubit<EventState> {
         isSelected: false,
       );
       final newListEvent = state.listEvent;
+      print(newListEvent == state.listEvent);
       newListEvent.insert(
         0,
         event,
       );
+
       emit(state.copyWith(listEvent: newListEvent));
     }
   }
@@ -117,7 +119,7 @@ class EventCubit extends Cubit<EventState> {
       listEvent.removeWhere((element) => element.isSelected);
     }
     emit(state.copyWith(listEvent: listEvent));
-    changeSelected();
+    // changeSelected();
   }
 
   void changeEditText() {
