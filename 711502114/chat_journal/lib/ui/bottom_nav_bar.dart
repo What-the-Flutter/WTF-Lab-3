@@ -31,7 +31,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    var local = AppLocalizations.of(context);
+    final local = AppLocalizations.of(context);
     return Scaffold(
       body: Center(
         child: _pages[_pageIndex],

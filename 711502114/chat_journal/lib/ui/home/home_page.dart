@@ -18,8 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    var local = AppLocalizations.of(context);
-    var desc = local?.chatDescription ?? '';
+    final local = AppLocalizations.of(context);
+    final desc = local?.chatDescription ?? '';
 
     final _chats = <Chat>[
       Chat(title: 'Travel', description: desc, assetsLink: 'assets/plane.svg'),
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: null,
+            onPressed: () => {},
             tooltip: local?.increaseButtonHint,
             child: const Icon(Icons.add),
           ),
