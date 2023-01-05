@@ -8,6 +8,7 @@ class Chat {
   final bool isPin;
   final List<Event> listEvent;
   final DateTime dateCreate;
+
   Chat({
     required this.icon,
     required this.title,

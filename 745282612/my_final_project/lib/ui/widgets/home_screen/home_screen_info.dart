@@ -74,9 +74,7 @@ class InfoPage extends StatelessWidget {
               color: theme ? Colors.black : Colors.white,
             ),
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ],
     );

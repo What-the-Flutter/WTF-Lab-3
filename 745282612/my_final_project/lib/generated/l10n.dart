@@ -259,6 +259,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Exit`
+  String get exit {
+    return Intl.message(
+      'Exit',
+      name: 'exit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No entries match the given search query. Please try again`
+  String get no_search_body {
+    return Intl.message(
+      'No entries match the given search query. Please try again',
+      name: 'no_search_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No search result available`
+  String get no_search_title {
+    return Intl.message(
+      'No search result available',
+      name: 'no_search_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select the page you want to migrate the selected event to!`
+  String get event_modal_title {
+    return Intl.message(
+      'Select the page you want to migrate the selected event to!',
+      name: 'event_modal_title',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

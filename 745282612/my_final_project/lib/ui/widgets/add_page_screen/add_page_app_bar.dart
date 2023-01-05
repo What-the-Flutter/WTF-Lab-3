@@ -16,9 +16,9 @@ class AddPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: status
-          ? Text(S.of(context).edit_page)
-          : Text(S.of(context).create_page),
+      title: Text(
+        status ? S.of(context).edit_page : S.of(context).create_page,
+      ),
       automaticallyImplyLeading: false,
     );
   }

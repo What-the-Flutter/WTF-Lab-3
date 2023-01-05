@@ -8,8 +8,6 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-  static _HomeScreenState of(BuildContext context) =>
-      context.findAncestorStateOfType<_HomeScreenState>()!;
 }
 
 class _HomeScreenState extends State<HomeScreen> {
