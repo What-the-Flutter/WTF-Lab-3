@@ -1,0 +1,9 @@
+{
+    "homePage": "Home",
+    "dailyPage": "Daily",
+    "timelinePage": "Timeline",
+    "explorePage": "Explore",
+    "bot": "Questionnaire Bot",
+    "chatDescription": "No events. Click to create one.",
+    "increaseButtonHint": "Increment"
+}
