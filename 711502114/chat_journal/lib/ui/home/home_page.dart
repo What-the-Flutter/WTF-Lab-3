@@ -7,6 +7,7 @@ import '../../theme/colors.dart';
 import '../../theme/theme_model.dart';
 import 'chat.dart';
 import 'chat_card.dart';
+import 'messenger_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,10 +22,25 @@ class _HomePageState extends State<HomePage> {
     final local = AppLocalizations.of(context);
     final desc = local?.chatDescription ?? '';
 
-    final _chats = <Chat>[
-      Chat(title: 'Travel', description: desc, assetsLink: 'assets/plane.svg'),
-      Chat(title: 'Family', description: desc, assetsLink: 'assets/sofa.svg'),
-      Chat(title: 'Sports', description: desc, assetsLink: 'assets/gym.svg'),
+    final _chatCards = <ChatCard>[
+      ChatCard(
+        chat: Chat(title: 'Travel', description: desc),
+        assetsLink: 'assets/plane.svg',
+      ),
+      ChatCard(
+        chat: Chat(
+            title: 'Family',
+            description: desc,
+            messages: ['Family is very important!']),
+        assetsLink: 'assets/sofa.svg',
+      ),
+      ChatCard(
+        chat: Chat(
+            title: 'Sports',
+            description: desc,
+            messages: ['I like going', 'to the fucking gym!']),
+        assetsLink: 'assets/gym.svg',
+      ),
     ];
 
     return Consumer<ThemeModel>(
@@ -55,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _createBotBox(context),
                 const SizedBox(height: 5),
-                _createMessagesList(_chats),
+                _createMessagesList(_chatCards),
               ],
             ),
           ),
@@ -100,15 +116,21 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Expanded _createMessagesList(List<Chat> chats) {
+  Expanded _createMessagesList(List<ChatCard> cards) {
     return Expanded(
       child: ListView.separated(
-        itemCount: chats.length,
+        itemCount: cards.length,
         itemBuilder: (context, index) {
           return InkWell(
             hoverColor: hoverElementColor,
-            onTap: () => print('TAP'),
-            child: ChatCard(chat: chats[index]),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => MessengerPage(chat: cards[index].chat),
+                ),
+              );
+            },
+            child: cards[index],
           );
         },
         separatorBuilder: (context, index) {

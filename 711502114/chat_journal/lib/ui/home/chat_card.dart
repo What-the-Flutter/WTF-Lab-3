@@ -8,9 +8,11 @@ class ChatCard extends StatelessWidget {
   const ChatCard({
     Key? key,
     required this.chat,
+    required this.assetsLink,
   }) : super(key: key);
 
   final Chat chat;
+  final String assetsLink;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class ChatCard extends StatelessWidget {
         color: circleMessageColor,
         shape: BoxShape.circle,
       ),
-      child: SvgPicture.asset(chat.assetsLink, color: Colors.white),
+      child: SvgPicture.asset(assetsLink, color: Colors.white),
     );
   }
 
