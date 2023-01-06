@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:my_final_project/utils/constants/app_colors.dart';
 
+enum ThemeGlobalKey { light, dark }
+
 class AppTheme {
   static const floatingStyle = FloatingActionButtonThemeData(
     backgroundColor: AppColors.colorLightYellow,

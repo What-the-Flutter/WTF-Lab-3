@@ -119,7 +119,7 @@ class EventCubit extends Cubit<EventState> {
       listEvent.removeWhere((element) => element.isSelected);
     }
     emit(state.copyWith(listEvent: listEvent));
-    // changeSelected();
+    changeSelected();
   }
 
   void changeEditText() {

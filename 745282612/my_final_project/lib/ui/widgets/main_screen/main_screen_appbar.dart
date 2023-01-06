@@ -36,11 +36,7 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
       actions: [
         IconButton(
           icon: const Icon(Icons.invert_colors),
-          onPressed: () {
-            setState(
-              () => CustomThemeInherited.of(context).changeTheme(),
-            );
-          },
+          onPressed: CustomThemeInherited.of(context).changeTheme,
         ),
       ],
     );
