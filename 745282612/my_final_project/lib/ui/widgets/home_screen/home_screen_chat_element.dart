@@ -33,9 +33,10 @@ class HomeScreenChatElement extends StatelessWidget {
                     return HomeScreenModal(
                       chat: itemChat,
                       index: index,
-                      dateLastEvent: itemChat.listEvent.isEmpty
-                          ? S.of(context).no_event
-                          : DateFormat.yMd().add_jm().format(itemChat.listEvent[0].messageTime),
+                      dateLastEvent: S.of(context).no_event,
+                      // dateLastEvent: itemChat.listEvent!.isEmpty
+                      //     ? S.of(context).no_event
+                      //     : DateFormat.yMd().add_jm().format(itemChat.listEvent![0].messageTime),
                     );
                   },
                 );
@@ -45,14 +46,14 @@ class HomeScreenChatElement extends StatelessWidget {
                   HoverButton(
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => EventScreen(
-                              listEvent: itemChat.listEvent,
-                              title: itemChat.title,
-                            ),
-                          ),
-                        );
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //     builder: (context) => EventScreen(
+                        //       listEvent: itemChat.listEvent!,
+                        //       title: itemChat.title,
+                        //     ),
+                        //   ),
+                        // );
                       },
                       child: ListTile(
                         leading: CircleAvatar(
@@ -80,17 +81,20 @@ class HomeScreenChatElement extends StatelessWidget {
                           ],
                         ),
                         subtitle: Text(
-                          itemChat.listEvent.isEmpty
-                              ? S.of(context).no_event
-                              : itemChat.listEvent[0].messageContent,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          S.of(context).no_event,
                         ),
-                        trailing: itemChat.listEvent.isEmpty
-                            ? const SizedBox()
-                            : Text(
-                                DateFormat('hh:mm a').format(itemChat.listEvent[0].messageTime),
-                              ),
+                        // subtitle: Text(
+                        //   itemChat.listEvent!.isEmpty
+                        //       ? S.of(context).no_event
+                        //       : itemChat.listEvent![0].messageContent,
+                        //   maxLines: 1,
+                        //   overflow: TextOverflow.ellipsis,
+                        // ),
+                        // trailing: itemChat.listEvent!.isEmpty
+                        //     ? const SizedBox()
+                        //     : Text(
+                        //         DateFormat('hh:mm a').format(itemChat.listEvent![0].messageTime),
+                        //       ),
                       ),
                     ),
                   ),

@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
 
+class EventField {
+  static final String id = 'id';
+  static final String messageContent = 'content';
+  static final String messageType = 'type';
+  static final String messageTime = 'timeCreate';
+  static final String favorite = 'favorite';
+  static final String sectionTitle = 'sectionTitle';
+  static final String sectionIcon = 'sectionIcon';
+  static final String messageImage = 'image';
+  static final String chat = 'chat';
+}
+
 class Event {
   final int id;
   final bool isFavorit;
