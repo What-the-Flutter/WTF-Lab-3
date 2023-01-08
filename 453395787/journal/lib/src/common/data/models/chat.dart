@@ -38,5 +38,5 @@ class Chat with _$Chat {
         creationDate: creationDate ?? DateTime.now(),
       );
 
-  Message? get lastMessage => messages.isEmpty ? null : messages.first;
+  Message? get lastMessage => messages.isEmpty ? null : messages.last;
 }

@@ -2,16 +2,19 @@ import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../api/chat_provider_api.dart';
 import 'models/chat.dart';
 import 'models/message.dart';
+import 'models/tag.dart';
 
 class ChatProvider extends ChatProviderApi {
-  final StreamController<List<Chat>> _chatsStream = StreamController.broadcast();
+  final BehaviorSubject<List<Chat>> _chatsStream =
+      BehaviorSubject.seeded(_chats.entries.map((e) => e.value).toList());
 
   @override
-  Stream<List<Chat>> getChats() {
+  ValueStream<List<Chat>> getChats() {
     return _chatsStream.stream;
   }
 
@@ -26,10 +29,10 @@ class ChatProvider extends ChatProviderApi {
     _chats.remove(id);
     _chatsStream.add(_chats.entries.map(((e) => e.value)).toList());
   }
-  
+
   @override
   Future<void> loadData() async {
-    _chatsStream.add(_chats.entries.map(((e) => e.value)).toList());
+    _chatsStream.add(_chats.entries.map(((e) => e.value.copyWith(creationDate: DateTime.now()))).toList());
   }
 }
 
@@ -62,6 +65,11 @@ Map<int, Chat> _chats = {
           id: 4,
           dateTime: DateTime.parse('2022-12-21 17:16:24'),
           text: 'message with chips',
+          tags: IList([
+            const Tag(text: 'done', color: Colors.green),
+            const Tag(text: 'important', color: Colors.orange),
+            const Tag(text: 'work', color: Colors.purple),
+          ]),
         ),
       ],
     ),

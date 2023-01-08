@@ -5,12 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../src/common/utils/floating_bottom_sheet.dart';
 import '../src/common/utils/insets.dart';
 import '../src/common/utils/radius.dart';
-import '../src/features/chat_adding_editing/view/manage_chat_page.dart';
-import '../src/features/chats_overview/view/chat_list.dart';
+import '../src/features/chat_adding_editing/chat_adding_editing.dart';
+import '../src/features/chats_overview/chats_overview.dart';
 import '../src/features/empty_page/empty_page.dart';
-import '../src/features/navigation/cubit/navigation_cubit.dart';
-import '../src/features/theme/cubit/theme_cubit.dart';
-import '../src/features/theme/widget/choose_color_page.dart';
+import '../src/features/navigation/navigation.dart';
+import '../src/features/theme/theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -65,12 +64,7 @@ class _HomePageState extends State<HomePage> {
     if (_selectedPage == 0) {
       return FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return const ManageChatPage();
-            }),
-          );
+          context.read<NavigationCubit>().openAddChatPage();
         },
         child: const Icon(Icons.add),
       );
@@ -85,7 +79,10 @@ class _HomePageState extends State<HomePage> {
       listener: (context, state) {
         state.map(
           goTo: (goTo) {
-            context.go(goTo.route);
+            context.go(
+              goTo.route,
+              extra: goTo.extra,
+            );
           },
           back: (back) {
             context.pop();

@@ -1,77 +1,24 @@
 part of 'manage_chat_cubit.dart';
 
-@immutable
-abstract class ManageChatState {
-  const ManageChatState({
-    this.selectedIcon,
-    this.name = '',
-  }) : isFabShown = selectedIcon != null && name != '';
+@freezed
+class ManageChatState with _$ManageChatState {
+  const ManageChatState._();
 
-  final int? selectedIcon;
-  final String name;
-  final bool isFabShown;
-
-  ManageChatState copyWith({
+  const factory ManageChatState.adding({
     int? selectedIcon,
-    String? name,
-  });
-}
+    @Default('') String name,
+  }) = ManageChatAdding;
 
-class ManageChatAdding extends ManageChatState {
-  const ManageChatAdding({
-    super.selectedIcon,
-    super.name,
-  });
-
-  @override
-  ManageChatState copyWith({
+  const factory ManageChatState.editing({
     int? selectedIcon,
-    String? name,
-    bool? isFabShown,
-  }) {
-    return ManageChatAdding(
-      selectedIcon: selectedIcon ?? super.selectedIcon,
-      name: name ?? super.name,
-    );
-  }
-}
+    @Default('') String name,
+    required Chat chat,
+  }) = ManageChatEditing;
 
-class ManageChatEditing extends ManageChatState {
-  final Chat chat;
-
-  ManageChatEditing({
-    required this.chat,
+  const factory ManageChatState.closed({
     int? selectedIcon,
-    String? name,
-  }) : super(
-          selectedIcon: selectedIcon ?? ChatIcons.icons.indexOf(chat.icon),
-          name: name ?? chat.name,
-        );
+    @Default('') String name,
+  }) = ManageChatClosed;
 
-  @override
-  ManageChatState copyWith({Chat? chat, int? selectedIcon, String? name}) {
-    return ManageChatEditing(
-      chat: chat ?? this.chat,
-      selectedIcon: selectedIcon ?? super.selectedIcon,
-      name: name ?? super.name,
-    );
-  }
-}
-
-class ManageChatClosed extends ManageChatState {
-  const ManageChatClosed({
-    super.selectedIcon,
-    super.name,
-  });
-
-  @override
-  ManageChatClosed copyWith({
-    int? selectedIcon,
-    String? name,
-  }) {
-    return ManageChatClosed(
-      selectedIcon: selectedIcon ?? super.selectedIcon,
-      name: name ?? super.name,
-    );
-  }
+  bool get isFabShown => selectedIcon != null && name.isNotEmpty;
 }

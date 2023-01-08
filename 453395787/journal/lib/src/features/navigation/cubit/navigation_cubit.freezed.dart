@@ -18,19 +18,19 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$NavigationState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String route) goTo,
+    required TResult Function(String route, Object? extra) goTo,
     required TResult Function() back,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String route)? goTo,
+    TResult? Function(String route, Object? extra)? goTo,
     TResult? Function()? back,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String route)? goTo,
+    TResult Function(String route, Object? extra)? goTo,
     TResult Function()? back,
     required TResult orElse(),
   }) =>
@@ -80,7 +80,7 @@ abstract class _$$_NavigationStateCopyWith<$Res> {
           _$_NavigationState value, $Res Function(_$_NavigationState) then) =
       __$$_NavigationStateCopyWithImpl<$Res>;
   @useResult
-  $Res call({String route});
+  $Res call({String route, Object? extra});
 }
 
 /// @nodoc
@@ -95,12 +95,14 @@ class __$$_NavigationStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? route = null,
+    Object? extra = freezed,
   }) {
     return _then(_$_NavigationState(
       route: null == route
           ? _value.route
           : route // ignore: cast_nullable_to_non_nullable
               as String,
+      extra: freezed == extra ? _value.extra : extra,
     ));
   }
 }
@@ -108,14 +110,16 @@ class __$$_NavigationStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_NavigationState implements _NavigationState {
-  const _$_NavigationState({required this.route});
+  const _$_NavigationState({required this.route, this.extra});
 
   @override
   final String route;
+  @override
+  final Object? extra;
 
   @override
   String toString() {
-    return 'NavigationState.goTo(route: $route)';
+    return 'NavigationState.goTo(route: $route, extra: $extra)';
   }
 
   @override
@@ -123,11 +127,13 @@ class _$_NavigationState implements _NavigationState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_NavigationState &&
-            (identical(other.route, route) || other.route == route));
+            (identical(other.route, route) || other.route == route) &&
+            const DeepCollectionEquality().equals(other.extra, extra));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, route);
+  int get hashCode => Object.hash(
+      runtimeType, route, const DeepCollectionEquality().hash(extra));
 
   @JsonKey(ignore: true)
   @override
@@ -138,30 +144,30 @@ class _$_NavigationState implements _NavigationState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String route) goTo,
+    required TResult Function(String route, Object? extra) goTo,
     required TResult Function() back,
   }) {
-    return goTo(route);
+    return goTo(route, extra);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String route)? goTo,
+    TResult? Function(String route, Object? extra)? goTo,
     TResult? Function()? back,
   }) {
-    return goTo?.call(route);
+    return goTo?.call(route, extra);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String route)? goTo,
+    TResult Function(String route, Object? extra)? goTo,
     TResult Function()? back,
     required TResult orElse(),
   }) {
     if (goTo != null) {
-      return goTo(route);
+      return goTo(route, extra);
     }
     return orElse();
   }
@@ -199,10 +205,11 @@ class _$_NavigationState implements _NavigationState {
 }
 
 abstract class _NavigationState implements NavigationState {
-  const factory _NavigationState({required final String route}) =
-      _$_NavigationState;
+  const factory _NavigationState(
+      {required final String route, final Object? extra}) = _$_NavigationState;
 
   String get route;
+  Object? get extra;
   @JsonKey(ignore: true)
   _$$_NavigationStateCopyWith<_$_NavigationState> get copyWith =>
       throw _privateConstructorUsedError;
@@ -246,7 +253,7 @@ class _$_BackNavigationState implements _BackNavigationState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String route) goTo,
+    required TResult Function(String route, Object? extra) goTo,
     required TResult Function() back,
   }) {
     return back();
@@ -255,7 +262,7 @@ class _$_BackNavigationState implements _BackNavigationState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String route)? goTo,
+    TResult? Function(String route, Object? extra)? goTo,
     TResult? Function()? back,
   }) {
     return back?.call();
@@ -264,7 +271,7 @@ class _$_BackNavigationState implements _BackNavigationState {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String route)? goTo,
+    TResult Function(String route, Object? extra)? goTo,
     TResult Function()? back,
     required TResult orElse(),
   }) {

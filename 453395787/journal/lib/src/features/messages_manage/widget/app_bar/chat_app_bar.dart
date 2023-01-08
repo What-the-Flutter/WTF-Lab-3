@@ -1,8 +1,13 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../../../common/data/chat_repository.dart';
 import '../../../../common/utils/confirmation_dialog.dart';
+import '../../../../common/utils/floating_bottom_sheet.dart';
+import '../../../move_messages/view/move_message.dart';
+import '../../../navigation/cubit/navigation_cubit.dart';
 import '../../cubit/message_manage_cubit.dart';
 
 part 'app_bar_with_actions.dart';

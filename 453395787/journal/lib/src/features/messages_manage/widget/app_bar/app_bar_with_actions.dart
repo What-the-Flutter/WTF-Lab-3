@@ -46,6 +46,30 @@ class _AppBarWithActions extends StatelessWidget {
           },
         ),
         IconButton(
+          icon: const Icon(Icons.reply_outlined),
+          onPressed: () {
+            var id = context.read<MessageManageCubit>().id;
+            state.maybeMap(
+              selectionMode: (selectionMode) {
+                showFloatingModalBottomSheet(
+                  context: context,
+                  builder: (context) => MoveMessagePage(
+                    repository: context.read<ChatRepository>(),
+                    fromChatId: id,
+                    messages: selectionMode.messages
+                        .where(
+                          (message) => selectionMode.selected.contains(
+                            message.id,
+                          ),
+                        ).toIList(),
+                  ),
+                );
+              },
+              orElse: () {},
+            );
+          },
+        ),
+        IconButton(
           icon: const Icon(
             Icons.delete_outline_outlined,
           ),

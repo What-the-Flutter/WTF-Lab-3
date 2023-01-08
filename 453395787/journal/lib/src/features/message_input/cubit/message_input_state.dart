@@ -6,6 +6,7 @@ class MessageInputState with _$MessageInputState {
 
   const factory MessageInputState.defaultMode({
     required Message message,
+    @Default(false) bool isTagMenuOpened,
   }) = _DefaultMode;
 
   const factory MessageInputState.editMode({

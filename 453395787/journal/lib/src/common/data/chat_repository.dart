@@ -1,3 +1,5 @@
+import 'package:rxdart/rxdart.dart';
+
 import '../api/chat_provider_api.dart';
 import '../api/chat_repository_api.dart';
 import 'models/chat.dart';
@@ -6,19 +8,13 @@ class ChatRepository extends ChatRepositoryApi {
   ChatRepository({
     required ChatProviderApi provider,
   }) : _provider = provider {
-    chats.listen(
-      (event) {
-        lastChats = event;
-      },
-    );
+    provider.loadData();
   }
 
   final ChatProviderApi _provider;
 
-  late List<Chat> lastChats;
-
   @override
-  Stream<List<Chat>> get chats => _provider.getChats();
+  ValueStream<List<Chat>> get chats => _provider.getChats();
 
   @override
   Future<void> add(Chat chat) async {
@@ -27,7 +23,7 @@ class ChatRepository extends ChatRepositoryApi {
 
   @override
   Future<Chat> findById(int id) async {
-    return lastChats.firstWhere(
+    return chats.value.firstWhere(
       (e) => e.id == id,
     );
   }

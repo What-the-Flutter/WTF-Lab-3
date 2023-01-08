@@ -1,4 +1,3 @@
-
 part of 'chat_icons.dart';
 
 class _SelectableIcon extends StatelessWidget {

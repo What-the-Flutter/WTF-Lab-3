@@ -15,17 +15,9 @@ class _DefaultAppBar extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () {
-            context.read<MessageManageCubit>().onSearchClick();
-            /*
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ChatSearchPage(
-                  chatId: context.read<ChatCubit>().state.chatId,
-                ),
-              ),
-            );
-            */
+            context.read<NavigationCubit>().openSearchPage(
+                  context.read<MessageManageCubit>().id,
+                );
           },
           icon: const Icon(
             Icons.search_outlined,

@@ -1,7 +1,9 @@
+import 'package:rxdart/rxdart.dart';
+
 import '../data/models/chat.dart';
 
 abstract class ChatRepositoryApi {
-  Stream<List<Chat>> get chats;
+  ValueStream<List<Chat>> get chats;
 
   Future<void> loadData();
 

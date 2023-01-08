@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/message_repository_api.dart';
+import '../../../common/data/models/chat.dart';
 import '../../../common/data/models/message.dart';
 import '../../../common/utils/extensions.dart';
 
@@ -20,24 +23,40 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             messages: IListConst([]),
           ),
         ) {
-    _listener = _repository.stream.listen((chat) {
-      emit(MessageManageState.defaultMode(name: '', messages: chat.messages));
-    });
+    _repository.filteredChatStreams.listen(
+      (event) {
+        _subscriber?.cancel();
+        _subscriber = event.listen(
+          (chat) {
+            name = chat.name;
+            id = chat.id;
+            emit(
+              MessageManageState.defaultMode(
+                name: name,
+                messages: chat.messages,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   final MessageRepositoryApi _repository;
-  late final _listener;
+
+  int id = 0;
+  String name = '';
+
+  StreamSubscription<Chat>? _subscriber;
 
   void select(Message message) {
     state.maybeMap(
       defaultMode: (defaultMode) {
         emit(
           MessageManageState.selectionMode(
-            name: '',
+            name: name,
             messages: defaultMode.messages,
-            selected: ISetConst(
-              {defaultMode.messages.indexWhere((e) => e.id == message.id)},
-            ),
+            selected: ISet([message.id]),
           ),
         );
       },
@@ -58,7 +77,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (selectionMode.selected.length == 1) {
           emit(
             MessageManageState.defaultMode(
-              name: '',
+              name: name,
               messages: selectionMode.messages,
             ),
           );
@@ -79,7 +98,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       selectionMode: (selectionMode) {
         emit(
           MessageManageState.defaultMode(
-            name: '',
+            name: name,
             messages: selectionMode.messages,
           ),
         );
@@ -110,7 +129,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         }
         emit(
           MessageManageState.defaultMode(
-            name: '',
+            name: name,
             messages: selectionMode.messages,
           ),
         );
@@ -132,7 +151,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         messages.forEach(_repository.remove);
         emit(
           MessageManageState.defaultMode(
-            name: '',
+            name: name,
             messages: messages.toIList(),
           ),
         );
@@ -147,7 +166,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (message != null) {
           emit(
             MessageManageState.editMode(
-              name: '',
+              name: name,
               messages: defaultMode.messages,
               message: message,
             ),
@@ -158,7 +177,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (selectionMode.selected.length == 1) {
           emit(
             MessageManageState.editMode(
-              name: '',
+              name: name,
               messages: selectionMode.messages,
               message: selectionMode.messages.firstWhere(
                 (element) => element.id == selectionMode.selected.first,
@@ -176,7 +195,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       editMode: (editMode) {
         emit(
           MessageManageState.defaultMode(
-            name: '',
+            name: name,
             messages: editMode.messages,
           ),
         );

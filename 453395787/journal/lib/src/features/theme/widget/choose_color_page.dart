@@ -8,22 +8,14 @@ import '../../messages_manage/widget/message_list/items/message_item.dart';
 import '../cubit/theme_cubit.dart';
 import '../data/theme_repository.dart';
 
-class ChooseColorSheet extends StatefulWidget {
+class ChooseColorSheet extends StatelessWidget {
   ChooseColorSheet({super.key});
 
   @override
-  State<ChooseColorSheet> createState() => _ChooseColorSheetState();
-}
-
-class _ChooseColorSheetState extends State<ChooseColorSheet> {
-  int? _selectedColor;
-
-  @override
   Widget build(BuildContext context) {
-    return Material(
-      child: SafeArea(
-        top: false,
-        child: Padding(
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return Padding(
           padding: const EdgeInsets.all(Insets.large),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -56,12 +48,8 @@ class _ChooseColorSheetState extends State<ChooseColorSheet> {
                   return InkWell(
                     borderRadius: BorderRadius.circular(Radius.extraLarge),
                     onTap: () {
-                      context.read<ThemeCubit>().color = ThemeRepository.colors[index];
-                      if (_selectedColor == index) {
-                        setState(() => _selectedColor = null);
-                      } else {
-                        setState(() => _selectedColor = index);
-                      }
+                      context.read<ThemeCubit>().color =
+                          ThemeRepository.colors[index];
                     },
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -72,7 +60,7 @@ class _ChooseColorSheetState extends State<ChooseColorSheet> {
                         padding: const EdgeInsets.all(
                           Insets.extraSmall,
                         ),
-                        child: _selectedColor == index
+                        child: state.color == ThemeRepository.colors[index]
                             ? DecoratedBox(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -92,8 +80,8 @@ class _ChooseColorSheetState extends State<ChooseColorSheet> {
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

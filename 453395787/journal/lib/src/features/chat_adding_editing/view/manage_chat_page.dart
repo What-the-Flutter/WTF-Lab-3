@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../common/data/chat_repository.dart';
 import '../../../common/data/models/chat.dart';
 import '../../../common/utils/insets.dart';
+import '../../navigation/cubit/navigation_cubit.dart';
 import '../cubit/manage_chat_cubit.dart';
 import '../widgets/chat_icons.dart';
 
@@ -42,13 +43,13 @@ class _ManageChatPageState extends State<ManageChatPage> {
       create: (context) => ManageChatCubit(
         repository: RepositoryProvider.of<ChatRepository>(context),
         manageChatState: widget.forEdit == null
-            ? const ManageChatAdding()
-            : ManageChatEditing(chat: widget.forEdit!),
+            ? const ManageChatState.adding()
+            : ManageChatState.editing(chat: widget.forEdit!),
       ),
       child: BlocConsumer<ManageChatCubit, ManageChatState>(
         listener: (context, state) {
           if (state is ManageChatClosed) {
-            Navigator.pop(context);
+            context.read<NavigationCubit>().back();
           }
         },
         builder: (context, state) {
@@ -89,7 +90,7 @@ class _ManageChatPageState extends State<ManageChatPage> {
                       state is ManageChatAdding ? Icons.add : Icons.edit,
                     ),
                     onPressed: () {
-                      context.read<ManageChatCubit>().onFabPressed();
+                      context.read<ManageChatCubit>().applyChanges();
                     },
                   )
                 : null,

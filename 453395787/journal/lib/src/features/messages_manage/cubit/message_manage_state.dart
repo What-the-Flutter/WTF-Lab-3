@@ -26,13 +26,13 @@ class MessageManageState with _$MessageManageState {
       return IList([]);
     }
 
-    var lastDate = messages.last.dateTime;
-    var list = <Object>[lastDate, messages.first];
+    var bufferDateTime = messages.first.dateTime;
+    var list = <Object>[bufferDateTime];
 
     for (var message in messages) {
-      if (!message.dateTime.isSameDay(lastDate)) {
+      if (!message.dateTime.isSameDay(bufferDateTime)) {
         list.add(message.dateTime);
-        lastDate = message.dateTime;
+        bufferDateTime = message.dateTime;
       }
       list.add(message);
     }

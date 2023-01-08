@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../utils/extensions.dart';
+import 'tag.dart';
 
 part 'message.freezed.dart';
 
@@ -17,7 +18,7 @@ class Message with _$Message {
     required String text,
     required DateTime dateTime,
     required IList<String> images,
-    required IList<String> tags,
+    required IList<Tag> tags,
     required bool isFavorite,
   }) = _Message;
 
@@ -26,7 +27,7 @@ class Message with _$Message {
     String text = '',
     DateTime? dateTime,
     IList<String> images = const IListConst([]),
-    IList<String> tags = const IListConst([]),
+    IList<Tag> tags = const IListConst([]),
     bool isFavorite = false,
   }) =>
       Message._internal(

@@ -6,6 +6,7 @@ import '../../../../../common/data/models/message.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/radius.dart';
 import '../../../../../common/utils/text_styles.dart';
+import 'item_tags.dart';
 
 part 'item_images.dart';
 part 'item_text.dart';
@@ -84,6 +85,14 @@ class MessageItem extends StatelessWidget {
                           _MessageText(
                             text: message.text,
                           ),
+                          if (message.tags.isNotEmpty) 
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 250),
+                              child: Padding(
+                                padding: const EdgeInsets.all(Insets.small),
+                                child: ItemTags(tags: message.tags,),
+                              ),
+                            ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,

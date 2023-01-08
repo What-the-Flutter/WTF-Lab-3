@@ -1,16 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+part of '../view/chat_list.dart';
 
-import '../../../common/data/chat_repository.dart';
-import '../../../common/data/models/chat.dart';
-import '../../../common/utils/confirmation_dialog.dart';
-import '../../../common/utils/insets.dart';
-import '../../../common/utils/text_styles.dart';
-import '../../chat_adding_editing/view/manage_chat_page.dart';
-
-class BottomActionSheet extends StatelessWidget {
-  const BottomActionSheet({
+class _BottomActionSheet extends StatelessWidget {
+  const _BottomActionSheet({
     super.key,
     required this.chat,
   });
@@ -55,12 +46,8 @@ class BottomActionSheet extends StatelessWidget {
               title: const Text('Edit'),
               leading: const Icon(Icons.edit),
               onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ManageChatPage(forEdit: chat),
-                  ),
-                );
+                context.read<NavigationCubit>().back();
+                context.read<NavigationCubit>().openEditChatPage(chat: chat);
               },
             ),
             ListTile(
@@ -68,7 +55,7 @@ class BottomActionSheet extends StatelessWidget {
               leading: const Icon(Icons.push_pin_outlined),
               onTap: () {
                 RepositoryProvider.of<ChatRepository>(context).togglePin(chat);
-                Navigator.of(context).pop();
+                context.read<NavigationCubit>().back();
               },
             ),
             ListTile(
@@ -87,9 +74,8 @@ class BottomActionSheet extends StatelessWidget {
                   context: context,
                 );
                 if (isConfirmed != null && isConfirmed) {
-                  RepositoryProvider.of<ChatRepository>(context)
-                      .remove(chat);
-                  Navigator.of(context).pop();
+                  RepositoryProvider.of<ChatRepository>(context).remove(chat);
+                  context.read<NavigationCubit>().back();
                 }
               },
             )

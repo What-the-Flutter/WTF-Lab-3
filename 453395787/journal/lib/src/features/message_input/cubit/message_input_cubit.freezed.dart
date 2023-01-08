@@ -19,19 +19,20 @@ mixin _$MessageInputState {
   Message get message => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Message message) defaultMode,
+    required TResult Function(Message message, bool isTagMenuOpened)
+        defaultMode,
     required TResult Function(Message message) editMode,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Message message)? defaultMode,
+    TResult? Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult? Function(Message message)? editMode,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Message message)? defaultMode,
+    TResult Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult Function(Message message)? editMode,
     required TResult orElse(),
   }) =>
@@ -112,7 +113,7 @@ abstract class _$$_DefaultModeCopyWith<$Res>
       __$$_DefaultModeCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Message message});
+  $Res call({Message message, bool isTagMenuOpened});
 
   @override
   $MessageCopyWith<$Res> get message;
@@ -130,12 +131,17 @@ class __$$_DefaultModeCopyWithImpl<$Res>
   @override
   $Res call({
     Object? message = null,
+    Object? isTagMenuOpened = null,
   }) {
     return _then(_$_DefaultMode(
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as Message,
+      isTagMenuOpened: null == isTagMenuOpened
+          ? _value.isTagMenuOpened
+          : isTagMenuOpened // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -143,14 +149,18 @@ class __$$_DefaultModeCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_DefaultMode extends _DefaultMode {
-  const _$_DefaultMode({required this.message}) : super._();
+  const _$_DefaultMode({required this.message, this.isTagMenuOpened = false})
+      : super._();
 
   @override
   final Message message;
+  @override
+  @JsonKey()
+  final bool isTagMenuOpened;
 
   @override
   String toString() {
-    return 'MessageInputState.defaultMode(message: $message)';
+    return 'MessageInputState.defaultMode(message: $message, isTagMenuOpened: $isTagMenuOpened)';
   }
 
   @override
@@ -158,11 +168,13 @@ class _$_DefaultMode extends _DefaultMode {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_DefaultMode &&
-            (identical(other.message, message) || other.message == message));
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.isTagMenuOpened, isTagMenuOpened) ||
+                other.isTagMenuOpened == isTagMenuOpened));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode => Object.hash(runtimeType, message, isTagMenuOpened);
 
   @JsonKey(ignore: true)
   @override
@@ -173,30 +185,31 @@ class _$_DefaultMode extends _DefaultMode {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Message message) defaultMode,
+    required TResult Function(Message message, bool isTagMenuOpened)
+        defaultMode,
     required TResult Function(Message message) editMode,
   }) {
-    return defaultMode(message);
+    return defaultMode(message, isTagMenuOpened);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Message message)? defaultMode,
+    TResult? Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult? Function(Message message)? editMode,
   }) {
-    return defaultMode?.call(message);
+    return defaultMode?.call(message, isTagMenuOpened);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Message message)? defaultMode,
+    TResult Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult Function(Message message)? editMode,
     required TResult orElse(),
   }) {
     if (defaultMode != null) {
-      return defaultMode(message);
+      return defaultMode(message, isTagMenuOpened);
     }
     return orElse();
   }
@@ -234,11 +247,14 @@ class _$_DefaultMode extends _DefaultMode {
 }
 
 abstract class _DefaultMode extends MessageInputState {
-  const factory _DefaultMode({required final Message message}) = _$_DefaultMode;
+  const factory _DefaultMode(
+      {required final Message message,
+      final bool isTagMenuOpened}) = _$_DefaultMode;
   const _DefaultMode._() : super._();
 
   @override
   Message get message;
+  bool get isTagMenuOpened;
   @override
   @JsonKey(ignore: true)
   _$$_DefaultModeCopyWith<_$_DefaultMode> get copyWith =>
@@ -314,7 +330,8 @@ class _$_EditMode extends _EditMode {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Message message) defaultMode,
+    required TResult Function(Message message, bool isTagMenuOpened)
+        defaultMode,
     required TResult Function(Message message) editMode,
   }) {
     return editMode(message);
@@ -323,7 +340,7 @@ class _$_EditMode extends _EditMode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Message message)? defaultMode,
+    TResult? Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult? Function(Message message)? editMode,
   }) {
     return editMode?.call(message);
@@ -332,7 +349,7 @@ class _$_EditMode extends _EditMode {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Message message)? defaultMode,
+    TResult Function(Message message, bool isTagMenuOpened)? defaultMode,
     TResult Function(Message message)? editMode,
     required TResult orElse(),
   }) {

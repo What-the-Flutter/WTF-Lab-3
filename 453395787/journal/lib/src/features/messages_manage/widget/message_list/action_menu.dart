@@ -29,6 +29,21 @@ Future<void> _showActionMenu(
         },
       ),
       PopupMenuItem(
+        child: const ListTile(
+          leading: Icon(
+            Icons.reply_outlined,
+          ),
+          title: Text('Move'),
+        ),
+        onTap: () {
+          print('hello');
+          showFloatingModalBottomSheet(
+            context: context,
+            builder: (context) => ChooseColorSheet(),
+          );
+        },
+      ),
+      PopupMenuItem(
         child: ListTile(
           leading: Icon(
             message.isFavorite ? Icons.star_outline : Icons.star,

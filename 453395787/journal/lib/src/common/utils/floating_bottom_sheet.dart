@@ -10,14 +10,16 @@ Future<T> showFloatingModalBottomSheet<T>({
   Color? backgroundColor,
 }) async {
   final result = await showCustomModalBottomSheet(
-      context: context,
-      builder: builder,
-      containerWidget: (_, animation, child) {
-        return _FloatingModal(
-          child: child,
-        );
-      },
-      expand: false);
+    context: context,
+    builder: builder,
+    useRootNavigator: true,
+    containerWidget: (_, animation, child) {
+      return _FloatingModal(
+        child: child,
+      );
+    },
+    expand: false,
+  );
 
   return result;
 }

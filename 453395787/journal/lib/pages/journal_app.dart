@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../src/features/navigation/routes.dart';
-import '../src/features/theme/cubit/theme_cubit.dart';
+import '../src/features/navigation/navigation.dart';
+import '../src/features/theme/theme.dart';
 
 class JournalApp extends StatelessWidget {
   const JournalApp({super.key});

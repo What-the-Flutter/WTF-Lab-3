@@ -20,7 +20,7 @@ mixin _$Message {
   String get text => throw _privateConstructorUsedError;
   DateTime get dateTime => throw _privateConstructorUsedError;
   IList<String> get images => throw _privateConstructorUsedError;
-  IList<String> get tags => throw _privateConstructorUsedError;
+  IList<Tag> get tags => throw _privateConstructorUsedError;
   bool get isFavorite => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -37,7 +37,7 @@ abstract class $MessageCopyWith<$Res> {
       String text,
       DateTime dateTime,
       IList<String> images,
-      IList<String> tags,
+      IList<Tag> tags,
       bool isFavorite});
 }
 
@@ -81,7 +81,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
-              as IList<String>,
+              as IList<Tag>,
       isFavorite: null == isFavorite
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
@@ -102,7 +102,7 @@ abstract class _$$_MessageCopyWith<$Res> implements $MessageCopyWith<$Res> {
       String text,
       DateTime dateTime,
       IList<String> images,
-      IList<String> tags,
+      IList<Tag> tags,
       bool isFavorite});
 }
 
@@ -143,7 +143,7 @@ class __$$_MessageCopyWithImpl<$Res>
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
-              as IList<String>,
+              as IList<Tag>,
       isFavorite: null == isFavorite
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
@@ -173,7 +173,7 @@ class _$_Message extends _Message with DiagnosticableTreeMixin {
   @override
   final IList<String> images;
   @override
-  final IList<String> tags;
+  final IList<Tag> tags;
   @override
   final bool isFavorite;
 
@@ -233,7 +233,7 @@ abstract class _Message extends Message {
       required final String text,
       required final DateTime dateTime,
       required final IList<String> images,
-      required final IList<String> tags,
+      required final IList<Tag> tags,
       required final bool isFavorite}) = _$_Message;
   _Message._() : super._();
 
@@ -246,7 +246,7 @@ abstract class _Message extends Message {
   @override
   IList<String> get images;
   @override
-  IList<String> get tags;
+  IList<Tag> get tags;
   @override
   bool get isFavorite;
   @override
