@@ -304,8 +304,12 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(0),
       ),
       onPressed: () async {
+        final chatData = bloc.getChatData(index);
+
         Chat? result = await Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => const CreateChat(
+            builder: (_) => CreateChat(
+                  prevChatIcon: chatData.icon,
+                  prevChatName: chatData.title,
                   title: 'Edit chat',
                 ))) as Chat?;
 
@@ -367,6 +371,8 @@ class _HomePageState extends State<HomePage> {
         onPressed: () async {
           Chat? result = await Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => const CreateChat(
+                    prevChatIcon: Icons.abc,
+                    prevChatName: '',
                     title: 'Create new chat',
                   ))) as Chat?;
 

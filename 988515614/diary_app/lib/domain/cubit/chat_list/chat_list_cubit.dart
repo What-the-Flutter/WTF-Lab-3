@@ -18,6 +18,9 @@ class ChatListCubit extends Cubit<ChatListState> {
   void pinUnpinChat(int index) {
     if (chats[index].isPinned) {
       chats[index].isPinned = false;
+      final lastPinnedIndex = chats.lastIndexWhere((element) => element.isPinned);
+      final chat = chats.removeAt(index);
+      chats.insert(lastPinnedIndex, chat);
       emit(update());
       return;
     }
@@ -50,5 +53,9 @@ class ChatListCubit extends Cubit<ChatListState> {
       chats.insert(lastPinnedIndex + 1, result);
       emit(update());
     }
+  }
+
+  Chat getChatData(int index) {
+    return chats[index];
   }
 }

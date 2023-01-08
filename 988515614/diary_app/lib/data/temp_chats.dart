@@ -1,4 +1,5 @@
 import 'package:carbon_icons/carbon_icons.dart';
+import 'package:flutter/material.dart';
 
 import '../domain/entities/chat.dart';
 
@@ -19,6 +20,12 @@ final List<Chat> chats = [
     chatId: 3,
     icon: CarbonIcons.trophy,
     title: 'Sports',
+    createdAt: DateTime.now(),
+  ),
+  Chat(
+    chatId: 4,
+    icon: Icons.label_important,
+    title: 'Smth interesting',
     createdAt: DateTime.now(),
   ),
 ];
