@@ -7,6 +7,7 @@ class EventState {
   final bool isFavorite;
   final bool isSelected;
   final bool isEdit;
+  final bool isRepet;
   final String editText;
   final bool isPicter;
   final bool isSearch;
@@ -22,6 +23,7 @@ class EventState {
     this.isSelected = false,
     this.isEdit = false,
     this.isPicter = false,
+    this.isRepet = false,
     this.editText = '',
     this.isSearch = false,
     this.countSelected = 0,
@@ -44,6 +46,7 @@ class EventState {
     bool? isSection,
     IconData? sectionIcon,
     String? sectionTitle,
+    bool? isRepet,
   }) {
     return EventState(
       isSelected: isSelected ?? this.isSelected,
@@ -58,6 +61,7 @@ class EventState {
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
       searchText: searchText ?? this.searchText,
+      isRepet: isRepet ?? this.isRepet,
     );
   }
 }

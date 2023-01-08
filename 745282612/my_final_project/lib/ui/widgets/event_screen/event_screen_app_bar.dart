@@ -51,6 +51,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: [
           TextButton(
             onPressed: () {
+              context.read<EventCubit>().changeRepetStatus();
               showDialog(
                 context: context,
                 builder: (context) {

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:path/path.dart';
@@ -52,7 +55,7 @@ class DBProvider {
   }
 
   Future<List<Chat>> getAllChat() async {
-    final db = await database;
+    final db = await dbProvider.database;
     final List<Map<String, dynamic>> maps = await db.query(chatsTable);
 
     return List.generate(
@@ -70,7 +73,7 @@ class DBProvider {
   }
 
   Future<List<Event>> getAllEvent() async {
-    final db = await database;
+    final db = await dbProvider.database;
     final List<Map<String, dynamic>> maps = await db.query(eventeTable);
     return List.generate(
       maps.length,
@@ -82,7 +85,9 @@ class DBProvider {
           messageTime: DateTime.parse(maps[i]['${EventField.messageTime}']),
           isFavorit: maps[i]['${EventField.favorite}'] == 'true',
           chatId: maps[i]['${EventField.chatId}'],
-          messageImage: maps[i]['${EventField.messageImage}'],
+          messageImage: maps[i]['${EventField.messageImage}'] != null
+              ? File(maps[i]['${EventField.messageImage}'])
+              : null,
           sectionIcon: maps[i]['${EventField.sectionIcon}'] != null
               ? IconData(maps[i]['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
               : null,
@@ -93,7 +98,7 @@ class DBProvider {
   }
 
   Future<Chat> addChat(Chat chat) async {
-    final db = await database;
+    final db = await dbProvider.database;
     final id = await db.insert(
       chatsTable,
       chat.toMap(),
@@ -102,7 +107,7 @@ class DBProvider {
   }
 
   Future<Event> addEvent(Event event) async {
-    final db = await database;
+    final db = await dbProvider.database;
     final id = await db.insert(
       eventeTable,
       event.toMap(),
@@ -111,7 +116,7 @@ class DBProvider {
   }
 
   Future<void> updateChat(Chat chat) async {
-    final db = await database;
+    final db = await dbProvider.database;
     await db.update(
       chatsTable,
       chat.toMap(),
@@ -121,7 +126,7 @@ class DBProvider {
   }
 
   Future<void> updateEvent(Event event) async {
-    final db = await database;
+    final db = await dbProvider.database;
     await db.update(
       eventeTable,
       event.toMap(),
@@ -131,7 +136,7 @@ class DBProvider {
   }
 
   Future<void> deleteChat(Chat chat) async {
-    final db = await database;
+    final db = await dbProvider.database;
     await db.delete(
       chatsTable,
       where: '${ChatField.id} = ?',
@@ -140,7 +145,7 @@ class DBProvider {
   }
 
   Future<void> deleteEventById(int id) async {
-    final db = await database;
+    final db = await dbProvider.database;
     db.delete(
       eventeTable,
       where: '${EventField.id} = ?',
@@ -149,11 +154,16 @@ class DBProvider {
   }
 
   Future<void> deleteAllEvent(Chat chat) async {
-    final db = await database;
+    final db = await dbProvider.database;
     db.delete(
       eventeTable,
       where: '${EventField.chatId} = ?',
       whereArgs: [chat.id],
     );
+  }
+
+  Future closeDataBase() async {
+    final db = await dbProvider.database;
+    db.close();
   }
 }

@@ -22,9 +22,9 @@ class EventScreenModal extends StatefulWidget {
 }
 
 class _EventScreenModalState extends State<EventScreenModal> {
-  String selectedRadioTile = '';
+  int selectedRadioTile = 0;
 
-  void setSelectedRadioTile(String val) {
+  void setSelectedRadioTile(int val) {
     setState(
       () {
         selectedRadioTile = val;
@@ -48,7 +48,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
               itemBuilder: (context, index) {
                 final element = state.listChat[index];
                 return RadioListTile(
-                  value: element.title,
+                  value: element.id,
                   groupValue: selectedRadioTile,
                   title: Text(element.title),
                   onChanged: (val) => setSelectedRadioTile(val!),
@@ -58,20 +58,22 @@ class _EventScreenModalState extends State<EventScreenModal> {
           ),
           actions: [
             TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                style: TextButton.styleFrom(
+                  backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              child: Text(
-                S.of(context).exit,
-                style: TextStyle(
-                  color: theme ? Colors.black : Colors.white,
+                child: Text(
+                  S.of(context).exit,
+                  style: TextStyle(
+                    color: theme ? Colors.black : Colors.white,
+                  ),
                 ),
-              ),
-              onPressed: Navigator.of(context).pop,
-            ),
+                onPressed: () {
+                  context.read<EventCubit>().changeRepetStatus();
+                  Navigator.of(context).pop();
+                }),
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
@@ -86,11 +88,13 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 ),
               ),
               onPressed: () {
-                context
-                    .read<HomeCubit>()
-                    .repetEvent(listEvent: widget.listEvent, title: selectedRadioTile);
+                context.read<EventCubit>().repetEvent(
+                      listEvent: widget.listEvent,
+                      chatId: selectedRadioTile,
+                    );
                 Navigator.of(context).pop();
                 context.read<EventCubit>().deleteEvent();
+                context.read<EventCubit>().changeRepetStatus();
               },
             ),
           ],

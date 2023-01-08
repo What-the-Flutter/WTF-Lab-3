@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -112,7 +110,7 @@ class EventScreenListMessage extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: indexMessage.messageImage != null
-                              ? Image.memory(base64Decode(indexMessage.messageImage!))
+                              ? Image.file(indexMessage.messageImage!)
                               : Text(
                                   indexMessage.messageContent,
                                   style: const TextStyle(fontSize: 16),

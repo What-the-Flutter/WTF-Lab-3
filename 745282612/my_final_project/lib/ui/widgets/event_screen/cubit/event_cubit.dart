@@ -22,20 +22,20 @@ class EventCubit extends Cubit<EventState> {
     required String content,
     required String type,
     required int chatId,
+    IconData? sectionIcon,
+    String? sectionTitle,
   }) async {
-    final selectedIcon = state.sectionIcon;
-    final sectionTitle = state.sectionTitle;
+    final selectedIcon = sectionIcon ?? state.sectionIcon;
+    final selectedTitle = sectionTitle ?? state.sectionTitle;
     final newListEvent = state.listEvent;
     final newEvent = Event(
       chatId: chatId,
       messageContent: content,
       messageType: type,
       messageTime: DateTime.now(),
-      isFavorit: false,
-      isSelected: false,
       messageImage: null,
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
-      sectionTitle: sectionTitle != 'Cancel' ? sectionTitle : null,
+      sectionTitle: selectedTitle != 'Cancel' ? selectedTitle : null,
     );
     final event = await DBProvider.dbProvider.addEvent(newEvent);
     newListEvent.add(event);
@@ -93,18 +93,18 @@ class EventCubit extends Cubit<EventState> {
   }
 
   void addPicterMessage({
-    required XFile? pickedFile,
+    File? repetFile,
+    XFile? pickedFile,
     required String type,
     required int chatId,
   }) async {
-    if (pickedFile != null) {
-      final image = File(pickedFile.path);
+    if (pickedFile != null || repetFile != null) {
       final newEvent = Event(
         chatId: chatId,
         messageContent: 'Image Entry',
         messageType: type,
         messageTime: DateTime.now(),
-        messageImage: _base64String(image.readAsBytesSync()),
+        messageImage: repetFile ?? File(pickedFile!.path),
         isFavorit: false,
         isSelected: false,
       );
@@ -167,6 +167,10 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
+  void changeRepetStatus() {
+    emit(state.copyWith(isRepet: !state.isRepet));
+  }
+
   void changeSection() {
     emit(state.copyWith(isSection: !state.isSection));
   }
@@ -220,5 +224,27 @@ class EventCubit extends Cubit<EventState> {
 
   void searchText(String text) {
     emit(state.copyWith(searchText: text));
+  }
+
+  void repetEvent({required int chatId, required List<Event> listEvent}) async {
+    final newListEvent = listEvent.reversed.where((element) => element.isSelected).toList();
+    int i;
+    for (i = 0; i < newListEvent.length; i++) {
+      if (newListEvent[i].isSelected && newListEvent[i].messageImage != null) {
+        addPicterMessage(
+          repetFile: newListEvent[i].messageImage,
+          type: newListEvent[i].messageType,
+          chatId: chatId,
+        );
+      } else {
+        addEvent(
+          content: newListEvent[i].messageContent,
+          type: newListEvent[i].messageType,
+          chatId: chatId,
+          sectionIcon: newListEvent[i].sectionIcon,
+          sectionTitle: newListEvent[i].sectionTitle,
+        );
+      }
+    }
   }
 }

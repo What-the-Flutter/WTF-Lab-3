@@ -13,7 +13,6 @@ class Chat {
   final Icon icon;
   final String title;
   final bool isPin;
-  // final List<Event>? listEvent;
   final DateTime dateCreate;
 
   Chat({
@@ -21,7 +20,6 @@ class Chat {
     required this.icon,
     required this.title,
     required this.isPin,
-    // this.listEvent,
     required this.dateCreate,
   });
 
@@ -30,7 +28,6 @@ class Chat {
     Icon? icon,
     String? title,
     bool? isPin,
-    // List<Event>? listEvent,
     DateTime? dateCreate,
   }) {
     return Chat(
@@ -38,7 +35,6 @@ class Chat {
       icon: icon ?? this.icon,
       title: title ?? this.title,
       isPin: isPin ?? this.isPin,
-      // listEvent: listEvent ?? this.listEvent,
       dateCreate: dateCreate ?? this.dateCreate,
     );
   }

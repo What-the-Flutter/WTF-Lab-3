@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class EventField {
@@ -19,7 +23,7 @@ class Event {
   final String messageContent;
   final String messageType;
   final DateTime messageTime;
-  final String? messageImage;
+  final File? messageImage;
   final IconData? sectionIcon;
   final String? sectionTitle;
   final int chatId;
@@ -29,7 +33,7 @@ class Event {
     required this.messageContent,
     required this.messageType,
     required this.messageTime,
-    required this.isFavorit,
+    this.isFavorit = false,
     this.isSelected = false,
     required this.chatId,
     this.messageImage,
@@ -44,7 +48,7 @@ class Event {
     String? messageContent,
     String? messageType,
     DateTime? messageTime,
-    String? messageImage,
+    File? messageImage,
     IconData? sectionIcon,
     String? sectionTitle,
     int? chatId,
@@ -63,6 +67,10 @@ class Event {
     );
   }
 
+  String _base64String(Uint8List data) {
+    return base64Encode(data);
+  }
+
   Map<String, dynamic> toMap() {
     return {
       '${EventField.id}': id,
@@ -73,7 +81,7 @@ class Event {
       '${EventField.sectionTitle}': sectionTitle,
       '${EventField.sectionIcon}': sectionIcon != null ? sectionIcon!.codePoint : null,
       '${EventField.chatId}': chatId,
-      '${EventField.messageImage}': messageImage,
+      '${EventField.messageImage}': messageImage != null ? messageImage!.path : null,
     };
   }
 }
