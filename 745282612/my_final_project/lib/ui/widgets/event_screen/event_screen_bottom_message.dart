@@ -11,11 +11,13 @@ import 'package:my_final_project/utils/theme/theme_inherited.dart';
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
   final bool isCamera;
+  final int chatId;
 
   const EventScreenBottomMessage({
     super.key,
     required this.controller,
     required this.isCamera,
+    required this.chatId,
   });
 
   @override
@@ -46,7 +48,11 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     } else if (widget.isCamera) {
       _showMyDialog('recipient');
     } else {
-      context.read<EventCubit>().addEvent(content: widget.controller.text, type: 'recipient');
+      context.read<EventCubit>().addEvent(
+            content: widget.controller.text,
+            type: 'recipient',
+            chatId: widget.chatId,
+          );
       widget.controller.clear();
     }
   }
@@ -60,7 +66,11 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     } else if (widget.isCamera) {
       _showMyDialog('sender');
     } else {
-      context.read<EventCubit>().addEvent(content: widget.controller.text, type: 'sender');
+      context.read<EventCubit>().addEvent(
+            content: widget.controller.text,
+            type: 'sender',
+            chatId: widget.chatId,
+          );
       widget.controller.clear();
     }
   }
@@ -72,6 +82,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
       builder: (context) {
         return MyDialog(
           type: type,
+          chatId: widget.chatId,
         );
       },
     );

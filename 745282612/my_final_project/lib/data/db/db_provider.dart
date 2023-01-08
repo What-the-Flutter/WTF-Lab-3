@@ -44,7 +44,7 @@ class DBProvider {
       ${EventField.messageType} TEXT,
       ${EventField.favorite} TEXT,
       ${EventField.messageImage} TEXT,
-      ${EventField.chat} INTEGER,
+      ${EventField.chatId} INTEGER,
       ${EventField.sectionIcon} INTEGER,
       ${EventField.sectionTitle} TEXT   
       )
@@ -52,14 +52,14 @@ class DBProvider {
   }
 
   Future<List<Chat>> getAllChat() async {
-    final db = await dbProvider.database;
+    final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(chatsTable);
 
     return List.generate(
       maps.length,
       (i) {
         return Chat(
-          id: maps[i]['id'],
+          id: maps[i]['${ChatField.id}'],
           title: maps[i]['${ChatField.title}'],
           icon: Icon(IconData(maps[i]['${ChatField.icon}'], fontFamily: 'MaterialIcons')),
           dateCreate: DateTime.parse(maps[i]['${ChatField.dateCreate}']),
@@ -69,12 +69,45 @@ class DBProvider {
     );
   }
 
-  Future<void> addChat(Chat chat) async {
+  Future<List<Event>> getAllEvent() async {
     final db = await database;
-    await db.insert(
+    final List<Map<String, dynamic>> maps = await db.query(eventeTable);
+    return List.generate(
+      maps.length,
+      (i) {
+        return Event(
+          id: maps[i]['${EventField.id}'],
+          messageContent: maps[i]['${EventField.messageContent}'],
+          messageType: maps[i]['${EventField.messageType}'],
+          messageTime: DateTime.parse(maps[i]['${EventField.messageTime}']),
+          isFavorit: maps[i]['${EventField.favorite}'] == 'true',
+          chatId: maps[i]['${EventField.chatId}'],
+          messageImage: maps[i]['${EventField.messageImage}'],
+          sectionIcon: maps[i]['${EventField.sectionIcon}'] != null
+              ? IconData(maps[i]['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
+              : null,
+          sectionTitle: maps[i]['${EventField.sectionTitle}'],
+        );
+      },
+    );
+  }
+
+  Future<Chat> addChat(Chat chat) async {
+    final db = await database;
+    final id = await db.insert(
       chatsTable,
       chat.toMap(),
     );
+    return chat.copyWith(id: id);
+  }
+
+  Future<Event> addEvent(Event event) async {
+    final db = await database;
+    final id = await db.insert(
+      eventeTable,
+      event.toMap(),
+    );
+    return event.copyWith(id: id);
   }
 
   Future<void> updateChat(Chat chat) async {
@@ -82,8 +115,18 @@ class DBProvider {
     await db.update(
       chatsTable,
       chat.toMap(),
-      where: 'id = ?',
+      where: '${ChatField.id} = ?',
       whereArgs: [chat.id],
+    );
+  }
+
+  Future<void> updateEvent(Event event) async {
+    final db = await database;
+    await db.update(
+      eventeTable,
+      event.toMap(),
+      where: '${EventField.id} = ?',
+      whereArgs: [event.id],
     );
   }
 
@@ -91,7 +134,25 @@ class DBProvider {
     final db = await database;
     await db.delete(
       chatsTable,
-      where: 'id = ?',
+      where: '${ChatField.id} = ?',
+      whereArgs: [chat.id],
+    );
+  }
+
+  Future<void> deleteEventById(int id) async {
+    final db = await database;
+    db.delete(
+      eventeTable,
+      where: '${EventField.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteAllEvent(Chat chat) async {
+    final db = await database;
+    db.delete(
+      eventeTable,
+      where: '${EventField.chatId} = ?',
       whereArgs: [chat.id],
     );
   }

@@ -7,9 +7,7 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState(listChat: [])) {
-    initializer();
-  }
+  HomeCubit() : super(HomeState(listChat: []));
 
   void initializer() async {
     final list = await DBProvider.dbProvider.getAllChat();
@@ -42,11 +40,10 @@ class HomeCubit extends Cubit<HomeState> {
       title: title,
       isPin: false,
       dateCreate: DateTime.now(),
-      // listEvent: [],
     );
-    await DBProvider.dbProvider.addChat(newChat);
+    final chat = await DBProvider.dbProvider.addChat(newChat);
     final newListChat = state.listChat;
-    newListChat.add(newChat);
+    newListChat.add(chat);
     emit(state.copyWith(listChat: newListChat));
   }
 
@@ -63,7 +60,7 @@ class HomeCubit extends Cubit<HomeState> {
     final element = newListChat[index];
     await DBProvider.dbProvider.deleteChat(element);
     newListChat.removeAt(index);
-    emit(HomeState(listChat: newListChat));
+    emit(state.copyWith(listChat: newListChat));
   }
 
   void changePinChat(int index) async {

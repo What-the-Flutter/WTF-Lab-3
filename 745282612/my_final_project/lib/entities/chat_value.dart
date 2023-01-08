@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_final_project/entities/chat.dart';
-import 'package:my_final_project/entities/event_value.dart';
 import 'package:my_final_project/utils/custom_icons/custom_icons.dart';
 
 class ChatValue {

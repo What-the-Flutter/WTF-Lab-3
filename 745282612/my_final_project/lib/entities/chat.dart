@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_final_project/entities/event.dart';
-
 class ChatField {
   static final String id = 'id';
   static final String title = 'title';
@@ -54,12 +52,4 @@ class Chat {
       '${ChatField.dateCreate}': dateCreate.toString(),
     };
   }
-
-  // static Chat fromMap(Map<String, dynamic> json) => Chat(
-  //       id: json['${ChatField.id}'] as int,
-  //       title: json['${ChatField.title}'],
-  //       icon: Icon(IconData(json['${ChatField.icon}'], fontFamily: 'MaterialIcons')),
-  //       dateCreate: DateTime.parse(json['${ChatField.dateCreate}']),
-  //       isPin: json['${ChatField.pin}'] == 'true',
-  //     );
 }

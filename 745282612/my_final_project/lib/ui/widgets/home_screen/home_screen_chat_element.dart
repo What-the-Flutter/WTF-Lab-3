@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/event_screen.dart';
@@ -11,8 +10,19 @@ import 'package:my_final_project/ui/widgets/hovers/on_hovers_button.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
-class HomeScreenChatElement extends StatelessWidget {
+class HomeScreenChatElement extends StatefulWidget {
   const HomeScreenChatElement({super.key});
+
+  @override
+  State<HomeScreenChatElement> createState() => _HomeScreenChatElementState();
+}
+
+class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<HomeCubit>(context).initializer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +56,14 @@ class HomeScreenChatElement extends StatelessWidget {
                   HoverButton(
                     child: TextButton(
                       onPressed: () {
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (context) => EventScreen(
-                        //       listEvent: itemChat.listEvent!,
-                        //       title: itemChat.title,
-                        //     ),
-                        //   ),
-                        // );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => EventScreen(
+                              chatId: itemChat.id!,
+                              title: itemChat.title,
+                            ),
+                          ),
+                        );
                       },
                       child: ListTile(
                         leading: CircleAvatar(

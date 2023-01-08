@@ -10,6 +10,7 @@ class EventValue {
       messageTime: DateTime.now(),
       isFavorit: true,
       isSelected: false,
+      chatId: 1,
     ),
     Event(
       id: UniqueKey().hashCode,
@@ -18,6 +19,7 @@ class EventValue {
       messageTime: DateTime.now(),
       isFavorit: false,
       isSelected: false,
+      chatId: 1,
     ),
     Event(
       id: UniqueKey().hashCode,
@@ -26,6 +28,7 @@ class EventValue {
       messageTime: DateTime.now(),
       isFavorit: false,
       isSelected: false,
+      chatId: 1,
     ),
   ];
 }

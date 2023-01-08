@@ -9,27 +9,29 @@ class EventField {
   static final String sectionTitle = 'sectionTitle';
   static final String sectionIcon = 'sectionIcon';
   static final String messageImage = 'image';
-  static final String chat = 'chat';
+  static final String chatId = 'chatId';
 }
 
 class Event {
-  final int id;
+  final int? id;
   final bool isFavorit;
   final bool isSelected;
   final String messageContent;
   final String messageType;
   final DateTime messageTime;
-  final Image? messageImage;
+  final String? messageImage;
   final IconData? sectionIcon;
   final String? sectionTitle;
+  final int chatId;
 
   Event({
-    required this.id,
+    this.id,
     required this.messageContent,
     required this.messageType,
     required this.messageTime,
     required this.isFavorit,
-    required this.isSelected,
+    this.isSelected = false,
+    required this.chatId,
     this.messageImage,
     this.sectionIcon,
     this.sectionTitle,
@@ -42,9 +44,10 @@ class Event {
     String? messageContent,
     String? messageType,
     DateTime? messageTime,
-    Image? messageImage,
+    String? messageImage,
     IconData? sectionIcon,
     String? sectionTitle,
+    int? chatId,
   }) {
     return Event(
       id: id ?? this.id,
@@ -56,6 +59,21 @@ class Event {
       messageImage: messageImage ?? this.messageImage,
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
+      chatId: chatId ?? this.chatId,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      '${EventField.id}': id,
+      '${EventField.messageContent}': messageContent,
+      '${EventField.messageType}': messageType,
+      '${EventField.messageTime}': messageTime.toString(),
+      '${EventField.favorite}': isFavorit.toString(),
+      '${EventField.sectionTitle}': sectionTitle,
+      '${EventField.sectionIcon}': sectionIcon != null ? sectionIcon!.codePoint : null,
+      '${EventField.chatId}': chatId,
+      '${EventField.messageImage}': messageImage,
+    };
   }
 }

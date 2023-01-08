@@ -10,10 +10,12 @@ import 'package:provider/provider.dart';
 
 class MyDialog extends StatelessWidget {
   final String type;
+  final int chatId;
 
   const MyDialog({
     super.key,
     required this.type,
+    required this.chatId,
   });
 
   @override
@@ -40,6 +42,7 @@ class MyDialog extends StatelessWidget {
             context.read<EventCubit>().addPicterMessage(
                   pickedFile: pickedFile,
                   type: type,
+                  chatId: chatId,
                 );
             Navigator.of(context).pop();
           },
@@ -56,6 +59,7 @@ class MyDialog extends StatelessWidget {
             context.read<EventCubit>().addPicterMessage(
                   pickedFile: pickedFile,
                   type: type,
+                  chatId: chatId,
                 );
             Navigator.of(context).pop();
           },
