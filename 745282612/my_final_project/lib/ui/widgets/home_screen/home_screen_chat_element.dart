@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/event_screen.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_modal.dart';
@@ -31,10 +33,13 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final listChat = state.listChat;
+        final stateEvent = context.read<EventCubit>().state;
         return ListView.builder(
           itemCount: listChat.length,
           itemBuilder: (context, index) {
             final itemChat = listChat[index];
+            final listEvent =
+                stateEvent.listEvent.where((element) => element.chatId == itemChat.id).toList();
             return GestureDetector(
               onLongPress: () {
                 showModalBottomSheet(
@@ -43,10 +48,9 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                     return HomeScreenModal(
                       chat: itemChat,
                       index: index,
-                      dateLastEvent: S.of(context).no_event,
-                      // dateLastEvent: itemChat.listEvent!.isEmpty
-                      //     ? S.of(context).no_event
-                      //     : DateFormat.yMd().add_jm().format(itemChat.listEvent![0].messageTime),
+                      dateLastEvent: listEvent.isEmpty
+                          ? S.of(context).no_event
+                          : DateFormat.yMd().add_jm().format(listEvent.last.messageTime),
                     );
                   },
                 );
@@ -91,20 +95,17 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                           ],
                         ),
                         subtitle: Text(
-                          S.of(context).no_event,
+                          listEvent.isEmpty
+                              ? S.of(context).no_event
+                              : listEvent.last.messageContent,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        // subtitle: Text(
-                        //   itemChat.listEvent!.isEmpty
-                        //       ? S.of(context).no_event
-                        //       : itemChat.listEvent![0].messageContent,
-                        //   maxLines: 1,
-                        //   overflow: TextOverflow.ellipsis,
-                        // ),
-                        // trailing: itemChat.listEvent!.isEmpty
-                        //     ? const SizedBox()
-                        //     : Text(
-                        //         DateFormat('hh:mm a').format(itemChat.listEvent![0].messageTime),
-                        //       ),
+                        trailing: listEvent.isEmpty
+                            ? const SizedBox()
+                            : Text(
+                                DateFormat('hh:mm a').format(listEvent.last.messageTime),
+                              ),
                       ),
                     ),
                   ),

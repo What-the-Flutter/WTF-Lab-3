@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/entities/section.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -12,6 +13,7 @@ class DBProvider {
   Database? _database;
   String chatsTable = 'chats';
   String eventeTable = 'events';
+  String sectionTable = 'sections';
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -52,6 +54,31 @@ class DBProvider {
       ${EventField.sectionTitle} TEXT   
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE $sectionTable(
+        ${SectionField.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${SectionField.titleSection} TEXT,
+        ${SectionField.iconSection} TEXT,
+      )
+    ''');
+  }
+
+  Future<List<Section>> getAllSection() async {
+    final db = await dbProvider.database;
+    final List<Map<String, dynamic>> maps = await db.query(sectionTable);
+
+    return List.generate(
+      maps.length,
+      (i) {
+        return Section(
+          id: maps[i]['${ChatField.id}'],
+          iconSection:
+              IconData(maps[i]['${SectionField.iconSection}'], fontFamily: 'MaterialIcons'),
+          titleSection: maps[i]['${SectionField.titleSection}'],
+        );
+      },
+    );
   }
 
   Future<List<Chat>> getAllChat() async {
@@ -104,6 +131,15 @@ class DBProvider {
       chat.toMap(),
     );
     return chat.copyWith(id: id);
+  }
+
+  Future<Section> addSection(Section section) async {
+    final db = await dbProvider.database;
+    final id = await db.insert(
+      sectionTable,
+      section.toMap(),
+    );
+    return section.copyWith(id: id);
   }
 
   Future<Event> addEvent(Event event) async {

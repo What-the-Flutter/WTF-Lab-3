@@ -46,6 +46,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     if (editMessage != '') {
       context.read<EventCubit>().editEvent(content: editText);
     } else if (widget.isCamera) {
+      context.read<EventCubit>().changeWrite();
       _showMyDialog('recipient');
     } else {
       context.read<EventCubit>().addEvent(
@@ -64,6 +65,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     if (editMessage != '') {
       context.read<EventCubit>().editEvent(content: editText);
     } else if (widget.isCamera) {
+      context.read<EventCubit>().changeWrite();
       _showMyDialog('sender');
     } else {
       context.read<EventCubit>().addEvent(

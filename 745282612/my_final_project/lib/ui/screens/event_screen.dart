@@ -27,7 +27,6 @@ class _EventScreenState extends State<EventScreen> {
   void initState() {
     super.initState();
     controllerSearch = TextEditingController();
-    BlocProvider.of<EventCubit>(context).initializer(widget.chatId);
   }
 
   @override
@@ -40,7 +39,7 @@ class _EventScreenState extends State<EventScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final listSearch = context.read<EventCubit>().searchListEvent();
+        final listSearch = context.read<EventCubit>().searchListEvent(widget.chatId);
         final listEvent =
             state.listEvent.reversed.where((element) => element.chatId == widget.chatId).toList();
         return Scaffold(

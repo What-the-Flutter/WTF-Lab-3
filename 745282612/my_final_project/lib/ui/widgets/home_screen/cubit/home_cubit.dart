@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_final_project/data/db/db_provider.dart';
 
+import 'package:my_final_project/data/db/db_provider.dart';
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 

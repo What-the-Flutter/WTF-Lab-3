@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,9 +10,11 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  EventCubit() : super(EventState(listEvent: []));
+  EventCubit() : super(EventState(listEvent: [])) {
+    initializer();
+  }
 
-  void initializer(int chatId) async {
+  void initializer() async {
     final listEvent = await DBProvider.dbProvider.getAllEvent();
     emit(state.copyWith(listEvent: listEvent));
   }
@@ -39,7 +40,7 @@ class EventCubit extends Cubit<EventState> {
     );
     final event = await DBProvider.dbProvider.addEvent(newEvent);
     newListEvent.add(event);
-    emit(state.copyWith(listEvent: newListEvent));
+    emit(state.copyWith(listEvent: newListEvent, isWrite: false));
   }
 
   void changeFavorite() {
@@ -88,10 +89,6 @@ class EventCubit extends Cubit<EventState> {
     _changeCountSelected();
   }
 
-  String _base64String(Uint8List data) {
-    return base64Encode(data);
-  }
-
   void addPicterMessage({
     File? repetFile,
     XFile? pickedFile,
@@ -111,8 +108,12 @@ class EventCubit extends Cubit<EventState> {
       final newListEvent = state.listEvent;
       final event = await DBProvider.dbProvider.addEvent(newEvent);
       newListEvent.add(event);
-      emit(state.copyWith(listEvent: newListEvent));
+      emit(state.copyWith(listEvent: newListEvent, isWrite: false));
     }
+  }
+
+  void changeWrite() {
+    emit(state.copyWith(isWrite: true));
   }
 
   void deleteEvent([int id = -1]) async {
@@ -215,9 +216,11 @@ class EventCubit extends Cubit<EventState> {
     changeSelected();
   }
 
-  List<Event> searchListEvent() {
-    final list = state.listEvent
-        .where((element) => element.messageContent.toLowerCase().contains(state.searchText))
+  List<Event> searchListEvent(int chatId) {
+    final list = state.listEvent.reversed
+        .where((element) =>
+            element.messageContent.toLowerCase().contains(state.searchText) &&
+            element.chatId == chatId)
         .toList();
     return list;
   }
