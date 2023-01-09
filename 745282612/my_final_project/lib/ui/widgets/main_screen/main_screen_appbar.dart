@@ -28,11 +28,6 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(_listTitle[widget.index]),
-      leading: IconButton(
-        icon: const Icon(Icons.menu),
-        onPressed: () {},
-      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.invert_colors),

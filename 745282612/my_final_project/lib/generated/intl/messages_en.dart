@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add_new_event": MessageLookupByLibrary.simpleMessage("Add new event"),
+        "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
         "content_add_image": MessageLookupByLibrary.simpleMessage(
@@ -42,6 +43,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "event_modal_title": MessageLookupByLibrary.simpleMessage(
             "Select the page you want to migrate the selected event to!"),
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
+        "exit_the_app": MessageLookupByLibrary.simpleMessage("Exit the app"),
         "explore_label": MessageLookupByLibrary.simpleMessage("Explore"),
         "home_label": MessageLookupByLibrary.simpleMessage("Home"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
@@ -58,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
+        "setting": MessageLookupByLibrary.simpleMessage("Settings"),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
         "title_instruction": m1

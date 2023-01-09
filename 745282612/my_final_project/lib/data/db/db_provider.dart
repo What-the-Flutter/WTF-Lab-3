@@ -11,9 +11,9 @@ import 'package:sqflite/sqflite.dart';
 class DBProvider {
   static final DBProvider dbProvider = DBProvider();
   Database? _database;
-  String chatsTable = 'chats';
-  String eventeTable = 'events';
-  String sectionTable = 'sections';
+  final String chatsTable = 'chats';
+  final String eventeTable = 'events';
+  final String sectionTable = 'sections';
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -59,13 +59,60 @@ class DBProvider {
       CREATE TABLE $sectionTable(
         ${SectionField.id} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${SectionField.titleSection} TEXT,
-        ${SectionField.iconSection} TEXT,
+        ${SectionField.iconSection} INTEGER
       )
     ''');
   }
 
+  void initSection() {
+    addSections(
+      <Section>[
+        Section(
+          id: 0,
+          iconSection: Icons.cancel,
+          titleSection: 'Cancel',
+        ),
+        Section(
+          id: 1,
+          iconSection: Icons.movie,
+          titleSection: 'Movie',
+        ),
+        Section(
+          id: 2,
+          iconSection: Icons.fastfood,
+          titleSection: 'FastFood',
+        ),
+        Section(
+          id: 3,
+          iconSection: Icons.sports,
+          titleSection: 'Workout',
+        ),
+        Section(
+          id: 4,
+          iconSection: Icons.directions_run_rounded,
+          titleSection: 'Runner',
+        ),
+        Section(
+          id: 5,
+          iconSection: Icons.shopping_basket_rounded,
+          titleSection: 'Shopping',
+        ),
+        Section(
+          id: 6,
+          iconSection: Icons.travel_explore,
+          titleSection: 'Travel',
+        ),
+        Section(
+          id: 7,
+          iconSection: Icons.explore,
+          titleSection: 'Explore',
+        ),
+      ],
+    );
+  }
+
   Future<List<Section>> getAllSection() async {
-    final db = await dbProvider.database;
+    final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(sectionTable);
 
     return List.generate(
@@ -82,7 +129,7 @@ class DBProvider {
   }
 
   Future<List<Chat>> getAllChat() async {
-    final db = await dbProvider.database;
+    final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(chatsTable);
 
     return List.generate(
@@ -100,8 +147,9 @@ class DBProvider {
   }
 
   Future<List<Event>> getAllEvent() async {
-    final db = await dbProvider.database;
+    final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(eventeTable);
+
     return List.generate(
       maps.length,
       (i) {
@@ -125,34 +173,44 @@ class DBProvider {
   }
 
   Future<Chat> addChat(Chat chat) async {
-    final db = await dbProvider.database;
+    final db = await database;
     final id = await db.insert(
       chatsTable,
       chat.toMap(),
     );
+
     return chat.copyWith(id: id);
   }
 
+  Future<void> addSections(List<Section> section) async {
+    for (final element in section) {
+      addSection(element);
+    }
+  }
+
   Future<Section> addSection(Section section) async {
-    final db = await dbProvider.database;
+    final db = await database;
     final id = await db.insert(
       sectionTable,
       section.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
     return section.copyWith(id: id);
   }
 
   Future<Event> addEvent(Event event) async {
-    final db = await dbProvider.database;
+    final db = await database;
     final id = await db.insert(
       eventeTable,
       event.toMap(),
     );
+
     return event.copyWith(id: id);
   }
 
   Future<void> updateChat(Chat chat) async {
-    final db = await dbProvider.database;
+    final db = await database;
     await db.update(
       chatsTable,
       chat.toMap(),
@@ -162,7 +220,7 @@ class DBProvider {
   }
 
   Future<void> updateEvent(Event event) async {
-    final db = await dbProvider.database;
+    final db = await database;
     await db.update(
       eventeTable,
       event.toMap(),

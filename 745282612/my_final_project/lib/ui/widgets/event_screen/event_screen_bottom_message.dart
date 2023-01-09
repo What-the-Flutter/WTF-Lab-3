@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
+import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/constants/app_section.dart';
 import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
@@ -96,6 +96,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
+        final stateMenu = context.watch<MenuCubit>().state;
         editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
@@ -117,9 +118,9 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                       ? Expanded(
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: AppSection.listSection.length,
+                            itemCount: stateMenu.listSection.length,
                             itemBuilder: (context, index) {
-                              final items = AppSection.listSection[index];
+                              final items = stateMenu.listSection[index];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
