@@ -1,7 +1,7 @@
 class MessageData {
   final String message;
-  final Duration duration;
-  final bool isFavorite;
+  final DateTime dateTime;
+  bool isFavorite = false;
 
-  MessageData(this.message, this.duration, this.isFavorite);
+  MessageData(this.message, this.dateTime, this.isFavorite);
 }

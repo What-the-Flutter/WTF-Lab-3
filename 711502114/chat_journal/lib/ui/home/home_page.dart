@@ -7,6 +7,7 @@ import '../../theme/colors.dart';
 import '../../theme/theme_model.dart';
 import 'chat.dart';
 import 'chat_card.dart';
+import 'event/message_data.dart';
 import 'event/messenger_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,16 +34,36 @@ class _HomePageState extends State<HomePage> {
       ),
       ChatCard(
         chat: Chat(
-            title: 'Family',
-            description: desc,
-            messages: ['Family is very important!']),
+          title: 'Family',
+          description: desc,
+          messages: [
+            MessageData(
+              'Family is very important!',
+              DateTime.now(),
+              false,
+            ),
+          ],
+        ),
         assetsLink: 'assets/sofa.svg',
       ),
       ChatCard(
-        chat: Chat(
-            title: 'Sports',
-            description: desc,
-            messages: ['I like going', 'to the fucking gym!']),
+        chat: Chat(title: 'Sports', description: desc, messages: [
+          MessageData(
+            'I like going',
+            DateTime(1, 10, 15, 10, 45, 12),
+            false,
+          ),
+          MessageData(
+            'to the fucking gym!',
+            DateTime(1, 10, 15, 9, 30, 2),
+            false,
+          ),
+          MessageData(
+            "I'll go to the fucking gym 3 times a week" * 200,
+            DateTime(1, 10, 15, 23, 59, 46),
+            false,
+          ),
+        ]),
         assetsLink: 'assets/gym.svg',
       ),
     ];

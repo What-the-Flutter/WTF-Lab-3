@@ -1,6 +1,8 @@
+import 'event/message_data.dart';
+
 class Chat {
   final String title, description;
-  final List<String> messages;
+  final List<MessageData> messages;
 
   Chat({
     required this.title,

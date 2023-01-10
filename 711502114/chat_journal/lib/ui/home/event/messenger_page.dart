@@ -48,7 +48,7 @@ class _MessengerPageState extends State<MessengerPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               widget.chat.messages.isNotEmpty
-                  ? _buildMessageList()
+                  ? _buildMessageList(size)
                   : InfoBox(size: size, mainTitle: widget.chat.title),
               _getInputBox(size),
             ],
@@ -56,13 +56,17 @@ class _MessengerPageState extends State<MessengerPage> {
         ));
   }
 
-  Expanded _buildMessageList() {
+  Expanded _buildMessageList(Size size) {
     return Expanded(
+
       child: ListView.builder(
         reverse: true,
         itemCount: widget.chat.messages.length,
         itemBuilder: (context, index) {
-          return Event(message: widget.chat.messages[index],);
+          return Event(
+            messageData: widget.chat.messages[index],
+            size: size,
+          );
         },
       ),
     );
