@@ -11,6 +11,8 @@ const _elementsColor = Color.fromRGBO(94, 163, 222, 1);
 const _mainDarkColor = Color.fromRGBO(33, 45, 59, 1);
 const _elementsDarkColor = Color.fromRGBO(23, 34, 44, 1);
 
+const messageBlocColor = Color.fromRGBO(37,47,57, 1);
+
 class CustomTheme {
   static ThemeData get lightTheme {
     iconColor = Colors.black;

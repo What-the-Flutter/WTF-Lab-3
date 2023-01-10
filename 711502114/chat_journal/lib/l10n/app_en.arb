@@ -5,5 +5,7 @@
     "explorePage": "Explore",
     "bot": "Questionnaire Bot",
     "chatDescription": "No events. Click to create one.",
-    "increaseButtonHint": "Increment"
+    "increaseButtonHint": "Increment",
+    "messageNotificationTitle": "This is the page where you can track everything about \"{}\"!",
+    "messageNotificationDesc": "Add your first event to \"{}\" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event In the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only."
 }

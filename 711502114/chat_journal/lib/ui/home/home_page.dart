@@ -7,7 +7,7 @@ import '../../theme/colors.dart';
 import '../../theme/theme_model.dart';
 import 'chat.dart';
 import 'chat_card.dart';
-import 'messenger_page.dart';
+import 'event/messenger_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,7 +24,11 @@ class _HomePageState extends State<HomePage> {
 
     final _chatCards = <ChatCard>[
       ChatCard(
-        chat: Chat(title: 'Travel', description: desc),
+        chat: Chat(
+          title: 'Travel',
+          description: desc,
+          messages: [],
+        ),
         assetsLink: 'assets/plane.svg',
       ),
       ChatCard(
