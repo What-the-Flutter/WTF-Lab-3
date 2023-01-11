@@ -35,7 +35,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             Expanded(
               child: TextButton(
-                onPressed: () => context.read<EventCubit>().changeSelected(),
+                onPressed: context.read<EventCubit>().changeSelected,
                 child: const Icon(
                   Icons.clear,
                   color: Colors.white,
@@ -51,6 +51,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: [
           TextButton(
             onPressed: () {
+              context.read<EventCubit>().changeRepetStatus();
               showDialog(
                 context: context,
                 builder: (context) {
@@ -67,7 +68,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           !eventState.isPicter && eventState.countSelected < 2
               ? TextButton(
-                  onPressed: () => context.read<EventCubit>().changeEditText(),
+                  onPressed: context.read<EventCubit>().changeEditText,
                   child: const Icon(
                     Icons.edit,
                     color: Colors.white,
@@ -105,9 +106,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              context.read<EventCubit>().changeSearch();
-            },
+            onPressed: context.read<EventCubit>().changeSearch,
             child: const Icon(
               Icons.clear,
               color: Colors.white,
@@ -131,14 +130,14 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: () => context.read<EventCubit>().changeSearch(),
+            onPressed: context.read<EventCubit>().changeSearch,
             child: const Icon(
               Icons.search,
               color: Colors.white,
             ),
           ),
           TextButton(
-            onPressed: () => context.read<EventCubit>().changeFavorite(),
+            onPressed: context.read<EventCubit>().changeFavorite,
             child: Icon(
               eventState.isFavorite ? Icons.turned_in : Icons.turned_in_not,
               color: Colors.white,

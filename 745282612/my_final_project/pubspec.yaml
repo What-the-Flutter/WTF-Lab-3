@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sqflite:
+  path:
   flutter_localizations:
     sdk: flutter
 
@@ -21,6 +23,8 @@ dependencies:
   provider: ^6.0.5
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
+  shared_preferences: ^2.0.15
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

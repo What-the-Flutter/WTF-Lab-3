@@ -6,6 +6,7 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenListMessage extends StatelessWidget {
   final List<Event> listMessage;
@@ -31,7 +32,7 @@ class EventScreenListMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -45,8 +46,8 @@ class EventScreenListMessage extends StatelessWidget {
               key: UniqueKey(),
               onDismissed: (direction) {
                 if (direction == DismissDirection.endToStart) {
-                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
-                  context.read<EventCubit>().deleteEvent(indexMessage.id);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
+                  context.read<EventCubit>().deleteEvent(indexMessage.id!);
                   context.read<EventCubit>().changeSelected();
                   final snackBar = const SnackBar(
                     content: Text('Delete element!'),
@@ -54,7 +55,7 @@ class EventScreenListMessage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 if (direction == DismissDirection.startToEnd) {
-                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
                   context.read<EventCubit>().changeSelected();
                   context.read<EventCubit>().changeEditText();
                 }
@@ -62,13 +63,13 @@ class EventScreenListMessage extends StatelessWidget {
               child: GestureDetector(
                 onLongPress: () {
                   if (!isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
                     context.read<EventCubit>().changeSelected();
                   }
                 },
                 onTap: () {
                   if (isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
                   }
                 },
                 child: Container(
@@ -108,11 +109,12 @@ class EventScreenListMessage extends StatelessWidget {
                         const SizedBox(height: 3),
                         Align(
                           alignment: Alignment.bottomLeft,
-                          child: indexMessage.messageImage ??
-                              Text(
-                                indexMessage.messageContent,
-                                style: const TextStyle(fontSize: 16),
-                              ),
+                          child: indexMessage.messageImage != null
+                              ? Image.file(indexMessage.messageImage!)
+                              : Text(
+                                  indexMessage.messageContent,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                         ),
                         const SizedBox(height: 3),
                         Row(

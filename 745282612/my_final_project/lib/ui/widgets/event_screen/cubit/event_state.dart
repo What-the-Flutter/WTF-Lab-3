@@ -1,12 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:my_final_project/entities/event.dart';
 
-class EventState {
+class EventState extends Equatable {
   final List<Event> listEvent;
   final bool isFavorite;
   final bool isSelected;
   final bool isEdit;
+  final bool isRepet;
   final String editText;
   final bool isPicter;
   final bool isSearch;
@@ -15,6 +17,7 @@ class EventState {
   final IconData sectionIcon;
   final String sectionTitle;
   final String searchText;
+  final bool isWrite;
 
   EventState({
     required this.listEvent,
@@ -22,10 +25,12 @@ class EventState {
     this.isSelected = false,
     this.isEdit = false,
     this.isPicter = false,
+    this.isRepet = false,
     this.editText = '',
     this.isSearch = false,
     this.countSelected = 0,
     this.isSection = false,
+    this.isWrite = false,
     this.sectionIcon = Icons.bubble_chart,
     this.sectionTitle = 'Cancel',
     this.searchText = '',
@@ -44,6 +49,8 @@ class EventState {
     bool? isSection,
     IconData? sectionIcon,
     String? sectionTitle,
+    bool? isRepet,
+    bool? isWrite,
   }) {
     return EventState(
       isSelected: isSelected ?? this.isSelected,
@@ -58,6 +65,26 @@ class EventState {
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
       searchText: searchText ?? this.searchText,
+      isRepet: isRepet ?? this.isRepet,
+      isWrite: isWrite ?? this.isWrite,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        listEvent,
+        isFavorite,
+        isSelected,
+        isEdit,
+        isRepet,
+        editText,
+        isPicter,
+        isSearch,
+        countSelected,
+        isSection,
+        sectionIcon,
+        sectionTitle,
+        searchText,
+        isWrite,
+      ];
 }

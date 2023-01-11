@@ -9,7 +9,7 @@ class DeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => context.read<EventCubit>().deleteEvent(),
+      onPressed: context.read<EventCubit>().deleteEvent,
       child: const Icon(
         Icons.delete,
         color: Colors.white,

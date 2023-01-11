@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:my_final_project/ui/widgets/main_screen/cubit/bottom_cubit.dart';
-import 'package:my_final_project/ui/widgets/main_screen/cubit/bottom_state.dart';
+import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_state.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_appbar.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_body.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_bottom.dart';
+import 'package:my_final_project/ui/widgets/main_screen/main_screen_drawer.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_floating_button.dart';
 
 class Menu extends StatelessWidget {
@@ -15,14 +16,15 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MenuCubit, MenuState>(
       builder: (context, state) {
-        final indexing = state.index;
+        final changeIndex = context.read<MenuCubit>().changeIndex;
         return Scaffold(
-          appBar: MainScreenAppBar(index: indexing),
-          body: MainScreenBody(index: indexing),
+          appBar: MainScreenAppBar(index: state.index),
+          body: MainScreenBody(index: state.index),
+          drawer: const MainScreenDrawer(),
           floatingActionButton: const MainScreenFloatingButton(),
           bottomNavigationBar: MainScreenBottomNavigation(
-            index: indexing,
-            selected: context.read<MenuCubit>().changeIndex,
+            index: state.index,
+            selected: changeIndex,
           ),
         );
       },

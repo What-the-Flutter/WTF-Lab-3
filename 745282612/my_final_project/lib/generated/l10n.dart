@@ -299,6 +299,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Settings`
+  String get setting {
+    return Intl.message(
+      'Settings',
+      name: 'setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exit the app`
+  String get exit_the_app {
+    return Intl.message(
+      'Exit the app',
+      name: 'exit_the_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add new section`
+  String get add_section {
+    return Intl.message(
+      'Add new section',
+      name: 'add_section',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

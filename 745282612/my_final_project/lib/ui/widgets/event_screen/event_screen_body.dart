@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_bottom_message.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_instruction.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_list_message.dart';
@@ -11,6 +13,7 @@ class EventScreenBody extends StatefulWidget {
   final bool isSelected;
   final List<Event> listEvent;
   final bool isSearch;
+  final int chatId;
 
   const EventScreenBody({
     super.key,
@@ -19,6 +22,7 @@ class EventScreenBody extends StatefulWidget {
     required this.listEvent,
     required this.title,
     required this.isSearch,
+    required this.chatId,
   });
 
   @override
@@ -50,6 +54,7 @@ class _EventScreenBodyState extends State<EventScreenBody> {
           TextPosition(offset: controller.text.length),
         );
         controller.text.isEmpty ? _isCamera = true : _isCamera = false;
+        context.read<EventCubit>().changeWrite();
       },
     );
   }
@@ -72,6 +77,7 @@ class _EventScreenBodyState extends State<EventScreenBody> {
             : EventScreenBottomMessage(
                 controller: controller,
                 isCamera: _isCamera,
+                chatId: widget.chatId,
               ),
       ],
     );

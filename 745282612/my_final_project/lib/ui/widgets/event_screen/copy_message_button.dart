@@ -15,7 +15,7 @@ class CopyMessageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => context.read<EventCubit>().copyClipboard(),
+      onPressed: context.read<EventCubit>().copyClipboard,
       child: const Icon(
         Icons.copy,
         color: Colors.white,

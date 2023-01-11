@@ -5,38 +5,42 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:my_final_project/data/db/db_provider.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  EventCubit() : super(EventState(listEvent: []));
+  EventCubit() : super(EventState(listEvent: [])) {
+    initializer();
+  }
 
-  void initializer(List<Event> event) {
-    emit(state.copyWith(listEvent: event));
+  void initializer() async {
+    final listEvent = await DBProvider.dbProvider.getAllEvent();
+    emit(state.copyWith(listEvent: listEvent));
   }
 
   void addEvent({
     required String content,
     required String type,
-  }) {
-    final selectedIcon = state.sectionIcon;
-    final sectionTitle = state.sectionTitle;
+    required int chatId,
+    IconData? sectionIcon,
+    String? sectionTitle,
+  }) async {
+    final selectedIcon = sectionIcon ?? state.sectionIcon;
+    final selectedTitle = sectionTitle ?? state.sectionTitle;
     final newListEvent = state.listEvent;
-    final event = Event(
-      id: state.listEvent.length,
+    final newEvent = Event(
+      chatId: chatId,
       messageContent: content,
       messageType: type,
       messageTime: DateTime.now(),
-      isFavorit: false,
-      isSelected: false,
+      messageImage: null,
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
-      sectionTitle: sectionTitle != 'Cancel' ? sectionTitle : null,
+      sectionTitle: selectedTitle != 'Cancel' ? selectedTitle : null,
     );
-    newListEvent.insert(
-      0,
-      event,
-    );
-    emit(state.copyWith(listEvent: newListEvent));
+    final event = await DBProvider.dbProvider.addEvent(newEvent);
+    newListEvent.add(event);
+    emit(state.copyWith(listEvent: newListEvent, isWrite: false));
   }
 
   void changeFavorite() {
@@ -66,6 +70,7 @@ class EventCubit extends Cubit<EventState> {
       if (listEvent[i].isSelected) {
         event = listEvent[i];
         listEvent[i] = event.copyWith(isFavorit: !listEvent[i].isFavorit);
+        DBProvider.dbProvider.updateEvent(listEvent[i]);
       }
     }
     emit(state.copyWith(listEvent: listEvent));
@@ -85,35 +90,44 @@ class EventCubit extends Cubit<EventState> {
   }
 
   void addPicterMessage({
-    required XFile? pickedFile,
+    File? repetFile,
+    XFile? pickedFile,
     required String type,
-  }) {
-    if (pickedFile != null) {
-      final event = Event(
-        id: state.listEvent.length,
+    required int chatId,
+  }) async {
+    if (pickedFile != null || repetFile != null) {
+      final newEvent = Event(
+        chatId: chatId,
         messageContent: 'Image Entry',
         messageType: type,
         messageTime: DateTime.now(),
-        messageImage: Image.file(
-          File(pickedFile.path),
-        ),
+        messageImage: repetFile ?? File(pickedFile!.path),
         isFavorit: false,
         isSelected: false,
       );
       final newListEvent = state.listEvent;
-      newListEvent.insert(
-        0,
-        event,
-      );
-      emit(state.copyWith(listEvent: newListEvent));
+      final event = await DBProvider.dbProvider.addEvent(newEvent);
+      newListEvent.add(event);
+      emit(state.copyWith(listEvent: newListEvent, isWrite: false));
     }
   }
 
-  void deleteEvent([int id = -1]) {
+  void changeWrite() {
+    emit(state.copyWith(isWrite: true));
+  }
+
+  void deleteEvent([int id = -1]) async {
     final listEvent = state.listEvent;
+    int i;
     if (id != -1) {
       listEvent.removeWhere((element) => element.id == id);
+      await DBProvider.dbProvider.deleteEventById(id);
     } else {
+      for (i = 0; i < listEvent.length; i++) {
+        if (listEvent[i].isSelected) {
+          await DBProvider.dbProvider.deleteEventById(listEvent[i].id!);
+        }
+      }
       listEvent.removeWhere((element) => element.isSelected);
     }
     emit(state.copyWith(listEvent: listEvent));
@@ -138,6 +152,7 @@ class EventCubit extends Cubit<EventState> {
       if (listEvent[i].isSelected) {
         final event = listEvent[i];
         listEvent[i] = event.copyWith(messageContent: content);
+        DBProvider.dbProvider.updateEvent(listEvent[i]);
         break;
       }
     }
@@ -151,6 +166,10 @@ class EventCubit extends Cubit<EventState> {
     } else {
       emit(state.copyWith(isSearch: true));
     }
+  }
+
+  void changeRepetStatus() {
+    emit(state.copyWith(isRepet: !state.isRepet));
   }
 
   void changeSection() {
@@ -197,14 +216,38 @@ class EventCubit extends Cubit<EventState> {
     changeSelected();
   }
 
-  List<Event> searchListEvent() {
-    final list = state.listEvent
-        .where((element) => element.messageContent.toLowerCase().contains(state.searchText))
+  List<Event> searchListEvent(int chatId) {
+    final list = state.listEvent.reversed
+        .where((element) =>
+            element.messageContent.toLowerCase().contains(state.searchText) &&
+            element.chatId == chatId)
         .toList();
     return list;
   }
 
   void searchText(String text) {
     emit(state.copyWith(searchText: text));
+  }
+
+  void repetEvent({required int chatId, required List<Event> listEvent}) async {
+    final newListEvent = listEvent.reversed.where((element) => element.isSelected).toList();
+    int i;
+    for (i = 0; i < newListEvent.length; i++) {
+      if (newListEvent[i].isSelected && newListEvent[i].messageImage != null) {
+        addPicterMessage(
+          repetFile: newListEvent[i].messageImage,
+          type: newListEvent[i].messageType,
+          chatId: chatId,
+        );
+      } else {
+        addEvent(
+          content: newListEvent[i].messageContent,
+          type: newListEvent[i].messageType,
+          chatId: chatId,
+          sectionIcon: newListEvent[i].sectionIcon,
+          sectionTitle: newListEvent[i].sectionTitle,
+        );
+      }
+    }
   }
 }

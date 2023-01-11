@@ -4,26 +4,42 @@ import 'package:intl/intl.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/event_screen.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_modal.dart';
 import 'package:my_final_project/ui/widgets/hovers/on_hovers_button.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
+import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
-class HomeScreenChatElement extends StatelessWidget {
+class HomeScreenChatElement extends StatefulWidget {
   const HomeScreenChatElement({super.key});
 
   @override
+  State<HomeScreenChatElement> createState() => _HomeScreenChatElementState();
+}
+
+class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<HomeCubit>(context).initializer();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).brightness == Brightness.light;
+    final theme = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final listChat = state.listChat;
+        final stateEvent = context.read<EventCubit>().state;
         return ListView.builder(
           itemCount: listChat.length,
           itemBuilder: (context, index) {
             final itemChat = listChat[index];
+            final listEvent =
+                stateEvent.listEvent.where((element) => element.chatId == itemChat.id).toList();
             return GestureDetector(
               onLongPress: () {
                 showModalBottomSheet(
@@ -32,11 +48,9 @@ class HomeScreenChatElement extends StatelessWidget {
                     return HomeScreenModal(
                       chat: itemChat,
                       index: index,
-                      dateLastEvent: itemChat.listEvent.isEmpty
+                      dateLastEvent: listEvent.isEmpty
                           ? S.of(context).no_event
-                          : DateFormat.yMd()
-                              .add_jm()
-                              .format(itemChat.listEvent[0].messageTime),
+                          : DateFormat.yMd().add_jm().format(listEvent.last.messageTime),
                     );
                   },
                 );
@@ -49,7 +63,7 @@ class HomeScreenChatElement extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => EventScreen(
-                              listEvent: itemChat.listEvent,
+                              chatId: itemChat.id!,
                               title: itemChat.title,
                             ),
                           ),
@@ -57,9 +71,8 @@ class HomeScreenChatElement extends StatelessWidget {
                       },
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: theme
-                              ? AppColors.colorLightBlue
-                              : AppColors.colorLightGrey,
+                          backgroundColor:
+                              theme ? AppColors.colorLightBlue : AppColors.colorLightGrey,
                           foregroundColor: Colors.white,
                           radius: 40,
                           child: itemChat.icon,
@@ -76,25 +89,22 @@ class HomeScreenChatElement extends StatelessWidget {
                             itemChat.isPin
                                 ? Icon(
                                     Icons.attach_file,
-                                    color: theme
-                                        ? Colors.black
-                                        : AppColors.colorLightYellow,
+                                    color: theme ? Colors.black : AppColors.colorLightYellow,
                                   )
                                 : const SizedBox(),
                           ],
                         ),
                         subtitle: Text(
-                          itemChat.listEvent.isEmpty
+                          listEvent.isEmpty
                               ? S.of(context).no_event
-                              : itemChat.listEvent[0].messageContent,
+                              : listEvent.last.messageContent,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        trailing: itemChat.listEvent.isEmpty
+                        trailing: listEvent.isEmpty
                             ? const SizedBox()
                             : Text(
-                                DateFormat('hh:mm a')
-                                    .format(itemChat.listEvent[0].messageTime),
+                                DateFormat('hh:mm a').format(listEvent.last.messageTime),
                               ),
                       ),
                     ),
