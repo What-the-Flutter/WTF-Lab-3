@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../theme/colors.dart';
 import '../chat.dart';
@@ -126,14 +127,68 @@ class _MessengerPageState extends State<MessengerPage> {
     );
   }
 
-  void _attachFile() {}
+  Future<void> _attachFile() async {
+    final _picker = ImagePicker();
+    late XFile? photo;
 
-  void _sendEvent() {
-    if (_fieldText.text.isEmpty) return;
+    return (await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Center(
+          child: Text(
+            'How would you like to upload an image?',
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: _closeDialog,
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              photo = await _picker.pickImage(source: ImageSource.gallery);
+              _sendEvent(photo?.path);
+              _closeDialog();
+            },
+            child: const Text(
+              'Gallery',
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              photo = await _picker.pickImage(source: ImageSource.camera);
+              _sendEvent(photo?.path);
+              _closeDialog();
+            },
+            child: const Text(
+              'Camera',
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+
+  void _closeDialog() => Navigator.of(context).pop(false);
+
+  void _sendEvent([String? path]) {
+    if (_fieldText.text.isEmpty && path == null) return;
 
     setState(() {
       widget.chat.messages.add(
-        MessageData(_fieldText.text, DateTime.now()),
+        MessageData(_fieldText.text, DateTime.now(), photoPath: path),
       );
       _fieldText.clear();
     });

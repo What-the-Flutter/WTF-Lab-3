@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
             MessageData(
               'Family is very important!',
               DateTime.now(),
-              false,
             ),
           ],
         ),
@@ -48,17 +47,14 @@ class _HomePageState extends State<HomePage> {
           MessageData(
             'I like going',
             DateTime(1, 10, 15, 9, 30, 2),
-            false,
           ),
           MessageData(
             'to the gym!',
             DateTime(1, 10, 15, 10, 45, 12),
-            false,
           ),
           MessageData(
             "I'll go to the gym 3 times a week" * 200,
             DateTime(1, 10, 15, 23, 59, 46),
-            false,
           ),
         ]),
         assetsLink: 'assets/gym.svg',

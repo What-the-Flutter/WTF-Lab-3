@@ -1,14 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../theme/colors.dart';
 import '../../../utils/utils.dart';
 import 'message_data.dart';
 
+enum MessageType { text, attach, textWithAttach }
+
 class Event extends StatelessWidget {
   final MessageData messageData;
   final Size size;
+  late final Image _image;
 
-  const Event({Key? key, required this.messageData, required this.size})
+  Event({Key? key, required this.messageData, required this.size})
       : super(key: key);
 
   @override
@@ -18,32 +23,114 @@ class Event extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: size.width * .75,
-              ),
-              padding: const EdgeInsets.all(12.0),
-              decoration: const BoxDecoration(
-                color: circleMessageColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(25),
-                  topRight: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
-                ),
-              ),
-              child: Text(
-                messageData.message,
-                style: const TextStyle(fontSize: 16),
-                overflow: TextOverflow.clip,
-              ),
-            ),
+            if (!_isValidPath(messageData.photoPath))
+              _buildMessageBox(MessageType.text)
+            else if (messageData.message.isEmpty)
+              _buildMessageBox(MessageType.attach)
+            else
+              _buildMessageBox(MessageType.textWithAttach),
             const SizedBox(width: 10),
             Text(formatTime(messageData.dateTime)),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildMessageBox(MessageType type,
+      {BoxConstraints? constraints, BorderRadius? radius}) {
+    var boxConstraints = constraints;
+    var borderRadius = radius;
+    Widget? child;
+
+    final circular = const Radius.circular(25);
+
+    switch (type) {
+      case MessageType.text:
+        if (constraints == null && radius == null) {
+          boxConstraints = BoxConstraints(
+            maxWidth: size.width * .75,
+          );
+          borderRadius = BorderRadius.only(
+            topLeft: circular,
+            topRight: circular,
+            bottomRight: circular,
+          );
+        }
+
+        child = Text(
+          messageData.message,
+          style: const TextStyle(fontSize: 16),
+          overflow: TextOverflow.clip,
+        );
+        break;
+      case MessageType.attach:
+        if (constraints == null && radius == null) {
+          boxConstraints = BoxConstraints(
+            minWidth: size.width * .75,
+          );
+          borderRadius = BorderRadius.only(
+            topLeft: circular,
+            topRight: circular,
+            bottomRight: circular,
+          );
+        }
+
+        child = SizedBox(
+          child: _image,
+          width: size.width * 0.3,
+          height: size.height * 0.3,
+        );
+        break;
+      case MessageType.textWithAttach:
+        return Column(
+          children: [
+            _buildMessageBox(
+              MessageType.text,
+              constraints: BoxConstraints(
+                minWidth: size.width * .75,
+                maxWidth: size.width * .75,
+              ),
+              radius: BorderRadius.only(
+                topLeft: circular,
+                topRight: circular,
+              ),
+            ),
+            _buildMessageBox(
+              MessageType.attach,
+              constraints: BoxConstraints(
+                minWidth: size.width * .75,
+              ),
+              radius: BorderRadius.only(
+                bottomRight: circular,
+              ),
+            ),
+          ],
+        );
+    }
+
+    return Container(
+      constraints: boxConstraints,
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: circleMessageColor,
+        borderRadius: borderRadius,
+      ),
+      child: child,
+    );
+  }
+
+  bool _isValidPath(String? path) {
+    if (path == null || path.isEmpty) return false;
+
+    try {
+      _image = Image.file(File(path));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
