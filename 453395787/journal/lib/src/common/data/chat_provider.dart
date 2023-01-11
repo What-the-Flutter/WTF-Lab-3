@@ -2,37 +2,54 @@ import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../api/chat_provider_api.dart';
-import 'models/chat.dart';
-import 'models/message.dart';
-import 'models/tag.dart';
+import '../models/chat.dart';
+import '../models/message.dart';
+import '../models/tag.dart';
 
 class ChatProvider extends ChatProviderApi {
-  final BehaviorSubject<List<Chat>> _chatsStream =
-      BehaviorSubject.seeded(_chats.entries.map((e) => e.value).toList());
-
   @override
-  ValueStream<List<Chat>> getChats() {
-    return _chatsStream.stream;
-  }
-
-  @override
-  Future<void> saveChat(Chat chat) async {
+  Future<void> add(Chat chat) async {
+    if (_chats.containsKey(chat.id)) return;
     _chats[chat.id] = chat;
-    _chatsStream.add(_chats.entries.map(((e) => e.value)).toList());
   }
 
   @override
-  Future<void> deleteChat(int id) async {
+  Future<void> addAll(IList<Chat> chats) async {
+    chats.forEach(add);
+  }
+
+  @override
+  Future<void> delete(int id) async {
     _chats.remove(id);
-    _chatsStream.add(_chats.entries.map(((e) => e.value)).toList());
   }
 
   @override
-  Future<void> loadData() async {
-    _chatsStream.add(_chats.entries.map(((e) => e.value.copyWith(creationDate: DateTime.now()))).toList());
+  Future<void> deleteAll(IList<int> ids) async {
+    ids.forEach(_chats.remove);
+  }
+
+  @override
+  Future<Chat?> get(int id) async {
+    return _chats[id];
+  }
+
+  @override
+  Future<IList<Chat>> getAll() async {
+    return _chats.mapTo((key, chat) => chat).toIList();
+  }
+
+  @override
+  Future<void> update(Chat chat) async {
+    if (_chats.containsKey(chat.id)) {
+      _chats[chat.id] = chat;
+    }
+  }
+
+  @override
+  Future<void> updateAll(IList<Chat> chats) async {
+    chats.forEach(update);
   }
 }
 

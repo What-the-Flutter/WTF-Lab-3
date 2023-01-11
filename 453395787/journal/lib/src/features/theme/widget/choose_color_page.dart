@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/data/models/message.dart';
+import '../../../common/models/message.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
-import '../../messages_manage/widget/message_list/items/message_item.dart';
-import '../cubit/theme_cubit.dart';
+import '../../chat/chat.dart';
 import '../data/theme_repository.dart';
+import '../theme.dart';
 
-class ChooseColorSheet extends StatelessWidget {
-  ChooseColorSheet({super.key});
+class ChoiceColorSheet extends StatelessWidget {
+  ChoiceColorSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
         return Padding(
-          padding: const EdgeInsets.all(Insets.large),
+          padding: const EdgeInsets.all(
+            Insets.large,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -48,7 +50,7 @@ class ChooseColorSheet extends StatelessWidget {
                   return InkWell(
                     borderRadius: BorderRadius.circular(Radius.extraLarge),
                     onTap: () {
-                      context.read<ThemeCubit>().color =
+                      ThemeScope.of(context).color =
                           ThemeRepository.colors[index];
                     },
                     child: DecoratedBox(

@@ -1,11 +1,12 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../data/models/chat.dart';
+import '../models/chat.dart';
 
 abstract class ChatRepositoryApi {
-  ValueStream<List<Chat>> get chats;
+  ValueStream<IList<Chat>> get chats;
 
-  Future<void> loadData();
+  Future<void> load();
 
   Future<void> add(Chat chat);
 
@@ -19,5 +20,5 @@ abstract class ChatRepositoryApi {
 
   Future<void> togglePin(Chat chat);
 
-  Future<Chat> findById(int id);
+  Future<Chat?> findById(int id);
 }
