@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme/colors.dart';
@@ -16,13 +17,22 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final local = AppLocalizations.of(context);
+    final desc = local?.chatDescription ?? '';
+
     return Padding(
       padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildIcon(),
           const SizedBox(width: 20),
-          _buildText(),
+          Expanded(
+            child: _buildText(desc),
+            flex: 1,
+          ),
+          _buildTimeText(),
+          const SizedBox(width: 25,)
         ],
       ),
     );
@@ -41,7 +51,15 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  Column _buildText() {
+  Column _buildText(String desc) {
+    String description;
+    if (chat.isDescriptionEmpty) {
+      description = desc;
+    } else {
+      description = chat.description.length > 35
+          ? '${chat.description.substring(0, 36)}...'
+          : chat.description;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,13 +72,23 @@ class ChatCard extends StatelessWidget {
           ),
         ),
         Text(
-          chat.description,
+          description,
           style: const TextStyle(
             color: Colors.grey,
             fontSize: 16,
           ),
         ),
       ],
+    );
+  }
+
+  Text _buildTimeText() {
+    return Text(
+      chat.time,
+      style: const TextStyle(
+        color: Colors.grey,
+        fontSize: 16,
+      ),
     );
   }
 }

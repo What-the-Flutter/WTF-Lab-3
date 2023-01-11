@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 import 'message_data.dart';
 
 class Event extends StatelessWidget {
@@ -39,16 +40,10 @@ class Event extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Text(_formatTime(messageData.dateTime)),
+            Text(formatTime(messageData.dateTime)),
           ],
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime time) {
-    final seconds = time.second;
-    final sec = seconds < 10 ? '0$seconds' : '$seconds';
-    return '${time.hour}:${time.minute}:$sec';
   }
 }

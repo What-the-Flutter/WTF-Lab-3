@@ -1,12 +1,27 @@
+import '../../utils/utils.dart';
 import 'event/message_data.dart';
 
 class Chat {
-  final String title, description;
+  final String title;
   final List<MessageData> messages;
+
+  String _description = '';
+  String _time = '';
 
   Chat({
     required this.title,
-    required this.description,
     required this.messages,
-  });
+  }) {
+    if (messages.isNotEmpty) {
+      final messageData = messages[messages.length - 1];
+      _description = messageData.message;
+      _time = formatTime(messageData.dateTime, includeSec: false);
+    }
+  }
+
+  bool get isDescriptionEmpty => _description.isEmpty;
+
+  String get description => _description;
+
+  String get time => _time;
 }

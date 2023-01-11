@@ -16,18 +16,16 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
+// TODO: fix bug with list updating!!!
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
-    final desc = local?.chatDescription ?? '';
 
     final _chatCards = <ChatCard>[
       ChatCard(
         chat: Chat(
           title: 'Travel',
-          description: desc,
           messages: [],
         ),
         assetsLink: 'assets/plane.svg',
@@ -35,7 +33,6 @@ class _HomePageState extends State<HomePage> {
       ChatCard(
         chat: Chat(
           title: 'Family',
-          description: desc,
           messages: [
             MessageData(
               'Family is very important!',
@@ -47,19 +44,19 @@ class _HomePageState extends State<HomePage> {
         assetsLink: 'assets/sofa.svg',
       ),
       ChatCard(
-        chat: Chat(title: 'Sports', description: desc, messages: [
+        chat: Chat(title: 'Sports', messages: [
           MessageData(
             'I like going',
-            DateTime(1, 10, 15, 10, 45, 12),
-            false,
-          ),
-          MessageData(
-            'to the fucking gym!',
             DateTime(1, 10, 15, 9, 30, 2),
             false,
           ),
           MessageData(
-            "I'll go to the fucking gym 3 times a week" * 200,
+            'to the gym!',
+            DateTime(1, 10, 15, 10, 45, 12),
+            false,
+          ),
+          MessageData(
+            "I'll go to the gym 3 times a week" * 200,
             DateTime(1, 10, 15, 23, 59, 46),
             false,
           ),
