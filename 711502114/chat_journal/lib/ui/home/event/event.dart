@@ -8,18 +8,13 @@ import 'message_data.dart';
 
 enum MessageType { text, attach, textWithAttach }
 
-class Event extends StatefulWidget {
+class Event extends StatelessWidget {
   final MessageData messageData;
   final Size size;
 
   Event({Key? key, required this.messageData, required this.size})
       : super(key: key);
 
-  @override
-  State<Event> createState() => _EventState();
-}
-
-class _EventState extends State<Event> {
   late final Image _image;
 
   final _iconFavoriteColor = Colors.yellow;
@@ -33,9 +28,9 @@ class _EventState extends State<Event> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!_isValidPath(widget.messageData.photoPath))
+          if (!_isValidPath(messageData.photoPath))
             _buildMessageBox(MessageType.text)
-          else if (widget.messageData.message.isEmpty)
+          else if (messageData.message.isEmpty)
             _buildMessageBox(MessageType.attach)
           else
             _buildMessageBox(MessageType.textWithAttach),
@@ -44,7 +39,7 @@ class _EventState extends State<Event> {
             children: [
               Icon(
                 Icons.bookmark,
-                color: widget.messageData.isFavorite
+                color: messageData.isFavorite
                     ? _iconFavoriteColor
                     : _iconNonFavoriteColor,
                 size: 10,
@@ -55,8 +50,8 @@ class _EventState extends State<Event> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text(formatDate(context, widget.messageData.dateTime)),
-                  Text(formatTime(widget.messageData.dateTime)),
+                  Text(formatDate(context, messageData.dateTime)),
+                  Text(formatTime(messageData.dateTime)),
                 ],
               ),
             ],
@@ -78,7 +73,7 @@ class _EventState extends State<Event> {
       case MessageType.text:
         if (constraints == null && radius == null) {
           boxConstraints = BoxConstraints(
-            maxWidth: widget.size.width * .75,
+            maxWidth: size.width * .75,
           );
           borderRadius = BorderRadius.only(
             topLeft: circular,
@@ -88,7 +83,7 @@ class _EventState extends State<Event> {
         }
 
         child = Text(
-          widget.messageData.message,
+          messageData.message,
           style: const TextStyle(fontSize: 16),
           overflow: TextOverflow.clip,
         );
@@ -96,7 +91,7 @@ class _EventState extends State<Event> {
       case MessageType.attach:
         if (constraints == null && radius == null) {
           boxConstraints = BoxConstraints(
-            minWidth: widget.size.width * .75,
+            minWidth: size.width * .75,
           );
           borderRadius = BorderRadius.only(
             topLeft: circular,
@@ -107,8 +102,8 @@ class _EventState extends State<Event> {
 
         child = SizedBox(
           child: _image,
-          width: widget.size.width * 0.3,
-          height: widget.size.height * 0.3,
+          width: size.width * 0.3,
+          height: size.height * 0.3,
         );
         break;
       case MessageType.textWithAttach:
@@ -117,8 +112,8 @@ class _EventState extends State<Event> {
             _buildMessageBox(
               MessageType.text,
               constraints: BoxConstraints(
-                minWidth: widget.size.width * .75,
-                maxWidth: widget.size.width * .75,
+                minWidth: size.width * .75,
+                maxWidth: size.width * .75,
               ),
               radius: BorderRadius.only(
                 topLeft: circular,
@@ -128,7 +123,7 @@ class _EventState extends State<Event> {
             _buildMessageBox(
               MessageType.attach,
               constraints: BoxConstraints(
-                minWidth: widget.size.width * .75,
+                minWidth: size.width * .75,
               ),
               radius: BorderRadius.only(
                 bottomRight: circular,
@@ -145,14 +140,7 @@ class _EventState extends State<Event> {
         color: circleMessageColor,
         borderRadius: borderRadius,
       ),
-      child: GestureDetector(
-        child: child,
-        onLongPress: () {
-          setState(() {
-            widget.messageData.isFavorite = !widget.messageData.isFavorite;
-          });
-        },
-      ),
+      child: child,
     );
   }
 

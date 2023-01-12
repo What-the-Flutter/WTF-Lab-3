@@ -99,13 +99,25 @@ class _MessengerPageState extends State<MessengerPage> {
         itemCount: _events.length,
         itemBuilder: (context, index) {
           final length = _events.length;
-          return Event(
-            messageData: _events[length - 1 - index],
-            size: size,
+          return InkWell(
+            child: Event(
+              messageData: _events[length - 1 - index],
+              size: size,
+            ),
+            onTap: _doEventActions,
+            onLongPress: () => _setFavoriteFlag(_events[length - 1 - index]),
           );
         },
       ),
     );
+  }
+
+  void _doEventActions() {}
+
+  void _setFavoriteFlag(MessageData messageData) {
+    setState(() {
+      messageData.isFavorite = !messageData.isFavorite;
+    });
   }
 
   Container _getInputBox(Size size) {
