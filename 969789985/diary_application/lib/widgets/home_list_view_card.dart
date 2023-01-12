@@ -16,13 +16,13 @@ class _HomeListViewCardState extends State<HomeListViewCard> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-      child: InkWell(
-        radius: 25.0,
-        onTap: () {},
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 15.0),
+      child: MaterialButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+        onPressed: () {},
         child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.only(top: 20, bottom: 20),
           child: Row(
             children: [
               buildAvatar(widget.chat.id),
