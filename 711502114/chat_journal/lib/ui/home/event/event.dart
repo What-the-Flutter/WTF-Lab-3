@@ -8,34 +8,60 @@ import 'message_data.dart';
 
 enum MessageType { text, attach, textWithAttach }
 
-class Event extends StatelessWidget {
+class Event extends StatefulWidget {
   final MessageData messageData;
   final Size size;
-  late final Image _image;
 
   Event({Key? key, required this.messageData, required this.size})
       : super(key: key);
 
   @override
+  State<Event> createState() => _EventState();
+}
+
+class _EventState extends State<Event> {
+  late final Image _image;
+
+  final _iconFavoriteColor = Colors.yellow;
+  final _iconNonFavoriteColor = Colors.transparent;
+
+  @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (!_isValidPath(messageData.photoPath))
-              _buildMessageBox(MessageType.text)
-            else if (messageData.message.isEmpty)
-              _buildMessageBox(MessageType.attach)
-            else
-              _buildMessageBox(MessageType.textWithAttach),
-            const SizedBox(width: 10),
-            Text(formatTime(messageData.dateTime)),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!_isValidPath(widget.messageData.photoPath))
+            _buildMessageBox(MessageType.text)
+          else if (widget.messageData.message.isEmpty)
+            _buildMessageBox(MessageType.attach)
+          else
+            _buildMessageBox(MessageType.textWithAttach),
+          const SizedBox(width: 10),
+          Row(
+            children: [
+              Icon(
+                Icons.bookmark,
+                color: widget.messageData.isFavorite
+                    ? _iconFavoriteColor
+                    : _iconNonFavoriteColor,
+                size: 10,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(formatDate(context, widget.messageData.dateTime)),
+                  Text(formatTime(widget.messageData.dateTime)),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -52,7 +78,7 @@ class Event extends StatelessWidget {
       case MessageType.text:
         if (constraints == null && radius == null) {
           boxConstraints = BoxConstraints(
-            maxWidth: size.width * .75,
+            maxWidth: widget.size.width * .75,
           );
           borderRadius = BorderRadius.only(
             topLeft: circular,
@@ -62,7 +88,7 @@ class Event extends StatelessWidget {
         }
 
         child = Text(
-          messageData.message,
+          widget.messageData.message,
           style: const TextStyle(fontSize: 16),
           overflow: TextOverflow.clip,
         );
@@ -70,7 +96,7 @@ class Event extends StatelessWidget {
       case MessageType.attach:
         if (constraints == null && radius == null) {
           boxConstraints = BoxConstraints(
-            minWidth: size.width * .75,
+            minWidth: widget.size.width * .75,
           );
           borderRadius = BorderRadius.only(
             topLeft: circular,
@@ -81,8 +107,8 @@ class Event extends StatelessWidget {
 
         child = SizedBox(
           child: _image,
-          width: size.width * 0.3,
-          height: size.height * 0.3,
+          width: widget.size.width * 0.3,
+          height: widget.size.height * 0.3,
         );
         break;
       case MessageType.textWithAttach:
@@ -91,8 +117,8 @@ class Event extends StatelessWidget {
             _buildMessageBox(
               MessageType.text,
               constraints: BoxConstraints(
-                minWidth: size.width * .75,
-                maxWidth: size.width * .75,
+                minWidth: widget.size.width * .75,
+                maxWidth: widget.size.width * .75,
               ),
               radius: BorderRadius.only(
                 topLeft: circular,
@@ -102,7 +128,7 @@ class Event extends StatelessWidget {
             _buildMessageBox(
               MessageType.attach,
               constraints: BoxConstraints(
-                minWidth: size.width * .75,
+                minWidth: widget.size.width * .75,
               ),
               radius: BorderRadius.only(
                 bottomRight: circular,
@@ -119,7 +145,14 @@ class Event extends StatelessWidget {
         color: circleMessageColor,
         borderRadius: borderRadius,
       ),
-      child: child,
+      child: GestureDetector(
+        child: child,
+        onLongPress: () {
+          setState(() {
+            widget.messageData.isFavorite = !widget.messageData.isFavorite;
+          });
+        },
+      ),
     );
   }
 

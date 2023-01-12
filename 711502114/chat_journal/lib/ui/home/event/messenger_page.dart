@@ -19,6 +19,22 @@ class MessengerPage extends StatefulWidget {
 class _MessengerPageState extends State<MessengerPage> {
   final _fieldText = TextEditingController();
 
+  bool _isFavoriteMode = false;
+
+  final Icon _bookmarkIcon = const Icon(Icons.bookmark_border_outlined);
+  final Icon _bookmarkIconWitchColor = const Icon(
+    Icons.bookmark,
+    color: Colors.yellow,
+  );
+
+  late List<MessageData> _events;
+
+  @override
+  void initState() {
+    super.initState();
+    _events = widget.chat.messages;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -41,7 +57,7 @@ class _MessengerPageState extends State<MessengerPage> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
             child: IconButton(
-              icon: const Icon(Icons.bookmark_border_outlined),
+              icon: _isFavoriteMode ? _bookmarkIconWitchColor : _bookmarkIcon,
               onPressed: _showFavorites,
             ),
           ),
@@ -63,17 +79,28 @@ class _MessengerPageState extends State<MessengerPage> {
 
   void _lookForWords() {}
 
-  void _showFavorites() {}
+  void _showFavorites() {
+    setState(() {
+      _isFavoriteMode = !_isFavoriteMode;
+      if (_isFavoriteMode) {
+        _events = widget.chat.messages
+            .where((element) => element.isFavorite)
+            .toList();
+      } else {
+        _events = widget.chat.messages;
+      }
+    });
+  }
 
   Expanded _buildMessageList(Size size) {
     return Expanded(
       child: ListView.builder(
         reverse: true,
-        itemCount: widget.chat.messages.length,
+        itemCount: _events.length,
         itemBuilder: (context, index) {
-          final length = widget.chat.messages.length;
+          final length = _events.length;
           return Event(
-            messageData: widget.chat.messages[length - 1 - index],
+            messageData: _events[length - 1 - index],
             size: size,
           );
         },

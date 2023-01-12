@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 // TODO: fix bug with list updating!!!
 class _HomePageState extends State<HomePage> {
   @override
@@ -46,15 +47,17 @@ class _HomePageState extends State<HomePage> {
         chat: Chat(title: 'Sports', messages: [
           MessageData(
             'I like going',
-            DateTime(1, 10, 15, 9, 30, 2),
+            DateTime(2021, 10, 15, 9, 30, 2),
+            isFavorite: true,
           ),
           MessageData(
             'to the gym!',
-            DateTime(1, 10, 15, 10, 45, 12),
+            DateTime(2022, 10, 15, 10, 45, 12),
+            isFavorite: true,
           ),
           MessageData(
             "I'll go to the gym 3 times a week" * 200,
-            DateTime(1, 10, 15, 23, 59, 46),
+            DateTime(2023, 10, 15, 23, 59, 46),
           ),
         ]),
         assetsLink: 'assets/gym.svg',

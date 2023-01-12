@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme/colors.dart';
+import '../../utils/utils.dart';
 import 'chat.dart';
 
 class ChatCard extends StatelessWidget {
@@ -31,7 +32,7 @@ class ChatCard extends StatelessWidget {
             child: _buildText(desc),
             flex: 1,
           ),
-          _buildTimeText(),
+          _buildTimeText(context),
           const SizedBox(width: 25,)
         ],
       ),
@@ -82,9 +83,14 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  Text _buildTimeText() {
+  Text _buildTimeText(BuildContext context) {
+    String? time;
+    if (chat.messages.isNotEmpty) {
+      final dateTime = chat.messages.last.dateTime;
+      time = formatDate(context, dateTime, includeTime: true);
+    }
     return Text(
-      chat.time,
+      time ?? '',
       style: const TextStyle(
         color: Colors.grey,
         fontSize: 16,
