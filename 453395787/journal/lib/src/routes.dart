@@ -8,7 +8,7 @@ import 'features/chat_overview/view/chat_overview_page.dart';
 import 'features/manage_chat/manage_chat.dart';
 
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: PagePaths.home.routePath,
   routes: [
     ShellRoute(
       builder: (context, state, child) {
@@ -18,17 +18,17 @@ final router = GoRouter(
       },
       routes: [
         GoRoute(
-          path: '/home',
+          path: PagePaths.home.routePath,
           pageBuilder: (context, state) => const NoTransitionPage(
             child: ChatOverviewPage(),
           ),
           routes: [
             GoRoute(
-              path: 'add',
+              path: PagePaths.chatAdding.routePath,
               builder: (context, state) => const ManageChatPage(),
             ),
             GoRoute(
-              path: 'edit/:chatId',
+              path: PagePaths.chatEditing.routePath,
               builder: (context, state) => ManageChatPage(
                 chatId: int.parse(state.params['chatId']!),
               ),
@@ -36,7 +36,7 @@ final router = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/daily',
+          path: PagePaths.daily.routePath,
           pageBuilder: (context, state) => const NoTransitionPage(
             child: EmptyPage(
               title: 'Daily',
@@ -44,7 +44,7 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-          path: '/timeline',
+          path: PagePaths.timeline.routePath,
           pageBuilder: (context, state) => const NoTransitionPage(
             child: EmptyPage(
               title: 'Timeline',
@@ -52,7 +52,7 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-          path: '/explore',
+          path: PagePaths.explore.routePath,
           pageBuilder: (context, state) => const NoTransitionPage(
             child: EmptyPage(
               title: 'Explore',
@@ -62,7 +62,7 @@ final router = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/chat/:chatId',
+      path: PagePaths.chat.routePath,
       builder: (context, state) => ChatPage(
         chatId: int.parse(
           state.params['chatId']!,
@@ -70,7 +70,7 @@ final router = GoRouter(
       ),
       routes: [
         GoRoute(
-          path: 'search',
+          path: PagePaths.chatSearch.routePath,
           builder: (context, state) => MessageSearchPage(
             chatId: int.parse(state.params['chatId']!),
           ),
@@ -80,3 +80,22 @@ final router = GoRouter(
   ],
   debugLogDiagnostics: true,
 );
+
+enum PagePaths {
+  home(routePath: '/home', path: '/home'),
+  chatAdding(routePath: 'add', path: '/home/add'),
+  chatEditing(routePath: 'edit/:chatId', path: '/home/edit/:chatId'),
+  daily(routePath: '/daily', path: '/daily'),
+  timeline(routePath: '/timeline', path: '/timeline'),
+  explore(routePath: '/explore', path: '/explore'),
+  chat(routePath: '/chat/:chatId', path: '/chat/:chatId'),
+  chatSearch(routePath: 'search', path: '/chat/:chatId/search');
+
+  const PagePaths({
+    required this.routePath,
+    required this.path,
+  });
+
+  final String routePath;
+  final String path;
+}

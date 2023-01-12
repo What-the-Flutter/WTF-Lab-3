@@ -9,27 +9,27 @@ class ThemeRepository extends ThemeRepositoryApi {
 
   @override
   Future<Color> getColor() async {
-    var prefs = await SharedPreferences.getInstance();
-    var colorCode = await prefs.getInt(_colorKey) ?? Colors.blue.value;
+    final prefs = await SharedPreferences.getInstance();
+    final colorCode = await prefs.getInt(_colorKey) ?? Colors.blue.value;
     return Color(colorCode);
   }
 
   @override
   Future<bool> getDarkMode() async {
-    var prefs = await SharedPreferences.getInstance();
-    var isDarkMode = await prefs.getBool(_isDarkModeKey) ?? false;
+    final prefs = await SharedPreferences.getInstance();
+    final isDarkMode = await prefs.getBool(_isDarkModeKey) ?? false;
     return isDarkMode;
   }
 
   @override
   Future<void> setColor(Color color) async {
-    var prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_colorKey, color.value);
   }
 
   @override
   Future<void> setDarkMode(bool isDarkMode) async {
-    var prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isDarkModeKey, isDarkMode);
   }
 

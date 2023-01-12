@@ -23,7 +23,7 @@ class TagSelector extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: state.tags.length,
             itemBuilder: (_, index) {
-              var tag = state.tags[index];
+              final tag = state.tags[index];
 
               return Padding(
                 padding: const EdgeInsets.all(

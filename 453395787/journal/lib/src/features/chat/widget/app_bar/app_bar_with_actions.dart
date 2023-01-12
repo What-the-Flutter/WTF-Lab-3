@@ -58,7 +58,7 @@ class _AppBarWithActions extends StatelessWidget {
             Icons.reply_outlined,
           ),
           onPressed: () {
-            var id = MessageManageScope.of(context).id;
+            final id = MessageManageScope.of(context).state.id;
             showFloatingModalBottomSheet(
               context: context,
               builder: (context) => MoveMessagePage(
@@ -79,7 +79,7 @@ class _AppBarWithActions extends StatelessWidget {
             Icons.delete_outline_outlined,
           ),
           onPressed: () async {
-            var isConfirmed = await showConfirmationDialog(
+            final isConfirmed = await showConfirmationDialog(
               context: context,
               title: 'Delete ${state.selected.length} messages',
               content: 'Are you sure you want to delete these messages?',

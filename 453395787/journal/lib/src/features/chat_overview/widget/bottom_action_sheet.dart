@@ -46,7 +46,11 @@ class _BottomChatActionSheet extends StatelessWidget {
             leading: const Icon(Icons.edit),
             onTap: () {
               context.pop();
-              context.go('/home/edit/${chat.id}');
+              context.go(
+                PagePaths.chatEditing.path.withArgs(
+                  {':chatId': '${chat.id}'},
+                ),
+              );
             },
           ),
           ListTile(
@@ -67,7 +71,7 @@ class _BottomChatActionSheet extends StatelessWidget {
               color: Colors.red,
             ),
             onTap: () async {
-              var isConfirmed = await showConfirmationDialog(
+              final isConfirmed = await showConfirmationDialog(
                 title: 'Delete "${chat.name}" chat',
                 content: 'Are you sure you want to delete this chat?',
                 context: context,
@@ -84,11 +88,11 @@ class _BottomChatActionSheet extends StatelessWidget {
   }
 
   String _durationScienceLastMessage() {
-    var duration = DateTime.now()
+    final duration = DateTime.now()
         .difference(chat.lastMessage?.dateTime ?? chat.creationDate);
 
-    var days = duration.inDays;
-    var hours = duration.inHours - days * 24;
+    final days = duration.inDays;
+    final hours = duration.inHours - days * 24;
     if (days == 0 && hours == 0) {
       return 'recently';
     }

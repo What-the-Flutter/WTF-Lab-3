@@ -2,10 +2,11 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../common/api/chat_repository_api.dart';
+import '../../../common/extensions/iterable_extensions.dart';
+import '../../../common/extensions/string_extensions.dart';
 import '../../../common/models/chat.dart';
 import '../../../common/models/message.dart';
 import '../../../common/models/tag.dart';
-import '../../../common/utils/extensions.dart';
 import '../api/message_repository_api.dart';
 
 class MessageRepository extends MessageRepositoryApi {
@@ -36,7 +37,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> add(Message message) async {
-    var chat = await _repository.findById(chatId);
+    final chat = await _repository.findById(chatId);
     if (chat == null) return;
 
     if (chat.messages.map((e) => e.id).contains(message.id)) {
@@ -52,7 +53,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> addToFavorites(Message message) async {
-    var chat = await _repository.findById(chatId);
+    final chat = await _repository.findById(chatId);
     if (chat == null) return;
 
     await _repository.update(
@@ -71,7 +72,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> remove(Message message) async {
-    var chat = await _repository.findById(chatId);
+    final chat = await _repository.findById(chatId);
     if (chat == null) return;
 
     await _repository.update(
@@ -83,7 +84,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> removeFromFavorites(Message message) async {
-    var chat = await _repository.findById(chatId);
+    final chat = await _repository.findById(chatId);
     if (chat == null) return;
 
     await _repository.update(
@@ -102,7 +103,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> update(Message message) async {
-    var chat = await _repository.findById(chatId);
+    final chat = await _repository.findById(chatId);
     if (chat == null) return;
 
     await _repository.update(

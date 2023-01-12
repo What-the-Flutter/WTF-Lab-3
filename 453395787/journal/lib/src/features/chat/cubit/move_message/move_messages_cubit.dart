@@ -81,7 +81,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   void move() {
     state.mapOrNull(
       withSelected: (withSelected) {
-        var oldChat = _repository.chats.value.firstWhere(
+        final oldChat = _repository.chats.value.firstWhere(
           (chat) => chat.id == fromChatId,
         );
         _repository.update(
@@ -90,7 +90,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
           ),
         );
 
-        var newChat = _repository.chats.value.firstWhere(
+        final newChat = _repository.chats.value.firstWhere(
           (chat) => chat.id == withSelected.selectedChatId,
         );
         _repository.update(

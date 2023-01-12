@@ -11,6 +11,7 @@ import '../../../../common/models/tag.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_search_cubit.freezed.dart';
+
 part 'message_search_state.dart';
 
 class MessageSearchCubit extends Cubit<MessageSearchState> {
@@ -39,10 +40,10 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   final MessageRepositoryApi _repository;
   late StreamSubscription<ValueStream<Chat>> _subscription;
   StreamSubscription<Chat>? _internalSubscription;
-  
+
   @override
   Future<void> close() async {
-    _subscription.cancel(); 
+    _subscription.cancel();
     _internalSubscription?.cancel();
     super.close();
   }
@@ -68,6 +69,8 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   Future<void> resetSearch() async {
-    emit(const MessageSearchState.initial());
+    emit(
+      const MessageSearchState.initial(),
+    );
   }
 }

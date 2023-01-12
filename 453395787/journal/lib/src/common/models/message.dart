@@ -4,7 +4,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../utils/extensions.dart';
+import '../extensions/date_time_extensions.dart';
 import 'tag.dart';
 
 part 'message.freezed.dart';
@@ -40,6 +40,8 @@ class Message with _$Message {
       );
 
   String get time => dateTime.formatTime;
+
   bool get hasImages => images.isNotEmpty;
+
   bool get hasSingleImage => images.length == 1;
 }

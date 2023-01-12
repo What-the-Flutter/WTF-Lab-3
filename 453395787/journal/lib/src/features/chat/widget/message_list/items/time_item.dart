@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../common/utils/extensions.dart';
+import '../../../../../common/extensions/date_time_extensions.dart';
 import '../../../../../common/utils/insets.dart';
 
 class TimeItem extends StatelessWidget {

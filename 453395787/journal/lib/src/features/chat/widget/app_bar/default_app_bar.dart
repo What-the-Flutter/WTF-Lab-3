@@ -13,7 +13,9 @@ class _DefaultAppBar extends StatelessWidget {
     return AppBar(
       leading: IconButton(
         onPressed: () {
-          context.go('/home');
+          context.go(
+            PagePaths.home.path,
+          );
         },
         icon: const Icon(
           Icons.arrow_back_outlined,
@@ -25,8 +27,12 @@ class _DefaultAppBar extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () {
-            var id = MessageManageScope.of(context).id;
-            context.go('/chat/$id/search');
+            final id = MessageManageScope.of(context).state.id;
+            context.go(
+              PagePaths.chatSearch.path.withArgs(
+                {':chatId': '$id'},
+              ),
+            );
           },
           icon: const Icon(
             Icons.search_outlined,

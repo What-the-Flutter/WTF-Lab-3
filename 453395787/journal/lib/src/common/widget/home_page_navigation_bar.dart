@@ -2,6 +2,8 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../routes.dart';
+
 class HomePageNavigationBar extends StatefulWidget {
   const HomePageNavigationBar({
     super.key,
@@ -18,10 +20,10 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
   int _selectedPage = 0;
 
   final IList<String> _pageRoutes = [
-    '/home',
-    '/daily',
-    '/timeline',
-    '/explore',
+    PagePaths.home.path,
+    PagePaths.daily.path,
+    PagePaths.timeline.path,
+    PagePaths.explore.path,
   ].lock;
 
   final List<Widget> _destinations = const [

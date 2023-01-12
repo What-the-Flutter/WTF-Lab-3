@@ -64,7 +64,7 @@ class SlidableMessageContainer extends StatelessWidget {
                 : Colors.green,
             onPressed: (_) => onEdit(),
             icon: Icons.edit_outlined,
-          )
+          ),
         ],
       ),
     );

@@ -19,7 +19,11 @@ class ChatList extends StatelessWidget {
                 child: ChatItem(
                   chat: state.chats[index],
                   onTap: () {
-                    context.go('/chat/${state.chats[index].id}');
+                    context.go(
+                      PagePaths.chat.path.withArgs(
+                        {':chatId': '${state.chats[index].id}'},
+                      ),
+                    );
                   },
                   onLongPress: () {
                     showFloatingModalBottomSheet(
