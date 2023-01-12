@@ -20,7 +20,7 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return AlertDialog(
       title: Text(
@@ -33,7 +33,7 @@ class MyDialog extends StatelessWidget {
         TextButton(
           child: Icon(
             Icons.camera_alt,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: () async {
             final pickedFile = await ImagePicker().pickImage(
@@ -50,7 +50,7 @@ class MyDialog extends StatelessWidget {
         TextButton(
           child: Icon(
             Icons.picture_as_pdf,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: () async {
             final pickedFile = await ImagePicker().pickImage(
@@ -67,7 +67,7 @@ class MyDialog extends StatelessWidget {
         TextButton(
           child: Icon(
             Icons.exit_to_app,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: Navigator.of(context).pop,
         ),

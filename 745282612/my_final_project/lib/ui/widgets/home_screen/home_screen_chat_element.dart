@@ -28,7 +28,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -72,7 +72,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor:
-                              theme ? AppColors.colorLightBlue : AppColors.colorLightGrey,
+                              isLight ? AppColors.colorLightBlue : AppColors.colorLightGrey,
                           foregroundColor: Colors.white,
                           radius: 40,
                           child: itemChat.icon,
@@ -89,7 +89,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                             itemChat.isPin
                                 ? Icon(
                                     Icons.attach_file,
-                                    color: theme ? Colors.black : AppColors.colorLightYellow,
+                                    color: isLight ? Colors.black : AppColors.colorLightYellow,
                                   )
                                 : const SizedBox(),
                           ],

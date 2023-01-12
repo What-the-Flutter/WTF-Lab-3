@@ -10,13 +10,13 @@ class HomeScreenQuestionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+          backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -29,7 +29,7 @@ class HomeScreenQuestionButton extends StatelessWidget {
             children: [
               Icon(
                 CustomIcons.robot,
-                color: theme ? Colors.black : Colors.white,
+                color: isLight ? Colors.black : Colors.white,
               ),
               const SizedBox(
                 width: 25,
@@ -39,7 +39,7 @@ class HomeScreenQuestionButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: theme ? Colors.black : Colors.white,
+                  color: isLight ? Colors.black : Colors.white,
                 ),
               ),
             ],

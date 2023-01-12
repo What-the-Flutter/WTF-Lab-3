@@ -44,21 +44,21 @@ class CustomThemeState extends State<CustomTheme> {
     _initTheme();
   }
 
-  void _initTheme() async {
+  Future<void> _initTheme() async {
     _prefs = await SharedPreferences.getInstance();
     themeKey = _prefs.getString('theme') ?? ThemeGlobalKey.light.toString();
     setState(
       () {
         if (themeKey == ThemeGlobalKey.light.toString()) {
           themeData = AppTheme.lightTheme;
-        } else {
+        } else if (themeKey == ThemeGlobalKey.dark.toString()) {
           themeData = AppTheme.darkTheme;
         }
       },
     );
   }
 
-  void changeTheme() async {
+  Future<void> changeTheme() async {
     _prefs = await SharedPreferences.getInstance();
     setState(
       () {

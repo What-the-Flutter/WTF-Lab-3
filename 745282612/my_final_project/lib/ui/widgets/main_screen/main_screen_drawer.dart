@@ -12,14 +12,14 @@ class MainScreenDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return Drawer(
       child: ListView(
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: theme ? AppColors.colorTurquoise : Colors.black,
+              color: isLight ? AppColors.colorTurquoise : Colors.black,
             ),
             child: Center(
               child: Text(
@@ -44,7 +44,7 @@ class MainScreenDrawer extends StatelessWidget {
             child: ListTile(
               leading: Icon(
                 Icons.add,
-                color: theme ? AppColors.colorTurquoise : Colors.white,
+                color: isLight ? AppColors.colorTurquoise : Colors.white,
               ),
               title: Text(S.of(context).add_section),
             ),
@@ -54,7 +54,7 @@ class MainScreenDrawer extends StatelessWidget {
             child: ListTile(
               leading: Icon(
                 Icons.exit_to_app,
-                color: theme ? AppColors.colorTurquoise : Colors.white,
+                color: isLight ? AppColors.colorTurquoise : Colors.white,
               ),
               title: Text(S.of(context).exit_the_app),
             ),

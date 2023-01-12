@@ -6,11 +6,13 @@ import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final myDBProvider = DBProvider.dbProvider;
+
   HomeCubit() : super(HomeState(listChat: []));
 
-  void initializer() async {
-    final list = await DBProvider.dbProvider.getAllChat();
-    emit(state.copyWith(listChat: _listChatSort(list)));
+  Future<void> initializer() async {
+    final list = await myDBProvider.getAllChat();
+    emit(state.copyWith(listChat: list));
   }
 
   void updateInfo() {
@@ -30,7 +32,7 @@ class HomeCubit extends Cubit<HomeState> {
     return listChat;
   }
 
-  void addChat({
+  Future<void> addChat({
     required Icon icon,
     required String title,
   }) async {
@@ -40,7 +42,7 @@ class HomeCubit extends Cubit<HomeState> {
       isPin: false,
       dateCreate: DateTime.now(),
     );
-    final chat = await DBProvider.dbProvider.addChat(newChat);
+    final chat = await myDBProvider.addChat(newChat);
     final newListChat = state.listChat;
     newListChat.add(chat);
     emit(state.copyWith(listChat: newListChat));
@@ -54,20 +56,20 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void deleteChat(int index) async {
+  Future<void> deleteChat(int index) async {
     final newListChat = state.listChat;
     final element = newListChat[index];
-    await DBProvider.dbProvider.deleteChat(element);
+    await myDBProvider.deleteChat(element);
     newListChat.removeAt(index);
     emit(state.copyWith(listChat: newListChat));
   }
 
-  void changePinChat(int index) async {
+  Future<void> changePinChat(int index) async {
     final newList = state.listChat;
     final newChat = state.listChat[index];
     newList[index] = newChat.copyWith(isPin: !newChat.isPin);
     _listChatSort(newList);
-    await DBProvider.dbProvider.updateChat(newChat.copyWith(isPin: !newChat.isPin));
+    await myDBProvider.updateChat(newChat.copyWith(isPin: !newChat.isPin));
     emit(state.copyWith(listChat: newList));
   }
 
@@ -75,7 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(isEdit: !state.isEdit));
   }
 
-  void editChat({
+  Future<void> editChat({
     required Icon icon,
     required String title,
     required int index,
@@ -83,7 +85,7 @@ class HomeCubit extends Cubit<HomeState> {
     final newList = state.listChat;
     final newChat = state.listChat[index];
     newList[index] = newChat.copyWith(icon: icon, title: title);
-    await DBProvider.dbProvider.updateChat(newChat.copyWith(icon: icon, title: title));
+    await myDBProvider.updateChat(newChat.copyWith(icon: icon, title: title));
     emit(state.copyWith(listChat: newList));
     changeEditMode();
   }

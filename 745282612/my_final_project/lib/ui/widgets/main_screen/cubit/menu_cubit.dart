@@ -6,12 +6,14 @@ import 'package:my_final_project/entities/section.dart';
 import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_state.dart';
 
 class MenuCubit extends Cubit<MenuState> {
+  final myDBProvider = DBProvider.dbProvider;
+
   MenuCubit() : super(MenuState(index: 0, listSection: [])) {
     initializer();
   }
 
-  void initializer() async {
-    final listSection = await DBProvider.dbProvider.getAllSection();
+  Future<void> initializer() async {
+    final listSection = await myDBProvider.getAllSection();
     emit(state.copyWith(listSection: listSection));
   }
 
@@ -19,12 +21,12 @@ class MenuCubit extends Cubit<MenuState> {
     emit(state.copyWith(index: index));
   }
 
-  void addSection({
+  Future<void> addSection({
     required IconData iconData,
     required String title,
   }) async {
     final listSection = state.listSection;
-    final newSection = await DBProvider.dbProvider.addSection(Section(
+    final newSection = await myDBProvider.addSection(Section(
       iconSection: iconData,
       titleSection: title,
     ));

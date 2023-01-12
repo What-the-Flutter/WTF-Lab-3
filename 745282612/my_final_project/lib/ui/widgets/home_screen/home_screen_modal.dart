@@ -24,8 +24,8 @@ class HomeScreenModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
-    final colorIcon = theme ? AppColors.colorNormalGrey : Colors.white;
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
+    final colorIcon = isLight ? AppColors.colorNormalGrey : Colors.white;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {

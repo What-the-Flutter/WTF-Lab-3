@@ -59,14 +59,14 @@ class EventScreenInstruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
           child: Container(
-            color: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+            color: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
             height: heightContrainer,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(

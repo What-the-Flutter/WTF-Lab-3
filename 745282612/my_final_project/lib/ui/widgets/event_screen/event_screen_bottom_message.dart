@@ -92,7 +92,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -110,7 +110,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                   : MediaQuery.of(context).size.height * 0.1,
             ),
             child: ColoredBox(
-              color: theme ? Colors.white : Colors.black,
+              color: isLight ? Colors.white : Colors.black,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -133,7 +133,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                             );
                                       },
                                       child: CircleAvatar(
-                                        backgroundColor: theme
+                                        backgroundColor: isLight
                                             ? AppColors.colorLightBlue
                                             : AppColors.colorLightGrey,
                                         foregroundColor: Colors.white,
@@ -156,7 +156,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                         child: Icon(
                           state.sectionIcon,
                           size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                          color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                       Expanded(
@@ -185,7 +185,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                   ? Icons.camera_enhance
                                   : Icons.send,
                           size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                          color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                     ],

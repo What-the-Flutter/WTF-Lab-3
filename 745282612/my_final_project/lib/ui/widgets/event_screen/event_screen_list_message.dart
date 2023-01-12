@@ -32,7 +32,7 @@ class EventScreenListMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -86,7 +86,7 @@ class EventScreenListMessage extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: theme
+                      color: isLight
                           ? indexMessage.isSelected
                               ? Colors.blue
                               : AppColors.colorLisgtTurquoise

@@ -21,7 +21,7 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return AlertDialog(
       title: Row(
@@ -62,7 +62,7 @@ class InfoPage extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+            backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -70,7 +70,7 @@ class InfoPage extends StatelessWidget {
           child: Text(
             S.of(context).ok,
             style: TextStyle(
-              color: theme ? Colors.black : Colors.white,
+              color: isLight ? Colors.black : Colors.white,
             ),
           ),
           onPressed: Navigator.of(context).pop,

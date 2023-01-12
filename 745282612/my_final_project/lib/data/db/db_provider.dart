@@ -130,7 +130,10 @@ class DBProvider {
 
   Future<List<Chat>> getAllChat() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(chatsTable);
+    final List<Map<String, dynamic>> maps = await db.query(
+      chatsTable,
+      orderBy: '${ChatField.pin} DESC',
+    );
 
     return List.generate(
       maps.length,

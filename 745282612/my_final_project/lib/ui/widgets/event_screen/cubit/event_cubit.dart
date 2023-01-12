@@ -10,16 +10,18 @@ import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
+  final myDBProvider = DBProvider.dbProvider;
+
   EventCubit() : super(EventState(listEvent: [])) {
     initializer();
   }
 
-  void initializer() async {
-    final listEvent = await DBProvider.dbProvider.getAllEvent();
+  Future<void> initializer() async {
+    final listEvent = await myDBProvider.getAllEvent();
     emit(state.copyWith(listEvent: listEvent));
   }
 
-  void addEvent({
+  Future<void> addEvent({
     required String content,
     required String type,
     required int chatId,
@@ -38,7 +40,7 @@ class EventCubit extends Cubit<EventState> {
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
       sectionTitle: selectedTitle != 'Cancel' ? selectedTitle : null,
     );
-    final event = await DBProvider.dbProvider.addEvent(newEvent);
+    final event = await myDBProvider.addEvent(newEvent);
     newListEvent.add(event);
     emit(state.copyWith(listEvent: newListEvent, isWrite: false));
   }
@@ -62,7 +64,7 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(isSelected: !state.isSelected));
   }
 
-  void changeFavoriteItem() {
+  Future<void> changeFavoriteItem() async {
     final listEvent = state.listEvent;
     Event event;
     int i;
@@ -70,7 +72,7 @@ class EventCubit extends Cubit<EventState> {
       if (listEvent[i].isSelected) {
         event = listEvent[i];
         listEvent[i] = event.copyWith(isFavorit: !listEvent[i].isFavorit);
-        DBProvider.dbProvider.updateEvent(listEvent[i]);
+        await myDBProvider.updateEvent(listEvent[i]); // dpProvider присвоить переменной
       }
     }
     emit(state.copyWith(listEvent: listEvent));
@@ -89,7 +91,7 @@ class EventCubit extends Cubit<EventState> {
     _changeCountSelected();
   }
 
-  void addPicterMessage({
+  Future<void> addPicterMessage({
     File? repetFile,
     XFile? pickedFile,
     required String type,
@@ -106,7 +108,7 @@ class EventCubit extends Cubit<EventState> {
         isSelected: false,
       );
       final newListEvent = state.listEvent;
-      final event = await DBProvider.dbProvider.addEvent(newEvent);
+      final event = await myDBProvider.addEvent(newEvent);
       newListEvent.add(event);
       emit(state.copyWith(listEvent: newListEvent, isWrite: false));
     }
@@ -116,16 +118,16 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(isWrite: true));
   }
 
-  void deleteEvent([int id = -1]) async {
+  Future<void> deleteEvent([int id = -1]) async {
     final listEvent = state.listEvent;
     int i;
     if (id != -1) {
       listEvent.removeWhere((element) => element.id == id);
-      await DBProvider.dbProvider.deleteEventById(id);
+      await myDBProvider.deleteEventById(id);
     } else {
       for (i = 0; i < listEvent.length; i++) {
         if (listEvent[i].isSelected) {
-          await DBProvider.dbProvider.deleteEventById(listEvent[i].id!);
+          await myDBProvider.deleteEventById(listEvent[i].id!);
         }
       }
       listEvent.removeWhere((element) => element.isSelected);
@@ -145,14 +147,14 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
-  void editEvent({required String content}) {
+  Future<void> editEvent({required String content}) async {
     final listEvent = state.listEvent;
     int i;
     for (i = 0; i < listEvent.length; i++) {
       if (listEvent[i].isSelected) {
         final event = listEvent[i];
         listEvent[i] = event.copyWith(messageContent: content);
-        DBProvider.dbProvider.updateEvent(listEvent[i]);
+        await myDBProvider.updateEvent(listEvent[i]);
         break;
       }
     }
@@ -205,7 +207,7 @@ class EventCubit extends Cubit<EventState> {
     }
   }
 
-  void copyClipboard() async {
+  Future<void> copyClipboard() async {
     final event = state.listEvent.firstWhere((element) => element.isSelected);
     final copyText = event.messageContent;
     await Clipboard.setData(
@@ -229,7 +231,7 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(searchText: text));
   }
 
-  void repetEvent({required int chatId, required List<Event> listEvent}) async {
+  void repetEvent({required int chatId, required List<Event> listEvent}) {
     final newListEvent = listEvent.reversed.where((element) => element.isSelected).toList();
     int i;
     for (i = 0; i < newListEvent.length; i++) {

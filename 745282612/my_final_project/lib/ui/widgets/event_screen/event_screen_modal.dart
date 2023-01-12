@@ -34,7 +34,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -59,7 +59,8 @@ class _EventScreenModalState extends State<EventScreenModal> {
           actions: [
             TextButton(
                 style: TextButton.styleFrom(
-                  backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+                  backgroundColor:
+                      isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -67,7 +68,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 child: Text(
                   S.of(context).exit,
                   style: TextStyle(
-                    color: theme ? Colors.black : Colors.white,
+                    color: isLight ? Colors.black : Colors.white,
                   ),
                 ),
                 onPressed: () {
@@ -76,7 +77,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 }),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+                backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -84,7 +85,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
               child: Text(
                 S.of(context).ok,
                 style: TextStyle(
-                  color: theme ? Colors.black : Colors.white,
+                  color: isLight ? Colors.black : Colors.white,
                 ),
               ),
               onPressed: () {
