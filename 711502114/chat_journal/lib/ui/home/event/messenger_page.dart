@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../theme/colors.dart';
@@ -19,7 +20,7 @@ class MessengerPage extends StatefulWidget {
 
 class _MessengerPageState extends State<MessengerPage> {
   final _fieldText = TextEditingController();
-  bool _isFavorite = false, _isSelectedMode = false;
+  bool _isFavorite = false, _isSelectedMode = false, _isEditMode = false;
   late List<MessageData> _events;
   final List<int> _selectedItemIndexes = [];
   final _bookMark = Icons.bookmark_border_outlined;
@@ -35,17 +36,20 @@ class _MessengerPageState extends State<MessengerPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: _isSelectedMode ? _buildSelectedAppBar() : _buildAppBar(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            widget.chat.messages.isNotEmpty
-                ? _buildMessageList(size)
-                : InfoBox(size: size, mainTitle: widget.chat.title),
-            _getInputBox(size),
-          ],
+    return WillPopScope(
+      onWillPop: _handleBackButton,
+      child: Scaffold(
+        appBar: _isSelectedMode ? _buildSelectedAppBar() : _buildAppBar(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.chat.messages.isNotEmpty
+                  ? _buildMessageList(size)
+                  : InfoBox(size: size, mainTitle: widget.chat.title),
+              _getInputBox(size),
+            ],
+          ),
         ),
       ),
     );
@@ -110,8 +114,8 @@ class _MessengerPageState extends State<MessengerPage> {
 
   Padding _createEditIcon() {
     final icon = Icons.edit;
-    if (_selectedItemIndexes.length == 1) {
-      return _createToolIcon(icon: icon, onPressed: _editMessage);
+    if (_selectedItemIndexes.length == 1 && !_isEditMode) {
+      return _createToolIcon(icon: icon, onPressed: _turnOnEditMode);
     } else {
       return _createToolIcon(icon: icon, color: Colors.transparent);
     }
@@ -137,14 +141,23 @@ class _MessengerPageState extends State<MessengerPage> {
       _events[i].isSelected = false;
     }
 
+    _fieldText.clear();
+    _isEditMode = false;
+
     _finishEditMode();
   }
 
-  void _editMessage() {
-    // TODO: add editing message realization!!!!!
+  void _turnOnEditMode() {
+    setState(() {
+      _isEditMode = true;
+      _fieldText.text = _events[_selectedItemIndexes.last].message;
+    });
+  }
 
+  void _turnOffEditMode() {
+    _isEditMode = false;
+    _events[_selectedItemIndexes.last].message = _fieldText.text;
     _disableSelect();
-    _finishEditMode();
   }
 
   void _copyText() {
@@ -163,7 +176,6 @@ class _MessengerPageState extends State<MessengerPage> {
     Clipboard.setData(ClipboardData(text: text));
 
     _disableSelect();
-    _finishEditMode();
   }
 
   void _changeFavoriteStatus() {
@@ -172,7 +184,6 @@ class _MessengerPageState extends State<MessengerPage> {
     }
 
     _disableSelect();
-    _finishEditMode();
   }
 
   void _deleteMessage() {
@@ -207,12 +218,14 @@ class _MessengerPageState extends State<MessengerPage> {
               isSelected: _events[index].isSelected,
             ),
             onTap: () {
-              if (_isSelectedMode) {
+              if (_isSelectedMode && !_isEditMode) {
                 _doEventActions(index);
               }
             },
             onLongPress: () {
-              _doEventActions(index);
+              if (!_isEditMode) {
+                _doEventActions(index);
+              }
             },
           );
         },
@@ -251,13 +264,14 @@ class _MessengerPageState extends State<MessengerPage> {
   }
 
   Container _getInputBox(Size size) {
+    final local = AppLocalizations.of(context);
     return Container(
       width: size.width,
       color: messageBlocColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _createKeyboardIcon(Icons.attach_file, _attachFile),
+          _initKeyboardIcon(Icons.attach_file, () => _openAttachDialog(local)),
           Expanded(
             child: TextField(
               controller: _fieldText,
@@ -266,21 +280,24 @@ class _MessengerPageState extends State<MessengerPage> {
               maxLines: 5,
               textInputAction: TextInputAction.newline,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter event',
-                hintStyle: TextStyle(fontSize: 20),
+                hintText: local?.enterFieldHint ?? '',
+                hintStyle: const TextStyle(fontSize: 20),
               ),
               style: const TextStyle(fontSize: 20),
             ),
           ),
-          _createKeyboardIcon(Icons.send, _sendEvent),
+          _initKeyboardIcon(
+            !_isEditMode ? Icons.send : Icons.edit,
+            !_isEditMode ? _sendEvent : _turnOffEditMode,
+          ),
         ],
       ),
     );
   }
 
-  IconButton _createKeyboardIcon(IconData icon, void Function() onPressed) {
+  IconButton _initKeyboardIcon(IconData icon, void Function() onPressed) {
     return IconButton(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -289,61 +306,44 @@ class _MessengerPageState extends State<MessengerPage> {
     );
   }
 
-  Future<void> _attachFile() async {
-    final _picker = ImagePicker();
-    late XFile? photo;
-
+  Future<void> _openAttachDialog(AppLocalizations? local) async {
+    final info = local?.attachDialogInfo ?? '';
+    final cancel = local?.cancel ?? '';
+    final gallery = local?.gallery ?? '';
+    final camera = local?.camera ?? '';
     return (await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Center(
-          child: Text(
-            'How would you like to upload an image?',
-            style: TextStyle(fontSize: 24),
-          ),
+        title: Center(
+          child: Text(info, style: const TextStyle(fontSize: 24)),
         ),
         actions: <Widget>[
-          TextButton(
-            onPressed: _closeDialog,
-            child: const Text(
-              'Cancel',
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              photo = await _picker.pickImage(source: ImageSource.gallery);
-              _sendEvent(photo?.path);
-              _closeDialog();
-            },
-            child: const Text(
-              'Gallery',
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              photo = await _picker.pickImage(source: ImageSource.camera);
-              _sendEvent(photo?.path);
-              _closeDialog();
-            },
-            child: const Text(
-              'Camera',
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
-          ),
+          _initDialogButton(cancel, _closeDialog),
+          _initDialogButton(gallery, () => _attachFile(ImageSource.gallery)),
+          _initDialogButton(camera, () => _attachFile(ImageSource.camera)),
         ],
       ),
     ));
   }
 
+  TextButton _initDialogButton(String text, void Function() action) {
+    return TextButton(
+      onPressed: action,
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 24),
+      ),
+    );
+  }
+
   void _closeDialog() => Navigator.of(context).pop(false);
+
+  void _attachFile(ImageSource imageSource) async {
+    final _picker = ImagePicker();
+    final photo = await _picker.pickImage(source: imageSource);
+    _sendEvent(photo?.path);
+    _closeDialog();
+  }
 
   void _sendEvent([String? path]) {
     if (_fieldText.text.isEmpty && path == null) return;
@@ -354,6 +354,15 @@ class _MessengerPageState extends State<MessengerPage> {
       );
       _fieldText.clear();
     });
+  }
+
+  Future<bool> _handleBackButton() async {
+    if (!_isSelectedMode) {
+      return true;
+    } else {
+      _disableSelect();
+      return false;
+    }
   }
 
   @override

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -29,7 +28,6 @@ class InfoBox extends StatelessWidget {
       padding: const EdgeInsets.only(top: 30),
       child: Container(
         width: size.width * 0.85,
-        height: size.height * 0.27,
         decoration: BoxDecoration(
           color: messageBlocColor,
           borderRadius: BorderRadius.circular(7),
@@ -47,6 +45,7 @@ class InfoBox extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 19,
                 ),
+                overflow: TextOverflow.clip,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
@@ -58,6 +57,7 @@ class InfoBox extends StatelessWidget {
                   color: Colors.grey,
                   fontSize: 19,
                 ),
+                overflow: TextOverflow.clip,
                 textAlign: TextAlign.center,
               ),
             ],

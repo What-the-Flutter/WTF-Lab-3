@@ -20,5 +20,10 @@
     "oct": "Oct",
     "nov": "Nov",
     "dec": "Dec",
-    "today": "Today"
+    "today": "Today",
+    "enterFieldHint": "Enter event",
+    "attachDialogInfo": "How would you like to upload an image?",
+    "cancel": "Cancel",
+    "gallery": "Gallery",
+    "camera": "Camera"
 }

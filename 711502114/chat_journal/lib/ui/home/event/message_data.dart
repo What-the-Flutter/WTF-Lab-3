@@ -1,5 +1,5 @@
 class MessageData {
-  final String message;
+  String message;
   final DateTime dateTime;
   bool isFavorite;
   bool isSelected;
