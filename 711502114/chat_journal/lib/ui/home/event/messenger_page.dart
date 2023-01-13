@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../theme/colors.dart';
@@ -18,16 +19,11 @@ class MessengerPage extends StatefulWidget {
 
 class _MessengerPageState extends State<MessengerPage> {
   final _fieldText = TextEditingController();
-
-  bool _isFavoriteMode = false;
-
-  final Icon _bookmarkIcon = const Icon(Icons.bookmark_border_outlined);
-  final Icon _bookmarkIconWitchColor = const Icon(
-    Icons.bookmark,
-    color: Colors.yellow,
-  );
-
+  bool _isFavorite = false, _isSelectedMode = false;
   late List<MessageData> _events;
+  final List<int> _selectedItemIndexes = [];
+  final _bookMark = Icons.bookmark_border_outlined;
+  late AppBar appBar;
 
   @override
   void initState() {
@@ -40,29 +36,7 @@ class _MessengerPageState extends State<MessengerPage> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.chat.title),
-        centerTitle: true,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: IconButton(
-              icon: const Icon(
-                Icons.search,
-                size: 24,
-              ),
-              onPressed: _lookForWords,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-            child: IconButton(
-              icon: _isFavoriteMode ? _bookmarkIconWitchColor : _bookmarkIcon,
-              onPressed: _showFavorites,
-            ),
-          ),
-        ],
-      ),
+      appBar: _isSelectedMode ? _buildSelectedAppBar() : _buildAppBar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,12 +51,31 @@ class _MessengerPageState extends State<MessengerPage> {
     );
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text(widget.chat.title),
+      centerTitle: true,
+      actions: <Widget>[
+        _createToolIcon(
+          icon: Icons.search,
+          onPressed: _lookForWords,
+        ),
+        _createToolIcon(
+          horizontal: 6,
+          icon: _isFavorite ? Icons.bookmark : _bookMark,
+          color: _isFavorite ? Colors.yellow : null,
+          onPressed: _showFavorites,
+        ),
+      ],
+    );
+  }
+
   void _lookForWords() {}
 
   void _showFavorites() {
     setState(() {
-      _isFavoriteMode = !_isFavoriteMode;
-      if (_isFavoriteMode) {
+      _isFavorite = !_isFavorite;
+      if (_isFavorite) {
         _events = widget.chat.messages
             .where((element) => element.isFavorite)
             .toList();
@@ -92,27 +85,164 @@ class _MessengerPageState extends State<MessengerPage> {
     });
   }
 
+  AppBar _buildSelectedAppBar() {
+    return AppBar(
+      leading: _createToolIcon(icon: Icons.close, onPressed: _disableSelect),
+      actions: <Widget>[
+        Expanded(
+          child: Align(
+            alignment: const Alignment(0, 0.15),
+            child: Text(
+              '${_selectedItemIndexes.length}',
+              style: const TextStyle(
+                fontSize: 25,
+              ),
+            ),
+          ),
+        ),
+        _createEditIcon(),
+        _createToolIcon(icon: Icons.copy, onPressed: _copyText),
+        _createToolIcon(icon: _bookMark, onPressed: _changeFavoriteStatus),
+        _createToolIcon(icon: Icons.delete, onPressed: _deleteMessage),
+      ],
+    );
+  }
+
+  Padding _createEditIcon() {
+    final icon = Icons.edit;
+    if (_selectedItemIndexes.length == 1) {
+      return _createToolIcon(icon: icon, onPressed: _editMessage);
+    } else {
+      return _createToolIcon(icon: icon, color: Colors.transparent);
+    }
+  }
+
+  Padding _createToolIcon({
+    double horizontal = 6.0,
+    required IconData icon,
+    Color? color,
+    void Function()? onPressed,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: horizontal),
+      child: IconButton(
+        icon: Icon(icon, size: 24, color: color),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  void _disableSelect() {
+    for (var i in _selectedItemIndexes) {
+      _events[i].isSelected = false;
+    }
+
+    _finishEditMode();
+  }
+
+  void _editMessage() {
+    // TODO: add editing message realization!!!!!
+
+    _disableSelect();
+    _finishEditMode();
+  }
+
+  void _copyText() {
+    _selectedItemIndexes.sort();
+    String? text;
+
+    for (var i in _selectedItemIndexes) {
+      final message = _events[i].message;
+      if (text == null) {
+        text = '$message\n\n';
+      } else {
+        text += '$message\n\n';
+      }
+    }
+
+    Clipboard.setData(ClipboardData(text: text));
+
+    _disableSelect();
+    _finishEditMode();
+  }
+
+  void _changeFavoriteStatus() {
+    for (var i in _selectedItemIndexes) {
+      _events[i].isFavorite = !_events[i].isFavorite;
+    }
+
+    _disableSelect();
+    _finishEditMode();
+  }
+
+  void _deleteMessage() {
+    _selectedItemIndexes.sort();
+
+    var shift = 0;
+    for (var i in _selectedItemIndexes) {
+      _events.removeAt(i + shift--);
+    }
+
+    _finishEditMode();
+  }
+
+  void _finishEditMode() {
+    setState(() {
+      _isSelectedMode = false;
+      _selectedItemIndexes.clear();
+    });
+  }
+
   Expanded _buildMessageList(Size size) {
     return Expanded(
       child: ListView.builder(
         reverse: true,
         itemCount: _events.length,
-        itemBuilder: (context, index) {
-          final length = _events.length;
+        itemBuilder: (_, i) {
+          final index = _events.length - 1 - i;
           return InkWell(
             child: Event(
-              messageData: _events[length - 1 - index],
+              messageData: _events[index],
               size: size,
+              isSelected: _events[index].isSelected,
             ),
-            onTap: _doEventActions,
-            onLongPress: () => _setFavoriteFlag(_events[length - 1 - index]),
+            onTap: () {
+              if (_isSelectedMode) {
+                _doEventActions(index);
+              }
+            },
+            onLongPress: () {
+              _doEventActions(index);
+            },
           );
         },
       ),
     );
   }
 
-  void _doEventActions() {}
+  void _doEventActions(int index) {
+    setState(() {
+      if (_selectedItemIndexes.isEmpty) {
+        _isSelectedMode = true;
+        _events[index].isSelected = true;
+
+        _selectedItemIndexes.add(index);
+      } else if (!_selectedItemIndexes.contains(index)) {
+        _events[index].isSelected = true;
+
+        _selectedItemIndexes.add(index);
+      } else if (_selectedItemIndexes.length == 1) {
+        _isSelectedMode = false;
+        _events[index].isSelected = false;
+
+        _selectedItemIndexes.remove(index);
+      } else {
+        _events[index].isSelected = false;
+
+        _selectedItemIndexes.remove(index);
+      }
+    });
+  }
 
   void _setFavoriteFlag(MessageData messageData) {
     setState(() {
@@ -127,15 +257,7 @@ class _MessengerPageState extends State<MessengerPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            icon: const Icon(
-              Icons.attach_file,
-              size: 24,
-            ),
-            onPressed: _attachFile,
-          ),
+          _createKeyboardIcon(Icons.attach_file, _attachFile),
           Expanded(
             child: TextField(
               controller: _fieldText,
@@ -152,17 +274,18 @@ class _MessengerPageState extends State<MessengerPage> {
               style: const TextStyle(fontSize: 20),
             ),
           ),
-          IconButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            icon: const Icon(
-              Icons.send,
-              size: 24,
-            ),
-            onPressed: _sendEvent,
-          ),
+          _createKeyboardIcon(Icons.send, _sendEvent),
         ],
       ),
+    );
+  }
+
+  IconButton _createKeyboardIcon(IconData icon, void Function() onPressed) {
+    return IconButton(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      icon: Icon(icon, size: 24),
+      onPressed: onPressed,
     );
   }
 

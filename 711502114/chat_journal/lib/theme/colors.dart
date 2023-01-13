@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const botBackgroundColor = Color.fromRGBO(49, 162, 225, 0.05);
 const circleMessageColor = Color.fromRGBO(77, 157, 206, 0.7);
+const circleMessageSelectedColor = Color.fromRGBO(77, 157, 206, 0.35);
 const hoverElementColor = Color.fromRGBO(161, 161, 161, 0.05);
 Color iconColor = Colors.white;
 
@@ -11,7 +12,7 @@ const _elementsColor = Color.fromRGBO(94, 163, 222, 1);
 const _mainDarkColor = Color.fromRGBO(33, 45, 59, 1);
 const _elementsDarkColor = Color.fromRGBO(23, 34, 44, 1);
 
-const messageBlocColor = Color.fromRGBO(37,47,57, 1);
+const messageBlocColor = Color.fromRGBO(37, 47, 57, 1);
 
 class CustomTheme {
   static ThemeData get lightTheme {

@@ -11,9 +11,14 @@ enum MessageType { text, attach, textWithAttach }
 class Event extends StatelessWidget {
   final MessageData messageData;
   final Size size;
+  final bool isSelected;
 
-  Event({Key? key, required this.messageData, required this.size})
-      : super(key: key);
+  Event({
+    Key? key,
+    required this.messageData,
+    required this.size,
+    required this.isSelected,
+  }) : super(key: key);
 
   late final Image _image;
 
@@ -137,7 +142,7 @@ class Event extends StatelessWidget {
       constraints: boxConstraints,
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: circleMessageColor,
+        color: isSelected ? circleMessageSelectedColor : circleMessageColor,
         borderRadius: borderRadius,
       ),
       child: child,
