@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'src/common/bloc/journal_bloc_observer.dart';
-import 'src/common/data/chat_provider.dart';
 import 'src/common/data/chat_repository.dart';
+import 'src/common/data/database/chat_database.dart';
 import 'src/features/theme/theme.dart';
 import 'src/journal_app.dart';
 
@@ -14,8 +14,9 @@ void main() async {
   runApp(
     RepositoryProvider(
       create: (context) => ChatRepository(
-        provider: ChatProvider(),
+        provider: ChatDatabase(),
       ),
+      lazy: false,
       child: const ThemeScope(
         child: JournalApp(),
       ),

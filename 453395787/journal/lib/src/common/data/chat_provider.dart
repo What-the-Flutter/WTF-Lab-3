@@ -10,46 +10,46 @@ import '../models/tag.dart';
 
 class ChatProvider extends ChatProviderApi {
   @override
-  Future<void> add(Chat chat) async {
+  Future<void> addChat(Chat chat) async {
     if (_chats.containsKey(chat.id)) return;
     _chats[chat.id] = chat;
   }
 
   @override
-  Future<void> addAll(IList<Chat> chats) async {
-    chats.forEach(add);
+  Future<void> addChats(IList<Chat> chats) async {
+    chats.forEach(addChat);
   }
 
   @override
-  Future<void> delete(int id) async {
+  Future<void> deleteChat(int id) async {
     _chats.remove(id);
   }
 
   @override
-  Future<void> deleteAll(IList<int> ids) async {
+  Future<void> deleteChats(IList<int> ids) async {
     ids.forEach(_chats.remove);
   }
 
   @override
-  Future<Chat?> get(int id) async {
+  Future<Chat?> getChat(int id) async {
     return _chats[id];
   }
 
   @override
-  Future<IList<Chat>> getAll() async {
+  Future<IList<Chat>> getChats() async {
     return _chats.mapTo((key, chat) => chat).toIList();
   }
 
   @override
-  Future<void> update(Chat chat) async {
+  Future<void> updateChat(Chat chat) async {
     if (_chats.containsKey(chat.id)) {
       _chats[chat.id] = chat;
     }
   }
 
   @override
-  Future<void> updateAll(IList<Chat> chats) async {
-    chats.forEach(update);
+  Future<void> updateChats(IList<Chat> chats) async {
+    chats.forEach(updateChat);
   }
 }
 

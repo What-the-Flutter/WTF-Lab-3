@@ -176,6 +176,8 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   Chat _findByIndex(IList<Chat> chats, int id) {
+    print(chats);
+    print(id);
     return chats.firstWhere((chat) => chat.id == id);
   }
 }
