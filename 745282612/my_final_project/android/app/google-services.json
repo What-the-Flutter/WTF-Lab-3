@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "702658349719",
+    "project_id": "chat-journal-wtf",
+    "storage_bucket": "chat-journal-wtf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702658349719:android:dc3b6f32700748abbf77d2",
+        "android_client_info": {
+          "package_name": "com.example.my_final_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "702658349719-hb17flif95k9oqmutp5593q4vg2f42tk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG-s6vwYCNws6qB76IisxhNii1Uz7FAp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "702658349719-hb17flif95k9oqmutp5593q4vg2f42tk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
