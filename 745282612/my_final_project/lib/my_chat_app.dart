@@ -32,10 +32,7 @@ class MainApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const Menu(),
-      },
+      home: const Menu(),
     );
   }
 }
