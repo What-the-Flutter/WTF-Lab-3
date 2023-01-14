@@ -4,9 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'l10n/l10n.dart';
+import 'pages/bottom_nav_bar.dart';
 import 'theme/colors.dart';
 import 'theme/theme_model.dart';
-import 'ui/bottom_nav_bar.dart';
 
 void main() => runApp(const MyApp());
 

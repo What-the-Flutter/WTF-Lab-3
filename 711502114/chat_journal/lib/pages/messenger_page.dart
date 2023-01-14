@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../theme/colors.dart';
-import '../chat.dart';
-import 'event.dart';
-import 'info_box.dart';
-import 'message_data.dart';
+import '../models/chat.dart';
+import '../models/event.dart';
+import '../theme/colors.dart';
+import '../widgets/event_box.dart';
+import '../widgets/info_box.dart';
 
 class MessengerPage extends StatefulWidget {
   const MessengerPage({Key? key, required this.chat}) : super(key: key);
@@ -21,7 +21,7 @@ class MessengerPage extends StatefulWidget {
 class _MessengerPageState extends State<MessengerPage> {
   final _fieldText = TextEditingController();
   bool _isFavorite = false, _isSelectedMode = false, _isEditMode = false;
-  late List<MessageData> _events;
+  late List<Event> _events;
   final List<int> _selectedItemIndexes = [];
   final _bookMark = Icons.bookmark_border_outlined;
   late AppBar appBar;
@@ -29,7 +29,7 @@ class _MessengerPageState extends State<MessengerPage> {
   @override
   void initState() {
     super.initState();
-    _events = widget.chat.messages;
+    _events = widget.chat.events;
   }
 
   @override
@@ -44,7 +44,7 @@ class _MessengerPageState extends State<MessengerPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              widget.chat.messages.isNotEmpty
+              widget.chat.events.isNotEmpty
                   ? _buildMessageList(size)
                   : InfoBox(size: size, mainTitle: widget.chat.title),
               _getInputBox(size),
@@ -80,11 +80,10 @@ class _MessengerPageState extends State<MessengerPage> {
     setState(() {
       _isFavorite = !_isFavorite;
       if (_isFavorite) {
-        _events = widget.chat.messages
-            .where((element) => element.isFavorite)
-            .toList();
+        _events =
+            widget.chat.events.where((element) => element.isFavorite).toList();
       } else {
-        _events = widget.chat.messages;
+        _events = widget.chat.events;
       }
     });
   }
@@ -212,8 +211,8 @@ class _MessengerPageState extends State<MessengerPage> {
         itemBuilder: (_, i) {
           final index = _events.length - 1 - i;
           return InkWell(
-            child: Event(
-              messageData: _events[index],
+            child: EventBox(
+              event: _events[index],
               size: size,
               isSelected: _events[index].isSelected,
             ),
@@ -257,9 +256,9 @@ class _MessengerPageState extends State<MessengerPage> {
     });
   }
 
-  void _setFavoriteFlag(MessageData messageData) {
+  void _setFavoriteFlag(Event event) {
     setState(() {
-      messageData.isFavorite = !messageData.isFavorite;
+      event.isFavorite = !event.isFavorite;
     });
   }
 
@@ -353,8 +352,8 @@ class _MessengerPageState extends State<MessengerPage> {
     if (_fieldText.text.isEmpty && path == null) return;
 
     setState(() {
-      widget.chat.messages.add(
-        MessageData(_fieldText.text, DateTime.now(), photoPath: path),
+      widget.chat.events.add(
+        Event(_fieldText.text, DateTime.now(), photoPath: path),
       );
       _fieldText.clear();
     });

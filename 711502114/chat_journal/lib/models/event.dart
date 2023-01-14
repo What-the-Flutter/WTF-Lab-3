@@ -1,11 +1,11 @@
-class MessageData {
+class Event {
   String message;
   final DateTime dateTime;
   bool isFavorite;
   bool isSelected;
   final String? photoPath;
 
-  MessageData(
+  Event(
     this.message,
     this.dateTime, {
     this.isFavorite = false,

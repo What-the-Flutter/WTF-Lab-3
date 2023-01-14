@@ -2,20 +2,20 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../../../theme/colors.dart';
-import '../../../utils/utils.dart';
-import 'message_data.dart';
+import '../models/event.dart';
+import '../theme/colors.dart';
+import '../utils/utils.dart';
 
 enum MessageType { text, attach, textWithAttach }
 
-class Event extends StatelessWidget {
-  final MessageData messageData;
+class EventBox extends StatelessWidget {
+  final Event event;
   final Size size;
   final bool isSelected;
 
-  Event({
+  EventBox({
     Key? key,
-    required this.messageData,
+    required this.event,
     required this.size,
     required this.isSelected,
   }) : super(key: key);
@@ -33,9 +33,9 @@ class Event extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!_isValidPath(messageData.photoPath))
+          if (!_isValidPath(event.photoPath))
             _buildMessageBox(MessageType.text)
-          else if (messageData.message.isEmpty)
+          else if (event.message.isEmpty)
             _buildMessageBox(MessageType.attach)
           else
             _buildMessageBox(MessageType.textWithAttach),
@@ -44,7 +44,7 @@ class Event extends StatelessWidget {
             children: [
               Icon(
                 Icons.bookmark,
-                color: messageData.isFavorite
+                color: event.isFavorite
                     ? _iconFavoriteColor
                     : _iconNonFavoriteColor,
                 size: 10,
@@ -55,8 +55,8 @@ class Event extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text(formatDate(context, messageData.dateTime)),
-                  Text(formatTime(messageData.dateTime)),
+                  Text(formatDate(context, event.dateTime)),
+                  Text(formatTime(event.dateTime)),
                 ],
               ),
             ],
@@ -88,7 +88,7 @@ class Event extends StatelessWidget {
         }
 
         child = Text(
-          messageData.message,
+          event.message,
           style: const TextStyle(fontSize: 16, color: Colors.white),
           overflow: TextOverflow.clip,
         );

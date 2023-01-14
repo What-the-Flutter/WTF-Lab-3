@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../theme/colors.dart';
-import '../../utils/utils.dart';
-import 'chat.dart';
+import '../models/chat.dart';
+import '../theme/colors.dart';
+import '../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
     Key? key,
     required this.chat,
-    required this.assetsLink,
   }) : super(key: key);
 
   final Chat chat;
-  final String assetsLink;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,9 @@ class ChatCard extends StatelessWidget {
             flex: 1,
           ),
           _buildTimeText(context),
-          const SizedBox(width: 25,)
+          const SizedBox(
+            width: 25,
+          )
         ],
       ),
     );
@@ -48,7 +48,7 @@ class ChatCard extends StatelessWidget {
         color: circleMessageColor,
         shape: BoxShape.circle,
       ),
-      child: SvgPicture.asset(assetsLink, color: Colors.white),
+      child: SvgPicture.asset(chat.assetsLink, color: Colors.white),
     );
   }
 
@@ -83,8 +83,8 @@ class ChatCard extends StatelessWidget {
 
   Text _buildTimeText(BuildContext context) {
     String? time;
-    if (chat.messages.isNotEmpty) {
-      final dateTime = chat.messages.last.dateTime;
+    if (chat.events.isNotEmpty) {
+      final dateTime = chat.events.last.dateTime;
       time = formatDate(context, dateTime, includeTime: true);
     }
     return Text(

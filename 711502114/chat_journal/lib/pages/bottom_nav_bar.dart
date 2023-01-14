@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'daily/daily_page.dart';
-import 'explore/explore_page.dart';
-import 'home/home_page.dart';
-import 'timeline/timeline_page.dart';
+import 'daily_page.dart';
+import 'explore_page.dart';
+import 'home_page.dart';
+import 'timeline_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
