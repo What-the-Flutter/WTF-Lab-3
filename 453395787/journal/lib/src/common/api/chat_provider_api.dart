@@ -1,21 +1,14 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:rxdart/rxdart.dart';
 
-import '../models/chat.dart';
+import '../models/chat_view.dart';
 
 abstract class ChatProviderApi {
-  Future<IList<Chat>> getChats();
+  ValueStream<IList<ChatView>> get chats;
 
-  Future<Chat?> getChat(int id);
+  Future<int> addChat(ChatView chat);
 
-  Future<void> addChat(Chat chat);
+  Future<void> deleteChat(int chatId);
 
-  Future<void> addChats(IList<Chat> chats);
-
-  Future<void> updateChat(Chat chat);
-
-  Future<void> updateChats(IList<Chat> chats);
-
-  Future<void> deleteChat(int id);
-
-  Future<void> deleteChats(IList<int> ids);
+  Future<void> updateChat(ChatView chat);
 }

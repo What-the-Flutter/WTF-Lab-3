@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:logger/logger.dart';
+import 'package:rxdart/rxdart.dart';
+
+typedef Filter<T> = Expression<bool> Function(T tbl);
 
 mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   TableInfo<UserTable, UserDataClass> get table => throw UnimplementedError();
@@ -9,13 +12,24 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
 
   static final Logger log = Logger(
     printer: PrettyPrinter(
-      methodCount: 7,
+      methodCount: 2,
     ),
   );
 
+  final BehaviorSubject<IList<UserDataClass>> _stream = BehaviorSubject.seeded(
+    IList<UserDataClass>([]),
+  );
+
+  void init() {
+    accessor.select(table).watch().listen((event) {
+      _stream.add(event.toIList());
+    });
+  }
+
   Future<int> add(Insertable<UserDataClass> value) async {
-    log.d('In add for ${UserDataClass.runtimeType}: $value');
-    return accessor.into(table).insert(value);
+    final res = await accessor.into(table).insert(value);
+    log.d('In add for ${UserDataClass.runtimeType}: $value, added id: $res');
+    return res;
   }
 
   Future<void> addAll(IList<Insertable<UserDataClass>> values) async {
@@ -34,8 +48,24 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
     return result;
   }
 
+  ValueStream<IList<UserDataClass>> get stream => _stream.stream;
+
+  ValueStream<IList<UserDataClass>> streamWhere(
+    Filter<UserTable> filter,
+  ) {
+    return ValueConnectableStream((accessor.select(table)
+          ..where(
+            (tbl) => filter(tbl),
+          ))
+        .watch()
+        .map(
+          (list) => list.toIList(),
+        ));
+  }
+
   Future<UserDataClass?> firstWhere(
-      Expression<bool> Function(UserTable tbl) filter) async {
+    Filter<UserTable> filter,
+  ) async {
     var result = await (accessor.select(table)
           ..where(
             (tbl) => filter(tbl),
@@ -46,7 +76,8 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   }
 
   Future<IList<UserDataClass>> where(
-      Expression<bool> Function(UserTable tbl) filter) async {
+    Filter<UserTable> filter,
+  ) async {
     var result = (await (accessor.select(table)
               ..where(
                 (tbl) => filter(tbl),
@@ -59,7 +90,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
 
   Future<void> updateWhere(
     Insertable<UserDataClass> value,
-    Expression<bool> Function(UserTable tbl) filter,
+    Filter<UserTable> filter,
   ) async {
     var result = await (accessor.update(table)
           ..where(
@@ -70,7 +101,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   }
 
   Future<void> deleteWhere(
-    Expression<bool> Function(UserTable tbl) filter,
+    Filter<UserTable> filter,
   ) async {
     var result = await (accessor.delete(table)
           ..where(

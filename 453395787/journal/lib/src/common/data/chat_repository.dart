@@ -3,76 +3,57 @@ import 'package:rxdart/rxdart.dart';
 
 import '../api/chat_provider_api.dart';
 import '../api/chat_repository_api.dart';
-import '../models/chat.dart';
+import '../models/chat_view.dart';
 
 class ChatRepository extends ChatRepositoryApi {
   ChatRepository({
     required ChatProviderApi provider,
-  }) : _provider = provider {
-    _provider.getChats().then(_chats.add);
-  }
+  }) : _provider = provider;
 
   final ChatProviderApi _provider;
-  final BehaviorSubject<IList<Chat>> _chats = BehaviorSubject();
 
   @override
-  ValueStream<IList<Chat>> get chats => _chats.stream;
+  ValueStream<IList<ChatView>> get chats => _provider.chats;
 
   @override
-  Future<void> add(Chat chat) async {
+  Future<void> add(ChatView chat) async {
     await _provider.addChat(chat);
-    _chats.add(await _provider.getChats());
   }
 
   @override
-  Future<Chat?> findById(int id) async {
-    return _provider.getChat(id);
-  }
-
-  @override
-  Future<void> pin(Chat chat) async {
+  Future<void> pin(ChatView chat) async {
     await _provider.updateChat(
       chat.copyWith(
         isPinned: true,
       ),
     );
-    _chats.add(await _provider.getChats());
   }
 
   @override
-  Future<void> remove(Chat chat) async {
+  Future<void> remove(ChatView chat) async {
     await _provider.deleteChat(chat.id);
-    _chats.add(await _provider.getChats());
   }
 
   @override
-  Future<void> togglePin(Chat chat) async {
+  Future<void> togglePin(ChatView chat) async {
     await _provider.updateChat(
       chat.copyWith(
         isPinned: !chat.isPinned,
       ),
     );
-    _chats.add(await _provider.getChats());
   }
 
   @override
-  Future<void> unpin(Chat chat) async {
+  Future<void> unpin(ChatView chat) async {
     await _provider.updateChat(
       chat.copyWith(
         isPinned: false,
       ),
     );
-    _chats.add(await _provider.getChats());
   }
 
   @override
-  Future<void> update(Chat chat) async {
+  Future<void> update(ChatView chat) async {
     await _provider.updateChat(chat);
-    _chats.add(await _provider.getChats());
-  }
-
-  @override
-  Future<void> load() async {
-    _chats.add(await _provider.getChats());
   }
 }

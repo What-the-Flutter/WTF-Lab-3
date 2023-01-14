@@ -9,7 +9,9 @@ part 'message_dao.g.dart';
 @DriftAccessor(tables: [MessageTable])
 class MessageDao extends DatabaseAccessor<ChatDatabase>
     with _$MessageDaoMixin, BaseDaoApi<MessageTableData, MessageTable> {
-  MessageDao(ChatDatabase db) : super(db);
+  MessageDao(ChatDatabase db) : super(db) {
+    init();
+  }
 
   @override
   TableInfo<MessageTable, MessageTableData> get table => messageTable;

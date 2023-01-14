@@ -7,7 +7,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/extensions/date_time_extensions.dart';
-import '../../../../common/models/chat.dart';
 import '../../../../common/models/message.dart';
 import '../../api/message_repository_api.dart';
 
@@ -17,25 +16,27 @@ part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
   MessageManageCubit({
-    required MessageRepositoryApi repository,
-  })  : _repository = repository,
+    required MessageRepositoryApi messageRepository,
+    required this.chatId,
+    required this.name,
+  })  : _repository = messageRepository,
         super(
-          const MessageManageState.defaultMode(
-            id: 0,
-            name: '',
-            messages: IListConst([]),
+          MessageManageState.defaultMode(
+            id: chatId,
+            name: name,
+            messages: messageRepository.filteredChatStreams.value.value,
           ),
         ) {
     _subscription = _repository.filteredChatStreams.listen(
       (event) {
         _internalSubscription?.cancel();
         _internalSubscription = event.listen(
-          (chat) {
+          (messages) {
             emit(
               MessageManageState.defaultMode(
-                id: chat.id,
-                name: chat.name,
-                messages: chat.messages,
+                id: chatId,
+                name: name,
+                messages: messages,
               ),
             );
           },
@@ -45,8 +46,10 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   }
 
   final MessageRepositoryApi _repository;
-  StreamSubscription<Chat>? _internalSubscription;
-  late final StreamSubscription<ValueStream<Chat>> _subscription;
+  final int chatId;
+  final String name;
+  StreamSubscription<IList<Message>>? _internalSubscription;
+  late final StreamSubscription<ValueStream<IList<Message>>> _subscription;
 
   @override
   Future<void> close() async {

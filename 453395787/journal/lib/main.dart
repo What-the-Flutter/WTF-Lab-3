@@ -13,12 +13,15 @@ void main() async {
 
   runApp(
     RepositoryProvider(
-      create: (context) => ChatRepository(
-        provider: ChatDatabase(),
-      ),
-      lazy: false,
-      child: const ThemeScope(
-        child: JournalApp(),
+      create: (context) => ChatDatabase(),
+      child: RepositoryProvider(
+        create: (context) => ChatRepository(
+          provider: context.read<ChatDatabase>(),
+        ),
+        lazy: false,
+        child: const ThemeScope(
+          child: JournalApp(),
+        ),
       ),
     ),
   );

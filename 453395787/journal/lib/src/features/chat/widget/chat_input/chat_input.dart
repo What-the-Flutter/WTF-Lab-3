@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../common/api/chat_provider_api.dart';
+import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/data/chat_repository.dart';
+import '../../../../common/data/database/chat_database.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/radius.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
@@ -45,10 +48,14 @@ class _ChatInputState extends State<ChatInput> {
 
   @override
   Widget build(BuildContext context) {
+    final chat = context.read<ChatRepository>().chats.value.firstWhere(
+          (chat) => chat.id == widget.chatId,
+        );
+
     return MessageInputScope(
       repository: MessageRepository(
-        repository: context.read<ChatRepository>(),
-        chatId: widget.chatId,
+        repository: context.read<ChatDatabase>(),
+        chat: chat,
       ),
       child: Builder(
         builder: (context) {

@@ -10,7 +10,9 @@ class MessageToChatDao extends DatabaseAccessor<ChatDatabase>
     with
         _$MessageToChatDaoMixin,
         BaseDaoApi<MessageToChatTableData, MessageToChatTable> {
-  MessageToChatDao(ChatDatabase db) : super(db);
+  MessageToChatDao(ChatDatabase db) : super(db) {
+    init();
+  }
 
   @override
   TableInfo<MessageToChatTable, MessageToChatTableData> get table =>

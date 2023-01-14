@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:flutter/material.dart' as material;
-import 'package:logger/logger.dart';
+import 'package:flutter/material.dart' as ui;
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../api/chat_provider_api.dart';
-import '../../models/chat.dart';
+import '../../api/message_provider_api.dart';
+import '../../models/chat_view.dart';
 import '../../models/message.dart';
 import '../../models/tag.dart';
 import 'dao/daos.dart';
@@ -50,226 +51,268 @@ part 'table/tag_to_message_table.dart';
     ImageToMessageDao,
   ],
 )
-class ChatDatabase extends _$ChatDatabase implements ChatProviderApi {
+class ChatDatabase extends _$ChatDatabase
+    implements ChatProviderApi, MessageProviderApi {
   ChatDatabase() : super(_openConnection());
-
-  static final Logger log = Logger(
-    printer: PrettyPrinter(
-      methodCount: 7,
-    ),
-  );
 
   @override
   int get schemaVersion => 1;
 
   @override
-  Future<void> addChat(Chat chat) async {
-    final chatId = await chatDao.addChatModel(chat);
-
-    for (var message in chat.messages) {
-      final messageId = await messageDao.addMessageModel(message);
-
-      await messageToChatDao.addRelation(
-        chatId: chatId,
-        messageId: messageId,
+  ValueStream<IList<ChatView>> get chats => chatDao.stream
+      .map((chats) => chats.map(chatViewFromTableData).toIList())
+      .shareValueSeeded(
+        chatDao.stream.value.map(chatViewFromTableData).toIList(),
       );
 
-      for (var tag in message.tags) {
-        final tagId = await tagDao.addTagModel(tag);
-        await tagToMessageDao.addRelation(
-          messageId: messageId,
-          tagId: tagId,
-        );
-      }
+  ChatView chatViewFromTableData(ChatTableData data) {
+    var chatView = chatDao.transformToModel(data);
+    final messagesId = messageToChatDao.stream.value
+        .where((e) => e.chatId == chatView.id)
+        .map((e) => e.messageId);
 
-      for (var image in message.images) {
-        final imageId = await imageDao.addImageModel(image);
+    final messages = messageDao.stream.value
+        .where((message) => messagesId.contains(message.uid))
+        .toIList();
 
-        await imageToMessageDao.addRelation(
-          messageId: messageId,
-          imageId: imageId,
-        );
-      }
-    }
-  }
-
-  @override
-  Future<void> addChats(IList<Chat> chats) async {
-    chats.forEach(await addChat);
-  }
-
-  @override
-  Future<void> deleteChat(int id) async {
-    // delete chat
-    final chat = await chatDao.firstWhere((tbl) => tbl.uid.equals(id));
-    if (chat == null) return;
-    await chatDao.deleteWhere((tbl) => tbl.uid.equals(chat.uid));
-
-    // delete messages to chat
-    final messagesToChat = await messageToChatDao.where(
-      (tbl) => tbl.chatId.equals(id),
-    );
-    final messagesToChatIds = messagesToChat.map((e) => e.uid);
-    messageToChatDao.deleteWhere(
-      (tbl) => tbl.uid.isIn(messagesToChatIds),
-    );
-
-    // delete messages
-    final messages = await getMessages(id);
-    final messagesIds = messages.map((e) => e.uid);
-    await messageDao.deleteWhere(
-      (tbl) => tbl.uid.isIn(messagesIds),
-    );
-
-    // delete tags to messages
-    final tagsToMessage = await tagToMessageDao.where(
-      (e) => e.messageId.isIn(messagesIds),
-    );
-    final tagsToMessageIds = tagsToMessage.map((e) => e.uid);
-    tagToMessageDao.deleteWhere(
-      (tbl) => tbl.uid.isIn(tagsToMessageIds),
-    );
-
-    var images = IList<ImageTableData>([]);
-    for (var message in messages) {
-      images = images.addAll(
-        await getImages(message.uid),
-      );
-    }
-
-    // delete images to message
-    final imagesToMessage = await imageToMessageDao.where(
-      (image) => image.uid.isIn(
-        messagesIds,
-      ),
-    );
-    final imagesToMessageIds = imagesToMessage.map((e) => e.uid);
-    await imageToMessageDao.deleteWhere(
-      (tbl) => tbl.uid.isIn(imagesToMessageIds),
-    );
-
-    // delete images if not used anywhere else
-    var imagesIds = images.map((image) => image.uid);
-    final imagesToOtherMessages =
-        await imageToMessageDao.where((image) => image.uid.isIn(imagesIds));
-    final imagesToOtherMessagesIds =
-        imagesToOtherMessages.map((image) => image.uid);
-    for (var image in images) {
-      if (!imagesToOtherMessagesIds.contains(image.uid)) {
-        await imageDao.deleteWhere(
-          (tbl) => tbl.uid.equals(image.uid),
-        );
-      }
-    }
-  }
-
-  @override
-  Future<void> deleteChats(IList<int> ids) async {
-    ids.forEach(await deleteChat);
-  }
-
-  @override
-  Future<Chat?> getChat(int id) async {
-    var chat = await chatDao.firstWhere(
-      (tbl) => tbl.uid.equals(id),
-    );
-    if (chat == null) return null;
-
-    var messages = await getMessages(chat.uid);
     if (messages.isEmpty) {
-      return chatDao.transformToModel(chat);
+      return chatView;
+    } else {
+      final lastMessage = messages
+          .sort((a, b) => a.creationDate.compareTo(b.creationDate))
+          .last;
+
+      return chatView.copyWith(
+        messagePreview: lastMessage.content,
+        messagePreviewCreationTime: lastMessage.creationDate,
+      );
     }
+  }
+
+  @override
+  Future<int> addChat(ChatView chat) async {
+    return chatDao.addChatModel(chat);
+  }
+
+  @override
+  Future<void> deleteChat(int chatId) async {
+    await chatDao.deleteWhere((tbl) => tbl.uid.equals(chatId));
+    final messagesToChat =
+        await messageToChatDao.where((tbl) => tbl.chatId.equals(chatId));
+    final messageIds = messagesToChat.map((e) => e.messageId);
+
+    await messageToChatDao.deleteWhere((tbl) => tbl.messageId.isIn(messageIds));
+    await messageDao.deleteWhere((tbl) => tbl.uid.isIn(messageIds));
+  }
+
+  @override
+  Future<void> updateChat(ChatView chat) async {
+    await chatDao.updateWhere(
+      ChatTableCompanion.insert(
+        name: chat.name,
+        icon: chat.icon.codePoint,
+        isPinned: chat.isPinned,
+        creationDate: chat.creationDate,
+      ),
+      (tbl) => tbl.uid.equals(chat.id),
+    );
+  }
+
+  @override
+  ValueStream<IList<Message>> messagesOf({required int chatId}) {
+    final mergeStream = MergeStream([
+      chatDao.stream,
+      messageToChatDao.stream,
+      messageDao.stream,
+      imageToMessageDao.stream,
+      imageDao.stream,
+      tagToMessageDao.stream,
+      tagDao.stream,
+    ]).asyncMap(
+      (event) {
+        return getMessages(chatId);
+      },
+    );
+    return mergeStream.shareValueSeeded(IList<Message>([]));
+  }
+
+  Future<IList<Message>> getMessages(int chatId) async {
+    final messagesToChat = await messageToChatDao.where(
+      (tbl) => tbl.chatId.equals(chatId),
+    );
+    final messagesId = messagesToChat.map((message) => message.uid);
+
+    final messages = await messageDao.where(
+      (tbl) => tbl.uid.isIn(messagesId),
+    );
 
     var modelMessages = IList<Message>([]);
     for (var message in messages) {
-      var tags = await getTags(message.uid);
-      var images = await getImages(message.uid);
+      var modelMessage = messageDao.transformToMessage(message);
+
+      // find tags
+      final tagsToMessage = await tagToMessageDao.where(
+        (tbl) => tbl.messageId.equals(message.uid),
+      );
+      final tagsId = tagsToMessage.map(
+        (tag) => tag.tagId,
+      );
+      final tags = (await tagDao.where((tbl) => tbl.uid.isIn(tagsId)))
+          .map(tagDao.transformToModel);
+
+      // find images
+      final imagesToMessage = await imageToMessageDao.where(
+        (tbl) => tbl.messageId.equals(message.uid),
+      );
+      final imagesId = imagesToMessage.map(
+        (image) => image.imageId,
+      );
+      final images = (await imageDao.where((tbl) => tbl.uid.isIn(imagesId)))
+          .map((image) => image.path);
 
       modelMessages = modelMessages.add(
-        messageDao.transformToMessage(message).copyWith(
-              images: images.map((image) => image.path).toIList(),
-              tags: tags.map(tagFromTable).toIList(),
-            ),
+        modelMessage.copyWith(
+          tags: tags.toIList(),
+          images: images.toIList(),
+        ),
       );
     }
 
-    return chatDao.transformToModel(chat).copyWith(
-          messages: modelMessages,
+    return modelMessages.sort(
+      (a, b) => a.dateTime.compareTo(b.dateTime),
+    );
+  }
+
+  @override
+  ValueStream<IList<Tag>> get tags => tagDao.stream
+      .map(
+        (tags) => tags
+            .map(
+              tagDao.transformToModel,
+            )
+            .toIList(),
+      )
+      .shareValueSeeded(
+        tagDao.stream.value
+            .map(
+              tagDao.transformToModel,
+            )
+            .toIList(),
+      );
+
+  @override
+  Future<int> addMessage(int chatId, Message message) async {
+    // add message
+    final messageId = await messageDao.addMessageModel(message);
+
+    // link message to chat
+    await messageToChatDao.addRelation(
+      chatId: chatId,
+      messageId: messageId,
+    );
+
+    // link tags with message
+    final messageTagsId = message.tags.map((tag) => tag.id);
+    for (var id in messageTagsId) {
+      tagToMessageDao.addRelation(
+        messageId: messageId,
+        tagId: id!,
+      );
+    }
+
+    // add images if not exists and link it to message
+    final images = message.images;
+    final messageImagesFromDB = await imageDao.where(
+      (tbl) => tbl.path.isIn(images),
+    );
+    final messageImagesPaths = messageImagesFromDB.map((e) => e.path);
+    for (var image in images) {
+      final int imageId;
+      if (messageImagesPaths.contains(image)) {
+        imageId = messageImagesFromDB.firstWhere((e) => e.path == image).uid;
+      } else {
+        imageId = await imageDao.addImageModel(image);
+      }
+      await imageToMessageDao.addRelation(
+        messageId: messageId,
+        imageId: imageId,
+      );
+    }
+
+    return messageId;
+  }
+
+  @override
+  Future<int> addTag(Tag tag) async {
+    return tagDao.addTagModel(tag);
+  }
+
+  @override
+  Future<void> deleteMessage(int messageId) async {
+    // delete message
+    await messageDao.deleteWhere((tbl) => tbl.uid.equals(messageId));
+
+    // delete link chat-message
+    await messageToChatDao
+        .deleteWhere((tbl) => tbl.messageId.equals(messageId));
+
+    // delete link tag-message
+    await tagToMessageDao.deleteWhere((tbl) => tbl.messageId.equals(messageId));
+
+    final messageImages = await imageToMessageDao.where(
+      (tbl) => tbl.messageId.equals(messageId),
+    );
+    // delete link image-message
+    await imageToMessageDao.deleteWhere(
+      (tbl) => tbl.messageId.equals(messageId),
+    );
+    for (var image in messageImages) {
+      // delete images if not used in other messages
+      final hasOtherLinks = await imageToMessageDao.firstWhere(
+            (tbl) => tbl.imageId.equals(image.uid),
+          ) !=
+          null;
+
+      if (!hasOtherLinks) {
+        imageDao.deleteWhere(
+          (tbl) => tbl.uid.equals(image.imageId),
         );
-  }
-
-  Future<IList<MessageTableData>> getMessages(int chatId) async {
-    final messagesToChats = await messageToChatDao.where(
-      (tbl) => tbl.chatId.equals(chatId),
-    );
-    final messagesId = messagesToChats.map(
-      (e) => e.messageId,
-    );
-
-    return messageDao.where((tbl) => tbl.uid.isIn(messagesId));
-  }
-
-  Future<IList<TagTableData>> getTags(int messageId) async {
-    final tagsToMessages = await tagToMessageDao.where(
-      (tbl) => tbl.messageId.equals(messageId),
-    );
-    final tagsId = tagsToMessages.map(
-      (e) => e.tagId,
-    );
-
-    return tagDao.where(
-      (tbl) => tbl.uid.isIn(tagsId),
-    );
-  }
-
-  Future<IList<ImageTableData>> getImages(int messageId) async {
-    final imagesToMessages = await imageToMessageDao.where(
-      (tbl) => tbl.messageId.equals(messageId),
-    );
-    final imagesId = imagesToMessages.map(
-      (e) => e.imageId,
-    );
-
-    return imageDao.where(
-      (tbl) => tbl.uid.isIn(imagesId),
-    );
-  }
-
-  Tag tagFromTable(TagTableData tag) {
-    return Tag(
-      text: tag.content,
-      color: material.Color(
-        tag.color,
-      ),
-    );
-  }
-
-  @override
-  Future<IList<Chat>> getChats() async {
-    final chatsId = (await chatDao.get()).map(
-      (chat) => chat.uid,
-    );
-    var chats = IList<Chat>([]);
-
-    for (var id in chatsId) {
-      chats = await chats.add(
-        (await getChat(id))!,
-      );
+      }
     }
-
-    return chats;
   }
 
   @override
-  Future<void> updateChat(Chat chat) async {
-    // TODO make it good
-    await deleteChat(chat.id);
-    await addChat(chat);
+  Future<void> deleteMessages(IList<int> messagesId) async {
+    messagesId.forEach(await deleteMessage);
   }
 
   @override
-  Future<void> updateChats(IList<Chat> chats) async {
-    chats.forEach(await updateChat);
+  Future<void> deleteTag(int tagId) async {
+    await tagToMessageDao.deleteWhere((tbl) => tbl.tagId.equals(tagId));
+    await tagDao.deleteWhere((tbl) => tbl.uid.equals(tagId));
+  }
+
+  @override
+  Future<void> updateMessage(Message message) async {
+    // TODO check this code
+    final messageToChat = await messageToChatDao
+        .firstWhere((tbl) => tbl.messageId.equals(message.id));
+    await messageToChatDao
+        .deleteWhere((tbl) => tbl.messageId.equals(message.id));
+
+    deleteMessage(message.id);
+    addMessage(messageToChat!.chatId, message);
+  }
+
+  @override
+  Future<void> updateTag(Tag tag) async {
+    await tagDao.updateWhere(
+      TagTableCompanion.insert(
+        content: tag.text,
+        color: tag.color.value,
+      ),
+      (tbl) => tbl.uid.equals(tag.id!),
+    );
   }
 }
 
@@ -277,7 +320,7 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(
-      path.join(dbFolder.path, 'db2.sqlite'),
+      path.join(dbFolder.path, 'journal_db.sqlite'),
     );
     return NativeDatabase.createInBackground(file);
   });

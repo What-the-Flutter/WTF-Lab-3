@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../common/data/chat_repository.dart';
 import '../../../common/models/chat.dart';
+import '../../../common/models/chat_view.dart';
 import '../../../common/utils/icons.dart';
 import '../../../common/utils/insets.dart';
 import '../cubit/manage_chat_cubit.dart';
@@ -27,7 +28,7 @@ class ManageChatPage extends StatefulWidget {
 
 class _ManageChatPageState extends State<ManageChatPage> {
   final TextEditingController _textEditingController = TextEditingController();
-  Chat? chatForEdit;
+  ChatView? chatForEdit;
 
   @override
   void dispose() {
@@ -38,6 +39,7 @@ class _ManageChatPageState extends State<ManageChatPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.chatId != null) {
+      print(context.read<ChatRepository>().chats.value);
       chatForEdit = context.read<ChatRepository>().chats.value.firstWhere(
             (chat) => chat.id == widget.chatId,
           );

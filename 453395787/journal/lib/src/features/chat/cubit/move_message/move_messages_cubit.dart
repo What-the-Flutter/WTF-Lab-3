@@ -3,7 +3,8 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/api/chat_repository_api.dart';
-import '../../../../common/models/chat.dart';
+import '../../../../common/api/message_provider_api.dart';
+import '../../../../common/models/chat_view.dart';
 import '../../../../common/models/message.dart';
 
 part 'move_messages_state.dart';
@@ -12,20 +13,23 @@ part 'move_messages_cubit.freezed.dart';
 
 class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   MoveMessagesCubit({
-    required ChatRepositoryApi repository,
+    required ChatRepositoryApi chatRepository,
+    required MessageProviderApi messageProviderApi,
     required this.fromChatId,
     required this.messages,
-  })  : _repository = repository,
+  })  : _chatRepository = chatRepository,
+        _messageProviderApi = messageProviderApi,
         super(
           MoveMessagesState.initial(
-            chats: repository.chats.value
+            chats: chatRepository.chats.value
                 .where((chat) => chat.id != fromChatId)
                 .toIList(),
             amountOfMessages: messages.length,
           ),
         );
 
-  final ChatRepositoryApi _repository;
+  final ChatRepositoryApi _chatRepository;
+  final MessageProviderApi _messageProviderApi;
   final int fromChatId;
   final IList<Message> messages;
 
@@ -78,28 +82,18 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
     );
   }
 
-  void move() {
+  Future<void> move() async {
     state.mapOrNull(
-      withSelected: (withSelected) {
-        final oldChat = _repository.chats.value.firstWhere(
-          (chat) => chat.id == fromChatId,
+      withSelected: (withSelected) async {
+        await _messageProviderApi.deleteMessages(
+          messages.map((message) => message.id).toIList(),
         );
-        _repository.update(
-          oldChat.copyWith(
-            messages: oldChat.messages.removeAll(messages),
-          ),
-        );
-
-        final newChat = _repository.chats.value.firstWhere(
-          (chat) => chat.id == withSelected.selectedChatId,
-        );
-        _repository.update(
-          newChat.copyWith(
-            messages: newChat.messages
-                .addAll(messages)
-                .sort((a, b) => a.dateTime.compareTo(b.dateTime)),
-          ),
-        );
+        for (var message in messages) {
+          await _messageProviderApi.addMessage(
+            withSelected.selectedChatId,
+            message,
+          );
+        }
       },
     );
   }

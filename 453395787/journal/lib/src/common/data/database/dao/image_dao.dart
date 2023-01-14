@@ -8,7 +8,9 @@ part 'image_dao.g.dart';
 @DriftAccessor(tables: [ImageTable])
 class ImageDao extends DatabaseAccessor<ChatDatabase>
     with _$ImageDaoMixin, BaseDaoApi<ImageTableData, ImageTable> {
-  ImageDao(ChatDatabase db) : super(db);
+  ImageDao(ChatDatabase db) : super(db) {
+    init();
+  }
 
   @override
   TableInfo<ImageTable, ImageTableData> get table => imageTable;

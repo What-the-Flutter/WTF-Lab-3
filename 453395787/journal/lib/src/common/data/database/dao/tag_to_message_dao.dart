@@ -10,7 +10,9 @@ class TagToMessageDao extends DatabaseAccessor<ChatDatabase>
     with
         _$TagToMessageDaoMixin,
         BaseDaoApi<TagToMessageTableData, TagToMessageTable> {
-  TagToMessageDao(ChatDatabase db) : super(db);
+  TagToMessageDao(ChatDatabase db) : super(db) {
+    init();
+  }
 
   @override
   TableInfo<TagToMessageTable, TagToMessageTableData> get table =>

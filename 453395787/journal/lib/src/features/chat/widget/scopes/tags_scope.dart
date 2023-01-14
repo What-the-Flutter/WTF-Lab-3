@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../common/data/database/chat_database.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
-import '../../cubit/tag_selector/tags_state.dart';
 
 class TagSelectorScope extends StatelessWidget {
   const TagSelectorScope({
     super.key,
     required this.child,
-    this.state,
   });
 
   final Widget child;
-  final TagsState? state;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TagsCubit(
-        state: state,
+        messageProviderApi: context.read<ChatDatabase>(),
       ),
       child: child,
     );

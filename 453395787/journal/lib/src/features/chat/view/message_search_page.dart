@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../common/data/chat_repository.dart';
+import '../../../common/data/database/chat_database.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
 import '../cubit/tag_selector/tags_state.dart';
@@ -33,13 +34,17 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final chat = context.read<ChatRepository>().chats.value.firstWhere(
+          (chat) => chat.id == widget.chatId,
+        );
     return RepositoryProvider(
       create: (context) => MessageRepository(
-        chatId: widget.chatId,
-        repository: context.read<ChatRepository>(),
+        repository: context.read<ChatDatabase>(),
+        chat: chat,
       ),
       child: MessageSearchScope(
         child: MessageManageScope(
+          chat: chat,
           child: Builder(
             builder: (context) {
               _isInputFieldShown = context.watch<MessageManageCubit>().state

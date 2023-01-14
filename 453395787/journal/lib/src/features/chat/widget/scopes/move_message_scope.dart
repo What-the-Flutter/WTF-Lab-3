@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../common/data/chat_repository.dart';
+import '../../../../common/data/database/chat_database.dart';
 import '../../../../common/models/message.dart';
 import '../../cubit/move_message/move_messages_cubit.dart';
+import '../../data/message_repository.dart';
 
 class MoveMessagesScope extends StatelessWidget {
   const MoveMessagesScope({
@@ -22,7 +24,8 @@ class MoveMessagesScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
-        repository: context.read<ChatRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        messageProviderApi: context.read<ChatDatabase>(),
         fromChatId: fromChatId,
         messages: messages,
       ),

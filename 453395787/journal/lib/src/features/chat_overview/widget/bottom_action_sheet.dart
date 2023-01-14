@@ -6,7 +6,7 @@ class _BottomChatActionSheet extends StatelessWidget {
     required this.chat,
   });
 
-  final Chat chat;
+  final ChatView chat;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class _BottomChatActionSheet extends StatelessWidget {
                   ),
                   _ChatInfoText(
                     bold: 'Messages: ',
-                    remaining: chat.messages.length.toString(),
+                    remaining: chat.messageAmount.toString(),
                   ),
                 ],
               ),
@@ -89,7 +89,7 @@ class _BottomChatActionSheet extends StatelessWidget {
 
   String _durationScienceLastMessage() {
     final duration = DateTime.now()
-        .difference(chat.lastMessage?.dateTime ?? chat.creationDate);
+        .difference(chat.messagePreviewCreationTime ?? chat.creationDate);
 
     final days = duration.inDays;
     final hours = duration.inHours - days * 24;

@@ -5,7 +5,6 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../../common/models/chat.dart';
 import '../../../../common/models/message.dart';
 import '../../../../common/models/tag.dart';
 import '../../api/message_repository_api.dart';
@@ -23,12 +22,12 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
       (event) {
         _internalSubscription?.cancel();
         _internalSubscription = event.listen(
-          (chat) {
+          (messages) {
             emit(
               MessageSearchState.results(
                 query: state.query!,
                 queryTags: state.queryTags,
-                messages: chat.messages,
+                messages: messages,
               ),
             );
           },
@@ -38,8 +37,8 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<Chat>> _subscription;
-  StreamSubscription<Chat>? _internalSubscription;
+  late StreamSubscription<ValueStream<IList<Message>>> _subscription;
+  StreamSubscription<IList<Message>>? _internalSubscription;
 
   @override
   Future<void> close() async {

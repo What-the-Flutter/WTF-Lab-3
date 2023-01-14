@@ -6,6 +6,7 @@ import '../../../common/data/chat_repository.dart';
 import '../../../common/extensions/date_time_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
 import '../../../common/models/chat.dart';
+import '../../../common/models/chat_view.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';

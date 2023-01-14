@@ -81,7 +81,14 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   void send() {
-    _repository.add(state.message);
+    state.map(
+      defaultMode: (defaultMode) {
+        _repository.add(state.message);
+      },
+      editMode: (editMode) {
+        _repository.update(state.message);
+      },
+    );
     emit(
       MessageInputState.defaultMode(
         message: Message(),

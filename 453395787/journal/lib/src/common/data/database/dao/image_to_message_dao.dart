@@ -10,7 +10,9 @@ class ImageToMessageDao extends DatabaseAccessor<ChatDatabase>
     with
         _$ImageToMessageDaoMixin,
         BaseDaoApi<ImageToMessageTableData, ImageToMessageTable> {
-  ImageToMessageDao(ChatDatabase db) : super(db);
+  ImageToMessageDao(ChatDatabase db) : super(db) {
+    init();
+  }
 
   @override
   TableInfo<ImageToMessageTable, ImageToMessageTableData> get table =>

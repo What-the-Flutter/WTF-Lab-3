@@ -1,14 +1,17 @@
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
+import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/models/tag.dart';
-import '../../data/tags.dart';
 import 'tags_state.dart';
 
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
-    TagsState? state,
-  }) : super(state ?? TagsState.initial(tags: Tags.list));
+    required MessageProviderApi messageProviderApi,
+  })  : _repository = messageProviderApi,
+        super(TagsState.initial(tags: messageProviderApi.tags.value));
+
+  final MessageProviderApi _repository;
 
   void select(Tag tag) {
     state.map(

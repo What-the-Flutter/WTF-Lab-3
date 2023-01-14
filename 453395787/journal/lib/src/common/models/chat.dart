@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'message.dart';
 
+/*
 part 'chat.freezed.dart';
 
 @freezed
@@ -40,3 +41,4 @@ class Chat with _$Chat {
 
   Message? get lastMessage => messages.isEmpty ? null : messages.last;
 }
+ */
