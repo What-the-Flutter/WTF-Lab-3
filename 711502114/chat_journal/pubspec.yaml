@@ -89,7 +89,6 @@ flutter:
   fonts:
     - family: Roboto
       fonts:
-        - asset: assets/fonts/Roboto-Light.ttf
         - asset: assets/fonts/Roboto-Bold.ttf
   #   - family: Trajan Pro
   #     fonts:

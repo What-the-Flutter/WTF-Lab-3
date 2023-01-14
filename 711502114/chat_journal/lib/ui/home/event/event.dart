@@ -89,7 +89,7 @@ class Event extends StatelessWidget {
 
         child = Text(
           messageData.message,
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16, color: Colors.white),
           overflow: TextOverflow.clip,
         );
         break;

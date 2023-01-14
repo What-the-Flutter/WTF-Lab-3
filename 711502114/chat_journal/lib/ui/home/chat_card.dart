@@ -67,8 +67,6 @@ class ChatCard extends StatelessWidget {
         Text(
           chat.title,
           style: const TextStyle(
-            fontFamily: 'Bold',
-            fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),

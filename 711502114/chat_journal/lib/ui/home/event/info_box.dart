@@ -44,6 +44,7 @@ class InfoBox extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 19,
+                  color: Colors.white,
                 ),
                 overflow: TextOverflow.clip,
                 textAlign: TextAlign.center,
@@ -53,8 +54,8 @@ class InfoBox extends StatelessWidget {
               ),
               Text(
                 desc,
-                style: const TextStyle(
-                  color: Colors.grey,
+                style: TextStyle(
+                  color: secondaryMessageTextColor,
                   fontSize: 19,
                 ),
                 overflow: TextOverflow.clip,

@@ -128,8 +128,6 @@ class _HomePageState extends State<HomePage> {
             AppLocalizations.of(context)?.bot ?? '',
             style: const TextStyle(
               fontSize: 18,
-              fontFamily: 'Bold',
-              fontWeight: FontWeight.bold,
             ),
           )
         ],
@@ -143,7 +141,6 @@ class _HomePageState extends State<HomePage> {
         itemCount: cards.length,
         itemBuilder: (context, index) {
           return InkWell(
-            hoverColor: hoverElementColor,
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -157,7 +154,6 @@ class _HomePageState extends State<HomePage> {
         separatorBuilder: (context, index) {
           return const Divider(
             height: 1,
-            color: hoverElementColor,
           );
         },
       ),

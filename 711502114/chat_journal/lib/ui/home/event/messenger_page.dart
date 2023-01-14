@@ -283,9 +283,12 @@ class _MessengerPageState extends State<MessengerPage> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: local?.enterFieldHint ?? '',
-                hintStyle: const TextStyle(fontSize: 20),
+                hintStyle: TextStyle(
+                  fontSize: 20,
+                  color: secondaryMessageTextColor,
+                ),
               ),
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
           _initKeyboardIcon(
@@ -329,6 +332,7 @@ class _MessengerPageState extends State<MessengerPage> {
   TextButton _initDialogButton(String text, void Function() action) {
     return TextButton(
       onPressed: action,
+      style: TextButton.styleFrom(foregroundColor: Colors.white),
       child: Text(
         text,
         style: const TextStyle(fontSize: 24),
