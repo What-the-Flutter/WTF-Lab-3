@@ -93,9 +93,8 @@ class _EventScreenModalState extends State<EventScreenModal> {
                       listEvent: widget.listEvent,
                       chatId: selectedRadioTile,
                     );
-                Navigator.of(context).pop();
-                context.read<EventCubit>().deleteEvent();
                 context.read<EventCubit>().changeRepetStatus();
+                Navigator.of(context).pop();
               },
             ),
           ],

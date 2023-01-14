@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class EventField {
@@ -17,19 +13,19 @@ class EventField {
 }
 
 class Event {
-  final int? id;
+  final int id;
   final bool isFavorit;
   final bool isSelected;
   final String messageContent;
   final String messageType;
   final DateTime messageTime;
-  final File? messageImage;
+  final String? messageImage;
   final IconData? sectionIcon;
   final String? sectionTitle;
   final int chatId;
 
   Event({
-    this.id,
+    required this.id,
     required this.messageContent,
     required this.messageType,
     required this.messageTime,
@@ -48,7 +44,7 @@ class Event {
     String? messageContent,
     String? messageType,
     DateTime? messageTime,
-    File? messageImage,
+    String? messageImage,
     IconData? sectionIcon,
     String? sectionTitle,
     int? chatId,
@@ -67,10 +63,6 @@ class Event {
     );
   }
 
-  String _base64String(Uint8List data) {
-    return base64Encode(data);
-  }
-
   Map<String, dynamic> toMap() {
     return {
       '${EventField.id}': id,
@@ -81,7 +73,23 @@ class Event {
       '${EventField.sectionTitle}': sectionTitle,
       '${EventField.sectionIcon}': sectionIcon != null ? sectionIcon!.codePoint : null,
       '${EventField.chatId}': chatId,
-      '${EventField.messageImage}': messageImage != null ? messageImage!.path : null,
+      '${EventField.messageImage}': messageImage != null ? messageImage! : null,
     };
+  }
+
+  static Event fromJson(Map<dynamic, dynamic> map) {
+    return Event(
+      id: map['${EventField.id}'],
+      messageContent: map['${EventField.messageContent}'],
+      messageType: map['${EventField.messageType}'],
+      messageTime: DateTime.parse(map['${EventField.messageTime}']),
+      isFavorit: map['${EventField.favorite}'] == 'true',
+      chatId: map['${EventField.chatId}'],
+      messageImage: map['${EventField.messageImage}'],
+      sectionIcon: map['${EventField.sectionIcon}'] != null
+          ? IconData(map['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
+          : null,
+      sectionTitle: map['${EventField.sectionTitle}'],
+    );
   }
 }

@@ -63,7 +63,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => EventScreen(
-                              chatId: itemChat.id!,
+                              chatId: itemChat.id,
                               title: itemChat.title,
                             ),
                           ),

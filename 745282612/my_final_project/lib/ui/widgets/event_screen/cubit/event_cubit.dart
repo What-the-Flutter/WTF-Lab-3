@@ -1,23 +1,23 @@
-import 'dart:io';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:my_final_project/data/db/db_provider.dart';
+import 'package:my_final_project/data/db/firebase_provider.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  final myDBProvider = DBProvider.dbProvider;
+  final User? user;
+  late final firebase = FirebaseProvider(user: user);
 
-  EventCubit() : super(EventState(listEvent: [])) {
+  EventCubit({this.user}) : super(EventState(listEvent: [])) {
     initializer();
   }
 
   Future<void> initializer() async {
-    final listEvent = await myDBProvider.getAllEvent();
+    final listEvent = await firebase.getAllEvent();
     emit(state.copyWith(listEvent: listEvent));
   }
 
@@ -32,6 +32,7 @@ class EventCubit extends Cubit<EventState> {
     final selectedTitle = sectionTitle ?? state.sectionTitle;
     final newListEvent = state.listEvent;
     final newEvent = Event(
+      id: UniqueKey().hashCode,
       chatId: chatId,
       messageContent: content,
       messageType: type,
@@ -40,8 +41,8 @@ class EventCubit extends Cubit<EventState> {
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
       sectionTitle: selectedTitle != 'Cancel' ? selectedTitle : null,
     );
-    final event = await myDBProvider.addEvent(newEvent);
-    newListEvent.add(event);
+    await firebase.addEvent(newEvent);
+    newListEvent.add(newEvent);
     emit(state.copyWith(listEvent: newListEvent, isWrite: false));
   }
 
@@ -72,7 +73,7 @@ class EventCubit extends Cubit<EventState> {
       if (listEvent[i].isSelected) {
         event = listEvent[i];
         listEvent[i] = event.copyWith(isFavorit: !listEvent[i].isFavorit);
-        await myDBProvider.updateEvent(listEvent[i]); // dpProvider присвоить переменной
+        await firebase.updateEvent(listEvent[i]);
       }
     }
     emit(state.copyWith(listEvent: listEvent));
@@ -92,23 +93,24 @@ class EventCubit extends Cubit<EventState> {
   }
 
   Future<void> addPicterMessage({
-    File? repetFile,
+    String? repetFile,
     XFile? pickedFile,
     required String type,
     required int chatId,
   }) async {
     if (pickedFile != null || repetFile != null) {
       final newEvent = Event(
+        id: UniqueKey().hashCode,
         chatId: chatId,
         messageContent: 'Image Entry',
         messageType: type,
         messageTime: DateTime.now(),
-        messageImage: repetFile ?? File(pickedFile!.path),
+        messageImage: repetFile ?? pickedFile!.path,
         isFavorit: false,
         isSelected: false,
       );
       final newListEvent = state.listEvent;
-      final event = await myDBProvider.addEvent(newEvent);
+      final event = await firebase.addEvent(newEvent);
       newListEvent.add(event);
       emit(state.copyWith(listEvent: newListEvent, isWrite: false));
     }
@@ -118,16 +120,16 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(isWrite: true));
   }
 
-  Future<void> deleteEvent([int id = -1]) async {
+  Future<void> deleteEvent([Event? event]) async {
     final listEvent = state.listEvent;
     int i;
-    if (id != -1) {
-      listEvent.removeWhere((element) => element.id == id);
-      await myDBProvider.deleteEventById(id);
+    if (event != null) {
+      listEvent.removeWhere((element) => element.id == event.id);
+      await firebase.deleteEvent(event);
     } else {
       for (i = 0; i < listEvent.length; i++) {
         if (listEvent[i].isSelected) {
-          await myDBProvider.deleteEventById(listEvent[i].id!);
+          await firebase.deleteEvent(listEvent[i]);
         }
       }
       listEvent.removeWhere((element) => element.isSelected);
@@ -154,7 +156,7 @@ class EventCubit extends Cubit<EventState> {
       if (listEvent[i].isSelected) {
         final event = listEvent[i];
         listEvent[i] = event.copyWith(messageContent: content);
-        await myDBProvider.updateEvent(listEvent[i]);
+        await firebase.updateEvent(listEvent[i]);
         break;
       }
     }
@@ -231,25 +233,18 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(searchText: text));
   }
 
-  void repetEvent({required int chatId, required List<Event> listEvent}) {
+  Future<void> repetEvent({required int chatId, required List<Event> listEvent}) async {
     final newListEvent = listEvent.reversed.where((element) => element.isSelected).toList();
+    final oldListEvent = state.listEvent;
     int i;
     for (i = 0; i < newListEvent.length; i++) {
-      if (newListEvent[i].isSelected && newListEvent[i].messageImage != null) {
-        addPicterMessage(
-          repetFile: newListEvent[i].messageImage,
-          type: newListEvent[i].messageType,
-          chatId: chatId,
-        );
-      } else {
-        addEvent(
-          content: newListEvent[i].messageContent,
-          type: newListEvent[i].messageType,
-          chatId: chatId,
-          sectionIcon: newListEvent[i].sectionIcon,
-          sectionTitle: newListEvent[i].sectionTitle,
-        );
+      if (newListEvent[i].isSelected) {
+        await firebase.updateEvent(newListEvent[i].copyWith(chatId: chatId));
+        oldListEvent.remove(newListEvent[i]);
+        oldListEvent.add(newListEvent[i].copyWith(chatId: chatId, isSelected: false));
       }
     }
+    emit(state.copyWith(listEvent: oldListEvent));
+    changeSelected();
   }
 }

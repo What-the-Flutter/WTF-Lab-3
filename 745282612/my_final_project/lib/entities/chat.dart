@@ -9,14 +9,14 @@ class ChatField {
 }
 
 class Chat {
-  final int? id;
+  final int id;
   final Icon icon;
   final String title;
   final bool isPin;
   final DateTime dateCreate;
 
   Chat({
-    this.id,
+    required this.id,
     required this.icon,
     required this.title,
     required this.isPin,
@@ -44,8 +44,18 @@ class Chat {
       '${ChatField.id}': id,
       '${ChatField.title}': title,
       '${ChatField.icon}': icon.icon!.codePoint,
-      '${ChatField.pin}': isPin.toString(),
+      '${ChatField.pin}': isPin,
       '${ChatField.dateCreate}': dateCreate.toString(),
     };
+  }
+
+  static Chat fromJson(Map<dynamic, dynamic> map) {
+    return Chat(
+      id: map['${ChatField.id}'],
+      title: map['${ChatField.title}'],
+      icon: Icon(IconData(map['${ChatField.icon}'], fontFamily: 'MaterialIcons')),
+      dateCreate: DateTime.parse(map['${ChatField.dateCreate}']),
+      isPin: map['${ChatField.pin}'] == true,
+    );
   }
 }

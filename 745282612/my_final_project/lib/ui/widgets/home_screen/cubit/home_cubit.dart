@@ -1,17 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:my_final_project/data/db/db_provider.dart';
+import 'package:my_final_project/data/db/firebase_provider.dart';
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final myDBProvider = DBProvider.dbProvider;
+  final User? user;
+  late final firebase = FirebaseProvider(user: user);
 
-  HomeCubit() : super(HomeState(listChat: []));
+  HomeCubit({this.user}) : super(HomeState(listChat: []));
 
   Future<void> initializer() async {
-    final list = await myDBProvider.getAllChat();
+    final list = await firebase.getAllChat();
     emit(state.copyWith(listChat: list));
   }
 
@@ -37,15 +39,16 @@ class HomeCubit extends Cubit<HomeState> {
     required String title,
   }) async {
     final newChat = Chat(
+      id: UniqueKey().hashCode,
       icon: icon,
       title: title,
       isPin: false,
       dateCreate: DateTime.now(),
     );
-    final chat = await myDBProvider.addChat(newChat);
+    await firebase.addChat(newChat);
     final newListChat = state.listChat;
-    newListChat.add(chat);
-    emit(state.copyWith(listChat: newListChat));
+    newListChat.insert(0, newChat);
+    emit(state.copyWith(listChat: _listChatSort(newListChat)));
   }
 
   void changeSelectedIcon(Icon? icon) {
@@ -59,7 +62,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> deleteChat(int index) async {
     final newListChat = state.listChat;
     final element = newListChat[index];
-    await myDBProvider.deleteChat(element);
+    await firebase.deleteChat(element);
     newListChat.removeAt(index);
     emit(state.copyWith(listChat: newListChat));
   }
@@ -69,7 +72,7 @@ class HomeCubit extends Cubit<HomeState> {
     final newChat = state.listChat[index];
     newList[index] = newChat.copyWith(isPin: !newChat.isPin);
     _listChatSort(newList);
-    await myDBProvider.updateChat(newChat.copyWith(isPin: !newChat.isPin));
+    await firebase.updateChat(newChat.copyWith(isPin: !newChat.isPin));
     emit(state.copyWith(listChat: newList));
   }
 
@@ -85,7 +88,7 @@ class HomeCubit extends Cubit<HomeState> {
     final newList = state.listChat;
     final newChat = state.listChat[index];
     newList[index] = newChat.copyWith(icon: icon, title: title);
-    await myDBProvider.updateChat(newChat.copyWith(icon: icon, title: title));
+    await firebase.updateChat(newChat.copyWith(icon: icon, title: title));
     emit(state.copyWith(listChat: newList));
     changeEditMode();
   }

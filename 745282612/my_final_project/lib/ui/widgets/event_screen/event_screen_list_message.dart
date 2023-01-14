@@ -46,8 +46,8 @@ class EventScreenListMessage extends StatelessWidget {
               key: UniqueKey(),
               onDismissed: (direction) {
                 if (direction == DismissDirection.endToStart) {
-                  context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
-                  context.read<EventCubit>().deleteEvent(indexMessage.id!);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
+                  context.read<EventCubit>().deleteEvent(indexMessage);
                   context.read<EventCubit>().changeSelected();
                   final snackBar = const SnackBar(
                     content: Text('Delete element!'),
@@ -55,7 +55,7 @@ class EventScreenListMessage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 if (direction == DismissDirection.startToEnd) {
-                  context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
+                  context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                   context.read<EventCubit>().changeSelected();
                   context.read<EventCubit>().changeEditText();
                 }
@@ -63,13 +63,13 @@ class EventScreenListMessage extends StatelessWidget {
               child: GestureDetector(
                 onLongPress: () {
                   if (!isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                     context.read<EventCubit>().changeSelected();
                   }
                 },
                 onTap: () {
                   if (isSelected) {
-                    context.read<EventCubit>().changeSelectedItem(indexMessage.id!);
+                    context.read<EventCubit>().changeSelectedItem(indexMessage.id);
                   }
                 },
                 child: Container(
@@ -110,7 +110,7 @@ class EventScreenListMessage extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: indexMessage.messageImage != null
-                              ? Image.file(indexMessage.messageImage!)
+                              ? Image.network(indexMessage.messageImage!)
                               : Text(
                                   indexMessage.messageContent,
                                   style: const TextStyle(fontSize: 16),
