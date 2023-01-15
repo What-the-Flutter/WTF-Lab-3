@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:logger/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -306,6 +307,7 @@ class ChatDatabase extends _$ChatDatabase
 
   @override
   Future<void> updateTag(Tag tag) async {
+    Logger().w(tag);
     await tagDao.updateWhere(
       TagTableCompanion.insert(
         content: tag.text,

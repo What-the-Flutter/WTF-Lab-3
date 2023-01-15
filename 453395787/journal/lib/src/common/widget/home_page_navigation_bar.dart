@@ -23,7 +23,7 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
     PagePaths.home.path,
     PagePaths.daily.path,
     PagePaths.timeline.path,
-    PagePaths.explore.path,
+    PagePaths.settings.path,
   ].lock;
 
   final List<Widget> _destinations = const [
@@ -40,8 +40,8 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
       label: 'Timeline',
     ),
     NavigationDestination(
-      icon: Icon(Icons.explore),
-      label: 'Explore',
+      icon: Icon(Icons.settings_outlined),
+      label: 'Settings',
     ),
   ];
 

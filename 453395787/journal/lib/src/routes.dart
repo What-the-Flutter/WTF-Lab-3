@@ -6,6 +6,8 @@ import 'features/chat/view/chat_page.dart';
 import 'features/chat/view/message_search_page.dart';
 import 'features/chat_overview/view/chat_overview_page.dart';
 import 'features/manage_chat/manage_chat.dart';
+import 'features/manage_tags/view/manage_tags_page.dart';
+import 'features/settings/view/settings_page.dart';
 
 final router = GoRouter(
   initialLocation: PagePaths.home.routePath,
@@ -52,13 +54,16 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-          path: PagePaths.explore.routePath,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: EmptyPage(
-              title: 'Explore',
-            ),
-          ),
-        ),
+            path: PagePaths.settings.routePath,
+            pageBuilder: (context, state) => const NoTransitionPage(
+                  child: SettingsPage(),
+                ),
+            routes: [
+              GoRoute(
+                path: PagePaths.manageTags.routePath,
+                builder: (context, state) => const ManageTagsPage(),
+              ),
+            ]),
       ],
     ),
     GoRoute(
@@ -87,7 +92,8 @@ enum PagePaths {
   chatEditing(routePath: 'edit/:chatId', path: '/home/edit/:chatId'),
   daily(routePath: '/daily', path: '/daily'),
   timeline(routePath: '/timeline', path: '/timeline'),
-  explore(routePath: '/explore', path: '/explore'),
+  settings(routePath: '/settings', path: '/settings'),
+  manageTags(routePath: 'tags', path: '/settings/tags'),
   chat(routePath: '/chat/:chatId', path: '/chat/:chatId'),
   chatSearch(routePath: 'search', path: '/chat/:chatId/search');
 
