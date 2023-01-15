@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../models/chat.dart';
+import '../models/chat_provider.dart';
 import '../models/event.dart';
 import '../theme/colors.dart';
 import '../widgets/event_box.dart';
@@ -200,6 +202,8 @@ class _MessengerPageState extends State<MessengerPage> {
     setState(() {
       _isSelectedMode = false;
       _selectedItemIndexes.clear();
+
+      notifyChat();
     });
   }
 
@@ -356,7 +360,13 @@ class _MessengerPageState extends State<MessengerPage> {
         Event(_fieldText.text, DateTime.now(), photoPath: path),
       );
       _fieldText.clear();
+
+      notifyChat();
     });
+  }
+
+  void notifyChat() {
+    Provider.of<ChatProvider>(context, listen: false).update();
   }
 
   Future<bool> _handleBackButton() async {

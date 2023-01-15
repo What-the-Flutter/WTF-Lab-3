@@ -18,6 +18,7 @@ class ChatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
     final desc = local?.chatDescription ?? '';
+    final attach = local?.attach ?? '';
 
     return Padding(
       padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
@@ -27,7 +28,7 @@ class ChatCard extends StatelessWidget {
           _buildIcon(),
           const SizedBox(width: 20),
           Expanded(
-            child: _buildText(desc),
+            child: _buildText(desc, attach),
             flex: 1,
           ),
           _buildTimeText(context),
@@ -52,14 +53,13 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  Column _buildText(String desc) {
+  Column _buildText(String defaultDescription, String attach) {
     String description;
-    if (chat.isDescriptionEmpty) {
-      description = desc;
+    if (chat.events.isEmpty) {
+      description = defaultDescription;
     } else {
-      description = chat.description.length > 35
-          ? '${chat.description.substring(0, 36)}...'
-          : chat.description;
+      final message = chat.events.last.message;
+      description = message.isNotEmpty ? _fitText(message, 35) : attach;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +79,14 @@ class ChatCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _fitText(String message, int maxSymbols) {
+    if (message.length <= maxSymbols) {
+      return message;
+    }
+
+    return '${message.substring(0, maxSymbols + 1)}...';
   }
 
   Text _buildTimeText(BuildContext context) {

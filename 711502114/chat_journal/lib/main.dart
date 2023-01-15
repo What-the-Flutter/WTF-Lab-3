@@ -4,9 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'l10n/l10n.dart';
+import 'models/chat_provider.dart';
 import 'pages/bottom_nav_bar.dart';
 import 'theme/colors.dart';
-import 'theme/theme_model.dart';
 
 void main() => runApp(const MyApp());
 
@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ThemeModel(),
-      child: Consumer<ThemeModel>(
+      create: (_) => ChatProvider(),
+      child: Consumer<ChatProvider>(
         builder: (context, themeNotifier, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -28,9 +28,7 @@ class MyApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
-            theme: themeNotifier.isDark
-                ? CustomTheme.darkTheme
-                : CustomTheme.lightTheme,
+            theme: CustomTheme.darkTheme,
             home: const BottomNavBar(),
           );
         },
