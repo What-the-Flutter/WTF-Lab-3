@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../models/chat_provider.dart';
 import '../theme/colors.dart';
+import '../theme/theme_inherited.dart';
 import '../widgets/chat_card.dart';
 import 'messenger_page.dart';
 
@@ -31,9 +32,7 @@ class _HomePageState extends State<HomePage> {
             child: IconButton(
               icon: const Icon(Icons.invert_colors),
               onPressed: () {
-                // themeNotifier.isDark
-                //     ? themeNotifier.isDark = false
-                //     : themeNotifier.isDark = true;
+                ThemeInherited.of(context).switchTheme();
               },
             ),
           ),
