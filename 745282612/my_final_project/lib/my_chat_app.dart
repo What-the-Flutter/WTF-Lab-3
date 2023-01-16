@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/services/auth_biometrics.dart';
 import 'package:my_final_project/ui/screens/main_screen.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
@@ -24,9 +25,18 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  bool status = false;
   @override
   void initState() {
     super.initState();
+    isStatus();
+  }
+
+  void isStatus() async {
+    final statusAuth = await AuthBiometrics.authenticateUser();
+    setState(() {
+      status = statusAuth;
+    });
   }
 
   @override
@@ -62,7 +72,7 @@ class _MainAppState extends State<MainApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: S.delegate.supportedLocales,
-            home: const Menu(),
+            home: status ? const Menu() : null,
           );
         },
       ),
