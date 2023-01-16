@@ -59,23 +59,18 @@ class ChatCard extends StatelessWidget {
       description = defaultDescription;
     } else {
       final message = chat.events.last.message;
-      description = message.isNotEmpty ? _fitText(message, 35) : attach;
+      description = message.isNotEmpty ? _fitText(message, 30) : attach;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           chat.title,
-          style: const TextStyle(
-            fontSize: 20,
-          ),
+          style: const TextStyle(fontSize: 20),
         ),
         Text(
           description,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 16,
-          ),
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ],
     );
@@ -86,7 +81,7 @@ class ChatCard extends StatelessWidget {
       return message;
     }
 
-    return '${message.substring(0, maxSymbols + 1)}...';
+    return '${message.substring(0, maxSymbols - 1)}...';
   }
 
   Text _buildTimeText(BuildContext context) {
@@ -97,10 +92,7 @@ class ChatCard extends StatelessWidget {
     }
     return Text(
       time ?? '',
-      style: const TextStyle(
-        color: Colors.grey,
-        fontSize: 16,
-      ),
+      style: const TextStyle(color: Colors.grey, fontSize: 16),
     );
   }
 }

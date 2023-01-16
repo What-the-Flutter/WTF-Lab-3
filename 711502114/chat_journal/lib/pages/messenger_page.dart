@@ -168,9 +168,9 @@ class _MessengerPageState extends State<MessengerPage> {
     for (var i in _selectedItemIndexes) {
       final message = _events[i].message;
       if (text == null) {
-        text = '$message\n\n';
+        text = '$message\n';
       } else {
-        text += '$message\n\n';
+        text += '\n$message\n';
       }
     }
 
