@@ -1,38 +1,71 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/main_screen.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
+import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MainApp extends StatefulWidget {
+  final User? user;
+
+  const MainApp({
+    super.key,
+    required this.user,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return const CustomTheme(
-      child: MainApp(),
-    );
-  }
+  State<MainApp> createState() => _MainAppState();
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: CustomThemeInherited.of(context).themeData,
-      title: 'Chat Journal',
-      localizationsDelegates: [
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => MenuCubit(),
+        ),
+        BlocProvider(
+          create: (_) => SettingsCubit(user: widget.user),
+        ),
+        BlocProvider(
+          create: (_) => HomeCubit(user: widget.user),
+        ),
+        BlocProvider(
+          create: (_) => EventCubit(user: widget.user),
+        ),
+        BlocProvider(
+          create: (_) => ThemeCubit(),
+        ),
       ],
-      supportedLocales: S.delegate.supportedLocales,
-      home: const Menu(),
+      child: BlocBuilder<ThemeCubit, ThemeData>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: state,
+            title: 'Chat Journal',
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            home: const Menu(),
+          );
+        },
+      ),
     );
   }
 }

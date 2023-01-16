@@ -6,7 +6,7 @@ import 'package:my_final_project/ui/widgets/add_page_screen/add_page_body.dart';
 import 'package:my_final_project/ui/widgets/add_page_screen/add_page_floating_button.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
-import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class AddNewScreen extends StatefulWidget {
   final String textController;
@@ -56,18 +56,18 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final stateMenu = context.watch<MenuCubit>().state;
+        final stateSetting = context.watch<SettingsCubit>().state;
         return Scaffold(
           appBar: AddPageAppBar(
             status: state.isEdit,
-            addSectionMode: stateMenu.isAdd,
+            addSectionMode: stateSetting.isAdd,
           ),
           body: AddPageBody(
             controller: inputController,
             selectedIcon: state.iconSeleted,
           ),
           floatingActionButton: AddPageFloatingButton(
-            addSectionMode: stateMenu.isAdd,
+            addSectionMode: stateSetting.isAdd,
             status: isStatus,
             selected: state.iconSeleted,
             controller: inputController,

@@ -18,7 +18,7 @@ class FirebaseProvider {
 
   Future<void> addChat(Chat chat) async {
     try {
-      await _ref.child(user!.uid).child('chat/${chat.dateCreate.millisecondsSinceEpoch}').set(
+      await _ref.child(user?.uid ?? '').child('chat/${chat.dateCreate.millisecondsSinceEpoch}').set(
             chat.toMap(),
           );
     } catch (e) {
@@ -33,12 +33,12 @@ class FirebaseProvider {
       final file = File(path);
       try {
         await _storage
-            .child(user!.uid)
+            .child(user?.uid ?? '')
             .child('event/${event.messageTime.millisecondsSinceEpoch}')
             .putFile(file);
         final downloadURL = await FirebaseStorage.instance
             .ref()
-            .child(user!.uid)
+            .child(user?.uid ?? '')
             .child('event/${event.messageTime.millisecondsSinceEpoch}')
             .getDownloadURL();
         newEvent = event.copyWith(messageImage: downloadURL);
@@ -50,7 +50,7 @@ class FirebaseProvider {
     }
     try {
       await _ref
-          .child(user!.uid)
+          .child(user?.uid ?? '')
           .child('event/${newEvent.messageTime.millisecondsSinceEpoch}')
           .set(newEvent.toMap());
     } catch (e) {
@@ -61,7 +61,7 @@ class FirebaseProvider {
 
   Future<void> addSection(Section section) async {
     try {
-      await _ref.child(user!.uid).child('section/${section.id}').set(section.toMap());
+      await _ref.child(user?.uid ?? '').child('section/${section.id}').set(section.toMap());
     } catch (e) {
       print(e);
     }
@@ -75,7 +75,7 @@ class FirebaseProvider {
       final section = Section.fromJson(map);
       sectionList.add(section);
     }
-    final databaseSectionUser = await _ref.child(user!.uid).child('section').once();
+    final databaseSectionUser = await _ref.child(user?.uid ?? '').child('section').once();
     for (final sectionElement in databaseSectionUser.snapshot.children) {
       final map = sectionElement.value as Map<dynamic, dynamic>;
       final section = Section.fromJson(map);
@@ -87,7 +87,7 @@ class FirebaseProvider {
   Future<List<Chat>> getAllChat() async {
     final chatList = <Chat>[];
     final databaseChat =
-        await _ref.child(user!.uid).child('chat').orderByChild('${ChatField.pin}').once();
+        await _ref.child(user?.uid ?? '').child('chat').orderByChild('${ChatField.pin}').once();
     for (final chatElement in databaseChat.snapshot.children) {
       final map = chatElement.value as Map<dynamic, dynamic>;
       final chat = Chat.fromJson(map);
@@ -98,7 +98,7 @@ class FirebaseProvider {
 
   Future<List<Event>> getAllEvent() async {
     final eventList = <Event>[];
-    final database = await _ref.child(user!.uid).child('event').once();
+    final database = await _ref.child(user?.uid ?? '').child('event').once();
     for (final eventElement in database.snapshot.children) {
       final map = eventElement.value as Map<dynamic, dynamic>;
       final event = Event.fromJson(map);
@@ -109,7 +109,10 @@ class FirebaseProvider {
 
   Future<void> deleteChat(Chat chat) async {
     try {
-      await _ref.child(user!.uid).child('chat/${chat.dateCreate.millisecondsSinceEpoch}').remove();
+      await _ref
+          .child(user?.uid ?? '')
+          .child('chat/${chat.dateCreate.millisecondsSinceEpoch}')
+          .remove();
     } catch (e) {
       print(e);
     }
@@ -118,7 +121,7 @@ class FirebaseProvider {
   Future<void> deleteEvent(Event event) async {
     try {
       await _ref
-          .child(user!.uid)
+          .child(user?.uid ?? '')
           .child('event/${event.messageTime.millisecondsSinceEpoch}')
           .remove();
     } catch (e) {
@@ -129,7 +132,7 @@ class FirebaseProvider {
   Future<void> updateChat(Chat chat) async {
     try {
       await _ref
-          .child(user!.uid)
+          .child(user?.uid ?? '')
           .child('chat/${chat.dateCreate.millisecondsSinceEpoch}')
           .update(chat.toMap());
     } catch (e) {
@@ -140,7 +143,7 @@ class FirebaseProvider {
   Future<void> updateEvent(Event event) async {
     try {
       await _ref
-          .child(user!.uid)
+          .child(user?.uid ?? '')
           .child('event/${event.messageTime.millisecondsSinceEpoch}')
           .update(event.toMap());
     } catch (e) {

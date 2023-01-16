@@ -10,7 +10,9 @@ class HomeCubit extends Cubit<HomeState> {
   final User? user;
   late final firebase = FirebaseProvider(user: user);
 
-  HomeCubit({this.user}) : super(HomeState(listChat: []));
+  HomeCubit({this.user}) : super(HomeState(listChat: [])) {
+    initializer();
+  }
 
   Future<void> initializer() async {
     final list = await firebase.getAllChat();

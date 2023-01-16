@@ -28,10 +28,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "account": MessageLookupByLibrary.simpleMessage("Account"),
         "add_new_event": MessageLookupByLibrary.simpleMessage("Add new event"),
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
         "content_add_image": MessageLookupByLibrary.simpleMessage(
             "If you click on the  camera icon, you can add an image from the camera, if you click on the photo icon, you can add an image from the phone."),
         "create_page":
@@ -60,7 +62,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
-        "setting": MessageLookupByLibrary.simpleMessage("Settings"),
+        "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
         "title_instruction": m1

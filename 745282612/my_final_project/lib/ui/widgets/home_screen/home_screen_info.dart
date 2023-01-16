@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class InfoPage extends StatelessWidget {
   final Icon icon;
@@ -21,7 +22,7 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
 
     return AlertDialog(
       title: Row(

@@ -244,7 +244,12 @@ class EventCubit extends Cubit<EventState> {
         oldListEvent.add(newListEvent[i].copyWith(chatId: chatId, isSelected: false));
       }
     }
-    emit(state.copyWith(listEvent: oldListEvent));
+    emit(state.copyWith(listEvent: _listEventSort(oldListEvent)));
     changeSelected();
+  }
+
+  List<Event> _listEventSort(List<Event> listChat) {
+    listChat.sort((a, b) => a.messageTime.compareTo(b.messageTime));
+    return listChat;
   }
 }

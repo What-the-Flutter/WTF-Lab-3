@@ -8,7 +8,7 @@ import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_info.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenModal extends StatelessWidget {
   final String dateLastEvent;
@@ -24,7 +24,7 @@ class HomeScreenModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
     final colorIcon = isLight ? AppColors.colorNormalGrey : Colors.white;
 
     return BlocBuilder<HomeCubit, HomeState>(

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
-import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class AddPageFloatingButton extends StatefulWidget {
   final bool status;
@@ -31,9 +31,9 @@ class _AddPageFloatingButtonState extends State<AddPageFloatingButton> {
   void changeOnPressed() {
     if (widget.addSectionMode) {
       context
-          .read<MenuCubit>()
+          .read<SettingsCubit>()
           .addSection(iconData: widget.selected!.icon!, title: widget.controller.text);
-      context.read<MenuCubit>().changeAddStatus();
+      context.read<SettingsCubit>().changeAddStatus();
     } else if (widget.editMode) {
       context
           .read<HomeCubit>()
@@ -45,7 +45,7 @@ class _AddPageFloatingButtonState extends State<AddPageFloatingButton> {
 
   void changeStatus() {
     if (widget.addSectionMode) {
-      context.read<MenuCubit>().changeAddStatus();
+      context.read<SettingsCubit>().changeAddStatus();
     } else if (widget.editMode) {
       context.read<HomeCubit>().changeEditMode();
     }

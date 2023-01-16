@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 import 'package:provider/provider.dart';
 
 class MyDialog extends StatelessWidget {
@@ -20,7 +20,7 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
 
     return AlertDialog(
       title: Text(

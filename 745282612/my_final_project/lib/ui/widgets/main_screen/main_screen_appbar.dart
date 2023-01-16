@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class MainScreenAppBar extends StatefulWidget implements PreferredSizeWidget {
   final int index;
@@ -31,9 +32,10 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
       actions: [
         IconButton(
           icon: const Icon(Icons.invert_colors),
-          onPressed: CustomThemeInherited.of(context).changeTheme,
+          onPressed: context.read<ThemeCubit>().changeTheme,
         ),
       ],
+      title: Text(_listTitle[widget.index]),
     );
   }
 }

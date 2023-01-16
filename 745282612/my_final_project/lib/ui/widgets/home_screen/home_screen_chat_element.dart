@@ -10,7 +10,7 @@ import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_modal.dart';
 import 'package:my_final_project/ui/widgets/hovers/on_hovers_button.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenChatElement extends StatefulWidget {
   const HomeScreenChatElement({super.key});
@@ -23,12 +23,11 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<HomeCubit>(context).initializer();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLight = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
