@@ -1,27 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:diary_app/domain/entities/event_category.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 class Event extends Equatable {
-  bool isFavorite = false;
-  bool isSelected = false;
-  bool isDisplayed = true;
-  EventCategory? category;
-
+  // Persistent props
+  int id;
+  final int chatId;
   final bool isMessage;
   final DateTime dateTime;
   final String message;
-  final Image? image;
+  final String? image;
+  EventCategory? category;
+  bool isFavorite = false;
 
-  Event(
-    this.category, {
+  // Temporary props
+  bool isSelected = false;
+  bool isDisplayed = true;
+
+  Event({
+    required this.id,
+    required this.chatId,
     required this.isMessage,
     required this.dateTime,
     required this.message,
+    this.category,
     this.image,
   });
 
   @override
-  List<Object?> get props => [isFavorite, isSelected, isMessage, dateTime, message, image];
+  List<Object?> get props => [isSelected, isDisplayed, message];
 }

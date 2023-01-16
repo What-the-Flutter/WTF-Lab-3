@@ -1,19 +1,20 @@
-import 'package:diary_app/domain/cubit/chat_list/chat_list_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../custom_theme.dart';
-
-import 'home_page.dart';
+import 'package:diary_app/data/repositories/local_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+import 'package:diary_app/custom_theme.dart';
+import 'package:diary_app/presentation/pages/home_page/chat_list_cubit.dart';
+import 'package:diary_app/presentation/pages/home_page/home_page.dart';
+import 'package:get_it/get_it.dart';
 
 class MainScreen extends HookWidget {
   MainScreen({super.key});
   static const _tabNames = ['Home', 'Daily', 'Timeline', 'Explore'];
   final _pages = [
     BlocProvider(
-      create: (context) => ChatListCubit(),
+      create: (context) => ChatListCubit(GetIt.I.get<LocalRepository>()),
       child: const HomePage(),
     ), // Home
     Text('2nd'), // Daily

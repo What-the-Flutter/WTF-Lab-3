@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:diary_app/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _CustomTheme extends InheritedWidget {
   // ignore: overridden_fields, annotate_overrides
@@ -52,17 +53,38 @@ class CustomTheme extends StatefulWidget {
 }
 
 class _CustomThemeState extends State<CustomTheme> {
-  late ThemeData _theme;
+  ThemeData _theme = MyThemes.getTheme(MyThemesKeys.light);
 
   @override
   void initState() {
     super.initState();
-    setState(() => _theme = MyThemes.getTheme(widget.initialThemeKey));
+    setInitialTheme();
   }
 
-  void changeTheme(MyThemesKeys themesKey) => setState(() {
-        _theme = MyThemes.getTheme(themesKey);
-      });
+  void setInitialTheme() async {
+    var prefs = await SharedPreferences.getInstance();
+    var initialTheme = prefs.getString('theme') ?? 'light';
+
+    if (initialTheme == 'light') {
+      setState(() => _theme = MyThemes.getTheme(MyThemesKeys.light));
+    } else {
+      setState(() => _theme = MyThemes.getTheme(MyThemesKeys.dark));
+    }
+  }
+
+  void changeTheme(MyThemesKeys themesKey) async {
+    var prefs = await SharedPreferences.getInstance();
+
+    if (themesKey == MyThemesKeys.light) {
+      prefs.setString('theme', 'light');
+    } else {
+      prefs.setString('theme', 'dark');
+    }
+
+    setState(() {
+      _theme = MyThemes.getTheme(themesKey);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
