@@ -4,36 +4,35 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'l10n/l10n.dart';
-import 'theme/colors.dart';
-import 'theme/theme_model.dart';
-import 'ui/bottom_nav_bar.dart';
+import 'models/chat_provider.dart';
+import 'pages/bottom_nav_bar.dart';
+import 'theme/custom_user_theme.dart';
+import 'theme/theme_inherited.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  runApp(const CustomUserTheme(child: ChatJournalApplication()));
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ChatJournalApplication extends StatelessWidget {
+  const ChatJournalApplication({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeModel(),
-      child: Consumer<ThemeModel>(
-        builder: (context, themeNotifier, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            supportedLocales: L10n.all,
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-            ],
-            theme: themeNotifier.isDark
-                ? CustomTheme.darkTheme
-                : CustomTheme.lightTheme,
-            home: const BottomNavBar(),
-          );
-        },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+      ],
+      child: MaterialApp(
+        theme: ThemeInherited.of(context).themeData,
+        debugShowCheckedModeBanner: false,
+        supportedLocales: L10n.all,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        home: const BottomNavBar(),
       ),
     );
   }
