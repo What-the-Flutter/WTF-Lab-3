@@ -4,13 +4,13 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:localization/localization.dart';
 
-import '../../../../common/api/chat_provider_api.dart';
-import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/data/chat_repository.dart';
 import '../../../../common/data/database/chat_database.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/radius.dart';
+import '../../../../common/utils/locale.dart' as locale;
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
@@ -21,7 +21,6 @@ import '../scopes/tags_scope.dart';
 import '../tag_selector/tag_selector.dart';
 
 part 'input_mutable_button.dart';
-
 part 'selected_images.dart';
 
 class ChatInput extends StatefulWidget {
@@ -136,10 +135,10 @@ class _ChatInputState extends State<ChatInput> {
                                     textCapitalization:
                                         TextCapitalization.sentences,
                                     maxLines: null,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       isCollapsed: true,
-                                      hintText: 'Message',
-                                      border: OutlineInputBorder(
+                                      hintText: locale.Hints.inputMessage.i18n(),
+                                      border: const OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                       ),
                                     ),

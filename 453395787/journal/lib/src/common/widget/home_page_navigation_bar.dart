@@ -1,8 +1,10 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
 import '../../routes.dart';
+import '../utils/locale.dart' as locale;
 
 class HomePageNavigationBar extends StatefulWidget {
   const HomePageNavigationBar({
@@ -26,22 +28,22 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
     PagePaths.settings.path,
   ].lock;
 
-  final List<Widget> _destinations = const [
+  final List<Widget> _destinations = [
     NavigationDestination(
-      icon: Icon(Icons.home),
-      label: 'Home',
+      icon: const Icon(Icons.home),
+      label: locale.Pages.home.i18n(),
     ),
     NavigationDestination(
-      icon: Icon(Icons.view_day_outlined),
-      label: 'Daily',
+      icon: const Icon(Icons.view_day_outlined),
+      label: locale.Pages.daily.i18n(),
     ),
     NavigationDestination(
-      icon: Icon(Icons.timeline),
-      label: 'Timeline',
+      icon: const Icon(Icons.timeline),
+      label: locale.Pages.timeline.i18n(),
     ),
     NavigationDestination(
-      icon: Icon(Icons.settings_outlined),
-      label: 'Settings',
+      icon: const Icon(Icons.settings_outlined),
+      label: locale.Pages.settings.i18n(),
     ),
   ];
 

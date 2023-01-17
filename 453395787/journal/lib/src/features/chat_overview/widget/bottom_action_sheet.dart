@@ -26,15 +26,15 @@ class _BottomChatActionSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _ChatInfoText(
-                    bold: 'Created: ',
+                    bold: locale.Hints.itemCreated.i18n(),
                     remaining: chat.creationDate.formatFullDateTime,
                   ),
                   _ChatInfoText(
-                    bold: 'Active: ',
+                    bold: locale.Hints.itemActive.i18n(),
                     remaining: _durationScienceLastMessage(),
                   ),
                   _ChatInfoText(
-                    bold: 'Messages: ',
+                    bold: locale.Hints.itemMessages.i18n(),
                     remaining: chat.messageAmount.toString(),
                   ),
                 ],
@@ -42,7 +42,9 @@ class _BottomChatActionSheet extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text('Edit'),
+            title: Text(
+              locale.Actions.edit.i18n(),
+            ),
             leading: const Icon(Icons.edit),
             onTap: () {
               context.pop();
@@ -54,7 +56,11 @@ class _BottomChatActionSheet extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text(chat.isPinned ? 'Unpin' : 'Pin'),
+            title: Text(
+              chat.isPinned
+                  ? locale.Actions.unpin.i18n()
+                  : locale.Actions.pin.i18n(),
+            ),
             leading: const Icon(Icons.push_pin_outlined),
             onTap: () {
               RepositoryProvider.of<ChatRepository>(context).togglePin(chat);
@@ -63,7 +69,7 @@ class _BottomChatActionSheet extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              'Delete',
+              locale.Actions.delete.i18n(),
               style: TextStyles.bodyRed(context),
             ),
             leading: const Icon(
@@ -72,8 +78,9 @@ class _BottomChatActionSheet extends StatelessWidget {
             ),
             onTap: () async {
               final isConfirmed = await showConfirmationDialog(
-                title: 'Delete "${chat.name}" chat',
-                content: 'Are you sure you want to delete this chat?',
+                title:
+                    locale.Info.chatDeleteConfirmationTitle.i18n([chat.name]),
+                content: locale.Info.chatDeleteConfirmationContent.i18n(),
                 context: context,
               );
               if (isConfirmed != null && isConfirmed) {
@@ -88,18 +95,22 @@ class _BottomChatActionSheet extends StatelessWidget {
   }
 
   String _durationScienceLastMessage() {
-    final duration = DateTime.now()
-        .difference(chat.messagePreviewCreationTime ?? chat.creationDate);
+    final duration = DateTime.now().difference(
+      chat.messagePreviewCreationTime,
+    );
 
     final days = duration.inDays;
     final hours = duration.inHours - days * 24;
     if (days == 0 && hours == 0) {
-      return 'recently';
+      return locale.Info.lastMessageRecently.i18n();
     }
     if (hours == 0) {
-      return '$days ago';
+      return locale.Info.lastMessageWithDays.i18n([days.toString()]);
     } else {
-      return '$days days and $hours hours ago';
+      return locale.Info.lastMessageWithDaysAndHours.i18n([
+        days.toString(),
+        hours.toString(),
+      ]);
     }
   }
 }

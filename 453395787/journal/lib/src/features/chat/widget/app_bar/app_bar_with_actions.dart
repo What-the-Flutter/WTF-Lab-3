@@ -49,7 +49,7 @@ class _AppBarWithActions extends StatelessWidget {
           onPressed: () {
             context.read<MessageManageCubit>().copyToClipboard();
             Fluttertoast.showToast(
-              msg: 'Text copied to clipboard',
+              msg: locale.Results.textCopied.i18n(),
             );
           },
         ),
@@ -81,8 +81,10 @@ class _AppBarWithActions extends StatelessWidget {
           onPressed: () async {
             final isConfirmed = await showConfirmationDialog(
               context: context,
-              title: 'Delete ${state.selected.length} messages',
-              content: 'Are you sure you want to delete these messages?',
+              title: locale.Info.messageDeleteConfirmationTitle.i18n([
+                state.selected.length.toString(),
+              ]),
+              content: locale.Info.messageDeleteConfirmationContent.i18n(),
             );
             if (isConfirmed != null && isConfirmed) {
               MessageManageScope.of(context).remove();

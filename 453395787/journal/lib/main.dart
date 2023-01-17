@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'src/common/bloc/journal_bloc_observer.dart';
 import 'src/common/data/chat_repository.dart';
 import 'src/common/data/database/chat_database.dart';
+import 'src/features/locale/widget/locale_scope.dart';
 import 'src/features/theme/theme.dart';
 import 'src/journal_app.dart';
 
@@ -20,7 +21,9 @@ void main() async {
         ),
         lazy: false,
         child: const ThemeScope(
-          child: JournalApp(),
+          child: LocaleScope(
+            child: JournalApp(),
+          ),
         ),
       ),
     ),

@@ -2,10 +2,12 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
 import '../../../common/data/database/chat_database.dart';
 import '../../../common/models/tag.dart';
 import '../../../common/utils/insets.dart';
+import '../../../common/utils/locale.dart' as locale;
 import '../../chat/widget/tag_selector/tag_item.dart';
 import '../../theme/widget/color_selector.dart';
 import '../cubit/manage_tags_cubit.dart';
@@ -25,7 +27,9 @@ class ManageTagsPage extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Manage tags'),
+              title: Text(
+                locale.Pages.tagsManage.i18n(),
+              ),
               leading: BackButton(
                 onPressed: () {
                   state.maybeMap(
@@ -101,7 +105,9 @@ class _PageSelectionBody extends StatelessWidget {
               onPressed: selectedId == null
                   ? null
                   : context.read<ManageTagsCubit>().remove,
-              child: const Text('remove'),
+              child: Text(
+                locale.Actions.remove.i18n(),
+              ),
             ),
             const Spacer(),
             OutlinedButton(
@@ -109,7 +115,9 @@ class _PageSelectionBody extends StatelessWidget {
                   ? context.read<ManageTagsCubit>().startAddingMode
                   : context.read<ManageTagsCubit>().startEditingMode,
               child: Text(
-                selectedId == null ? 'add' : 'edit',
+                selectedId == null
+                    ? locale.Actions.add.i18n()
+                    : locale.Actions.edit.i18n(),
               ),
             ),
           ],
@@ -177,7 +185,9 @@ class _PageAddEditBodyState extends State<_PageAddEditBody> {
           children: [
             OutlinedButton(
               onPressed: context.read<ManageTagsCubit>().applyChanges,
-              child: const Text('apply'),
+              child: Text(
+                locale.Actions.apply.i18n(),
+              ),
             ),
           ],
         ),

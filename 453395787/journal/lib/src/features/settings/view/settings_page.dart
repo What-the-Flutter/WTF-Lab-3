@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
+import '../../../common/utils/locale.dart' as locale;
+import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
+import '../../locale/widget/language_selector.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -12,18 +16,29 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(
+          locale.Pages.settings.i18n(),
+        ),
       ),
       body: Column(
         children: [
           ListTile(
             leading: const Icon(Icons.language_outlined),
-            title: const Text('languages'),
-            onTap: () {},
+            title: Text(
+              locale.SettingsPage.languageItem.i18n(),
+            ),
+            onTap: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => const LanguageSelector(),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.tag_outlined),
-            title: const Text('Tags'),
+            title: Text(
+              locale.SettingsPage.tagItem.i18n(),
+            ),
             onTap: () {
               context.go(PagePaths.manageTags.path);
             },

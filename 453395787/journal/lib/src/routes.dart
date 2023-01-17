@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
+import 'common/utils/locale.dart' as locale;
 import 'common/widget/empty_page.dart';
 import 'common/widget/home_page_navigation_bar.dart';
 import 'features/chat/view/chat_page.dart';
@@ -39,17 +41,17 @@ final router = GoRouter(
         ),
         GoRoute(
           path: PagePaths.daily.routePath,
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => NoTransitionPage(
             child: EmptyPage(
-              title: 'Daily',
+              title: locale.Pages.daily.i18n(),
             ),
           ),
         ),
         GoRoute(
           path: PagePaths.timeline.routePath,
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => NoTransitionPage(
             child: EmptyPage(
-              title: 'Timeline',
+              title: locale.Pages.timeline.i18n(),
             ),
           ),
         ),
