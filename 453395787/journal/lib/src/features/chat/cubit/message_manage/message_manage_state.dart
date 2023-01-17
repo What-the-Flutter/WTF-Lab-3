@@ -5,19 +5,22 @@ class MessageManageState with _$MessageManageState {
   const MessageManageState._();
 
   const factory MessageManageState.defaultMode({
+    required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
   }) = MessageManageDefaultMode;
 
   const factory MessageManageState.selectionMode({
+    required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required ISet<int> selected,
   }) = MessageManageSelectionMode;
 
   const factory MessageManageState.editMode({
+    required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required Message message,
   }) = MessageManageEditMode;
 
@@ -27,7 +30,7 @@ class MessageManageState with _$MessageManageState {
     }
 
     var bufferDateTime = messages.first.dateTime;
-    var list = <Object>[bufferDateTime];
+    final list = <Object>[bufferDateTime];
 
     for (var message in messages) {
       if (!message.dateTime.isSameDay(bufferDateTime)) {
@@ -46,7 +49,7 @@ class MessageManageState with _$MessageManageState {
         var amountOfFavorites = 0;
         var amountOfOther = 0;
 
-        var selectedMessages = selectionMode.messages.where(
+        final selectedMessages = selectionMode.messages.where(
           (message) => selectionMode.selected.contains(
             message.id,
           ),

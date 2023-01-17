@@ -3,6 +3,6 @@ part of 'chat_overview_cubit.dart';
 @freezed
 class ChatOverviewState with _$ChatOverviewState {
   const factory ChatOverviewState({
-    required IList<Chat> chats,
+    required ChatViewList chats,
   }) = _ChatOverviewState;
 }

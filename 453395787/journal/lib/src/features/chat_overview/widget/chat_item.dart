@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../common/models/chat.dart';
+import '../../../common/extensions/date_time_extensions.dart';
+import '../../../common/models/chat_view.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';
+import '../../../common/utils/typedefs.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem({
@@ -14,9 +16,9 @@ class ChatItem extends StatelessWidget {
     this.isSelected = false,
   });
 
-  final Chat chat;
-  final void Function() onTap;
-  final void Function()? onLongPress;
+  final ChatView chat;
+  final Callback onTap;
+  final Callback? onLongPress;
   final bool isSelected;
 
   @override
@@ -70,7 +72,7 @@ class ChatItem extends StatelessWidget {
                                 style: TextStyles.defaultMedium(context),
                               ),
                               Text(
-                                chat.lastMessage?.time ?? '',
+                                chat.messagePreviewCreationTime.formatTime,
                                 style: TextStyles.defaultGrey(context),
                               ),
                             ],
@@ -81,8 +83,7 @@ class ChatItem extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  chat.lastMessage?.text ??
-                                      'Write your first message!',
+                                  chat.messagePreview,
                                   textAlign: TextAlign.start,
                                   style: TextStyles.defaultGrey(context),
                                   overflow: TextOverflow.ellipsis,

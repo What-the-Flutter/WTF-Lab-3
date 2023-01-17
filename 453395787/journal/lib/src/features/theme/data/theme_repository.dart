@@ -7,29 +7,35 @@ class ThemeRepository extends ThemeRepositoryApi {
   static const String _colorKey = 'themeColorKey';
   static const String _isDarkModeKey = 'themeIsDarkModeKey';
 
-  @override
-  Future<Color> getColor() async {
-    var prefs = await SharedPreferences.getInstance();
-    var colorCode = await prefs.getInt(_colorKey) ?? Colors.blue.value;
-    return Color(colorCode);
+  static Color _color = Colors.blue;
+  static bool _isDarkMode = true;
+
+  static Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final colorCode = await prefs.getInt(_colorKey) ?? Colors.blue.value;
+    _color = Color(colorCode);
+
+    _isDarkMode = await prefs.getBool(_isDarkModeKey) ?? false;
   }
 
   @override
-  Future<bool> getDarkMode() async {
-    var prefs = await SharedPreferences.getInstance();
-    var isDarkMode = await prefs.getBool(_isDarkModeKey) ?? false;
-    return isDarkMode;
-  }
+  Color get color => _color;
+
+  @override
+  bool get isDarkMode => _isDarkMode;
 
   @override
   Future<void> setColor(Color color) async {
-    var prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+    ThemeRepository._color = color;
     await prefs.setInt(_colorKey, color.value);
   }
 
   @override
   Future<void> setDarkMode(bool isDarkMode) async {
-    var prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+    ThemeRepository._isDarkMode = isDarkMode;
     await prefs.setBool(_isDarkModeKey, isDarkMode);
   }
 

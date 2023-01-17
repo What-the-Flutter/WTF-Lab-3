@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../../common/models/chat.dart';
+import '../../../../common/extensions/date_time_extensions.dart';
 import '../../../../common/models/message.dart';
-import '../../../../common/utils/extensions.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_manage_cubit.freezed.dart';
@@ -17,25 +17,27 @@ part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
   MessageManageCubit({
-    required MessageRepositoryApi repository,
-  })  : _repository = repository,
+    required MessageRepositoryApi messageRepository,
+    required this.chatId,
+    required this.name,
+  })  : _repository = messageRepository,
         super(
-          const MessageManageState.defaultMode(
-            name: '',
-            messages: IListConst([]),
+          MessageManageState.defaultMode(
+            id: chatId,
+            name: name,
+            messages: messageRepository.filteredChatStreams.value.value,
           ),
         ) {
     _subscription = _repository.filteredChatStreams.listen(
       (event) {
         _internalSubscription?.cancel();
         _internalSubscription = event.listen(
-          (chat) {
-            name = chat.name;
-            id = chat.id;
+          (messages) {
             emit(
               MessageManageState.defaultMode(
+                id: chatId,
                 name: name,
-                messages: chat.messages,
+                messages: messages,
               ),
             );
           },
@@ -45,11 +47,10 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<Chat>> _subscription;
-  StreamSubscription<Chat>? _internalSubscription;
-
-  int id = 0;
-  String name = '';
+  final int chatId;
+  final String name;
+  StreamSubscription<MessageList>? _internalSubscription;
+  late final StreamSubscription<ValueStream<MessageList>> _subscription;
 
   @override
   Future<void> close() async {
@@ -63,7 +64,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       defaultMode: (defaultMode) {
         emit(
           MessageManageState.selectionMode(
-            name: name,
+            id: defaultMode.id,
+            name: defaultMode.name,
             messages: defaultMode.messages,
             selected: ISet([message.id]),
           ),
@@ -85,7 +87,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (selectionMode.selected.length == 1) {
           emit(
             MessageManageState.defaultMode(
-              name: name,
+              id: selectionMode.id,
+              name: selectionMode.name,
               messages: selectionMode.messages,
             ),
           );
@@ -105,7 +108,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       selectionMode: (selectionMode) {
         emit(
           MessageManageState.defaultMode(
-            name: name,
+            id: selectionMode.id,
+            name: selectionMode.name,
             messages: selectionMode.messages,
           ),
         );
@@ -126,7 +130,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       },
       selectionMode: (selectionMode) {
         if (selectionMode.selected.isNotEmpty) {
-          var text = selectionMode.messages
+          final text = selectionMode.messages
               .where((e) => selectionMode.selected.contains(e.id))
               .map((e) => e.text)
               .join('\n');
@@ -135,7 +139,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         }
         emit(
           MessageManageState.defaultMode(
-            name: name,
+            id: selectionMode.id,
+            name: selectionMode.name,
             messages: selectionMode.messages,
           ),
         );
@@ -151,7 +156,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         }
       },
       selectionMode: (selectionMode) {
-        var messages = selectionMode.messages.where(
+        final messages = selectionMode.messages.where(
           (e) => selectionMode.selected.contains(e.id),
         );
         messages.forEach(_repository.remove);
@@ -165,7 +170,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (message != null) {
           emit(
             MessageManageState.editMode(
-              name: name,
+              id: defaultMode.id,
+              name: defaultMode.name,
               messages: defaultMode.messages,
               message: defaultMode.messages.firstWhere(
                 (m) => m.id == message.id,
@@ -178,7 +184,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
         if (selectionMode.selected.length == 1) {
           emit(
             MessageManageState.editMode(
-              name: name,
+              id: selectionMode.id,
+              name: selectionMode.name,
               messages: selectionMode.messages,
               message: selectionMode.messages.firstWhere(
                 (element) => element.id == selectionMode.selected.first,
@@ -195,7 +202,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       editMode: (editMode) {
         emit(
           MessageManageState.defaultMode(
-            name: name,
+            id: editMode.id,
+            name: editMode.name,
             messages: state.messages,
           ),
         );
@@ -212,7 +220,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       },
       selectionMode: (selectionMode) {
         if (selectionMode.selected.isNotEmpty) {
-          var messages = selectionMode.messages.where(
+          final messages = selectionMode.messages.where(
             (e) => selectionMode.selected.contains(e.id),
           );
           messages.forEach(_repository.addToFavorites);
@@ -230,7 +238,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
       },
       selectionMode: (selectionMode) {
         if (selectionMode.selected.isNotEmpty) {
-          var messages = selectionMode.messages.where(
+          final messages = selectionMode.messages.where(
             (e) => selectionMode.selected.contains(e.id),
           );
           messages.forEach(_repository.removeFromFavorites);

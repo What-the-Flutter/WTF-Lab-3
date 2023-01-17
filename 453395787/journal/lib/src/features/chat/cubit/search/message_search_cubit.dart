@@ -5,12 +5,13 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../../common/models/chat.dart';
 import '../../../../common/models/message.dart';
 import '../../../../common/models/tag.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_search_cubit.freezed.dart';
+
 part 'message_search_state.dart';
 
 class MessageSearchCubit extends Cubit<MessageSearchState> {
@@ -22,12 +23,12 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
       (event) {
         _internalSubscription?.cancel();
         _internalSubscription = event.listen(
-          (chat) {
+          (messages) {
             emit(
               MessageSearchState.results(
                 query: state.query!,
                 queryTags: state.queryTags,
-                messages: chat.messages,
+                messages: messages,
               ),
             );
           },
@@ -37,12 +38,12 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<Chat>> _subscription;
-  StreamSubscription<Chat>? _internalSubscription;
-  
+  late StreamSubscription<ValueStream<MessageList>> _subscription;
+  StreamSubscription<MessageList>? _internalSubscription;
+
   @override
   Future<void> close() async {
-    _subscription.cancel(); 
+    _subscription.cancel();
     _internalSubscription?.cancel();
     super.close();
   }
@@ -57,7 +58,7 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     await _repository.search(query, state.queryTags);
   }
 
-  Future<void> onSearchTagsChanged(IList<Tag>? tags) async {
+  Future<void> onSearchTagsChanged(TagList? tags) async {
     emit(
       MessageSearchState.loading(
         query: state.query!,
@@ -68,6 +69,8 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   Future<void> resetSearch() async {
-    emit(const MessageSearchState.initial());
+    emit(
+      const MessageSearchState.initial(),
+    );
   }
 }

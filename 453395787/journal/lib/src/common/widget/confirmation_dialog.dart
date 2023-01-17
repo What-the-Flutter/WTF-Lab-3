@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 
 import '../utils/insets.dart';
+import '../utils/locale.dart' as locale;
 
 Future<bool?> showConfirmationDialog({
   required String title,
@@ -15,11 +17,15 @@ Future<bool?> showConfirmationDialog({
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(
+            locale.Actions.cancel.i18n(),
+          ),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Ok'),
+          child: Text(
+            locale.Actions.ok.i18n(),
+          ),
         ),
       ],
       titlePadding: const EdgeInsets.only(

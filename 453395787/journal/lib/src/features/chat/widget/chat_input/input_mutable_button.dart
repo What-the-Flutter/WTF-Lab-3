@@ -6,7 +6,7 @@ class _ChatInputMutableButton extends StatelessWidget {
     required this.onSend,
   });
 
-  final void Function() onSend;
+  final Callback onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class _ChatInputMutableButton extends StatelessWidget {
             },
             onTap: () async {
               final images = await ImagePicker().pickMultiImage();
-              var imagePaths = images.map((e) => e.path).toList();
+              final imagePaths = images.map((e) => e.path).toList();
               MessageInputScope.of(context).addImages(imagePaths);
             },
             child: const Padding(

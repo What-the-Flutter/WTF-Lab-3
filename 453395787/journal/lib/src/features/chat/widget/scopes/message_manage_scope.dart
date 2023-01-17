@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../common/models/chat_view.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../data/message_repository.dart';
 
@@ -8,15 +9,19 @@ class MessageManageScope extends StatelessWidget {
   const MessageManageScope({
     super.key,
     required this.child,
+    required this.chat,
   });
 
   final Widget child;
+  final ChatView chat;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageManageCubit(
-        repository: context.read<MessageRepository>(),
+        messageRepository: context.read<MessageRepository>(),
+        chatId: chat.id,
+        name: chat.name,
       ),
       child: child,
     );

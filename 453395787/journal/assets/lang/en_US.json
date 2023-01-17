@@ -1,0 +1,48 @@
+{
+  "pages_home": "Home",
+  "pages_daily": "Daily",
+  "pages_timeline": "Timeline",
+  "pages_settings": "Settings",
+  "pages_add_chat": "Add Chat",
+  "pages_edit_chat": "Edit Chat",
+
+  "settings_item_tags": "Tags",
+  "settings_item_languages": "Languages",
+  "settings_page_tags_title": "Manage tags",
+
+  "action_ok": "Ok",
+  "action_cancel": "Cancel",
+  "action_remove": "Remove",
+  "action_add": "Add",
+  "action_edit": "Edit",
+  "action_delete": "Delete",
+  "action_apply": "Apply",
+  "action_move": "Move",
+  "action_pin": "Pin",
+  "action_unpin": "Unpin",
+
+  "result_text_copied": "Text copied to clipboard",
+
+  "message_example_text_1": "You can choose app color here",
+  "message_example_text_2": "Favorite and selected message :)",
+
+  "input_hint_chat_name": "Name",
+  "input_hint_message": "Message",
+
+  "item_hint_created": "Created: ",
+  "item_hint_active": "Active: ",
+  "item_hint_messages": "Messages: ",
+
+  "confirmation_chat_delete_title": "Delete '%s' chat",
+  "confirmation_chat_delete_content": "Are you sure you want to delete this chat?",
+
+  "confirmation_messages_delete_title": "Delete '%s' messages",
+  "confirmation_messages_delete_content": "Are you sure you want to delete this messages?",
+
+  "info_last_message_recently": "recently",
+  "info_last_message_days": "%s days ago",
+  "info_last_message_days_and_hours": "%s0 days and %s1 hours ago",
+
+  "info_move": "Move %s message to",
+  "info_move_plural": "Move %s messages to"
+}

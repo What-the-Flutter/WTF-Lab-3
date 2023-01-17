@@ -1,14 +1,35 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
+import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/models/tag.dart';
-import '../../data/tags.dart';
+import '../../../../common/utils/typedefs.dart';
 import 'tags_state.dart';
 
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
-    TagsState? state,
-  }) : super(state ?? TagsState.initial(tags: Tags.list));
+    required MessageProviderApi messageProviderApi,
+  })  : _repository = messageProviderApi,
+        super(TagsState.initial(tags: messageProviderApi.tags.value)) {
+    _subscription = _repository.tags.listen((event) {
+      emit(
+        state.copyWith(
+          tags: event,
+        ),
+      );
+    });
+  }
+
+  final MessageProviderApi _repository;
+  late final StreamSubscription<TagList> _subscription;
+
+  @override
+  Future<void> close() async {
+    _subscription.cancel();
+    super.close();
+  }
 
   void select(Tag tag) {
     state.map(
@@ -61,7 +82,7 @@ class TagsCubit extends Cubit<TagsState> {
     });
   }
 
-  void setSelected(IList<Tag> tags) {
+  void setSelected(TagList tags) {
     emit(
       TagsState.hasSelected(
         tags: state.tags,

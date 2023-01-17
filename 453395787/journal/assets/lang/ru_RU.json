@@ -1,0 +1,46 @@
+{
+  "pages_home": "Чаты",
+  "pages_daily": "День",
+  "pages_timeline": "Обзор",
+  "pages_settings": "Настройки",
+  "pages_add_chat": "Добавить чат",
+  "pages_edit_chat": "Редактировать чат",
+
+  "settings_item_tags": "Теги",
+  "settings_item_languages": "Языки",
+  "settings_page_tags_title": "Управление тегами",
+
+  "action_ok": "Ок",
+  "action_cancel": "Отменить",
+  "action_remove": "Удалить",
+  "action_add": "Добавить",
+  "action_edit": "Редактировать",
+  "action_delete": "Удалить",
+  "action_apply": "Применить",
+  "action_move": "Переместить",
+  "action_pin": "Закрепить",
+  "action_unpin": "Открепить",
+
+  "result_text_copied": "Текст скопирован в буффер",
+
+  "message_example_text_1": "Вы можете выбрать цвет приложения тут",
+  "message_example_text_2": "Это сообщение в избранном и выделено :)",
+
+  "input_hint_chat_name": "Название",
+  "input_hint_message": "Сообщение",
+
+  "item_hint_created": "Создан: ",
+  "item_hint_active": "Активен: ",
+  "item_hint_messages": "Сообщения: ",
+
+  "confirmation_chat_delete_title": "Удаление чата '%s'",
+  "confirmation_chat_delete_content": "Вы уверены, что хотите удалить этот чат?",
+  "confirmation_messages_delete_title": "Удаление '%s' сообщений",
+  "confirmation_messages_delete_content": "Вы уверены, что хотите удалить эти сообщения?",
+
+  "info_last_message_recently": "недавно",
+  "info_last_message_days": "%s дней назад",
+  "info_last_message_days_and_hours": "%s0 дней и %s1 часов назад",
+  "info_move": "Переместить %s сообщение в",
+  "info_move_plural": "Переместить %s сообщений в"
+}

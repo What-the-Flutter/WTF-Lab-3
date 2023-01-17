@@ -10,7 +10,9 @@ class ChatIconsGrid extends StatelessWidget {
     return BlocBuilder<ManageChatCubit, ManageChatState>(
       builder: (context, state) {
         return GridView.builder(
-          padding: const EdgeInsets.all(Insets.medium),
+          padding: const EdgeInsets.all(
+            Insets.medium,
+          ),
           itemCount: JournalIcons.icons.length,
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 50,

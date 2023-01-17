@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/chat_repository_api.dart';
-import '../../../common/models/chat.dart';
+import '../../../common/models/chat_view.dart';
 import '../../../common/utils/icons.dart';
 
 part 'manage_chat_state.dart';
@@ -31,12 +28,17 @@ class ManageChatCubit extends Cubit<ManageChatState> {
   void applyChanges() {
     state.map(
       adding: (adding) {
+        final creationDate = DateTime.now();
         repository.add(
-          Chat(
-            id: Random().nextInt(1000),
+          ChatView(
+            id: 0,
             icon: JournalIcons.icons[state.selectedIcon!],
-            messages: IList([]),
             name: adding.name,
+            messagePreview: 'Write your first message!',
+            messagePreviewCreationTime: creationDate,
+            messageAmount: 0,
+            isPinned: false,
+            creationDate: creationDate,
           ),
         );
       },

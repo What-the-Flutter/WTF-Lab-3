@@ -15,7 +15,6 @@ class MessageInputState with _$MessageInputState {
 
   bool get canBeSent {
     return message.text.isNotEmpty ||
-        message.images.isNotEmpty ||
-        message.tags.isNotEmpty;
+        message.images.isNotEmpty;
   }
 }
