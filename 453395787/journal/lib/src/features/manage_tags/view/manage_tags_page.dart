@@ -1,4 +1,3 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +7,8 @@ import '../../../common/data/database/chat_database.dart';
 import '../../../common/models/tag.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
+import '../../../common/utils/typedefs.dart';
+import '../../../routes.dart';
 import '../../chat/widget/tag_selector/tag_item.dart';
 import '../../theme/widget/color_selector.dart';
 import '../cubit/manage_tags_cubit.dart';
@@ -34,7 +35,7 @@ class ManageTagsPage extends StatelessWidget {
                 onPressed: () {
                   state.maybeMap(
                     initial: (initial) {
-                      context.pop();
+                      context.go(PagePaths.settings.path);
                     },
                     orElse: () {
                       context.read<ManageTagsCubit>().backToDefault();
@@ -88,7 +89,7 @@ class _PageSelectionBody extends StatelessWidget {
   });
 
   final int? selectedId;
-  final IList<Tag> tags;
+  final TagList tags;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +204,7 @@ class MessageTags extends StatelessWidget {
     this.selectedId,
   });
 
-  final IList<Tag> tags;
+  final TagList tags;
   final int? selectedId;
 
   @override

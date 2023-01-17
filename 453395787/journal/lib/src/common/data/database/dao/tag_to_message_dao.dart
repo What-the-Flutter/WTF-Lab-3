@@ -1,15 +1,17 @@
 import 'package:drift/drift.dart';
 
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'tag_to_message_dao.g.dart';
 
-@DriftAccessor(tables: [TagToMessageTable])
+@DriftAccessor(tables: [
+  TagToMessageTable,
+])
 class TagToMessageDao extends DatabaseAccessor<ChatDatabase>
     with
         _$TagToMessageDaoMixin,
-        BaseDaoApi<TagToMessageTableData, TagToMessageTable> {
+        BaseDao<TagToMessageTableData, TagToMessageTable> {
   TagToMessageDao(ChatDatabase db) : super(db) {
     init();
   }
@@ -21,7 +23,10 @@ class TagToMessageDao extends DatabaseAccessor<ChatDatabase>
   @override
   DatabaseAccessor get accessor => this;
 
-  Future<int> addRelation({required int messageId, required int tagId}) async {
+  Future<int> addRelation({
+    required int messageId,
+    required int tagId,
+  }) async {
     return add(
       TagToMessageTableCompanion.insert(
         messageId: messageId,

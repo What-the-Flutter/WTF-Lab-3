@@ -13,7 +13,9 @@ class LocaleCubit extends Cubit<LocaleState> {
     required LocaleRepositoryApi localeRepository,
   })  : _repository = localeRepository,
         super(
-          const LocaleState.system(),
+          LocaleState(
+            localeRepository.locale,
+          ),
         );
 
   final LocaleRepositoryApi _repository;
@@ -21,7 +23,7 @@ class LocaleCubit extends Cubit<LocaleState> {
   void setLocale(Locale locale) {
     _repository.setLocale(locale);
     emit(
-      LocaleState.custom(locale: locale),
+      LocaleState(locale),
     );
   }
 }

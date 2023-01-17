@@ -1,9 +1,9 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../api/chat_provider_api.dart';
 import '../api/chat_repository_api.dart';
 import '../models/chat_view.dart';
+import '../utils/typedefs.dart';
 
 class ChatRepository extends ChatRepositoryApi {
   ChatRepository({
@@ -13,7 +13,7 @@ class ChatRepository extends ChatRepositoryApi {
   final ChatProviderApi _provider;
 
   @override
-  ValueStream<IList<ChatView>> get chats => _provider.chats;
+  ValueStream<ChatViewList> get chats => _provider.chats;
 
   @override
   Future<void> add(ChatView chat) async {

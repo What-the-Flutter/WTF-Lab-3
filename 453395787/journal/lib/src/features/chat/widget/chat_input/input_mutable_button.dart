@@ -6,7 +6,7 @@ class _ChatInputMutableButton extends StatelessWidget {
     required this.onSend,
   });
 
-  final void Function() onSend;
+  final Callback onSend;
 
   @override
   Widget build(BuildContext context) {

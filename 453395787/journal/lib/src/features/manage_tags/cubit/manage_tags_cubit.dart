@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/message_provider_api.dart';
 import '../../../common/models/tag.dart';
+import '../../../common/utils/typedefs.dart';
 import '../../theme/data/theme_repository.dart';
 
 part 'manage_tags_state.dart';
@@ -32,7 +33,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   }
 
   final MessageProviderApi _messageProviderApi;
-  late final StreamSubscription<IList<Tag>> _subscription;
+  late final StreamSubscription<TagList> _subscription;
 
   @override
   Future<void> close() async {

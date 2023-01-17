@@ -1,16 +1,17 @@
 import 'package:drift/drift.dart';
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/tag.dart';
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'tag_dao.g.dart';
 
-@DriftAccessor(tables: [TagTable])
+@DriftAccessor(tables: [
+  TagTable,
+])
 class TagDao extends DatabaseAccessor<ChatDatabase>
-    with _$TagDaoMixin, BaseDaoApi<TagTableData, TagTable> {
+    with _$TagDaoMixin, BaseDao<TagTableData, TagTable> {
   TagDao(ChatDatabase db) : super(db) {
     init();
   }

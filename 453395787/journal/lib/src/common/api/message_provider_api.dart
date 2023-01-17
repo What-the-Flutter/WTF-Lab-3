@@ -3,11 +3,12 @@ import 'package:rxdart/rxdart.dart';
 
 import '../models/message.dart';
 import '../models/tag.dart';
+import '../utils/typedefs.dart';
 
 abstract class MessageProviderApi {
-  ValueStream<IList<Message>> messagesOf({required int chatId});
+  ValueStream<MessageList> messagesOf({required int chatId});
 
-  ValueStream<IList<Tag>> get tags;
+  ValueStream<TagList> get tags;
 
   Future<int> addMessage(int chatId, Message message);
 

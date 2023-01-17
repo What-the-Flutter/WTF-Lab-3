@@ -1,8 +1,7 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../common/models/tag.dart';
 import '../../../../../common/utils/insets.dart';
+import '../../../../../common/utils/typedefs.dart';
 import '../../tag_selector/tag_item.dart';
 
 class MessageTags extends StatelessWidget {
@@ -11,7 +10,7 @@ class MessageTags extends StatelessWidget {
     required this.tags,
   });
 
-  final IList<Tag> tags;
+  final TagList tags;
 
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/models/message.dart';
 import '../../../../common/models/tag.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_input_cubit.freezed.dart';
@@ -70,7 +71,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
   }
 
-  void setTags(IList<Tag> tags) {
+  void setTags(TagList tags) {
     emit(
       state.copyWith(
         message: state.message.copyWith(

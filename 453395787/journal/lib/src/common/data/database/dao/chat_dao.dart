@@ -1,26 +1,19 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 
 import '../../../models/chat_view.dart';
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'chat_dao.g.dart';
 
-@DriftAccessor(tables: [ChatTable])
+@DriftAccessor(tables: [
+  ChatTable,
+])
 class ChatDao extends DatabaseAccessor<ChatDatabase>
-    with _$ChatDaoMixin, BaseDaoApi<ChatTableData, ChatTable> {
+    with _$ChatDaoMixin, BaseDao<ChatTableData, ChatTable> {
   ChatDao(ChatDatabase db) : super(db) {
     init();
-    var log = Logger(
-      printer: PrettyPrinter(
-        methodCount: 0,
-      ),
-    );
-    stream.listen((event) {
-      log.wtf('Value: ${stream.value} \nEvent: $event');
-    });
   }
 
   @override

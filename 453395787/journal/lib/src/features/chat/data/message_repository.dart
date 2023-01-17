@@ -8,7 +8,7 @@ import '../../../common/extensions/iterable_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
 import '../../../common/models/chat_view.dart';
 import '../../../common/models/message.dart';
-import '../../../common/models/tag.dart';
+import '../../../common/utils/typedefs.dart';
 import '../api/message_repository_api.dart';
 
 class MessageRepository extends MessageRepositoryApi {
@@ -25,7 +25,6 @@ class MessageRepository extends MessageRepositoryApi {
 
     _subscription = _repository.messagesOf(chatId: chat.id).listen(
       (event) {
-        print('asdfasdfasdfoqwieurlaskfj');
         _filteredChatStream.add(
           _repository.messagesOf(chatId: chat.id),
         );
@@ -41,12 +40,12 @@ class MessageRepository extends MessageRepositoryApi {
   ChatView get chat => _chat;
 
   @override
-  ValueStream<IList<Tag>> get tags => _repository.tags;
+  ValueStream<TagList> get tags => _repository.tags;
 
-  final BehaviorSubject<ValueStream<IList<Message>>> _filteredChatStream =
+  final BehaviorSubject<ValueStream<MessageList>> _filteredChatStream =
       BehaviorSubject();
 
-  late final StreamSubscription<IList<Message>> _subscription;
+  late final StreamSubscription<MessageList> _subscription;
 
   void close() {
     _subscription.cancel();
@@ -54,7 +53,7 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  ValueStream<ValueStream<IList<Message>>> get filteredChatStreams =>
+  ValueStream<ValueStream<MessageList>> get filteredChatStreams =>
       _filteredChatStream.stream;
 
   @override
@@ -80,7 +79,7 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  Future<void> removeAll(IList<Message> messages) async {
+  Future<void> removeAll(MessageList messages) async {
     _repository.deleteMessages(
       messages.map((message) => message.id).toIList(),
     );
@@ -99,7 +98,7 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  Future<void> search(String query, [IList<Tag>? tags]) async {
+  Future<void> search(String query, [TagList? tags]) async {
     _filteredChatStream.add(
       _applyFilter(
         _repository.messagesOf(chatId: chat.id),
@@ -109,10 +108,10 @@ class MessageRepository extends MessageRepositoryApi {
     );
   }
 
-  ValueStream<IList<Message>> _applyFilter(
-    ValueStream<IList<Message>> stream,
+  ValueStream<MessageList> _applyFilter(
+    ValueStream<MessageList> stream,
     String query, [
-    IList<Tag>? tags,
+    TagList? tags,
   ]) {
     return stream.map(
       (chat) {
@@ -123,10 +122,10 @@ class MessageRepository extends MessageRepositoryApi {
     );
   }
 
-  IList<Message> _filterMessages(
-    IList<Message> messages,
+  MessageList _filterMessages(
+    MessageList messages,
     String query, [
-    IList<Tag>? tags,
+    TagList? tags,
   ]) {
     return messages.where(
       (message) {

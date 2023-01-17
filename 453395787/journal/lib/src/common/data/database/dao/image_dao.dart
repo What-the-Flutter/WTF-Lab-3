@@ -1,13 +1,15 @@
 import 'package:drift/drift.dart';
 
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'image_dao.g.dart';
 
-@DriftAccessor(tables: [ImageTable])
+@DriftAccessor(tables: [
+  ImageTable,
+])
 class ImageDao extends DatabaseAccessor<ChatDatabase>
-    with _$ImageDaoMixin, BaseDaoApi<ImageTableData, ImageTable> {
+    with _$ImageDaoMixin, BaseDao<ImageTableData, ImageTable> {
   ImageDao(ChatDatabase db) : super(db) {
     init();
   }

@@ -1,14 +1,13 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../common/models/chat_view.dart';
 import '../../../common/models/message.dart';
-import '../../../common/models/tag.dart';
+import '../../../common/utils/typedefs.dart';
 
 abstract class MessageRepositoryApi {
-  ValueStream<ValueStream<IList<Message>>> get filteredChatStreams;
+  ValueStream<ValueStream<MessageList>> get filteredChatStreams;
 
-  ValueStream<IList<Tag>> get tags;
+  ValueStream<TagList> get tags;
 
   ChatView get chat;
 
@@ -20,11 +19,11 @@ abstract class MessageRepositoryApi {
 
   Future<void> remove(Message message);
 
-  Future<void> removeAll(IList<Message> messages);
+  Future<void> removeAll(MessageList messages);
 
   Future<void> addToFavorites(Message message);
 
   Future<void> removeFromFavorites(Message message);
 
-  Future<void> search(String query, [IList<Tag>? tags]);
+  Future<void> search(String query, [TagList? tags]);
 }

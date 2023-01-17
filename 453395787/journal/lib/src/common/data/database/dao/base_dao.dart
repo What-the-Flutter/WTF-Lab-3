@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:logger/logger.dart';
@@ -5,25 +7,30 @@ import 'package:rxdart/rxdart.dart';
 
 typedef Filter<T> = Expression<bool> Function(T tbl);
 
-mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
+mixin BaseDao<UserDataClass extends DataClass, UserTable extends Table> {
+  static final Logger log = Logger();
+
   TableInfo<UserTable, UserDataClass> get table => throw UnimplementedError();
 
   DatabaseAccessor get accessor => throw UnimplementedError();
-
-  static final Logger log = Logger(
-    printer: PrettyPrinter(
-      methodCount: 2,
-    ),
-  );
 
   final BehaviorSubject<IList<UserDataClass>> _stream = BehaviorSubject.seeded(
     IList<UserDataClass>([]),
   );
 
-  void init() {
-    accessor.select(table).watch().listen((event) {
+  late StreamSubscription<List<UserDataClass>> _subscription;
+
+  ValueStream<IList<UserDataClass>> get stream => _stream.stream;
+
+  Future<void> init() async {
+    _stream.add(await getAll());
+    _subscription = accessor.select(table).watch().listen((event) {
       _stream.add(event.toIList());
     });
+  }
+
+  void close() {
+    _subscription.cancel();
   }
 
   Future<int> add(Insertable<UserDataClass> value) async {
@@ -42,20 +49,18 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
     });
   }
 
-  Future<IList<UserDataClass>> get() async {
+  Future<IList<UserDataClass>> getAll() async {
     var result = (await accessor.select(table).get()).toIList();
     log.d('In get for ${UserDataClass.runtimeType}: $result');
     return result;
   }
-
-  ValueStream<IList<UserDataClass>> get stream => _stream.stream;
 
   ValueStream<IList<UserDataClass>> streamWhere(
     Filter<UserTable> filter,
   ) {
     return ValueConnectableStream((accessor.select(table)
           ..where(
-            (tbl) => filter(tbl),
+            filter,
           ))
         .watch()
         .map(
@@ -68,7 +73,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   ) async {
     var result = await (accessor.select(table)
           ..where(
-            (tbl) => filter(tbl),
+            filter,
           ))
         .getSingleOrNull();
     log.d('In firstWhere for ${UserDataClass.runtimeType}: $result');
@@ -80,7 +85,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   ) async {
     var result = (await (accessor.select(table)
               ..where(
-                (tbl) => filter(tbl),
+                filter,
               ))
             .get())
         .toIList();
@@ -94,7 +99,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   ) async {
     var result = await (accessor.update(table)
           ..where(
-            (tbl) => filter(tbl),
+            filter,
           ))
         .write(value);
     log.d('In updateWhere for ${UserDataClass.runtimeType}: $result');
@@ -105,7 +110,7 @@ mixin BaseDaoApi<UserDataClass extends DataClass, UserTable extends Table> {
   ) async {
     var result = await (accessor.delete(table)
           ..where(
-            (tbl) => filter(tbl),
+            filter,
           ))
         .go();
     log.d('In deleteWhere for ${UserDataClass.runtimeType}: $result');

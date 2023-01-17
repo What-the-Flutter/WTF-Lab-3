@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../common/api/chat_repository_api.dart';
 import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/models/chat_view.dart';
-import '../../../../common/models/message.dart';
+import '../../../../common/utils/typedefs.dart';
 
 part 'move_messages_state.dart';
 
@@ -31,7 +31,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   final ChatRepositoryApi _chatRepository;
   final MessageProviderApi _messageProviderApi;
   final int fromChatId;
-  final IList<Message> messages;
+  final MessageList messages;
 
   void select(int id) {
     state.map(

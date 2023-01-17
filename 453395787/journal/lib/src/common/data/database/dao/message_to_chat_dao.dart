@@ -1,15 +1,17 @@
 import 'package:drift/drift.dart';
 
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'message_to_chat_dao.g.dart';
 
-@DriftAccessor(tables: [MessageToChatTable])
+@DriftAccessor(tables: [
+  MessageToChatTable,
+])
 class MessageToChatDao extends DatabaseAccessor<ChatDatabase>
     with
         _$MessageToChatDaoMixin,
-        BaseDaoApi<MessageToChatTableData, MessageToChatTable> {
+        BaseDao<MessageToChatTableData, MessageToChatTable> {
   MessageToChatDao(ChatDatabase db) : super(db) {
     init();
   }

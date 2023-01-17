@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/models/message.dart';
 import '../../../../common/models/tag.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_search_cubit.freezed.dart';
@@ -37,8 +38,8 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<IList<Message>>> _subscription;
-  StreamSubscription<IList<Message>>? _internalSubscription;
+  late StreamSubscription<ValueStream<MessageList>> _subscription;
+  StreamSubscription<MessageList>? _internalSubscription;
 
   @override
   Future<void> close() async {
@@ -57,7 +58,7 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     await _repository.search(query, state.queryTags);
   }
 
-  Future<void> onSearchTagsChanged(IList<Tag>? tags) async {
+  Future<void> onSearchTagsChanged(TagList? tags) async {
     emit(
       MessageSearchState.loading(
         query: state.query!,

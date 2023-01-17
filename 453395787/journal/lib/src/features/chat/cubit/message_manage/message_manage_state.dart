@@ -7,20 +7,20 @@ class MessageManageState with _$MessageManageState {
   const factory MessageManageState.defaultMode({
     required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
   }) = MessageManageDefaultMode;
 
   const factory MessageManageState.selectionMode({
     required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required ISet<int> selected,
   }) = MessageManageSelectionMode;
 
   const factory MessageManageState.editMode({
     required int id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required Message message,
   }) = MessageManageEditMode;
 

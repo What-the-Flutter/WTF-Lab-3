@@ -12,6 +12,11 @@ part 'message_images.dart';
 
 part 'message_text.dart';
 
+typedef SelectedMessageCallback = void Function(
+  Message message,
+  bool isSelected,
+);
+
 class MessageItem extends StatelessWidget {
   const MessageItem({
     super.key,
@@ -22,8 +27,8 @@ class MessageItem extends StatelessWidget {
   });
 
   final Message message;
-  final void Function(Message message, bool isSelected)? onTap;
-  final void Function(Message message, bool isSelected)? onLongPress;
+  final SelectedMessageCallback? onTap;
+  final SelectedMessageCallback? onLongPress;
   final bool isSelected;
 
   double get _widthScaleFactor => isSelected ? 0.75 : 0.8;

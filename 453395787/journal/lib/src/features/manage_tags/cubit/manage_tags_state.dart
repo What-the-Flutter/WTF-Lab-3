@@ -3,7 +3,7 @@ part of 'manage_tags_cubit.dart';
 @freezed
 class ManageTagsState with _$ManageTagsState {
   const factory ManageTagsState.initial({
-    required IList<Tag> tags,
+    required TagList tags,
   }) = _Initial;
 
   const factory ManageTagsState.addingMode({
@@ -17,7 +17,7 @@ class ManageTagsState with _$ManageTagsState {
   }) = _EditingMode;
 
   const factory ManageTagsState.selectionMode({
-    required IList<Tag> tags,
+    required TagList tags,
     required int selectedTag,
   }) = _SelectionMode;
 }

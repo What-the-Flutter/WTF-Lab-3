@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../common/extensions/date_time_extensions.dart';
-import '../../../common/models/chat.dart';
 import '../../../common/models/chat_view.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';
+import '../../../common/utils/typedefs.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem({
@@ -17,8 +17,8 @@ class ChatItem extends StatelessWidget {
   });
 
   final ChatView chat;
-  final void Function() onTap;
-  final void Function()? onLongPress;
+  final Callback onTap;
+  final Callback? onLongPress;
   final bool isSelected;
 
   @override

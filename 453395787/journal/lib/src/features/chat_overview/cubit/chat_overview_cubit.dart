@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/chat_repository_api.dart';
 import '../../../common/models/chat_view.dart';
+import '../../../common/utils/typedefs.dart';
 
 part 'chat_overview_state.dart';
 
@@ -17,7 +18,7 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   })  : _repository = repository,
         super(
           ChatOverviewState(
-            chats: IList<ChatView>([]),
+            chats: ChatViewList([]),
           ),
         ) {
     _subscription = repository.chats.listen(
@@ -34,7 +35,7 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   }
 
   final ChatRepositoryApi _repository;
-  late StreamSubscription<IList<ChatView>> _subscription;
+  late StreamSubscription<ChatViewList> _subscription;
 
   @override
   Future<void> close() async {

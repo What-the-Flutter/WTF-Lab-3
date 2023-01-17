@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/extensions/date_time_extensions.dart';
 import '../../../../common/models/message.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_manage_cubit.freezed.dart';
@@ -48,8 +49,8 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   final MessageRepositoryApi _repository;
   final int chatId;
   final String name;
-  StreamSubscription<IList<Message>>? _internalSubscription;
-  late final StreamSubscription<ValueStream<IList<Message>>> _subscription;
+  StreamSubscription<MessageList>? _internalSubscription;
+  late final StreamSubscription<ValueStream<MessageList>> _subscription;
 
   @override
   Future<void> close() async {

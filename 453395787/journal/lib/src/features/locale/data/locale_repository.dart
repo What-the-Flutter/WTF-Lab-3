@@ -9,29 +9,36 @@ class LocaleRepository implements LocaleRepositoryApi {
   static const _localeLanguageCodeKey = 'localeLangCodeKey';
   static const _localeCountryCodeKey = 'localeCountryCodeKey';
 
-  @override
-  Future<Locale?> getLocale() async {
+  static Locale? _locale;
+
+  static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     var langCode = await prefs.getString(_localeLanguageCodeKey);
     var countryCode = await prefs.getString(_localeCountryCodeKey);
 
     if (langCode != null) {
-      return Locale(langCode, countryCode);
+      _locale = Locale(langCode, countryCode);
     } else {
-      return null;
+      _locale = null;
     }
   }
 
   @override
+  Locale? get locale => _locale;
+
+  @override
   Future<void> setLocale(Locale? locale) async {
     final prefs = await SharedPreferences.getInstance();
+
     if (locale == null) {
-      prefs.remove(_localeLanguageCodeKey);
-      prefs.remove(_localeCountryCodeKey);
+      _locale = null;
+      await prefs.remove(_localeLanguageCodeKey);
+      await prefs.remove(_localeCountryCodeKey);
     } else {
-      prefs.setString(_localeLanguageCodeKey, locale.languageCode);
+      _locale = locale;
+      await prefs.setString(_localeLanguageCodeKey, locale.languageCode);
       if (locale.countryCode != null) {
-        prefs.setString(_localeCountryCodeKey, locale.countryCode!);
+        await prefs.setString(_localeCountryCodeKey, locale.countryCode!);
       }
     }
   }

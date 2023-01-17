@@ -13,9 +13,9 @@ class ThemeCubit extends Cubit<ThemeState> {
     required ThemeRepositoryApi repository,
   })  : _repository = repository,
         super(
-          const ThemeState(
-            color: Colors.grey,
-            isDarkMode: true,
+          ThemeState(
+            color: repository.color,
+            isDarkMode: repository.isDarkMode,
           ),
         );
 

@@ -2,13 +2,15 @@ import 'package:drift/drift.dart';
 
 import '../../../models/message.dart';
 import '../chat_database.dart';
-import 'dao_api.dart';
+import 'base_dao.dart';
 
 part 'message_dao.g.dart';
 
-@DriftAccessor(tables: [MessageTable])
+@DriftAccessor(tables: [
+  MessageTable,
+])
 class MessageDao extends DatabaseAccessor<ChatDatabase>
-    with _$MessageDaoMixin, BaseDaoApi<MessageTableData, MessageTable> {
+    with _$MessageDaoMixin, BaseDao<MessageTableData, MessageTable> {
   MessageDao(ChatDatabase db) : super(db) {
     init();
   }

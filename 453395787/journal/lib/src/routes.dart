@@ -56,17 +56,16 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-            path: PagePaths.settings.routePath,
-            pageBuilder: (context, state) => const NoTransitionPage(
-                  child: SettingsPage(),
-                ),
-            routes: [
-              GoRoute(
-                path: PagePaths.manageTags.routePath,
-                builder: (context, state) => const ManageTagsPage(),
-              ),
-            ]),
+          path: PagePaths.settings.routePath,
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: SettingsPage(),
+          ),
+        ),
       ],
+    ),
+    GoRoute(
+      path: PagePaths.manageTags.routePath,
+      builder: (context, state) => const ManageTagsPage(),
     ),
     GoRoute(
       path: PagePaths.chat.routePath,
@@ -95,8 +94,8 @@ enum PagePaths {
   daily(routePath: '/daily', path: '/daily'),
   timeline(routePath: '/timeline', path: '/timeline'),
   settings(routePath: '/settings', path: '/settings'),
-  manageTags(routePath: 'tags', path: '/settings/tags'),
   chat(routePath: '/chat/:chatId', path: '/chat/:chatId'),
+  manageTags(routePath: '/tags', path: '/tags'),
   chatSearch(routePath: 'search', path: '/chat/:chatId/search');
 
   const PagePaths({
