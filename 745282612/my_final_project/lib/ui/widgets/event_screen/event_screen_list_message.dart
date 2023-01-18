@@ -54,6 +54,20 @@ double sizePaddingBottom(BuildContext context, EventState state) {
   }
 }
 
+List<Event> getListEvent(Map<dynamic, dynamic> map, int chatId) {
+  final listEvent = <Event>[];
+  for (final chatElement in map.values) {
+    final map = chatElement as Map<dynamic, dynamic>;
+    final event = Event.fromJson(map);
+    listEvent.add(event);
+  }
+  final newEventList = listEvent.reversed.where((element) => element.chatId == chatId).toList();
+  newEventList.sort(
+    (a, b) => b.messageTime.compareTo(a.messageTime),
+  );
+  return newEventList;
+}
+
 Widget listMessage(BuildContext context, EventState state, User? _user, int chatId) {
   return StreamBuilder(
     stream: FirebaseDatabase.instance.ref().child(_user?.uid ?? '').child('event').onValue,
@@ -61,26 +75,16 @@ Widget listMessage(BuildContext context, EventState state, User? _user, int chat
       if (!snapshot.hasData) {
         return const CircularProgressIndicator();
       } else {
-        final eventList = <Event>[];
         final Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as dynamic;
-        for (final chatElement in map.values) {
-          final map = chatElement as Map<dynamic, dynamic>;
-          final chat = Event.fromJson(map);
-          eventList.add(chat);
-        }
-        final newEventList =
-            eventList.reversed.where((element) => element.chatId == chatId).toList();
-        newEventList.sort(
-          (a, b) => b.messageTime.compareTo(a.messageTime),
-        );
+        final eventList = getListEvent(map, chatId);
 
         return ListView.builder(
           reverse: true,
           padding: EdgeInsets.only(bottom: sizePaddingBottom(context, state)),
-          itemCount: newEventList.length,
+          itemCount: eventList.length,
           itemBuilder: (context, index) {
             return EventMessage(
-              event: newEventList[index],
+              event: eventList[index],
               isSelected: state.isSelected,
             );
           },
