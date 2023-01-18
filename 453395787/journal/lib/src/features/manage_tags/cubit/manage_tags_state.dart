@@ -6,18 +6,18 @@ class ManageTagsState with _$ManageTagsState {
     required TagList tags,
   }) = _Initial;
 
-  const factory ManageTagsState.addingMode({
+  const factory ManageTagsState.addModeState({
     required IList<Color> colors,
     required Tag newTag,
-  }) = _AddingMode;
+  }) = _AddModeState;
 
-  const factory ManageTagsState.editingMode({
+  const factory ManageTagsState.editModeState({
     required IList<Color> colors,
     required Tag editableTag,
-  }) = _EditingMode;
+  }) = _EditModeState;
 
-  const factory ManageTagsState.selectionMode({
+  const factory ManageTagsState.selectModeState({
     required TagList tags,
     required int selectedTag,
-  }) = _SelectionMode;
+  }) = _SelectModeState;
 }

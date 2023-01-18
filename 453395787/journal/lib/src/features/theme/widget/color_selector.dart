@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../common/utils/colors.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
-import '../data/theme_repository.dart';
 
 class ColorSelector extends StatelessWidget {
   const ColorSelector({
@@ -26,23 +26,23 @@ class ColorSelector extends StatelessWidget {
         mainAxisSpacing: Insets.extraLarge,
         crossAxisSpacing: Insets.extraLarge,
       ),
-      itemCount: ThemeRepository.colors.length,
+      itemCount: AppColors.list.length,
       itemBuilder: (context, index) {
         return InkWell(
           borderRadius: BorderRadius.circular(Radius.extraLarge),
           onTap: () => onTap(
-            ThemeRepository.colors[index],
+            AppColors.list[index],
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: ThemeRepository.colors[index],
+              color: AppColors.list[index],
               shape: BoxShape.circle,
             ),
             child: Padding(
               padding: const EdgeInsets.all(
                 Insets.extraSmall,
               ),
-              child: selectedColor == ThemeRepository.colors[index]
+              child: selectedColor == AppColors.list[index]
                   ? DecoratedBox(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,

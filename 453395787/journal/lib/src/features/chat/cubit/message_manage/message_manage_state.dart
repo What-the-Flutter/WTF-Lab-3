@@ -4,25 +4,25 @@ part of 'message_manage_cubit.dart';
 class MessageManageState with _$MessageManageState {
   const MessageManageState._();
 
-  const factory MessageManageState.defaultMode({
+  const factory MessageManageState.defaultModeState({
     required int id,
     required String name,
     required MessageList messages,
-  }) = MessageManageDefaultMode;
+  }) = MessageManageDefaultModeState;
 
-  const factory MessageManageState.selectionMode({
+  const factory MessageManageState.selectionModeState({
     required int id,
     required String name,
     required MessageList messages,
     required ISet<int> selected,
-  }) = MessageManageSelectionMode;
+  }) = MessageManageSelectionModeState;
 
-  const factory MessageManageState.editMode({
+  const factory MessageManageState.editModeState({
     required int id,
     required String name,
     required MessageList messages,
     required Message message,
-  }) = MessageManageEditMode;
+  }) = MessageManageEditModeState;
 
   IList<Object> get messagesWithDates {
     if (messages.isEmpty) {
@@ -45,12 +45,12 @@ class MessageManageState with _$MessageManageState {
 
   bool? get hasMoreFavoritesInSelected {
     return mapOrNull(
-      selectionMode: (selectionMode) {
+      selectionModeState: (selectionModeState) {
         var amountOfFavorites = 0;
         var amountOfOther = 0;
 
-        final selectedMessages = selectionMode.messages.where(
-          (message) => selectionMode.selected.contains(
+        final selectedMessages = selectionModeState.messages.where(
+          (message) => selectionModeState.selected.contains(
             message.id,
           ),
         );

@@ -30,7 +30,7 @@ class JournalApp extends StatelessWidget {
                     state.isDarkMode ? Brightness.dark : Brightness.light,
               ),
               locale: localeState.locale,
-              routerConfig: router,
+              routerConfig: Navigation.router,
               localizationsDelegates: _localizationDelegates,
               supportedLocales: LocaleRepositoryApi.supportedLocales,
               localeResolutionCallback: _localeResolution,

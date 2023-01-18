@@ -27,13 +27,13 @@ class ManageChatCubit extends Cubit<ManageChatState> {
 
   void applyChanges() {
     state.map(
-      adding: (adding) {
+      addModeState: (addModeState) {
         final creationDate = DateTime.now();
         repository.add(
           ChatView(
             id: 0,
             icon: JournalIcons.icons[state.selectedIcon!],
-            name: adding.name,
+            name: addModeState.name,
             messagePreview: 'Write your first message!',
             messagePreviewCreationTime: creationDate,
             messageAmount: 0,
@@ -42,9 +42,9 @@ class ManageChatCubit extends Cubit<ManageChatState> {
           ),
         );
       },
-      editing: (editing) {
+      editModeState: (editModeState) {
         repository.update(
-          editing.chat.copyWith(
+          editModeState.chat.copyWith(
             icon: JournalIcons.icons[state.selectedIcon!],
             name: state.name,
           ),

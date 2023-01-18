@@ -36,7 +36,7 @@ class ChatPage extends StatelessWidget {
         appBar: const ChatAppBar(),
         body: Column(
           children: [
-            Expanded(
+            const Expanded(
               child: ChatMessageList(),
             ),
             ChatInput(

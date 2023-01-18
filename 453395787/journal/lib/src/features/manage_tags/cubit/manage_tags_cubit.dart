@@ -7,8 +7,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/message_provider_api.dart';
 import '../../../common/models/tag.dart';
+import '../../../common/utils/colors.dart';
 import '../../../common/utils/typedefs.dart';
-import '../../theme/data/theme_repository.dart';
 
 part 'manage_tags_state.dart';
 
@@ -21,7 +21,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
         super(
           ManageTagsState.initial(tags: messageProviderApi.tags.value),
         ) {
-    _subscription = _messageProviderApi.tags.listen(
+    _tagsStreamSubscription = _messageProviderApi.tags.listen(
       (event) {
         emit(
           ManageTagsState.initial(
@@ -33,18 +33,18 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   }
 
   final MessageProviderApi _messageProviderApi;
-  late final StreamSubscription<TagList> _subscription;
+  late final StreamSubscription<TagList> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {
-    _subscription.cancel();
+    _tagsStreamSubscription.cancel();
     super.close();
   }
 
   void startAddingMode() {
     emit(
-      ManageTagsState.addingMode(
-        colors: ThemeRepository.colors.toIList(),
+      ManageTagsState.addModeState(
+        colors: AppColors.list,
         newTag: const Tag(
           text: 'name',
           color: Colors.grey,
@@ -55,12 +55,12 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
 
   void startEditingMode() {
     state.mapOrNull(
-      selectionMode: (selectionMode) {
+      selectModeState: (selectModeState) {
         emit(
-          ManageTagsState.editingMode(
-            colors: ThemeRepository.colors.toIList(),
-            editableTag: selectionMode.tags.firstWhere(
-              (e) => e.id == selectionMode.selectedTag,
+          ManageTagsState.editModeState(
+            colors: AppColors.list,
+            editableTag: selectModeState.tags.firstWhere(
+              (e) => e.id == selectModeState.selectedTag,
             ),
           ),
         );
@@ -73,22 +73,22 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     Color? color,
   }) {
     state.mapOrNull(
-      addingMode: (addingMode) {
+      addModeState: (addModeState) {
         emit(
-          addingMode.copyWith(
-            newTag: addingMode.newTag.copyWith(
-              text: text ?? addingMode.newTag.text,
-              color: color ?? addingMode.newTag.color,
+          addModeState.copyWith(
+            newTag: addModeState.newTag.copyWith(
+              text: text ?? addModeState.newTag.text,
+              color: color ?? addModeState.newTag.color,
             ),
           ),
         );
       },
-      editingMode: (editingMode) {
+      editModeState: (editModeState) {
         emit(
-          editingMode.copyWith(
-            editableTag: editingMode.editableTag.copyWith(
-              text: text ?? editingMode.editableTag.text,
-              color: color ?? editingMode.editableTag.color,
+          editModeState.copyWith(
+            editableTag: editModeState.editableTag.copyWith(
+              text: text ?? editModeState.editableTag.text,
+              color: color ?? editModeState.editableTag.color,
             ),
           ),
         );
@@ -98,14 +98,14 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
 
   void applyChanges() {
     state.mapOrNull(
-      addingMode: (addingMode) {
+      addModeState: (addModeState) {
         _messageProviderApi.addTag(
-          addingMode.newTag,
+          addModeState.newTag,
         );
       },
-      editingMode: (editingMode) {
+      editModeState: (editModeState) {
         _messageProviderApi.updateTag(
-          editingMode.editableTag,
+          editModeState.editableTag,
         );
       },
     );
@@ -120,22 +120,22 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     state.mapOrNull(
       initial: (initial) {
         emit(
-          ManageTagsState.selectionMode(
+          ManageTagsState.selectModeState(
             tags: initial.tags,
             selectedTag: tag.id!,
           ),
         );
       },
-      selectionMode: (selectionMode) {
-        if (selectionMode.selectedTag == tag.id) {
+      selectModeState: (selectModeState) {
+        if (selectModeState.selectedTag == tag.id) {
           emit(
             ManageTagsState.initial(
-              tags: selectionMode.tags,
+              tags: selectModeState.tags,
             ),
           );
         } else {
           emit(
-            selectionMode.copyWith(
+            selectModeState.copyWith(
               selectedTag: tag.id!,
             ),
           );
@@ -146,9 +146,9 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
 
   void remove() {
     state.mapOrNull(
-      selectionMode: (selectionMode) {
+      selectModeState: (selectModeState) {
         _messageProviderApi.deleteTag(
-          selectionMode.selectedTag,
+          selectModeState.selectedTag,
         );
         emit(
           ManageTagsState.initial(

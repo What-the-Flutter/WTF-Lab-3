@@ -37,16 +37,16 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
     state.map(
       initial: (initial) {
         emit(
-          MoveMessagesState.withSelected(
+          MoveMessagesState.hasSelectedState(
             chats: initial.chats,
             amountOfMessages: initial.amountOfMessages,
             selectedChatId: id,
           ),
         );
       },
-      withSelected: (withSelected) {
+      hasSelectedState: (hasSelectedState) {
         emit(
-          withSelected.copyWith(
+          hasSelectedState.copyWith(
             selectedChatId: id,
           ),
         );
@@ -56,11 +56,11 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
 
   void unselect(int id) {
     state.mapOrNull(
-      withSelected: (withSelected) {
+      hasSelectedState: (hasSelectedState) {
         emit(
           MoveMessagesState.initial(
-            chats: withSelected.chats,
-            amountOfMessages: withSelected.amountOfMessages,
+            chats: hasSelectedState.chats,
+            amountOfMessages: hasSelectedState.amountOfMessages,
           ),
         );
       },
@@ -72,8 +72,8 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
       initial: (initial) {
         select(id);
       },
-      withSelected: (withSelected) {
-        if (withSelected.selectedChatId == id) {
+      hasSelectedState: (hasSelectedState) {
+        if (hasSelectedState.selectedChatId == id) {
           unselect(id);
         } else {
           select(id);
@@ -84,13 +84,13 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
 
   Future<void> move() async {
     state.mapOrNull(
-      withSelected: (withSelected) async {
+      hasSelectedState: (hasSelectedState) async {
         await _messageProviderApi.deleteMessages(
           messages.map((message) => message.id).toIList(),
         );
         for (var message in messages) {
           await _messageProviderApi.addMessage(
-            withSelected.selectedChatId,
+            hasSelectedState.selectedChatId,
             message,
           );
         }

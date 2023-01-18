@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'locale_repository_api.dart';
 
 class LocaleRepository implements LocaleRepositoryApi {
-  static const _localeLanguageCodeKey = 'localeLangCodeKey';
-  static const _localeCountryCodeKey = 'localeCountryCodeKey';
+  static const String _localeLanguageCodeKey = 'localeLangCodeKey';
+  static const String _localeCountryCodeKey = 'localeCountryCodeKey';
 
   static Locale? _locale;
 

@@ -18,11 +18,11 @@ class _MessageImages extends StatelessWidget {
       return _EvenAmountOfImages(
         images: message.images.toList(),
       );
-    } else {
-      return _OddAmountOfImages(
-        images: message.images.toList(),
-      );
     }
+
+    return _OddAmountOfImages(
+      images: message.images.toList(),
+    );
   }
 }
 

@@ -21,7 +21,7 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
             chats: ChatViewList([]),
           ),
         ) {
-    _subscription = repository.chats.listen(
+    _chatsStreamSubscription = repository.chats.listen(
       (event) {
         emit(
           ChatOverviewState(
@@ -35,11 +35,11 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   }
 
   final ChatRepositoryApi _repository;
-  late StreamSubscription<ChatViewList> _subscription;
+  late StreamSubscription<ChatViewList> _chatsStreamSubscription;
 
   @override
   Future<void> close() async {
-    _subscription.cancel();
+    _chatsStreamSubscription.cancel();
     super.close();
   }
 }

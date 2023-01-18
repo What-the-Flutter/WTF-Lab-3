@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../../../../../common/utils/typedefs.dart';
-
 class SlidableMessageContainer extends StatelessWidget {
   const SlidableMessageContainer({
     super.key,
@@ -15,8 +13,8 @@ class SlidableMessageContainer extends StatelessWidget {
 
   final Widget child;
   final ValueKey<Object> valueKey;
-  final Callback onEdit;
-  final Callback onDelete;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
   final bool isEditMode;
 
   @override

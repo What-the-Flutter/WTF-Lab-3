@@ -1,10 +1,4 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../../common/models/tag.dart';
-import '../../../../common/utils/typedefs.dart';
-
-part 'tags_state.freezed.dart';
+part of 'tags_cubit.dart';
 
 @freezed
 class TagsState with _$TagsState {
@@ -14,7 +8,7 @@ class TagsState with _$TagsState {
     required TagList tags,
   }) = TagsInitialState;
 
-  const factory TagsState.hasSelected({
+  const factory TagsState.hasSelectedState({
     required TagList tags,
     required TagList selected,
   }) = TagsHasSelectedState;
@@ -22,7 +16,7 @@ class TagsState with _$TagsState {
   bool isSelected(Tag tag) {
     return map(
       initial: (initial) => false,
-      hasSelected: (hasSelected) => hasSelected.selected.contains(tag),
+      hasSelectedState: (hasSelectedState) => hasSelectedState.selected.contains(tag),
     );
   }
 

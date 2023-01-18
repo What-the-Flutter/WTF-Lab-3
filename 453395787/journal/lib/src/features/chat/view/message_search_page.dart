@@ -6,7 +6,6 @@ import '../../../common/data/chat_repository.dart';
 import '../../../common/data/database/chat_database.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
-import '../cubit/tag_selector/tags_state.dart';
 import '../data/message_repository.dart';
 import '../widget/chat_input/chat_input.dart';
 import '../widget/message_list/chat_message_list.dart';
@@ -48,7 +47,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
           child: Builder(
             builder: (context) {
               _isInputFieldShown = context.watch<MessageManageCubit>().state
-                  is MessageManageEditMode;
+                  is MessageManageEditModeState;
 
               return TagSelectorScope(
                 child: BlocListener<TagsCubit, TagsState>(
@@ -56,7 +55,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     MessageSearchScope.of(context).onSearchTagsChanged(
                       state.map(
                         initial: (_) => null,
-                        hasSelected: (hasSelected) => hasSelected.selected,
+                        hasSelectedState: (hasSelectedState) => hasSelectedState.selected,
                       ),
                     );
                   },
@@ -65,7 +64,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     body: Column(
                       children: [
                         const TagSelector(),
-                        Expanded(
+                        const Expanded(
                           child: ChatMessageList(),
                         ),
                         Visibility(

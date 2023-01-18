@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 abstract class ThemeRepositoryApi {
-
   Color get color;
 
   bool get isDarkMode;

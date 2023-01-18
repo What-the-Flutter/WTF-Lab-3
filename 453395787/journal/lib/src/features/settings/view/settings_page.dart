@@ -5,7 +5,7 @@ import 'package:localization/localization.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
-import '../../locale/widget/language_selector.dart';
+import '../../locale/locale.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -40,7 +40,9 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.tagItem.i18n(),
             ),
             onTap: () {
-              context.go(PagePaths.manageTags.path);
+              context.go(
+                Navigation.manageTagsPagePath,
+              );
             },
           ),
         ],

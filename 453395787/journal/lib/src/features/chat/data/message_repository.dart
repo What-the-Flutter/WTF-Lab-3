@@ -23,7 +23,7 @@ class MessageRepository extends MessageRepositoryApi {
       ),
     );
 
-    _subscription = _repository.messagesOf(chatId: chat.id).listen(
+    _messagesStreamSubscription = _repository.messagesOf(chatId: chat.id).listen(
       (event) {
         _filteredChatStream.add(
           _repository.messagesOf(chatId: chat.id),
@@ -45,10 +45,10 @@ class MessageRepository extends MessageRepositoryApi {
   final BehaviorSubject<ValueStream<MessageList>> _filteredChatStream =
       BehaviorSubject();
 
-  late final StreamSubscription<MessageList> _subscription;
+  late final StreamSubscription<MessageList> _messagesStreamSubscription;
 
   void close() {
-    _subscription.cancel();
+    _messagesStreamSubscription.cancel();
     _filteredChatStream.close();
   }
 
@@ -131,10 +131,10 @@ class MessageRepository extends MessageRepositoryApi {
       (message) {
         if (tags == null) {
           return message.text.containsIgnoreCase(query);
-        } else {
-          return message.tags.containsAll(tags) &&
-              message.text.containsIgnoreCase(query);
         }
+
+        return message.tags.containsAll(tags) &&
+            message.text.containsIgnoreCase(query);
       },
     ).toIList();
   }

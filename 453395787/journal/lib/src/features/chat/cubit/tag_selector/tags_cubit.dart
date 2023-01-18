@@ -2,18 +2,22 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/models/tag.dart';
 import '../../../../common/utils/typedefs.dart';
-import 'tags_state.dart';
+
+part 'tags_state.dart';
+
+part 'tags_cubit.freezed.dart';
 
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
     required MessageProviderApi messageProviderApi,
   })  : _repository = messageProviderApi,
         super(TagsState.initial(tags: messageProviderApi.tags.value)) {
-    _subscription = _repository.tags.listen((event) {
+    _tagsStreamSubscription = _repository.tags.listen((event) {
       emit(
         state.copyWith(
           tags: event,
@@ -23,11 +27,11 @@ class TagsCubit extends Cubit<TagsState> {
   }
 
   final MessageProviderApi _repository;
-  late final StreamSubscription<TagList> _subscription;
+  late final StreamSubscription<TagList> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {
-    _subscription.cancel();
+    _tagsStreamSubscription.cancel();
     super.close();
   }
 
@@ -35,16 +39,16 @@ class TagsCubit extends Cubit<TagsState> {
     state.map(
       initial: (initial) {
         emit(
-          TagsState.hasSelected(
+          TagsState.hasSelectedState(
             tags: initial.tags,
             selected: IList({tag}),
           ),
         );
       },
-      hasSelected: (hasSelected) {
+      hasSelectedState: (hasSelectedState) {
         emit(
-          hasSelected.copyWith(
-            selected: hasSelected.selected.add(tag),
+          hasSelectedState.copyWith(
+            selected: hasSelectedState.selected.add(tag),
           ),
         );
       },
@@ -54,15 +58,15 @@ class TagsCubit extends Cubit<TagsState> {
   void unselect(Tag tag) {
     state.map(
       initial: (_) {},
-      hasSelected: (hasSelected) {
-        if (hasSelected.selected.length == 1) {
+      hasSelectedState: (hasSelectedState) {
+        if (hasSelectedState.selected.length == 1) {
           emit(
-            TagsState.initial(tags: hasSelected.tags),
+            TagsState.initial(tags: hasSelectedState.tags),
           );
         } else {
           emit(
-            hasSelected.copyWith(
-              selected: hasSelected.selected.remove(tag),
+            hasSelectedState.copyWith(
+              selected: hasSelectedState.selected.remove(tag),
             ),
           );
         }
@@ -73,8 +77,8 @@ class TagsCubit extends Cubit<TagsState> {
   void toggleSelection(Tag tag) {
     state.map(initial: (initial) {
       select(tag);
-    }, hasSelected: (hasSelected) {
-      if (hasSelected.selected.contains(tag)) {
+    }, hasSelectedState: (hasSelectedState) {
+      if (hasSelectedState.selected.contains(tag)) {
         unselect(tag);
       } else {
         select(tag);
@@ -84,7 +88,7 @@ class TagsCubit extends Cubit<TagsState> {
 
   void setSelected(TagList tags) {
     emit(
-      TagsState.hasSelected(
+      TagsState.hasSelectedState(
         tags: state.tags,
         selected: tags,
       ),

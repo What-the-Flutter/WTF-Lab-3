@@ -6,7 +6,7 @@ class _AppBarWithActions extends StatelessWidget {
     super.key,
   });
 
-  final MessageManageSelectionMode state;
+  final MessageManageSelectionModeState state;
 
   @override
   Widget build(BuildContext context) {

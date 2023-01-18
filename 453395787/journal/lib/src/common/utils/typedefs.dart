@@ -4,8 +4,6 @@ import '../models/chat_view.dart';
 import '../models/message.dart';
 import '../models/tag.dart';
 
-typedef Callback = void Function();
-
 typedef TagList = IList<Tag>;
 typedef MessageList = IList<Message>;
 typedef ChatViewList = IList<ChatView>;

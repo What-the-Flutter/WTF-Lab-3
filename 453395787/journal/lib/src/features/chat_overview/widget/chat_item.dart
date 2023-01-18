@@ -5,7 +5,6 @@ import '../../../common/models/chat_view.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';
-import '../../../common/utils/typedefs.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem({
@@ -17,8 +16,8 @@ class ChatItem extends StatelessWidget {
   });
 
   final ChatView chat;
-  final Callback onTap;
-  final Callback? onLongPress;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final bool isSelected;
 
   @override

@@ -19,13 +19,13 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     required MessageRepositoryApi repository,
   })  : _repository = repository,
         super(const MessageSearchState.initial()) {
-    _subscription = _repository.filteredChatStreams.listen(
+    _messageStreamUpdatesSub = _repository.filteredChatStreams.listen(
       (event) {
-        _internalSubscription?.cancel();
-        _internalSubscription = event.listen(
+        _messageStreamSub?.cancel();
+        _messageStreamSub = event.listen(
           (messages) {
             emit(
-              MessageSearchState.results(
+              MessageSearchState.success(
                 query: state.query!,
                 queryTags: state.queryTags,
                 messages: messages,
@@ -38,13 +38,13 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<MessageList>> _subscription;
-  StreamSubscription<MessageList>? _internalSubscription;
+  late StreamSubscription<ValueStream<MessageList>> _messageStreamUpdatesSub;
+  StreamSubscription<MessageList>? _messageStreamSub;
 
   @override
   Future<void> close() async {
-    _subscription.cancel();
-    _internalSubscription?.cancel();
+    _messageStreamUpdatesSub.cancel();
+    _messageStreamSub?.cancel();
     super.close();
   }
 

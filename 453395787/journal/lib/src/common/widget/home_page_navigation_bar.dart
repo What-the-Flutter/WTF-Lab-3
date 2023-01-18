@@ -22,10 +22,10 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
   int _selectedPage = 0;
 
   final IList<String> _pageRoutes = [
-    PagePaths.home.path,
-    PagePaths.daily.path,
-    PagePaths.timeline.path,
-    PagePaths.settings.path,
+    Navigation.homePagePath,
+    Navigation.dailyPagePath,
+    Navigation.timelinePagePath,
+    Navigation.settingsPagePath,
   ].lock;
 
   final List<Widget> _destinations = [

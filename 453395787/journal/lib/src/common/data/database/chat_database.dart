@@ -89,17 +89,19 @@ class ChatDatabase extends _$ChatDatabase
 
     if (messages.isEmpty) {
       return chatView;
-    } else {
-      final lastMessage = messages
-          .sort((a, b) => a.creationDate.compareTo(b.creationDate))
-          .last;
-
-      return chatView.copyWith(
-        messagePreview: lastMessage.content,
-        messagePreviewCreationTime: lastMessage.creationDate,
-        messageAmount: messages.length,
-      );
     }
+
+    final lastMessage = messages
+        .sort(
+          (a, b) => a.creationDate.compareTo(b.creationDate),
+        )
+        .last;
+
+    return chatView.copyWith(
+      messagePreview: lastMessage.content,
+      messagePreviewCreationTime: lastMessage.creationDate,
+      messageAmount: messages.length,
+    );
   }
 
   @override

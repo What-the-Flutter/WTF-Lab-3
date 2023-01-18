@@ -10,7 +10,7 @@ part 'image_dao.g.dart';
 ])
 class ImageDao extends DatabaseAccessor<ChatDatabase>
     with _$ImageDaoMixin, BaseDao<ImageTableData, ImageTable> {
-  ImageDao(ChatDatabase db) : super(db) {
+   ImageDao(ChatDatabase db) : super(db) {
     init();
   }
 

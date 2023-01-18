@@ -12,6 +12,7 @@ import '../cubit/manage_chat_cubit.dart';
 import '../widgets/manage_chat_scope.dart';
 
 part '../widgets/chat_icons.dart';
+
 part '../widgets/selectable_icon.dart';
 
 class ManageChatPage extends StatefulWidget {
@@ -39,7 +40,6 @@ class _ManageChatPageState extends State<ManageChatPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.chatId != null) {
-      print(context.read<ChatRepository>().chats.value);
       chatForEdit = context.read<ChatRepository>().chats.value.firstWhere(
             (chat) => chat.id == widget.chatId,
           );
@@ -47,8 +47,8 @@ class _ManageChatPageState extends State<ManageChatPage> {
     }
     return ManageChatScope(
       manageChatState: chatForEdit == null
-          ? const ManageChatState.adding()
-          : ManageChatState.editing(
+          ? const ManageChatState.addModeState()
+          : ManageChatState.editModeState(
               name: chatForEdit!.name,
               chat: chatForEdit!,
               selectedIcon: JournalIcons.icons.indexOf(

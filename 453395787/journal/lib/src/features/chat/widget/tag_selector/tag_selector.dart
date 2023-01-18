@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../routes.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
-import '../../cubit/tag_selector/tags_state.dart';
 import '../scopes/tags_scope.dart';
 import 'tag_item.dart';
 
@@ -41,18 +40,18 @@ class TagSelector extends StatelessWidget {
                         TagSelectorScope.of(context).toggleSelection(tag),
                   ),
                 );
-              } else {
-                return IconButton(
-                  onPressed: () {
-                    context.go(
-                      PagePaths.manageTags.path,
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.settings_outlined,
-                  ),
-                );
               }
+
+              return IconButton(
+                onPressed: () {
+                  context.go(
+                    Navigation.manageTagsPagePath,
+                  );
+                },
+                icon: const Icon(
+                  Icons.settings_outlined,
+                ),
+              );
             },
           ),
         );

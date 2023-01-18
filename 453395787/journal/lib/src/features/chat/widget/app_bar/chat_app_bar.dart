@@ -28,13 +28,13 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     return BlocBuilder<MessageManageCubit, MessageManageState>(
       builder: (context, state) {
         return state.map(
-          defaultMode: (defaultMode) => _DefaultAppBar(
-            state: defaultMode,
+          defaultModeState: (defaultModeState) => _DefaultAppBar(
+            state: defaultModeState,
           ),
-          selectionMode: (selectionMode) => _AppBarWithActions(
-            state: selectionMode,
+          selectionModeState: (selectionModeState) => _AppBarWithActions(
+            state: selectionModeState,
           ),
-          editMode: (editMode) => const _AppBarWithCancelButton(),
+          editModeState: (editModeState) => const _AppBarWithCancelButton(),
         );
       },
     );

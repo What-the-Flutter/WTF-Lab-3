@@ -4,13 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'src/common/bloc/journal_bloc_observer.dart';
 import 'src/common/data/chat_repository.dart';
 import 'src/common/data/database/chat_database.dart';
-import 'src/features/locale/data/locale_repository.dart';
-import 'src/features/locale/widget/locale_scope.dart';
-import 'src/features/theme/data/theme_repository.dart';
+import 'src/features/locale/locale.dart';
 import 'src/features/theme/theme.dart';
 import 'src/journal_app.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = JournalBlocObserver();
   await ThemeRepository.init();

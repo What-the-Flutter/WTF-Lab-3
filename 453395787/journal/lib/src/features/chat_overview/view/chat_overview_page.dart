@@ -45,7 +45,7 @@ class ChatOverviewPage extends StatelessWidget {
             onLongPress: () {
               showFloatingModalBottomSheet(
                 context: context,
-                builder: (context) => ChoiceColorSheet(),
+                builder: (context) => const ChoiceColorSheet(),
               );
             },
             child: Padding(
@@ -61,11 +61,11 @@ class ChatOverviewPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ChatList(),
+      body: const ChatList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.go(
-            PagePaths.chatAdding.path,
+            Navigation.addChatPagePath,
           );
         },
         child: const Icon(Icons.add),
