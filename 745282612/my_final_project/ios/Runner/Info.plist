@@ -49,5 +49,9 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Why is my app authenticating using face id?</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Please grant photo gallery access</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Please grant camera access</string>
 </dict>
 </plist>
