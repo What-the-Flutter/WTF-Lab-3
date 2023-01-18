@@ -3,9 +3,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-import '../models/chat_provider.dart';
-import '../theme/colors.dart';
-import '../theme/theme_inherited.dart';
+import '../../provider/chat_provider.dart';
+import '../../theme/colors.dart';
+import '../../theme/theme_inherited.dart';
 import '../widgets/chat_card.dart';
 import 'messenger_page.dart';
 
@@ -57,10 +57,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _createBotBox(BuildContext context) {
+  Widget _createBotBox(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.89,
-      height: MediaQuery.of(context).size.height * 0.07,
+      width: 365,
+      height: 63,
       decoration: BoxDecoration(
         color: botBackgroundColor,
         borderRadius: BorderRadius.circular(15),

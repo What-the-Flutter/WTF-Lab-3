@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import 'chat.dart';
+import '../models/chat.dart';
 
 class ChatProvider extends ChangeNotifier {
   final chats = <Chat>[
