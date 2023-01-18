@@ -27,6 +27,16 @@ class _EventMessageState extends State<EventMessage> {
     final isLight = context.watch<ThemeCubit>().isLight();
 
     return Dismissible(
+      background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: const Icon(Icons.edit),
+      ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: const Icon(Icons.delete),
+      ),
       key: UniqueKey(),
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
