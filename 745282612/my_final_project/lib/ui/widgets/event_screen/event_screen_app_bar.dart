@@ -122,6 +122,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.white,
           ),
           onPressed: () {
+            context.read<EventCubit>().resetFavorite();
             context.read<HomeCubit>().updateInfo();
             Navigator.of(context).pop();
           },

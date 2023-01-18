@@ -10,6 +10,7 @@ class EventField {
   static final String sectionIcon = 'sectionIcon';
   static final String messageImage = 'image';
   static final String chatId = 'chatId';
+  static final String isSelected = 'isSelected';
 }
 
 class Event {
@@ -68,12 +69,13 @@ class Event {
       '${EventField.id}': id,
       '${EventField.messageContent}': messageContent,
       '${EventField.messageType}': messageType,
-      '${EventField.messageTime}': messageTime.toString(),
+      '${EventField.messageTime}': messageTime.toIso8601String(),
       '${EventField.favorite}': isFavorit.toString(),
       '${EventField.sectionTitle}': sectionTitle,
       '${EventField.sectionIcon}': sectionIcon != null ? sectionIcon!.codePoint : null,
       '${EventField.chatId}': chatId,
       '${EventField.messageImage}': messageImage != null ? messageImage! : null,
+      '${EventField.isSelected}': isSelected == false ? 1 : 0,
     };
   }
 
@@ -90,6 +92,7 @@ class Event {
           ? IconData(map['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
           : null,
       sectionTitle: map['${EventField.sectionTitle}'],
+      isSelected: map[EventField.isSelected] == 1 ? false : true,
     );
   }
 }

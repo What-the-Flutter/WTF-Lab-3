@@ -32,7 +32,7 @@ class EventCubit extends Cubit<EventState> {
     final selectedTitle = sectionTitle ?? state.sectionTitle;
     final newListEvent = state.listEvent;
     final newEvent = Event(
-      id: UniqueKey().hashCode,
+      id: DateTime.now().millisecondsSinceEpoch,
       chatId: chatId,
       messageContent: content,
       messageType: type,
@@ -46,11 +46,15 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(listEvent: newListEvent, isWrite: false));
   }
 
+  void resetFavorite() {
+    emit(state.copyWith(isFavorite: false));
+  }
+
   void changeFavorite() {
     emit(state.copyWith(isFavorite: !state.isFavorite));
   }
 
-  void changeSelected() {
+  Future<void> changeSelected() async {
     if (state.isSelected) {
       final listEvent = state.listEvent;
       int i;
@@ -58,11 +62,12 @@ class EventCubit extends Cubit<EventState> {
         if (listEvent[i].isSelected) {
           final event = listEvent[i];
           listEvent[i] = event.copyWith(isSelected: !listEvent[i].isSelected);
+          await firebase.updateEvent(listEvent[i]);
         }
       }
       emit(state.copyWith(listEvent: listEvent, editText: '', isPicter: false));
     }
-    emit(state.copyWith(isSelected: !state.isSelected));
+    emit(state.copyWith(isSelected: !state.isSelected, isFavorite: false));
   }
 
   Future<void> changeFavoriteItem() async {
@@ -80,11 +85,12 @@ class EventCubit extends Cubit<EventState> {
     changeSelected();
   }
 
-  void changeSelectedItem(int id) {
+  Future<void> changeSelectedItem(int id) async {
     final newlistEvent = state.listEvent;
     final indexEvent = newlistEvent.indexWhere((element) => element.id == id);
     final event = state.listEvent.firstWhere((element) => element.id == id);
     newlistEvent[indexEvent] = event.copyWith(isSelected: !newlistEvent[indexEvent].isSelected);
+    await firebase.updateEvent(newlistEvent[indexEvent]);
     if (newlistEvent[indexEvent].messageImage != null) {
       emit(state.copyWith(isPicter: !state.isPicter));
     }
@@ -133,6 +139,7 @@ class EventCubit extends Cubit<EventState> {
         }
       }
       listEvent.removeWhere((element) => element.isSelected);
+      // changeSelected();
     }
     emit(state.copyWith(listEvent: listEvent));
     changeSelected();
@@ -239,7 +246,7 @@ class EventCubit extends Cubit<EventState> {
     int i;
     for (i = 0; i < newListEvent.length; i++) {
       if (newListEvent[i].isSelected) {
-        await firebase.updateEvent(newListEvent[i].copyWith(chatId: chatId));
+        await firebase.updateEvent(newListEvent[i].copyWith(chatId: chatId, isSelected: false));
         oldListEvent.remove(newListEvent[i]);
         oldListEvent.add(newListEvent[i].copyWith(chatId: chatId, isSelected: false));
       }
