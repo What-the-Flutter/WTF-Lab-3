@@ -61,7 +61,7 @@ List<Event> getListEvent(Map<dynamic, dynamic> map, int chatId) {
     final event = Event.fromJson(map);
     listEvent.add(event);
   }
-  final newEventList = listEvent.reversed.where((element) => element.chatId == chatId).toList();
+  final newEventList = listEvent.reversed.toList();
   newEventList.sort(
     (a, b) => b.messageTime.compareTo(a.messageTime),
   );
@@ -70,7 +70,13 @@ List<Event> getListEvent(Map<dynamic, dynamic> map, int chatId) {
 
 Widget listMessage(BuildContext context, EventState state, User? _user, int chatId) {
   return StreamBuilder(
-    stream: FirebaseDatabase.instance.ref().child(_user?.uid ?? '').child('event').onValue,
+    stream: FirebaseDatabase.instance
+        .ref()
+        .child(_user?.uid ?? '')
+        .child('event')
+        .orderByChild('chatId')
+        .equalTo(chatId)
+        .onValue,
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
         return const CircularProgressIndicator();
