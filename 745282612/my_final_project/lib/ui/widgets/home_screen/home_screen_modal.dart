@@ -12,19 +12,17 @@ import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenModal extends StatelessWidget {
   final String dateLastEvent;
-  final int index;
   final Chat chat;
 
   const HomeScreenModal({
     super.key,
     required this.dateLastEvent,
-    required this.index,
     required this.chat,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
+    final isLight = context.watch<ThemeCubit>().isLight();
     final colorIcon = isLight ? AppColors.colorNormalGrey : Colors.white;
 
     return BlocBuilder<HomeCubit, HomeState>(
@@ -43,6 +41,7 @@ class HomeScreenModal extends StatelessWidget {
                       dateCreate: chat.dateCreate,
                       title: chat.title,
                       dateLastEvent: dateLastEvent,
+                      chat: chat,
                     ),
                   ),
                 );
@@ -57,7 +56,7 @@ class HomeScreenModal extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<HomeCubit>().changePinChat(index);
+                context.read<HomeCubit>().changePinChat(chat);
                 Navigator.pop(context);
               },
               child: ListTile(
@@ -85,7 +84,7 @@ class HomeScreenModal extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => AddNewScreen(
                       textController: chat.title,
-                      editIndex: index,
+                      chat: chat,
                     ),
                   ),
                 );
@@ -100,7 +99,7 @@ class HomeScreenModal extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<HomeCubit>().deleteChat(index);
+                context.read<HomeCubit>().deleteChat(chat);
                 Navigator.pop(context);
               },
               child: ListTile(

@@ -15,8 +15,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> initializer() async {
-    final list = await firebase.getAllChat();
-    emit(state.copyWith(listChat: list));
+    final listChat = await firebase.getAllChat();
+    emit(state.copyWith(listChat: listChat));
   }
 
   void updateInfo() {
@@ -34,6 +34,10 @@ class HomeCubit extends Cubit<HomeState> {
       },
     );
     return listChat;
+  }
+
+  void changeIconSelected() {
+    emit(state.copyWith(iconSeleted: null));
   }
 
   Future<void> addChat({
@@ -61,20 +65,22 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> deleteChat(int index) async {
+  Future<void> deleteChat(Chat chat) async {
     final newListChat = state.listChat;
-    final element = newListChat[index];
-    await firebase.deleteChat(element);
+    final updateChat = newListChat.firstWhere((element) => element.id == chat.id);
+    final index = newListChat.indexOf(updateChat);
+    await firebase.deleteChat(updateChat);
     newListChat.removeAt(index);
     emit(state.copyWith(listChat: newListChat));
   }
 
-  Future<void> changePinChat(int index) async {
+  Future<void> changePinChat(Chat chat) async {
     final newList = state.listChat;
-    final newChat = state.listChat[index];
-    newList[index] = newChat.copyWith(isPin: !newChat.isPin);
+    final updateChat = newList.firstWhere((element) => element.id == chat.id);
+    final index = newList.indexOf(updateChat);
+    newList[index] = updateChat.copyWith(isPin: !updateChat.isPin);
     _listChatSort(newList);
-    await firebase.updateChat(newChat.copyWith(isPin: !newChat.isPin));
+    await firebase.updateChat(updateChat.copyWith(isPin: !updateChat.isPin));
     emit(state.copyWith(listChat: newList));
   }
 
@@ -85,12 +91,14 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> editChat({
     required Icon icon,
     required String title,
-    required int index,
+    required Chat chat,
   }) async {
+    await firebase.updateChat(chat.copyWith(icon: icon, title: title));
     final newList = state.listChat;
-    final newChat = state.listChat[index];
-    newList[index] = newChat.copyWith(icon: icon, title: title);
-    await firebase.updateChat(newChat.copyWith(icon: icon, title: title));
+    final updateChat = newList.firstWhere((element) => element.id == chat.id);
+    final index = newList.indexOf(updateChat);
+    newList[index] = updateChat.copyWith(icon: icon, title: title);
+    await firebase.updateChat(updateChat.copyWith(icon: icon, title: title));
     emit(state.copyWith(listChat: newList));
     changeEditMode();
   }

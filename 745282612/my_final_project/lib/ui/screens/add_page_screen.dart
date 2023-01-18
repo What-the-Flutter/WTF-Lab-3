@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/ui/widgets/add_page_screen/add_page_app_bar.dart';
 import 'package:my_final_project/ui/widgets/add_page_screen/add_page_body.dart';
 import 'package:my_final_project/ui/widgets/add_page_screen/add_page_floating_button.dart';
@@ -10,12 +11,12 @@ import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit
 
 class AddNewScreen extends StatefulWidget {
   final String textController;
-  final int editIndex;
+  final Chat? chat;
 
   const AddNewScreen({
     super.key,
     required this.textController,
-    this.editIndex = -1,
+    this.chat,
   });
 
   @override
@@ -72,7 +73,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
             selected: state.iconSeleted,
             controller: inputController,
             editMode: state.isEdit,
-            editIndex: widget.editIndex,
+            chat: widget.chat,
           ),
         );
       },

@@ -20,7 +20,7 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return AlertDialog(
       title: Text(

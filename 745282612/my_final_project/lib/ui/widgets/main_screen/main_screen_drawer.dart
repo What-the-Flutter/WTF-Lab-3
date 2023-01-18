@@ -11,7 +11,7 @@ class MainScreenDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return Drawer(
       child: ListView(

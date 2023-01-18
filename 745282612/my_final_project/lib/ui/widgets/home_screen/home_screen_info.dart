@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 import 'package:my_final_project/utils/theme/theme_cubit.dart';
@@ -10,6 +11,7 @@ class InfoPage extends StatelessWidget {
   final Icon icon;
   final String title;
   final DateTime dateCreate;
+  final Chat chat;
   final String dateLastEvent;
 
   const InfoPage({
@@ -17,12 +19,13 @@ class InfoPage extends StatelessWidget {
     required this.dateCreate,
     required this.icon,
     required this.title,
+    required this.chat,
     required this.dateLastEvent,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.read<ThemeCubit>().state.brightness == Brightness.light;
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return AlertDialog(
       title: Row(

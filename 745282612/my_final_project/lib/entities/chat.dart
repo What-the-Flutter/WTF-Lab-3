@@ -44,7 +44,7 @@ class Chat {
       '${ChatField.id}': id,
       '${ChatField.title}': title,
       '${ChatField.icon}': icon.icon!.codePoint,
-      '${ChatField.pin}': isPin,
+      '${ChatField.pin}': isPin == false ? 1 : 0,
       '${ChatField.dateCreate}': dateCreate.toString(),
     };
   }
@@ -55,7 +55,7 @@ class Chat {
       title: map['${ChatField.title}'],
       icon: Icon(IconData(map['${ChatField.icon}'], fontFamily: 'MaterialIcons')),
       dateCreate: DateTime.parse(map['${ChatField.dateCreate}']),
-      isPin: map['${ChatField.pin}'] == true,
+      isPin: map['${ChatField.pin}'] == 1 ? false : true,
     );
   }
 }

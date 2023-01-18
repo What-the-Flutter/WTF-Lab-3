@@ -11,6 +11,7 @@ import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/theme/theme_cubit.dart';
+import 'package:my_final_project/utils/theme/theme_state.dart';
 
 class MainApp extends StatefulWidget {
   final User? user;
@@ -26,6 +27,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool status = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,9 +36,11 @@ class _MainAppState extends State<MainApp> {
 
   void isStatus() async {
     final statusAuth = await AuthBiometrics.authenticateUser();
-    setState(() {
-      status = statusAuth;
-    });
+    setState(
+      () {
+        status = statusAuth;
+      },
+    );
   }
 
   @override
@@ -59,11 +63,11 @@ class _MainAppState extends State<MainApp> {
           create: (_) => ThemeCubit(),
         ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeData>(
+      child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: state,
+            theme: state.theme,
             title: 'Chat Journal',
             localizationsDelegates: [
               S.delegate,
