@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class MyDialog extends StatelessWidget {
@@ -20,7 +21,7 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return AlertDialog(
       title: Text(
@@ -33,24 +34,33 @@ class MyDialog extends StatelessWidget {
         TextButton(
           child: Icon(
             Icons.camera_alt,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: () async {
-            final pickedFile = await ImagePicker().pickImage(
-              source: ImageSource.camera,
-            );
-            context.read<EventCubit>().addPicterMessage(
-                  pickedFile: pickedFile,
-                  type: type,
-                  chatId: chatId,
-                );
+            final statusCamera = await Permission.camera.request();
+            if (statusCamera == PermissionStatus.granted) {
+              final pickedFile = await ImagePicker().pickImage(
+                source: ImageSource.camera,
+              );
+              context.read<EventCubit>().addPicterMessage(
+                    pickedFile: pickedFile,
+                    type: type,
+                    chatId: chatId,
+                  );
+            } else if (statusCamera == PermissionStatus.denied) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('This permisssion is recommended'),
+                ),
+              );
+            }
             Navigator.of(context).pop();
           },
         ),
         TextButton(
           child: Icon(
             Icons.picture_as_pdf,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: () async {
             final pickedFile = await ImagePicker().pickImage(
@@ -67,7 +77,7 @@ class MyDialog extends StatelessWidget {
         TextButton(
           child: Icon(
             Icons.exit_to_app,
-            color: theme ? AppColors.colorTurquoise : Colors.white,
+            color: isLight ? AppColors.colorTurquoise : Colors.white,
           ),
           onPressed: Navigator.of(context).pop,
         ),

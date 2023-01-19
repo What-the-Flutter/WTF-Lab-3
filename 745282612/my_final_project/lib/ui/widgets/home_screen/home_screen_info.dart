@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class InfoPage extends StatelessWidget {
   final Icon icon;
   final String title;
   final DateTime dateCreate;
+  final Chat chat;
   final String dateLastEvent;
 
   const InfoPage({
@@ -16,12 +19,13 @@ class InfoPage extends StatelessWidget {
     required this.dateCreate,
     required this.icon,
     required this.title,
+    required this.chat,
     required this.dateLastEvent,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return AlertDialog(
       title: Row(
@@ -62,7 +66,7 @@ class InfoPage extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+            backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -70,7 +74,7 @@ class InfoPage extends StatelessWidget {
           child: Text(
             S.of(context).ok,
             style: TextStyle(
-              color: theme ? Colors.black : Colors.white,
+              color: isLight ? Colors.black : Colors.white,
             ),
           ),
           onPressed: Navigator.of(context).pop,

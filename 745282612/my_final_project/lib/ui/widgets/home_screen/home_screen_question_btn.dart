@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 import 'package:my_final_project/utils/custom_icons/custom_icons.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenQuestionButton extends StatelessWidget {
   const HomeScreenQuestionButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+          backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -29,7 +30,7 @@ class HomeScreenQuestionButton extends StatelessWidget {
             children: [
               Icon(
                 CustomIcons.robot,
-                color: theme ? Colors.black : Colors.white,
+                color: isLight ? Colors.black : Colors.white,
               ),
               const SizedBox(
                 width: 25,
@@ -39,7 +40,7 @@ class HomeScreenQuestionButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: theme ? Colors.black : Colors.white,
+                  color: isLight ? Colors.black : Colors.white,
                 ),
               ),
             ],

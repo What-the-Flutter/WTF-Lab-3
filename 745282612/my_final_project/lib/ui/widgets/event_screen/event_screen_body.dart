@@ -66,18 +66,20 @@ class _EventScreenBodyState extends State<EventScreenBody> {
         widget.listEvent.isEmpty
             ? Instruction(title: widget.title)
             : EventScreenListMessage(
-                listMessage: widget.isFavorite
+                chatId: widget.chatId,
+                title: widget.title,
+                isSearch: widget.isSearch,
+                isSelected: widget.isSelected,
+                listMessageFavorite: widget.isFavorite
                     ? widget.listEvent.where((element) => element.isFavorit).toList()
                     : widget.listEvent,
-                isSelected: widget.isSelected,
-                isSearch: widget.isSearch,
               ),
         widget.isSearch
             ? const SizedBox()
             : EventScreenBottomMessage(
-                controller: controller,
-                isCamera: _isCamera,
                 chatId: widget.chatId,
+                isCamera: _isCamera,
+                controller: controller,
               ),
       ],
     );

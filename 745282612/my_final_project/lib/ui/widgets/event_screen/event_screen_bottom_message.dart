@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
-import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
@@ -92,11 +92,11 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<ThemeCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final stateMenu = context.watch<MenuCubit>().state;
+        final stateSetting = context.watch<SettingsCubit>().state;
         editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
@@ -110,7 +110,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                   : MediaQuery.of(context).size.height * 0.1,
             ),
             child: ColoredBox(
-              color: theme ? Colors.white : Colors.black,
+              color: isLight ? Colors.white : Colors.black,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -118,9 +118,9 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                       ? Expanded(
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: stateMenu.listSection.length,
+                            itemCount: stateSetting.listSection.length,
                             itemBuilder: (context, index) {
-                              final items = stateMenu.listSection[index];
+                              final items = stateSetting.listSection[index];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
@@ -133,7 +133,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                             );
                                       },
                                       child: CircleAvatar(
-                                        backgroundColor: theme
+                                        backgroundColor: isLight
                                             ? AppColors.colorLightBlue
                                             : AppColors.colorLightGrey,
                                         foregroundColor: Colors.white,
@@ -156,7 +156,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                         child: Icon(
                           state.sectionIcon,
                           size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                          color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                       Expanded(
@@ -185,7 +185,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                   ? Icons.camera_enhance
                                   : Icons.send,
                           size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                          color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                     ],

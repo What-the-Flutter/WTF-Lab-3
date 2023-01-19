@@ -300,16 +300,6 @@ class S {
     );
   }
 
-  /// `Settings`
-  String get setting {
-    return Intl.message(
-      'Settings',
-      name: 'setting',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Exit the app`
   String get exit_the_app {
     return Intl.message(
@@ -325,6 +315,36 @@ class S {
     return Intl.message(
       'Add new section',
       name: 'add_section',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get setting_title {
+    return Intl.message(
+      'Settings',
+      name: 'setting_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account`
+  String get account {
+    return Intl.message(
+      'Account',
+      name: 'account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change theme`
+  String get change_theme {
+    return Intl.message(
+      'Change theme',
+      name: 'change_theme',
       desc: '',
       args: [],
     );

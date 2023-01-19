@@ -38,8 +38,10 @@
   "no_search_body" : "No entries match the given search query. Please try again",
   "no_search_title" : "No search result available",
   "event_modal_title" : "Select the page you want to migrate the selected event to!",
-  "setting" : "Settings",
   "exit_the_app" : "Exit the app",
-  "add_section": "Add new section"
+  "add_section": "Add new section",
+  "setting_title" : "Settings",
+  "account" : "Account",
+  "change_theme": "Change theme"
   
 }

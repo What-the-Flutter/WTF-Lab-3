@@ -7,12 +7,12 @@ class SectionField {
 }
 
 class Section {
-  final int? id;
+  final int id;
   final IconData iconSection;
   final String titleSection;
 
   Section({
-    this.id,
+    required this.id,
     required this.iconSection,
     required this.titleSection,
   });
@@ -23,6 +23,14 @@ class Section {
       '${SectionField.iconSection}': iconSection.codePoint,
       '${SectionField.titleSection}': titleSection.toString(),
     };
+  }
+
+  static Section fromJson(Map<dynamic, dynamic> map) {
+    return Section(
+      id: map['${SectionField.id}'],
+      iconSection: IconData(map['${SectionField.iconSection}'], fontFamily: 'MaterialIcons'),
+      titleSection: map['${SectionField.titleSection}'],
+    );
   }
 
   Section copyWith({
