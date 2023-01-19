@@ -11,6 +11,7 @@ abstract class Pages {
 abstract class SettingsPage {
   static const String tagItem = 'settings_item_tags';
   static const String languageItem = 'settings_item_languages';
+  static const String themeItem = 'settings_page_theme';
 }
 
 abstract class Actions {

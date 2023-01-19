@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
@@ -6,6 +7,7 @@ import '../../../common/utils/locale.dart' as locale;
 import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
 import '../../locale/locale.dart';
+import '../../theme/theme.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -42,6 +44,25 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               context.go(
                 Navigation.manageTagsPagePath,
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              context.watch<ThemeCubit>().state.isDarkMode
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
+            ),
+            title: Text(
+              locale.SettingsPage.themeItem.i18n(),
+            ),
+            onTap: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => const ChoiceColorSheet(
+                  showExampleMessages: false,
+                  showDarkModeButton: true,
+                ),
               );
             },
           ),

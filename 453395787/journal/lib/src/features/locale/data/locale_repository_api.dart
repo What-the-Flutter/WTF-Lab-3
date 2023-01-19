@@ -12,7 +12,7 @@ abstract class LocaleRepositoryApi {
       ].lock;
 
   static IList<String> get localeNames => const [
-        'english',
-        'русский',
+        'English',
+        'Русский',
       ].lock;
 }
