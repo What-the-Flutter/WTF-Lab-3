@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/chat_provider.dart';
 import '../pages/add_chat_page.dart';
+import 'info_chat_dialog.dart';
 
 class PopupBottomMenu extends StatelessWidget {
   final int index;
@@ -17,10 +18,7 @@ class PopupBottomMenu extends StatelessWidget {
     return Wrap(
       children: [
         TextButton(
-          onPressed: () {
-            //
-            Navigator.pop(context);
-          },
+          onPressed: () => _showChatInfo(context, provider),
           child: ListTile(
             leading: const Icon(
               Icons.info,
@@ -30,10 +28,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {
-            //
-            Navigator.pop(context);
-          },
+          onPressed: () => _pinChat(context),
           child: ListTile(
             leading: const Icon(
               Icons.attach_file,
@@ -43,10 +38,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {
-            //
-            Navigator.pop(context);
-          },
+          onPressed: () => _archiveChat(context),
           child: ListTile(
             leading: const Icon(
               Icons.archive,
@@ -56,15 +48,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => AddChatPage(
-                chat: provider.chats[index],
-                chatIndex: index,
-              ),
-            ));
-          },
+          onPressed: () => _editChat(context, provider),
           child: ListTile(
             leading: const Icon(
               Icons.edit,
@@ -74,10 +58,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {
-            provider.delete(index);
-            Navigator.pop(context);
-          },
+          onPressed: () => _deleteChat(context, provider),
           child: ListTile(
             leading: const Icon(
               Icons.delete,
@@ -88,5 +69,40 @@ class PopupBottomMenu extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _showChatInfo(BuildContext context, ChatProvider provider) {
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (_) {
+        return InfoChatDialog(chat: provider.chats[index]);
+      },
+    );
+  }
+
+  void _pinChat(BuildContext context) {
+    //
+    Navigator.pop(context);
+  }
+
+  void _archiveChat(BuildContext context) {
+    //
+    Navigator.pop(context);
+  }
+
+  void _editChat(BuildContext context, ChatProvider provider) {
+    Navigator.pop(context);
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => AddChatPage(
+        chat: provider.chats[index],
+        chatIndex: index,
+      ),
+    ));
+  }
+
+  void _deleteChat(BuildContext context, ChatProvider provider) {
+    provider.delete(index);
+    Navigator.pop(context);
   }
 }

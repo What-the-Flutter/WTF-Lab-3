@@ -18,11 +18,14 @@ Color iconColor = Colors.white;
 Color messageBlocColor = const Color.fromRGBO(37, 47, 57, 1);
 Color secondaryMessageTextColor = const Color.fromRGBO(37, 47, 57, 1);
 
+Color dialogBackgroundColor = _mainDarkColor;
+
 class CustomTheme {
   static ThemeData get lightTheme {
     iconColor = Colors.black;
     messageBlocColor = circleMessageColor;
     secondaryMessageTextColor = Colors.white;
+    dialogBackgroundColor = const Color.fromRGBO(49, 162, 225, 0.1);
     return ThemeData(
       brightness: Brightness.light,
       primaryColor: _mainColor,
@@ -54,6 +57,7 @@ class CustomTheme {
     iconColor = Colors.white;
     messageBlocColor = const Color.fromRGBO(37, 47, 57, 1);
     secondaryMessageTextColor = Colors.grey;
+    dialogBackgroundColor = botBackgroundColor;
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: _mainDarkColor,
