@@ -28,7 +28,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _pinChat(context),
+          onPressed: () => _pinChat(context, provider),
           child: ListTile(
             leading: const Icon(
               Icons.attach_file,
@@ -81,8 +81,8 @@ class PopupBottomMenu extends StatelessWidget {
     );
   }
 
-  void _pinChat(BuildContext context) {
-    //
+  void _pinChat(BuildContext context, ChatProvider provider) {
+    provider.changePin(index);
     Navigator.pop(context);
   }
 

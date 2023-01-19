@@ -39,16 +39,26 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  Container _buildIcon() {
-    return Container(
-      width: 60,
-      height: 60,
-      padding: const EdgeInsets.all(14),
-      decoration: const BoxDecoration(
-        color: circleMessageColor,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(chat.iconData),
+  Widget _buildIcon() {
+    return Stack(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          padding: const EdgeInsets.all(14),
+          decoration: const BoxDecoration(
+            color: circleMessageColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(chat.iconData),
+        ),
+        if (chat.isPin)
+          const Positioned(
+            right: -5,
+            bottom: -1,
+            child: Icon(Icons.push_pin),
+          )
+      ],
     );
   }
 
