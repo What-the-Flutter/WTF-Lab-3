@@ -1,9 +1,11 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../common/data/chat_repository.dart';
-import '../../../common/data/database/chat_database.dart';
+import '../../../common/data/database/database.dart';
+import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
 import '../data/message_repository.dart';
@@ -22,7 +24,7 @@ class MessageSearchPage extends StatefulWidget {
     required this.chatId,
   });
 
-  final int chatId;
+  final Id chatId;
 
   @override
   State<MessageSearchPage> createState() => _MessageSearchPageState();
@@ -38,7 +40,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
         );
     return RepositoryProvider(
       create: (context) => MessageRepository(
-        repository: context.read<ChatDatabase>(),
+        repository: context.read<Database>(),
         chat: chat,
       ),
       child: MessageSearchScope(
@@ -55,7 +57,13 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     MessageSearchScope.of(context).onSearchTagsChanged(
                       state.map(
                         initial: (_) => null,
-                        hasSelectedState: (hasSelectedState) => hasSelectedState.selected,
+                        hasSelectedState: (hasSelectedState) => hasSelectedState
+                            .tags
+                            .where(
+                              (tag) =>
+                                  hasSelectedState.selected.contains(tag),
+                            )
+                            .toIList(),
                       ),
                     );
                   },

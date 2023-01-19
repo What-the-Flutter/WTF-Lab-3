@@ -52,7 +52,10 @@ class _ManageChatPageState extends State<ManageChatPage> {
               name: chatForEdit!.name,
               chat: chatForEdit!,
               selectedIcon: JournalIcons.icons.indexOf(
-                chatForEdit!.icon,
+                IconData(
+                  chatForEdit!.iconCodePoint,
+                  fontFamily: 'MaterialIcons',
+                ),
               ),
             ),
       child: BlocBuilder<ManageChatCubit, ManageChatState>(

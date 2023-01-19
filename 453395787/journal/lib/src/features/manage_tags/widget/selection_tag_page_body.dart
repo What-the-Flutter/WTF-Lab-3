@@ -7,7 +7,7 @@ class _SelectionTagPageBody extends StatelessWidget {
     this.selectedId,
   });
 
-  final int? selectedId;
+  final Id? selectedId;
   final TagList tags;
 
   @override

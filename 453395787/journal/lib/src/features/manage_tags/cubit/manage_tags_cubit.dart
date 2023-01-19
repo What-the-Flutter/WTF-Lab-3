@@ -17,12 +17,13 @@ part 'manage_tags_cubit.freezed.dart';
 class ManageTagsCubit extends Cubit<ManageTagsState> {
   ManageTagsCubit({
     required MessageProviderApi messageProviderApi,
-  })  : _messageProviderApi = messageProviderApi,
+  })
+      : _messageProviderApi = messageProviderApi,
         super(
-          ManageTagsState.initial(tags: messageProviderApi.tags.value),
-        ) {
+        ManageTagsState.initial(tags: messageProviderApi.tags.value),
+      ) {
     _tagsStreamSubscription = _messageProviderApi.tags.listen(
-      (event) {
+          (event) {
         emit(
           ManageTagsState.initial(
             tags: event,
@@ -45,9 +46,9 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     emit(
       ManageTagsState.addModeState(
         colors: AppColors.list,
-        newTag: const Tag(
+        newTag: Tag(
           text: 'name',
-          color: Colors.grey,
+          colorCode: Colors.grey.value,
         ),
       ),
     );
@@ -60,7 +61,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           ManageTagsState.editModeState(
             colors: AppColors.list,
             editableTag: selectModeState.tags.firstWhere(
-              (e) => e.id == selectModeState.selectedTag,
+                  (e) => e.id == selectModeState.selectedTag,
             ),
           ),
         );
@@ -78,7 +79,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           addModeState.copyWith(
             newTag: addModeState.newTag.copyWith(
               text: text ?? addModeState.newTag.text,
-              color: color ?? addModeState.newTag.color,
+              colorCode: color?.value ?? addModeState.newTag.colorCode,
             ),
           ),
         );
@@ -88,7 +89,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           editModeState.copyWith(
             editableTag: editModeState.editableTag.copyWith(
               text: text ?? editModeState.editableTag.text,
-              color: color ?? editModeState.editableTag.color,
+              colorCode: color?.value ?? editModeState.editableTag.colorCode,
             ),
           ),
         );
@@ -122,7 +123,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
         emit(
           ManageTagsState.selectModeState(
             tags: initial.tags,
-            selectedTag: tag.id!,
+            selectedTag: tag.id,
           ),
         );
       },
@@ -136,7 +137,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
         } else {
           emit(
             selectModeState.copyWith(
-              selectedTag: tag.id!,
+              selectedTag: tag.id,
             ),
           );
         }

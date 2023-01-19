@@ -7,10 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
 import '../../../../common/data/chat_repository.dart';
-import '../../../../common/data/database/chat_database.dart';
+import '../../../../common/data/database/database.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
@@ -29,7 +30,7 @@ class ChatInput extends StatefulWidget {
     required this.chatId,
   });
 
-  final int chatId;
+  final Id chatId;
 
   @override
   State<ChatInput> createState() => _ChatInputState();
@@ -53,7 +54,7 @@ class _ChatInputState extends State<ChatInput> {
 
     return MessageInputScope(
       repository: MessageRepository(
-        repository: context.read<ChatDatabase>(),
+        repository: context.read<Database>(),
         chat: chat,
       ),
       child: Builder(
@@ -71,13 +72,14 @@ class _ChatInputState extends State<ChatInput> {
                   },
                   editModeState: (editModeState) {
                     _controller.text = editModeState.message.text;
-                    _isTagAddingOpened = editModeState.message.tags.isNotEmpty;
+                    _isTagAddingOpened =
+                        editModeState.message.tagsId.isNotEmpty;
 
                     MessageInputScope.of(context).startEditMode(
                       editModeState.message,
                     );
                     TagSelectorScope.of(context).setSelected(
-                      editModeState.message.tags,
+                      editModeState.message.tagsId,
                     );
                   },
                 );
@@ -103,7 +105,12 @@ class _ChatInputState extends State<ChatInput> {
                                 },
                                 hasSelectedState: (hasSelectedState) {
                                   MessageInputScope.of(context).setTags(
-                                    hasSelectedState.selected,
+                                    hasSelectedState.tags
+                                        .where(
+                                          (tag) => hasSelectedState.selected
+                                              .contains(tag),
+                                        )
+                                        .toIList(),
                                   );
                                 },
                               );

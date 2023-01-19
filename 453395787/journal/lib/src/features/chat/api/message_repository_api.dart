@@ -13,7 +13,7 @@ abstract class MessageRepositoryApi {
 
   Future<void> add(Message message);
 
-  Future<void> customAdd(int chatId, Message message);
+  Future<void> customAdd(Id chatId, Message message);
 
   Future<void> update(Message message);
 

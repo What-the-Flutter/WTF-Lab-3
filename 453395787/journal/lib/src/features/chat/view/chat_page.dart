@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/data/chat_repository.dart';
-import '../../../common/data/database/chat_database.dart';
+import '../../../common/data/database/database.dart';
+import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../data/message_repository.dart';
 import '../widget/app_bar/chat_app_bar.dart';
@@ -15,7 +16,7 @@ class ChatPage extends StatelessWidget {
     required this.chatId,
   });
 
-  final int chatId;
+  final Id chatId;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class ChatPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageManageCubit(
         messageRepository: MessageRepository(
-          repository: context.read<ChatDatabase>(),
+          repository: context.read<Database>(),
           chat: chat,
         ),
         chatId: chatId,

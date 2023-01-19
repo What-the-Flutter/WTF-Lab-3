@@ -7,3 +7,5 @@ import '../models/tag.dart';
 typedef TagList = IList<Tag>;
 typedef MessageList = IList<Message>;
 typedef ChatViewList = IList<ChatView>;
+
+typedef Id = String;

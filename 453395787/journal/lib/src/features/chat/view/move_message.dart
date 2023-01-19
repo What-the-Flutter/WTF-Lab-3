@@ -18,7 +18,7 @@ class MoveMessagePage extends StatefulWidget {
     required this.messages,
   });
 
-  final int fromChatId;
+  final Id fromChatId;
   final MessageList messages;
 
   @override

@@ -10,7 +10,7 @@ class TagsState with _$TagsState {
 
   const factory TagsState.hasSelectedState({
     required TagList tags,
-    required TagList selected,
+    required IList<Tag> selected,
   }) = TagsHasSelectedState;
 
   bool isSelected(Tag tag) {

@@ -8,11 +8,11 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/extensions/date_time_extensions.dart';
 import '../../../../common/models/message.dart';
+import '../../../../common/models/tag.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_manage_cubit.freezed.dart';
-
 part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
@@ -26,6 +26,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             id: chatId,
             name: name,
             messages: messageRepository.filteredChatStreams.value.value,
+            tags: messageRepository.tags.value,
           ),
         ) {
     _messageStreamUpdatesSub = _repository.filteredChatStreams.listen(
@@ -38,6 +39,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
                 id: chatId,
                 name: name,
                 messages: messages,
+                tags: messageRepository.tags.value,
               ),
             );
           },
@@ -47,7 +49,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   }
 
   final MessageRepositoryApi _repository;
-  final int chatId;
+  final Id chatId;
   final String name;
   StreamSubscription<MessageList>? _messageStreamSub;
   late final StreamSubscription<ValueStream<MessageList>> _messageStreamUpdatesSub;
@@ -68,6 +70,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             name: defaultModeState.name,
             messages: defaultModeState.messages,
             selected: ISet([message.id]),
+            tags: _repository.tags.value,
           ),
         );
       },
@@ -90,6 +93,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
               id: selectionModeState.id,
               name: selectionModeState.name,
               messages: selectionModeState.messages,
+              tags: _repository.tags.value,
             ),
           );
         } else {
@@ -111,6 +115,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             id: selectionModeState.id,
             name: selectionModeState.name,
             messages: selectionModeState.messages,
+            tags: _repository.tags.value,
           ),
         );
       },
@@ -142,6 +147,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             id: selectionModeState.id,
             name: selectionModeState.name,
             messages: selectionModeState.messages,
+            tags: _repository.tags.value,
           ),
         );
       },
@@ -173,6 +179,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
               id: defaultModeState.id,
               name: defaultModeState.name,
               messages: defaultModeState.messages,
+              tags: _repository.tags.value,
               message: defaultModeState.messages.firstWhere(
                 (m) => m.id == message.id,
               ),
@@ -187,6 +194,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
               id: selectionModeState.id,
               name: selectionModeState.name,
               messages: selectionModeState.messages,
+              tags: _repository.tags.value,
               message: selectionModeState.messages.firstWhere(
                 (element) => element.id == selectionModeState.selected.first,
               ),
@@ -205,6 +213,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
             id: editModeState.id,
             name: editModeState.name,
             messages: state.messages,
+            tags: _repository.tags.value,
           ),
         );
       },

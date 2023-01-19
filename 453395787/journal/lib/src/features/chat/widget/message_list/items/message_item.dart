@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../common/models/message.dart';
+import '../../../../../common/models/tag.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/radius.dart';
 import '../../../../../common/utils/text_styles.dart';
@@ -21,12 +23,14 @@ class MessageItem extends StatelessWidget {
   const MessageItem({
     super.key,
     required this.message,
+    this.tags = const IListConst([]),
     this.onTap,
     this.onLongPress,
     this.isSelected = false,
   });
 
   final Message message;
+  final IList<Tag> tags;
   final SelectedMessageCallback? onTap;
   final SelectedMessageCallback? onLongPress;
   final bool isSelected;
@@ -92,7 +96,7 @@ class MessageItem extends StatelessWidget {
                             _MessageText(
                               text: message.text,
                             ),
-                          if (message.tags.isNotEmpty)
+                          if (message.tagsId.isNotEmpty)
                             ConstrainedBox(
                               constraints: const BoxConstraints(
                                 maxWidth: 250,
@@ -102,7 +106,7 @@ class MessageItem extends StatelessWidget {
                                   Insets.small,
                                 ),
                                 child: MessageTags(
-                                  tags: message.tags,
+                                  tags: tags,
                                 ),
                               ),
                             ),

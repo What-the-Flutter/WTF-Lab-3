@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../common/api/message_provider_api.dart';
@@ -23,7 +24,8 @@ class MessageRepository extends MessageRepositoryApi {
       ),
     );
 
-    _messagesStreamSubscription = _repository.messagesOf(chatId: chat.id).listen(
+    _messagesStreamSubscription =
+        _repository.messagesOf(chatId: chat.id).listen(
       (event) {
         _filteredChatStream.add(
           _repository.messagesOf(chatId: chat.id),
@@ -62,7 +64,7 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  Future<void> customAdd(int chatId, Message message) async {
+  Future<void> customAdd(Id chatId, Message message) async {
     await _repository.addMessage(chatId, message);
   }
 
@@ -109,16 +111,16 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   ValueStream<MessageList> _applyFilter(
-    ValueStream<MessageList> stream,
+    ValueStream<MessageList> messagesStream,
     String query, [
     TagList? tags,
   ]) {
-    return stream.map(
-      (chat) {
-        return _filterMessages(chat, query, tags);
+    return messagesStream.map(
+      (messages) {
+        return _filterMessages(messages, query, tags);
       },
     ).shareValueSeeded(
-      _filterMessages(stream.value, query, tags),
+      _filterMessages(messagesStream.value, query, tags),
     );
   }
 
@@ -132,8 +134,7 @@ class MessageRepository extends MessageRepositoryApi {
         if (tags == null) {
           return message.text.containsIgnoreCase(query);
         }
-
-        return message.tags.containsAll(tags) &&
+        return message.tagsId.containsAll(tags.map((e) => e.id)) &&
             message.text.containsIgnoreCase(query);
       },
     ).toIList();

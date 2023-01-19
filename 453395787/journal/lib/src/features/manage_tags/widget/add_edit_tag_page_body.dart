@@ -42,7 +42,7 @@ class _AddEditTagPageBodyState extends State<_AddEditTagPageBody> {
             Insets.large,
           ),
           child: TagItem(
-            color: widget.tagForEdit.color,
+            color: Color(widget.tagForEdit.colorCode),
             text: widget.tagForEdit.text,
           ),
         ),
@@ -50,7 +50,7 @@ class _AddEditTagPageBodyState extends State<_AddEditTagPageBody> {
           onTap: (color) {
             context.read<ManageTagsCubit>().updateTag(color: color);
           },
-          selectedColor: widget.tagForEdit.color,
+          selectedColor: Color(widget.tagForEdit.colorCode),
         ),
         const Spacer(),
         Row(

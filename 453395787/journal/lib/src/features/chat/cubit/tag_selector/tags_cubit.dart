@@ -41,7 +41,7 @@ class TagsCubit extends Cubit<TagsState> {
         emit(
           TagsState.hasSelectedState(
             tags: initial.tags,
-            selected: IList({tag}),
+            selected: [tag].lock,
           ),
         );
       },
@@ -86,7 +86,8 @@ class TagsCubit extends Cubit<TagsState> {
     });
   }
 
-  void setSelected(TagList tags) {
+  void setSelected(IList<Id> tagsId) {
+    final tags = state.tags.where((e) => tagsId.contains(e.id)).toIList();
     emit(
       TagsState.hasSelectedState(
         tags: state.tags,

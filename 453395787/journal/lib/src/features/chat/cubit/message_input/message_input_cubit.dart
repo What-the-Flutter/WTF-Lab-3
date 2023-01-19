@@ -17,7 +17,10 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   })  : _repository = repository,
         super(
           MessageInputState.defaultModeState(
-            message: Message(),
+            message: Message(
+              parentId: '',
+              dateTime: DateTime.now(),
+            ),
           ),
         );
 
@@ -32,10 +35,11 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   void addImages(List<String> images) {
+    final stateImages = state.message.images;
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.addAll(images.lock),
+          images: stateImages.addAll(images.lock),
         ),
       ),
     );
@@ -52,10 +56,11 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   void addTag(Tag tag) {
+    final stateTags = state.message.tagsId;
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          tags: state.message.tags.add(tag),
+          tagsId: stateTags.add(tag.id),
         ),
       ),
     );
@@ -65,7 +70,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          tags: state.message.tags.remove(tag),
+          tagsId: state.message.tagsId.remove(tag.id),
         ),
       ),
     );
@@ -75,7 +80,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          tags: tags,
+          tagsId: tags.map((e) => e.id).toIList(),
         ),
       ),
     );
@@ -92,7 +97,10 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
     emit(
       MessageInputState.defaultModeState(
-        message: Message(),
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }
@@ -108,7 +116,10 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   void endEditMode() {
     emit(
       MessageInputState.defaultModeState(
-        message: Message(),
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }

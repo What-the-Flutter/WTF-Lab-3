@@ -10,6 +10,6 @@ class MoveMessagesState with _$MoveMessagesState {
   const factory MoveMessagesState.hasSelectedState({
     required ChatViewList chats,
     required int amountOfMessages,
-    required int selectedChatId,
+    required Id selectedChatId,
   }) = _HasSelectedState;
 }

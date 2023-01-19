@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/models/message.dart';
@@ -22,6 +23,15 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     _messageStreamUpdatesSub = _repository.filteredChatStreams.listen(
       (event) {
         _messageStreamSub?.cancel();
+        if (state.query != null || state.queryTags != null) {
+          emit(
+            MessageSearchState.success(
+              query: state.query ?? '',
+              queryTags: state.queryTags,
+              messages: event.value,
+            ),
+          );
+        }
         _messageStreamSub = event.listen(
           (messages) {
             emit(

@@ -16,7 +16,7 @@ class MessageTags extends StatelessWidget {
   });
 
   final TagList tags;
-  final int? selectedId;
+  final Id? selectedId;
   final double spacing;
   final WrapAlignment alignment;
   final void Function(Tag tag)? onPressed;
@@ -30,7 +30,9 @@ class MessageTags extends StatelessWidget {
       children: tags.map(
         (tag) {
           return TagItem(
-            color: tag.color,
+            color: Color(
+              tag.colorCode,
+            ),
             text: tag.text,
             isSelected: selectedId == tag.id,
             onPressed: onPressed == null ? null : (_) => onPressed!(tag),

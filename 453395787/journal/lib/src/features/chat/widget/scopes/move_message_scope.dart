@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../common/data/chat_repository.dart';
-import '../../../../common/data/database/chat_database.dart';
+import '../../../../common/data/database/database.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../cubit/move_message/move_messages_cubit.dart';
 
@@ -15,7 +15,7 @@ class MoveMessagesScope extends StatelessWidget {
   });
 
   final Widget child;
-  final int fromChatId;
+  final Id fromChatId;
   final MessageList messages;
 
   @override
@@ -23,7 +23,7 @@ class MoveMessagesScope extends StatelessWidget {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
         chatRepository: context.read<ChatRepository>(),
-        messageProviderApi: context.read<ChatDatabase>(),
+        messageProviderApi: context.read<Database>(),
         fromChatId: fromChatId,
         messages: messages,
       ),

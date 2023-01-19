@@ -1,3 +1,4 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -58,6 +59,11 @@ class ChatMessageList extends StatelessWidget {
                 },
                 child: MessageItem(
                   message: item as Message,
+                  tags: context.read<MessageManageCubit>().state.tags.where(
+                        (e) => item.tagsId.contains(
+                          e.id,
+                        ),
+                      ).toIList(),
                   onTap: (message, isSelected) {
                     state.mapOrNull(
                       selectionModeState: (selectionModeState) {

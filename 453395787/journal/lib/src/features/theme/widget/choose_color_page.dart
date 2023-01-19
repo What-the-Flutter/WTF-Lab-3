@@ -30,11 +30,13 @@ class ChoiceColorSheet extends StatelessWidget {
               MessageItem(
                 message: Message(
                   text: locale.Other.messageExampleText1.i18n(),
+                  dateTime: DateTime.now(),
                 ),
               ),
               MessageItem(
                 message: Message(
                   text: locale.Other.messageExampleText2.i18n(),
+                  dateTime: DateTime.now(),
                   isFavorite: true,
                 ),
                 isSelected: true,

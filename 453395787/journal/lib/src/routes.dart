@@ -70,15 +70,13 @@ abstract class Navigation {
       GoRoute(
         path: _routerChatPagePath,
         builder: (context, state) => ChatPage(
-          chatId: int.parse(
-            state.params['chatId']!,
-          ),
+          chatId: state.params['chatId']!,
         ),
         routes: [
           GoRoute(
             path: _routerChatSearchPagePath,
             builder: (context, state) => MessageSearchPage(
-              chatId: int.parse(state.params['chatId']!),
+              chatId: state.params['chatId']!,
             ),
           ),
         ],

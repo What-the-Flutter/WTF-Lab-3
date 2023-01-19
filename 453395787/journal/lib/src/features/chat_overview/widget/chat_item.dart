@@ -57,7 +57,12 @@ class ChatItem extends StatelessWidget {
                       padding: const EdgeInsets.only(
                         right: Insets.large,
                       ),
-                      child: Icon(chat.icon),
+                      child: Icon(
+                        IconData(
+                          chat.iconCodePoint,
+                          fontFamily: 'MaterialIcons',
+                        ),
+                      ),
                     ),
                     Expanded(
                       child: Column(
