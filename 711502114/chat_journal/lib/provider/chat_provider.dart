@@ -1,11 +1,10 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'package:flutter/cupertino.dart';
 
 import '../models/chat.dart';
 
 class ChatProvider extends ChangeNotifier {
   final chats = <Chat>[];
+  final archivedChats = <Chat>[];
 
   void update() {
     notifyListeners();
@@ -49,6 +48,22 @@ class ChatProvider extends ChangeNotifier {
         return -1;
       }
     });
+
+    notifyListeners();
+  }
+
+  void archive(int index) {
+    chats[index] = chats[index].copyWith(isArchive: true);
+
+    archivedChats.add(chats[index]);
+    delete(index);
+  }
+
+  void unarchive(int index) {
+    chats[index] = chats[index].copyWith(isArchive: false);
+
+    chats.add(archivedChats[index]);
+    archivedChats.removeAt(index);
 
     notifyListeners();
   }

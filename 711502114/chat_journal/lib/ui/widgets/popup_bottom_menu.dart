@@ -38,7 +38,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _archiveChat(context),
+          onPressed: () => _archiveChat(context, provider),
           child: ListTile(
             leading: const Icon(
               Icons.archive,
@@ -75,9 +75,7 @@ class PopupBottomMenu extends StatelessWidget {
     Navigator.pop(context);
     showDialog(
       context: context,
-      builder: (_) {
-        return InfoChatDialog(chat: provider.chats[index]);
-      },
+      builder: (_) => InfoChatDialog(chat: provider.chats[index]),
     );
   }
 
@@ -86,8 +84,8 @@ class PopupBottomMenu extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  void _archiveChat(BuildContext context) {
-    //
+  void _archiveChat(BuildContext context, ChatProvider provider) {
+    provider.archive(index);
     Navigator.pop(context);
   }
 
