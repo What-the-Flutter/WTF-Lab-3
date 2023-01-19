@@ -3,25 +3,22 @@ import 'package:flutter/cupertino.dart';
 import '../models/chat.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final chats = <Chat>[
-    Chat(
-      title: 'Travel',
-      events: [],
-      assetsLink: 'assets/plane.svg',
-    ),
-    Chat(
-      title: 'Family',
-      events: [],
-      assetsLink: 'assets/sofa.svg',
-    ),
-    Chat(
-      title: 'Travel',
-      events: [],
-      assetsLink: 'assets/gym.svg',
-    ),
-  ];
+  final chats = <Chat>[];
 
   void update() {
+    notifyListeners();
+  }
+
+  void add({required String title, required IconData iconData}) {
+    chats.add(
+      Chat(
+        title: title,
+        events: [],
+        iconData: iconData,
+        creationTime: DateTime.now(),
+      ),
+    );
+
     notifyListeners();
   }
 }

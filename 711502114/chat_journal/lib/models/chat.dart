@@ -1,13 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
 import 'event.dart';
 
 class Chat {
   final String title;
   final List<Event> events;
-  final String assetsLink;
+  final IconData iconData;
+  final DateTime creationTime;
 
   Chat({
     required this.title,
     required this.events,
-    required this.assetsLink,
+    required this.iconData,
+    required this.creationTime,
   });
 }

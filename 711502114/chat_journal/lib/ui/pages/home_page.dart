@@ -7,6 +7,7 @@ import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/theme_inherited.dart';
 import '../widgets/chat_card.dart';
+import 'add_chat_page.dart';
 import 'messenger_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,8 +51,14 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
-        tooltip: local?.increaseButtonHint,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const AddChatPage(),
+            ),
+          );
+        },
+        tooltip: local?.add,
         child: const Icon(Icons.add),
       ),
     );
@@ -86,7 +93,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Expanded _createMessagesList() {
+  Widget _createMessagesList() {
     final chats = Provider.of<ChatProvider>(context).chats;
     return Expanded(
       child: ListView.separated(
