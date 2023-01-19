@@ -44,6 +44,9 @@ class CustomTheme {
         backgroundColor: _elementsColor,
         titleTextStyle: TextStyle(color: Colors.white),
       ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.white,
+      ),
     );
   }
 
@@ -67,6 +70,9 @@ class CustomTheme {
         elevation: 0.0,
       ),
       fontFamily: 'Roboto-Bold',
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: _elementsDarkColor,
+      ),
     );
   }
 }

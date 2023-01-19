@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'event.dart';
 
@@ -14,4 +14,13 @@ class Chat {
     required this.iconData,
     required this.creationTime,
   });
+
+  Chat copyWith({String? title, IconData? iconData}) {
+    return Chat(
+      title: title ?? this.title,
+      events: events,
+      iconData: iconData ?? this.iconData,
+      creationTime: creationTime,
+    );
+  }
 }

@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/chat.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../utils/icons.dart';
 import '../widgets/page_icon.dart';
 
 class AddChatPage extends StatefulWidget {
-  const AddChatPage({Key? key}) : super(key: key);
+  final Chat? chat;
+  final int? chatIndex;
+
+  const AddChatPage({Key? key, this.chat, this.chatIndex}) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -19,13 +23,24 @@ class AddChatPage extends StatefulWidget {
 class _AddChatPageState extends State<AddChatPage> {
   final _fieldText = TextEditingController();
   IconData _fabIcon = Icons.close;
-  int _pageIndex = 0;
+  int _iconIndex = 0;
   final _icons = IconList.data;
 
   @override
   void initState() {
     super.initState();
     _fieldText.addListener(_changeFABIcon);
+
+    if (widget.chat != null) {
+      for (int i = 0; i < _icons.length; i++) {
+        if (widget.chat?.iconData == _icons[i]) {
+          _iconIndex = i;
+          break;
+        }
+      }
+
+      _fieldText.text = widget.chat?.title ?? '';
+    }
   }
 
   @override
@@ -50,7 +65,7 @@ class _AddChatPageState extends State<AddChatPage> {
       floatingActionButton: Align(
         alignment: const Alignment(1, 0.87),
         child: FloatingActionButton(
-          onPressed: _addNewChat,
+          onPressed: widget.chat == null ? _addNewChat : _editChat,
           child: Icon(_fabIcon),
         ),
       ),
@@ -102,10 +117,10 @@ class _AddChatPageState extends State<AddChatPage> {
             child: PageIcon(
               child: Icon(_icons[index]),
               index: index,
-              pageIndex: _pageIndex,
+              pageIndex: _iconIndex,
             ),
             onTap: () {
-              setState(() => _pageIndex = index);
+              setState(() => _iconIndex = index);
             },
           );
         },
@@ -135,7 +150,19 @@ class _AddChatPageState extends State<AddChatPage> {
     if (_fieldText.text.isNotEmpty) {
       Provider.of<ChatProvider>(context, listen: false).add(
         title: _fieldText.text,
-        iconData: _icons[_pageIndex],
+        iconData: _icons[_iconIndex],
+      );
+    }
+
+    Navigator.pop(context);
+  }
+
+  void _editChat() {
+    if (_fieldText.text.isNotEmpty) {
+      Provider.of<ChatProvider>(context, listen: false).edit(
+        widget.chatIndex ?? 0,
+        title: _fieldText.text,
+        iconData: _icons[_iconIndex],
       );
     }
 

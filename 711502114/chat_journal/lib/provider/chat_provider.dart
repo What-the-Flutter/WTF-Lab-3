@@ -21,4 +21,16 @@ class ChatProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void delete(int index) {
+    chats.removeAt(index);
+
+    notifyListeners();
+  }
+
+  void edit(int index, {required String title, required IconData iconData}) {
+    chats[index] = chats[index].copyWith(title: title, iconData: iconData);
+
+    notifyListeners();
+  }
 }

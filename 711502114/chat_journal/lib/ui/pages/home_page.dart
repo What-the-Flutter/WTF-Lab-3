@@ -7,6 +7,7 @@ import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/theme_inherited.dart';
 import '../widgets/chat_card.dart';
+import '../widgets/popup_bottom_menu.dart';
 import 'add_chat_page.dart';
 import 'messenger_page.dart';
 
@@ -51,13 +52,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AddChatPage(),
-            ),
-          );
-        },
+        onPressed: () => _openNewPage(const AddChatPage()),
         tooltip: local?.add,
         child: const Icon(Icons.add),
       ),
@@ -100,13 +95,8 @@ class _HomePageState extends State<HomePage> {
         itemCount: chats.length,
         itemBuilder: (context, index) {
           return InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => MessengerPage(chat: chats[index]),
-                ),
-              );
-            },
+            onTap: () => _openNewPage(MessengerPage(chat: chats[index])),
+            onLongPress: () => _showMenu(index),
             child: ChatCard(chat: chats[index]),
           );
         },
@@ -117,5 +107,14 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+  void _openNewPage(Widget page) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+  }
+
+  void _showMenu(int index) {
+    PopupBottomMenu builder(_) => PopupBottomMenu(index: index);
+    showModalBottomSheet(context: context, builder: builder);
   }
 }

@@ -28,5 +28,10 @@
   "gallery": "Gallery",
   "camera": "Camera",
   "addNewChat": "Create a new Page",
-  "addPageLabel": "Name of the Page"
+  "addPageLabel": "Name of the Page",
+  "infoChat": "Info",
+  "pinChat": "Pin/Unpin page",
+  "archiveChat": "Archive Page",
+  "editChat": "Edit Page",
+  "deleteChat": "Delete Page"
 }
