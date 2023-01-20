@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../models/chat.dart';
-import '../../theme/colors.dart';
-import '../../utils/utils.dart';
+import '../../../models/chat.dart';
+import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 
 class InfoChatDialog extends StatelessWidget {
   final Chat chat;
@@ -46,13 +46,19 @@ class InfoChatDialog extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(local?.created ?? ''),
+            Text(
+              local?.created ?? '',
+              style: const TextStyle(color: Colors.white),
+            ),
             Text(
               _useDateTimeFormat(context, chat.creationTime),
               style: TextStyle(color: secondaryMessageTextColor),
             ),
             const SizedBox(height: 20),
-            Text(local?.latestEvent ?? ''),
+            Text(
+              local?.latestEvent ?? '',
+              style: const TextStyle(color: Colors.white),
+            ),
             Text(
               _useDateTimeFormat(context, _knowLastEvent()),
               style: TextStyle(color: secondaryMessageTextColor),

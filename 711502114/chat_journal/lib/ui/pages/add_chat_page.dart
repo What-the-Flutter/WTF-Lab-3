@@ -8,7 +8,7 @@ import '../../models/chat.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../utils/icons.dart';
-import '../widgets/page_icon.dart';
+import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
   final Chat? chat;
@@ -91,7 +91,7 @@ class _AddChatPageState extends State<AddChatPage> {
             color: secondaryMessageTextColor,
           ),
         ),
-        style: const TextStyle(fontSize: 20, color: Colors.white),
+        style: TextStyle(fontSize: 20, color: addTextColor),
       ),
     );
   }
@@ -114,7 +114,7 @@ class _AddChatPageState extends State<AddChatPage> {
           return InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
-            child: PageIcon(
+            child: ChatIcon(
               child: Icon(_icons[index]),
               index: index,
               pageIndex: _iconIndex,

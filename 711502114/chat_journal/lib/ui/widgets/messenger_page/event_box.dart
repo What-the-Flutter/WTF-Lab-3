@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../../models/event.dart';
-import '../../theme/colors.dart';
-import '../../utils/utils.dart';
+import '../../../models/event.dart';
+import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 
 class EventBox extends StatelessWidget {
   final Event event;

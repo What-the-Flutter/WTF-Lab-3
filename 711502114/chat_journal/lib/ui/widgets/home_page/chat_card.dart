@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../models/chat.dart';
-import '../../theme/colors.dart';
-import '../../utils/utils.dart';
+import '../../../models/chat.dart';
+import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
@@ -53,10 +53,10 @@ class ChatCard extends StatelessWidget {
           child: Icon(chat.iconData),
         ),
         if (chat.isPin)
-          const Positioned(
+          Positioned(
             right: -5,
             bottom: -1,
-            child: Icon(Icons.push_pin),
+            child: Icon(Icons.push_pin, color: pinIconColor),
           )
       ],
     );

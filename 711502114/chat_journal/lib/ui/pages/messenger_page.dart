@@ -7,11 +7,11 @@ import '../../models/event.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../tools/event_action.dart';
-import '../widgets/attach_dialog.dart';
-import '../widgets/event_box.dart';
-import '../widgets/info_box.dart';
-import '../widgets/keyboard_icon.dart';
-import '../widgets/tool_menu_icon.dart';
+import '../widgets/messenger_page/attach_dialog.dart';
+import '../widgets/messenger_page/event_box.dart';
+import '../widgets/messenger_page/info_box.dart';
+import '../widgets/messenger_page/keyboard_icon.dart';
+import '../widgets/messenger_page/tool_menu_icon.dart';
 
 class MessengerPage extends StatefulWidget {
   const MessengerPage({Key? key, required this.chat}) : super(key: key);

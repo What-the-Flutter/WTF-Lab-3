@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/chat_provider.dart';
-import '../pages/add_chat_page.dart';
-import 'info_chat_dialog.dart';
+import '../../../provider/chat_provider.dart';
+import 'chat_functions.dart';
 
 class PopupBottomMenu extends StatelessWidget {
   final int index;
@@ -15,10 +14,15 @@ class PopupBottomMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
     final provider = Provider.of<ChatProvider>(context, listen: false);
+    final functions = ChatFunctions(
+      context: context,
+      provider: provider,
+      index: index,
+    );
     return Wrap(
       children: [
         TextButton(
-          onPressed: () => _showChatInfo(context, provider),
+          onPressed: functions.showChatInfo,
           child: ListTile(
             leading: const Icon(
               Icons.info,
@@ -28,7 +32,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _pinChat(context, provider),
+          onPressed: functions.pinChat,
           child: ListTile(
             leading: const Icon(
               Icons.attach_file,
@@ -38,7 +42,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _archiveChat(context, provider),
+          onPressed: functions.archiveChat,
           child: ListTile(
             leading: const Icon(
               Icons.archive,
@@ -48,7 +52,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _editChat(context, provider),
+          onPressed: functions.editChat,
           child: ListTile(
             leading: const Icon(
               Icons.edit,
@@ -58,7 +62,7 @@ class PopupBottomMenu extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () => _deleteChat(context, provider),
+          onPressed: functions.deleteChat,
           child: ListTile(
             leading: const Icon(
               Icons.delete,
@@ -69,38 +73,5 @@ class PopupBottomMenu extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _showChatInfo(BuildContext context, ChatProvider provider) {
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder: (_) => InfoChatDialog(chat: provider.chats[index]),
-    );
-  }
-
-  void _pinChat(BuildContext context, ChatProvider provider) {
-    provider.changePin(index);
-    Navigator.pop(context);
-  }
-
-  void _archiveChat(BuildContext context, ChatProvider provider) {
-    provider.archive(index);
-    Navigator.pop(context);
-  }
-
-  void _editChat(BuildContext context, ChatProvider provider) {
-    Navigator.pop(context);
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => AddChatPage(
-        chat: provider.chats[index],
-        chatIndex: index,
-      ),
-    ));
-  }
-
-  void _deleteChat(BuildContext context, ChatProvider provider) {
-    provider.delete(index);
-    Navigator.pop(context);
   }
 }

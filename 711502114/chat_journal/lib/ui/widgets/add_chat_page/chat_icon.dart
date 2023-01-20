@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/colors.dart';
+import '../../../theme/colors.dart';
 
-class PageIcon extends StatelessWidget {
-  const PageIcon(
+class ChatIcon extends StatelessWidget {
+  const ChatIcon(
       {Key? key,
       required this.child,
       required this.index,
@@ -23,8 +23,8 @@ class PageIcon extends StatelessWidget {
             minHeight: 65,
             minWidth: 65,
           ),
-          decoration: const BoxDecoration(
-            color: botBackgroundColor,
+          decoration: BoxDecoration(
+            color: addChatColor,
             shape: BoxShape.circle,
           ),
           child: child,

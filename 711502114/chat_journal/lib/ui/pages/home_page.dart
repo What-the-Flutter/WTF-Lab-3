@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/theme_inherited.dart';
-import '../widgets/chat_card.dart';
-import '../widgets/popup_bottom_menu.dart';
+import '../widgets/home_page/chat_card.dart';
+import '../widgets/home_page/popup_bottom_menu.dart';
 import 'add_chat_page.dart';
 import 'messenger_page.dart';
 
