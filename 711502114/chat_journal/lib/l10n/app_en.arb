@@ -36,5 +36,7 @@
   "deleteChat": "Delete Page",
   "created": "Created",
   "latestEvent": "Latest Event",
-  "ok": "OK"
+  "ok": "OK",
+  "archivedPage": "Archived Pages",
+  "countArchived": "Pages Archived"
 }

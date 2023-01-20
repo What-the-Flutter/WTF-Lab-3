@@ -6,12 +6,14 @@ import '../../../theme/colors.dart';
 import '../../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
+  final Chat chat;
+  final Widget? extraWidget;
+
   const ChatCard({
     Key? key,
     required this.chat,
+    this.extraWidget,
   }) : super(key: key);
-
-  final Chat chat;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,11 @@ class ChatCard extends StatelessWidget {
     final desc = local?.chatDescription ?? '';
     final attach = local?.attach ?? '';
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.1)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -30,7 +35,7 @@ class ChatCard extends StatelessWidget {
             child: _buildText(desc, attach),
             flex: 1,
           ),
-          _buildTimeText(context),
+          extraWidget ?? _buildTimeText(context),
           const SizedBox(
             width: 25,
           )

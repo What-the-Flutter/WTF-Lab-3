@@ -8,6 +8,7 @@ import '../../models/chat.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../utils/icons.dart';
+import '../../utils/utils.dart';
 import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
@@ -154,7 +155,7 @@ class _AddChatPageState extends State<AddChatPage> {
       );
     }
 
-    Navigator.pop(context);
+    closePage(context);
   }
 
   void _editChat() {
@@ -166,7 +167,7 @@ class _AddChatPageState extends State<AddChatPage> {
       );
     }
 
-    Navigator.pop(context);
+    closePage(context);
   }
 
   @override

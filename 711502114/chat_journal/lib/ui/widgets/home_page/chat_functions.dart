@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../provider/chat_provider.dart';
+import '../../../utils/utils.dart';
 import '../../pages/add_chat_page.dart';
 import 'info_chat_dialog.dart';
 
@@ -16,7 +17,7 @@ class ChatFunctions {
   });
 
   void showChatInfo() {
-    Navigator.pop(context);
+    closePage(context);
     showDialog(
       context: context,
       builder: (_) => InfoChatDialog(chat: provider.chats[index]),
@@ -25,16 +26,16 @@ class ChatFunctions {
 
   void pinChat() {
     provider.changePin(index);
-    Navigator.pop(context);
+    closePage(context);
   }
 
   void archiveChat() {
     provider.archive(index);
-    Navigator.pop(context);
+    closePage(context);
   }
 
   void editChat() {
-    Navigator.pop(context);
+    closePage(context);
     Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => AddChatPage(
         chat: provider.chats[index],
@@ -45,6 +46,6 @@ class ChatFunctions {
 
   void deleteChat() {
     provider.delete(index);
-    Navigator.pop(context);
+    closePage(context);
   }
 }

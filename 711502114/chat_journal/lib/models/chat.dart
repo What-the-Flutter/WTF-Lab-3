@@ -10,13 +10,14 @@ class Chat {
   final bool isPin;
   final bool isArchive;
 
-  Chat(
-      {required this.title,
-      required this.events,
-      required this.iconData,
-      required this.creationTime,
-      this.isPin = false,
-      this.isArchive = false});
+  Chat({
+    required this.title,
+    required this.events,
+    required this.iconData,
+    required this.creationTime,
+    this.isPin = false,
+    this.isArchive = false,
+  });
 
   Chat copyWith({
     String? title,

@@ -60,7 +60,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void unarchive(int index) {
-    chats[index] = chats[index].copyWith(isArchive: false);
+    archivedChats[index] = archivedChats[index].copyWith(isArchive: false);
 
     chats.add(archivedChats[index]);
     archivedChats.removeAt(index);

@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../../provider/chat_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/theme_inherited.dart';
+import '../../utils/utils.dart';
+import '../widgets/home_page/archive_row.dart';
 import '../widgets/home_page/chat_card.dart';
 import '../widgets/home_page/popup_bottom_menu.dart';
 import 'add_chat_page.dart';
@@ -47,12 +49,12 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             _createBotBox(context),
             const SizedBox(height: 5),
-            _createMessagesList(),
+            _createMessagesList(local),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _openNewPage(const AddChatPage()),
+        onPressed: () => openNewPage(context, const AddChatPage()),
         tooltip: local?.add,
         child: const Icon(Icons.add),
       ),
@@ -88,29 +90,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _createMessagesList() {
-    final chats = Provider.of<ChatProvider>(context).chats;
+  Widget _createMessagesList(AppLocalizations? local) {
+    final provider = Provider.of<ChatProvider>(context);
+    final chats = provider.chats;
+    final archived = provider.archivedChats;
+    final archivedFlag = archived.isNotEmpty ? 1 : 0;
+    final info = '${archived.length} ${local?.countArchived ?? ''}';
     return Expanded(
-      child: ListView.separated(
-        itemCount: chats.length,
+      child: ListView.builder(
+        itemCount: chats.length + archivedFlag,
         itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () => _openNewPage(MessengerPage(chat: chats[index])),
-            onLongPress: () => _showMenu(index),
-            child: ChatCard(chat: chats[index]),
-          );
-        },
-        separatorBuilder: (context, index) {
-          return const Divider(
-            height: 1,
-          );
+          if (index < chats.length) {
+            return InkWell(
+              onTap: () =>
+                  openNewPage(context, MessengerPage(chat: chats[index])),
+              onLongPress: () => _showMenu(index),
+              child: ChatCard(chat: chats[index]),
+            );
+          } else {
+            return Column(
+              children: [
+                const SizedBox(height: 30),
+                ArchiveRow(archivedInfo: info),
+              ],
+            );
+          }
         },
       ),
     );
-  }
-
-  void _openNewPage(Widget page) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
   }
 
   void _showMenu(int index) {

@@ -53,3 +53,11 @@ String _addSeconds(int seconds, bool include) {
   final sec = seconds < 10 ? '0$seconds' : '$seconds';
   return ':$sec';
 }
+
+void openNewPage(BuildContext context, Widget page) {
+  Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+}
+
+void closePage(BuildContext context) {
+  Navigator.pop(context);
+}
