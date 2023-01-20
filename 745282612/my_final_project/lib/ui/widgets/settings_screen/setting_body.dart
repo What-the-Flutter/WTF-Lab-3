@@ -23,7 +23,12 @@ class _SettingBodyState extends State<SettingBody> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.add),
-            title: Text(S.of(context).add_section),
+            title: Text(
+              S.of(context).add_section,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
             onTap: () {
               context.read<SettingsCubit>().changeAddStatus();
               Navigator.of(context).push(
@@ -38,10 +43,38 @@ class _SettingBodyState extends State<SettingBody> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.invert_colors),
-            title: Text(S.of(context).change_theme),
-            subtitle: const Text('Light/Dark'),
+            title: Text(
+              S.of(context).change_theme,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            subtitle: Text(
+              'Light/Dark',
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
             onTap: context.read<ThemeCubit>().changeTheme,
-          )
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.text_fields),
+            title: Text(
+              S.of(context).cnange_font_size,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            subtitle: Text(
+              'Small/Medium/Large',
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            onTap: context.read<ThemeCubit>().changeFontSize,
+          ),
+          const Divider(),
         ],
       ),
     );

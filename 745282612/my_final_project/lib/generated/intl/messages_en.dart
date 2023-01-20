@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
         "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
+        "cnange_font_size":
+            MessageLookupByLibrary.simpleMessage("Change font size"),
         "content_add_image": MessageLookupByLibrary.simpleMessage(
             "If you click on the  camera icon, you can add an image from the camera, if you click on the photo icon, you can add an image from the phone."),
         "create_page":

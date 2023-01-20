@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class AddPageAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool status;
@@ -35,6 +37,9 @@ class _AddPageAppBarState extends State<AddPageAppBar> {
     return AppBar(
       title: Text(
         titleText(),
+        style: TextStyle(
+          fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
+        ),
       ),
       automaticallyImplyLeading: false,
     );

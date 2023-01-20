@@ -42,6 +42,7 @@
   "add_section": "Add new section",
   "setting_title" : "Settings",
   "account" : "Account",
-  "change_theme": "Change theme"
+  "change_theme": "Change theme",
+  "cnange_font_size": "Change font size"
   
 }

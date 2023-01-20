@@ -68,6 +68,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 child: Text(
                   S.of(context).exit,
                   style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
                     color: isLight ? Colors.black : Colors.white,
                   ),
                 ),

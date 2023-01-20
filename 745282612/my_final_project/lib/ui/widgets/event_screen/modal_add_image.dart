@@ -26,9 +26,15 @@ class MyDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         S.of(context).title_add_image,
+        style: TextStyle(
+          fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
+        ),
       ),
       content: Text(
         S.of(context).content_add_image,
+        style: TextStyle(
+          fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+        ),
       ),
       actions: <Widget>[
         TextButton(

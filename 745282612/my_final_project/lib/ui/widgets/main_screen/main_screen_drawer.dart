@@ -23,8 +23,8 @@ class MainScreenDrawer extends StatelessWidget {
             child: Center(
               child: Text(
                 S.of(context).account,
-                style: const TextStyle(
-                  fontSize: 24,
+                style: TextStyle(
+                  fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
                 ),
               ),
             ),
@@ -42,7 +42,12 @@ class MainScreenDrawer extends StatelessWidget {
                 Icons.settings,
                 color: isLight ? AppColors.colorTurquoise : Colors.white,
               ),
-              title: Text(S.of(context).setting_title),
+              title: Text(
+                S.of(context).setting_title,
+                style: TextStyle(
+                  fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                ),
+              ),
             ),
           ),
           TextButton(
@@ -52,7 +57,12 @@ class MainScreenDrawer extends StatelessWidget {
                 Icons.exit_to_app,
                 color: isLight ? AppColors.colorTurquoise : Colors.white,
               ),
-              title: Text(S.of(context).exit_the_app),
+              title: Text(
+                S.of(context).exit_the_app,
+                style: TextStyle(
+                  fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                ),
+              ),
             ),
           ),
         ],

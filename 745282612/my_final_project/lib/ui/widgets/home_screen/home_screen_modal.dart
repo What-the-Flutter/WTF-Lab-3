@@ -51,7 +51,12 @@ class HomeScreenModal extends StatelessWidget {
                   Icons.info,
                   color: colorIcon,
                 ),
-                title: Text(S.of(context).info),
+                title: Text(
+                  S.of(context).info,
+                  style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  ),
+                ),
               ),
             ),
             TextButton(
@@ -64,7 +69,12 @@ class HomeScreenModal extends StatelessWidget {
                   Icons.attach_file,
                   color: colorIcon,
                 ),
-                title: Text(S.of(context).pin_unpin),
+                title: Text(
+                  S.of(context).pin_unpin,
+                  style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  ),
+                ),
               ),
             ),
             TextButton(
@@ -74,7 +84,12 @@ class HomeScreenModal extends StatelessWidget {
                   Icons.archive,
                   color: colorIcon,
                 ),
-                title: Text(S.of(context).archive_page),
+                title: Text(
+                  S.of(context).archive_page,
+                  style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  ),
+                ),
               ),
             ),
             TextButton(
@@ -94,7 +109,12 @@ class HomeScreenModal extends StatelessWidget {
                   Icons.edit,
                   color: colorIcon,
                 ),
-                title: Text(S.of(context).edit_page),
+                title: Text(
+                  S.of(context).edit_page,
+                  style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  ),
+                ),
               ),
             ),
             TextButton(
@@ -107,7 +127,12 @@ class HomeScreenModal extends StatelessWidget {
                   Icons.delete,
                   color: colorIcon,
                 ),
-                title: Text(S.of(context).delete_page),
+                title: Text(
+                  S.of(context).delete_page,
+                  style: TextStyle(
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  ),
+                ),
               ),
             ),
           ],

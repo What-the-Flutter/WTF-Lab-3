@@ -24,15 +24,11 @@ class Instruction extends StatelessWidget {
             if (constraints.maxWidth > 600) {
               return EventScreenInstruction(
                 heightContrainer: state.isSearch ? 190 : 380,
-                headerSize: 40,
-                contentSize: 20,
                 title: title,
               );
             } else {
               return EventScreenInstruction(
                 heightContrainer: state.isSearch ? 120 : 240,
-                headerSize: 17,
-                contentSize: 15,
                 title: title,
               );
             }
@@ -46,14 +42,10 @@ class Instruction extends StatelessWidget {
 class EventScreenInstruction extends StatelessWidget {
   final String title;
   final double heightContrainer;
-  final double headerSize;
-  final double contentSize;
 
   const EventScreenInstruction({
     super.key,
     required this.heightContrainer,
-    required this.headerSize,
-    required this.contentSize,
     required this.title,
   });
 
@@ -78,7 +70,7 @@ class EventScreenInstruction extends StatelessWidget {
                       ? S.of(context).no_search_title
                       : S.of(context).title_instruction(title),
                   style: TextStyle(
-                    fontSize: headerSize,
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
                 const SizedBox(
@@ -87,7 +79,7 @@ class EventScreenInstruction extends StatelessWidget {
                 Text(
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: contentSize,
+                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
                     color: AppColors.colorNormalGrey,
                   ),
                   state.isSearch

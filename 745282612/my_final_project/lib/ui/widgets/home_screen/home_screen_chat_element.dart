@@ -82,9 +82,10 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                       children: [
                         Text(
                           chat.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                            fontSize:
+                                context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
                           ),
                         ),
                         chat.isPin
@@ -97,6 +98,9 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                     ),
                     subtitle: Text(
                       listEvent.isEmpty ? S.of(context).no_event : listEvent.last.messageContent,
+                      style: TextStyle(
+                        fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -104,6 +108,10 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                         ? const SizedBox()
                         : Text(
                             DateFormat('hh:mm a').format(listEvent.last.messageTime),
+                            style: TextStyle(
+                              fontSize:
+                                  context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                            ),
                           ),
                   ),
                 ),

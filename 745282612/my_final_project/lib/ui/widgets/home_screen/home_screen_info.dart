@@ -41,9 +41,9 @@ class InfoPage extends StatelessWidget {
           ),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 30,
+              fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
             ),
           ),
         ],
@@ -53,13 +53,33 @@ class InfoPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(S.of(context).created),
-            Text(DateFormat.yMd().add_jm().format(dateCreate)),
+            Text(
+              S.of(context).created,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            Text(
+              DateFormat.yMd().add_jm().format(dateCreate),
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
-            Text(S.of(context).last_event),
-            Text(dateLastEvent),
+            Text(
+              S.of(context).last_event,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            Text(
+              dateLastEvent,
+              style: TextStyle(
+                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
           ],
         ),
       ),

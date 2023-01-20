@@ -349,6 +349,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Change font size`
+  String get cnange_font_size {
+    return Intl.message(
+      'Change font size',
+      name: 'cnange_font_size',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

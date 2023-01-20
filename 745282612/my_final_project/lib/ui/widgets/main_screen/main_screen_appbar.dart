@@ -35,7 +35,12 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
           onPressed: context.read<ThemeCubit>().changeTheme,
         ),
       ],
-      title: Text(_listTitle[widget.index]),
+      title: Text(
+        _listTitle[widget.index],
+        style: TextStyle(
+          fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
+        ),
+      ),
     );
   }
 }

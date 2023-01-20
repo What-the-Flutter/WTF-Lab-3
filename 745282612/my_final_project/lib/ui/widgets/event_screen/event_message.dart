@@ -93,7 +93,13 @@ class _EventMessageState extends State<EventMessage> {
                     ? Row(
                         children: [
                           Icon(widget.event.sectionIcon),
-                          Text(widget.event.sectionTitle!),
+                          Text(
+                            widget.event.sectionTitle!,
+                            style: TextStyle(
+                              fontSize:
+                                  context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                            ),
+                          ),
                         ],
                       )
                     : Container(),
@@ -104,7 +110,10 @@ class _EventMessageState extends State<EventMessage> {
                       ? Image.network(widget.event.messageImage!)
                       : Text(
                           widget.event.messageContent,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                            fontSize:
+                                context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                          ),
                         ),
                 ),
                 const SizedBox(height: 3),
@@ -113,8 +122,9 @@ class _EventMessageState extends State<EventMessage> {
                     Expanded(
                       child: Text(
                         DateFormat('hh:mm a').format(widget.event.messageTime),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.colorNormalGrey,
+                          fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
                         ),
                       ),
                     ),

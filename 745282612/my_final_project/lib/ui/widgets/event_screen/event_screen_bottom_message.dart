@@ -141,7 +141,17 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                         child: Icon(items.iconSection),
                                       ),
                                     ),
-                                    Text(items.titleSection),
+                                    Text(
+                                      items.titleSection,
+                                      style: TextStyle(
+                                        fontSize: context
+                                            .watch<ThemeCubit>()
+                                            .state
+                                            .textTheme
+                                            .bodyText2!
+                                            .fontSize,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               );
