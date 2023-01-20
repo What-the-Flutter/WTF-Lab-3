@@ -63,7 +63,7 @@ class _AppBarWithActions extends StatelessWidget {
               context: context,
               builder: (context) => MoveMessagePage(
                 fromChatId: id,
-                messages: state.messages,
+                messages: state.messages.where((e) => state.selected.contains(e.id)).toIList(),
               ),
             );
           },

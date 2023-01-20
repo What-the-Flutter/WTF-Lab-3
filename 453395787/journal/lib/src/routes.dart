@@ -34,7 +34,7 @@ abstract class Navigation {
               GoRoute(
                 path: _routerEditChatPagePath,
                 builder: (context, state) => ManageChatPage(
-                  chatId: int.parse(state.params['chatId']!),
+                  chatId: state.params['chatId']!,
                 ),
               ),
             ],

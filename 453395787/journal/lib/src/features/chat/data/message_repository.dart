@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../common/api/provider/message_provider_api.dart';
@@ -125,7 +126,7 @@ class MessageRepository extends MessageRepositoryApi {
         if (_queryTags == null) {
           return message.text.containsIgnoreCase(_query);
         }
-        return message.tagsId.containsAll(_queryTags!.map((e) => e.id)) &&
+        return message.tagsId.containsAll(_queryTags!.map((e) => e.id).toIList()) &&
             message.text.containsIgnoreCase(_query);
       },
     ).toIList();
@@ -172,6 +173,13 @@ class MessageRepository extends MessageRepositoryApi {
   @override
   Future<void> remove(Message message) async {
     await _messageProviderApi.deleteMessage(message.id);
+    for (var image in message.images) {
+      _storageProviderApi.remove(
+        basename(
+          (await image).path,
+        ),
+      );
+    }
   }
 
   @override
@@ -185,7 +193,7 @@ class MessageRepository extends MessageRepositoryApi {
   Future<void> removeFromFavorites(Message message) async {
     await _messageProviderApi.updateMessage(
       await Transformers.messageToModel(
-        message.copyWith(isFavorite: true),
+        message.copyWith(isFavorite: false),
       ),
     );
   }

@@ -61,6 +61,13 @@ class ChatMessageList extends StatelessWidget {
                   tags: item.tags,
                   onTap: (message, isSelected) {
                     state.mapOrNull(
+                      defaultModeState: (defaultModeState) {
+                        if (message.isFavorite) {
+                          MessageManageScope.of(context).removeFromFavorites(message);
+                        } else {
+                          MessageManageScope.of(context).addToFavorites(message);
+                        }
+                      },
                       selectionModeState: (selectionModeState) {
                         if (selectionModeState.selected.contains(message.id)) {
                           MessageManageScope.of(context).select(message);

@@ -1,14 +1,15 @@
+import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../api/chat_provider_api.dart';
-import '../../api/message_provider_api.dart';
-import '../../api/tag_provider_api.dart';
-import '../../models/chat_view.dart';
-import '../../models/message.dart';
-import '../../models/tag.dart';
+import '../../api/provider/chat_provider_api.dart';
+import '../../api/provider/message_provider_api.dart';
+import '../../api/provider/tag_provider_api.dart';
+import '../../models/db/db_chat.dart';
+import '../../models/db/db_message.dart';
+import '../../models/db/db_tag.dart';
 import '../../utils/typedefs.dart';
 
 class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
@@ -21,24 +22,49 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
     _userId = userId;
     _initTagsStream(userId);
     _initChatStream(userId);
+    _initChatAndMessageSynchronization();
+  }
+
+  void _initChatAndMessageSynchronization() {
+    _messagesRef.onValue.listen(
+      (event) async {
+        if (event.snapshot.exists) {
+          final messages = _transformSnapshotToMessages(event.snapshot);
+          final messageGroups = messages.groupListsBy((e) => e.parentId);
+          for (var group in messageGroups.entries) {
+            final lastMessage = group.value.last;
+            log.wtf('In sync $group');
+
+            await _chatsRef.child(lastMessage.parentId).update(
+              {
+                'messagePreview': lastMessage.text,
+                'messagePreviewCreationTime':
+                    lastMessage.dateTime.toIso8601String(),
+                'messageAmount': group.value.length,
+              },
+            );
+          }
+        }
+      },
+    );
   }
 
   void _initTagsStream(Id userId) {
     log.i('init Tags Stream');
     _tagsRef.onValue.listen((event) {
       if (event.snapshot.exists) {
-        final tags = _transformEventToTag(event);
+        final tags = _transformSnapshotToTags(event.snapshot);
         log.i('New tags: $tags');
         tagsSubject.add(tags);
       }
     });
   }
 
-  TagList _transformEventToTag(DatabaseEvent event) {
-    final dynamicMap = event.snapshot.value as Map<dynamic, dynamic>;
+  TagList _transformSnapshotToTags(DataSnapshot snapshot) {
+    final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
     final tagsMap = dynamicMap.mapTo((key, value) => value).toIList();
 
-    var tags = IList<Tag>();
+    var tags = IList<DbTag>();
     for (Map<dynamic, dynamic> tagMap in tagsMap) {
       final m = tagMap.map(
         (key, value) {
@@ -46,7 +72,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
         },
       );
       tags = tags.add(
-        Tag.fromJson(m),
+        DbTag.fromJson(m),
       );
     }
 
@@ -57,21 +83,23 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
     log.i('init message Stream');
     _chatsRef.onValue.listen((event) {
       if (event.snapshot.exists) {
-        final chats = _transformEventToChatView(event);
+        final chats = _transformSnapshotToChats(event.snapshot);
         log.i('New chats: $chats');
         chatsSubject.add(chats);
+      } else {
+        chatsSubject.add(IList([]));
       }
     });
 
     final event = await _chatsRef.once(DatabaseEventType.value);
-    chatsSubject.add(_transformEventToChatView(event));
+    chatsSubject.add(_transformSnapshotToChats(event.snapshot));
   }
 
-  ChatViewList _transformEventToChatView(DatabaseEvent event) {
-    final dynamicMap = event.snapshot.value as Map<dynamic, dynamic>;
+  ChatViewList _transformSnapshotToChats(DataSnapshot snapshot) {
+    final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
     final chatsMap = dynamicMap.mapTo((key, value) => value).toIList();
 
-    var chats = IList<ChatView>();
+    var chats = IList<DbChat>();
     for (Map<dynamic, dynamic> chatMap in chatsMap) {
       final m = chatMap.map(
         (key, value) {
@@ -79,7 +107,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
         },
       );
       chats = chats.add(
-        ChatView.fromJson(m),
+        DbChat.fromJson(m),
       );
     }
 
@@ -101,7 +129,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   ValueStream<TagList> get tags => tagsSubject.stream;
 
   @override
-  Future<Id> addChat(ChatView chat) async {
+  Future<Id> addChat(DbChat chat) async {
     log.i('add Chat $chat');
     final ref = _chatsRef.push();
     await ref.set(
@@ -115,21 +143,30 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   }
 
   @override
-  Future<void> updateChat(ChatView chat) async {
+  Future<void> updateChat(DbChat chat) async {
     log.i('update Chat $chat');
-    await _chatsRef.push().update(chat.toJson());
+    await _chatsRef.child(chat.id).update(chat.toJson());
   }
 
   @override
   Future<void> deleteChat(Id chatId) async {
     log.i('delete Chat $chatId');
-    final chatsRef =
-        FirebaseDatabase.instance.ref('user/$_userId/chats/$chatId');
-    await chatsRef.remove();
+    final messages = _transformSnapshotToMessages(
+      await _messagesRef.get(),
+    );
+    final chatMessages = messages.where(
+      (e) => e.parentId == chatId,
+    );
+
+    for (var chatMessage in chatMessages) {
+      await _messagesRef.child(chatMessage.id).remove();
+    }
+
+    await _chatsRef.child(chatId).remove();
   }
 
   @override
-  Future<Id> addMessage(Id chatId, Message message) async {
+  Future<Id> addMessage(Id chatId, DbMessage message) async {
     final ref = _messagesRef.push();
     await ref.set(
       message
@@ -143,19 +180,15 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   }
 
   @override
-  Future<void> updateMessage(Message message) async {
-    final messageRef = FirebaseDatabase.instance.ref(
-      '$_messagesRef/${message.id}',
-    );
-    await messageRef.update(message.toJson());
+  Future<void> updateMessage(DbMessage message) async {
+    await _messagesRef.child(message.id).update(
+          message.toJson(),
+        );
   }
 
   @override
   Future<void> deleteMessage(String messageId) async {
-    final messageRef = FirebaseDatabase.instance.ref(
-      '$_messagesRef/$messageId',
-    );
-    await messageRef.remove();
+    await _messagesRef.child(messageId).remove();
   }
 
   @override
@@ -166,27 +199,30 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   @override
   ValueStream<MessageList> messagesOf({required Id chatId}) {
     log.i('messagesOf $chatId');
-    return _messagesRef.orderByChild('dateTime').onValue.map((event) {
-      log.i('messagesOf Event ${event.snapshot.value}');
-      if (event.snapshot.exists) {
-        final messages = _transformEventToMessage(event);
-        return messages
-            .where(
-              (e) => e.parentId == chatId,
-            )
-            .toIList();
-      }
-      return IList<Message>([]);
-    }).shareValueSeeded(
+    return _messagesRef.onValue.map(
+      (event) {
+        log.i('messagesOf Event ${event.snapshot.value}');
+        if (event.snapshot.exists) {
+          final messages = _transformSnapshotToMessages(event.snapshot);
+          return messages
+              .where(
+                (e) => e.parentId == chatId,
+              )
+              .sorted((a, b) => a.dateTime.compareTo(b.dateTime))
+              .toIList();
+        }
+        return IList<DbMessage>([]);
+      },
+    ).shareValueSeeded(
       IList([]),
     );
   }
 
-  MessageList _transformEventToMessage(DatabaseEvent event) {
-    final dynamicMap = event.snapshot.value as Map<dynamic, dynamic>;
+  MessageList _transformSnapshotToMessages(DataSnapshot snapshot) {
+    final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
     final messagesMap = dynamicMap.mapTo((key, value) => value).toIList();
 
-    var messages = IList<Message>();
+    var messages = IList<DbMessage>();
     for (Map<dynamic, dynamic> messageMap in messagesMap) {
       final m = messageMap.map(
         (key, value) {
@@ -194,7 +230,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
         },
       );
       messages = messages.add(
-        Message.fromJson(m),
+        DbMessage.fromJson(m),
       );
     }
 
@@ -202,7 +238,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   }
 
   @override
-  Future<Id> addTag(Tag tag) async {
+  Future<Id> addTag(DbTag tag) async {
     final ref = _tagsRef.push();
     ref.set(
       tag.copyWith(id: ref.key!).toJson(),
@@ -211,7 +247,7 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   }
 
   @override
-  Future<void> updateTag(Tag tag) async {
+  Future<void> updateTag(DbTag tag) async {
     await _tagsRef.push().set(tag.toJson());
   }
 
