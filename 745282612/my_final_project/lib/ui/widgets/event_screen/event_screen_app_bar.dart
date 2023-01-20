@@ -9,7 +9,7 @@ import 'package:my_final_project/ui/widgets/event_screen/delete_button.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_modal.dart';
 import 'package:my_final_project/ui/widgets/event_screen/favorite_button.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
   final EventState eventState;
@@ -46,7 +46,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               eventState.countSelected.toString(),
               style: TextStyle(
-                fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
               ),
             ),
           ],
@@ -133,7 +133,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: Text(
           title,
           style: TextStyle(
-            fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
+            fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
           ),
         ),
         centerTitle: true,

@@ -359,6 +359,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Reset setting`
+  String get reset_setting {
+    return Intl.message(
+      'Reset setting',
+      name: 'reset_setting',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

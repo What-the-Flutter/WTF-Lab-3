@@ -11,8 +11,8 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart'
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_modal.dart';
 import 'package:my_final_project/ui/widgets/hovers/on_hovers_button.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenChatElement extends StatefulWidget {
   const HomeScreenChatElement({super.key});
@@ -31,7 +31,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
     final stateEvent = context.watch<EventCubit>().state;
 
     return FirebaseAnimatedList(
@@ -85,7 +85,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize:
-                                context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                           ),
                         ),
                         chat.isPin
@@ -99,7 +99,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                     subtitle: Text(
                       listEvent.isEmpty ? S.of(context).no_event : listEvent.last.messageContent,
                       style: TextStyle(
-                        fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                        fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -110,7 +110,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                             DateFormat('hh:mm a').format(listEvent.last.messageTime),
                             style: TextStyle(
                               fontSize:
-                                  context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                                  context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                             ),
                           ),
                   ),

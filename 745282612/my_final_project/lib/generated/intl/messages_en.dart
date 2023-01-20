@@ -64,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
+        "reset_setting": MessageLookupByLibrary.simpleMessage("Reset setting"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),

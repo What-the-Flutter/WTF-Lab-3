@@ -7,8 +7,8 @@ import 'package:my_final_project/ui/screens/add_page_screen.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_info.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class HomeScreenModal extends StatelessWidget {
   final String dateLastEvent;
@@ -22,7 +22,7 @@ class HomeScreenModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
     final colorIcon = isLight ? AppColors.colorNormalGrey : Colors.white;
 
     return BlocBuilder<HomeCubit, HomeState>(
@@ -54,7 +54,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).info,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -72,7 +72,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).pin_unpin,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -87,7 +87,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).archive_page,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -112,7 +112,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).edit_page,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -130,7 +130,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).delete_page,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),

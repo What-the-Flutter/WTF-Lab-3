@@ -43,6 +43,7 @@
   "setting_title" : "Settings",
   "account" : "Account",
   "change_theme": "Change theme",
-  "cnange_font_size": "Change font size"
+  "cnange_font_size": "Change font size",
+  "reset_setting": "Reset setting"
   
 }

@@ -32,9 +32,9 @@ class _AddPageFloatingButtonState extends State<AddPageFloatingButton> {
   void changeOnPressed() {
     if (widget.addSectionMode) {
       context
-          .read<SettingsCubit>()
+          .read<SettingCubit>()
           .addSection(iconData: widget.selected!.icon!, title: widget.controller.text);
-      context.read<SettingsCubit>().changeAddStatus();
+      context.read<SettingCubit>().changeAddStatus();
     } else if (widget.editMode) {
       context
           .read<HomeCubit>()
@@ -47,7 +47,7 @@ class _AddPageFloatingButtonState extends State<AddPageFloatingButton> {
 
   void changeStatus() {
     if (widget.addSectionMode) {
-      context.read<SettingsCubit>().changeAddStatus();
+      context.read<SettingCubit>().changeAddStatus();
     } else if (widget.editMode) {
       context.read<HomeCubit>().changeEditMode();
     }

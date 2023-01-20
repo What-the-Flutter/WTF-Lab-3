@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class Instruction extends StatelessWidget {
   final String title;
@@ -51,7 +51,7 @@ class EventScreenInstruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -70,7 +70,7 @@ class EventScreenInstruction extends StatelessWidget {
                       ? S.of(context).no_search_title
                       : S.of(context).title_instruction(title),
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
                 const SizedBox(
@@ -79,7 +79,7 @@ class EventScreenInstruction extends StatelessWidget {
                 Text(
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                     color: AppColors.colorNormalGrey,
                   ),
                   state.isSearch

@@ -6,7 +6,6 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart'
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
@@ -92,11 +91,11 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final stateSetting = context.watch<SettingsCubit>().state;
+        final stateSetting = context.watch<SettingCubit>().state;
         editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
@@ -145,7 +144,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                       items.titleSection,
                                       style: TextStyle(
                                         fontSize: context
-                                            .watch<ThemeCubit>()
+                                            .watch<SettingCubit>()
                                             .state
                                             .textTheme
                                             .bodyText2!

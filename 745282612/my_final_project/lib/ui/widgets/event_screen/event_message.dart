@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventMessage extends StatefulWidget {
   final Event event;
@@ -24,7 +24,7 @@ class EventMessage extends StatefulWidget {
 class _EventMessageState extends State<EventMessage> {
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return Dismissible(
       background: Container(
@@ -97,7 +97,7 @@ class _EventMessageState extends State<EventMessage> {
                             widget.event.sectionTitle!,
                             style: TextStyle(
                               fontSize:
-                                  context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                                  context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                             ),
                           ),
                         ],
@@ -112,7 +112,7 @@ class _EventMessageState extends State<EventMessage> {
                           widget.event.messageContent,
                           style: TextStyle(
                             fontSize:
-                                context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                           ),
                         ),
                 ),
@@ -124,7 +124,8 @@ class _EventMessageState extends State<EventMessage> {
                         DateFormat('hh:mm a').format(widget.event.messageTime),
                         style: TextStyle(
                           color: AppColors.colorNormalGrey,
-                          fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText2!.fontSize,
+                          fontSize:
+                              context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                         ),
                       ),
                     ),

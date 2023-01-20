@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/setting_screen.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class MainScreenDrawer extends StatelessWidget {
   const MainScreenDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return Drawer(
       child: ListView(
@@ -24,7 +24,7 @@ class MainScreenDrawer extends StatelessWidget {
               child: Text(
                 S.of(context).account,
                 style: TextStyle(
-                  fontSize: context.watch<ThemeCubit>().state.textTheme.headline2!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
                 ),
               ),
             ),
@@ -45,7 +45,7 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).setting_title,
                 style: TextStyle(
-                  fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                 ),
               ),
             ),
@@ -60,7 +60,7 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).exit_the_app,
                 style: TextStyle(
-                  fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                 ),
               ),
             ),

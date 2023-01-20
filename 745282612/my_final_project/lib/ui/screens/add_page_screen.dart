@@ -57,7 +57,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final stateSetting = context.watch<SettingsCubit>().state;
+        final stateSetting = context.watch<SettingCubit>().state;
         return Scaffold(
           appBar: AddPageAppBar(
             status: state.isEdit,

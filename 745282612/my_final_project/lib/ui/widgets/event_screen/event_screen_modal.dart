@@ -6,8 +6,8 @@ import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventScreenModal extends StatefulWidget {
   final List<Event> listEvent;
@@ -34,7 +34,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -68,7 +68,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 child: Text(
                   S.of(context).exit,
                   style: TextStyle(
-                    fontSize: context.watch<ThemeCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                     color: isLight ? Colors.black : Colors.white,
                   ),
                 ),
