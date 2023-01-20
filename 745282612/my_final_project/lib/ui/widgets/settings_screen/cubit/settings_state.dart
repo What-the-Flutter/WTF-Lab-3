@@ -8,12 +8,14 @@ class SettingState extends Equatable {
   final bool isAdd;
   final ThemeData theme;
   final TextTheme textTheme;
+  final String backgroundImage;
 
   SettingState({
     this.isAdd = false,
     required this.listSection,
     required this.theme,
     required this.textTheme,
+    required this.backgroundImage,
   });
 
   SettingState copyWith({
@@ -21,12 +23,14 @@ class SettingState extends Equatable {
     bool? isAdd,
     ThemeData? theme,
     TextTheme? textTheme,
+    String? backgroundImage,
   }) {
     return SettingState(
       isAdd: isAdd ?? this.isAdd,
       listSection: listSection ?? this.listSection,
       theme: theme ?? this.theme,
       textTheme: textTheme ?? this.textTheme,
+      backgroundImage: backgroundImage ?? this.backgroundImage,
     );
   }
 
@@ -36,5 +40,6 @@ class SettingState extends Equatable {
         isAdd,
         theme,
         textTheme,
+        backgroundImage,
       ];
 }

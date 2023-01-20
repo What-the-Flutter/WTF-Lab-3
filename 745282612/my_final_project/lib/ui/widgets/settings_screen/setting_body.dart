@@ -75,6 +75,17 @@ class _SettingBodyState extends State<SettingBody> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.image),
+            title: Text(
+              S.of(context).choose_image,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            onTap: context.read<SettingCubit>().changeBackgroundImage,
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.restore_rounded),
             title: Text(
               S.of(context).reset_setting,

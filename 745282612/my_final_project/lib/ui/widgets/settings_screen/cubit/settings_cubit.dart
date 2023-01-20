@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:my_final_project/data/db/firebase_provider.dart';
 import 'package:my_final_project/entities/section.dart';
@@ -18,6 +19,7 @@ class SettingCubit extends Cubit<SettingState> {
             listSection: [],
             theme: AppTheme.lightTheme,
             textTheme: AppFontSize.mediumFontSize,
+            backgroundImage: '',
           ),
         ) {
     initializer();
@@ -27,9 +29,11 @@ class SettingCubit extends Cubit<SettingState> {
     final listSection = await firebase.getAllSection();
     ThemeData themeData;
     TextTheme textTheme;
+    String? backgroundImage;
     final prefs = await SharedPreferences.getInstance();
     final themeKey = prefs.getString('theme') ?? ThemeGlobalKey.light.toString();
     final fontKey = prefs.getString('font') ?? FontSizeKey.medium.toString();
+    final backgroundImageKey = prefs.getString('image') ?? '';
     if (themeKey == ThemeGlobalKey.light.toString() || themeKey == '') {
       themeData = AppTheme.lightTheme;
     } else {
@@ -42,7 +46,30 @@ class SettingCubit extends Cubit<SettingState> {
     } else {
       textTheme = AppFontSize.largeFontSize;
     }
-    emit(state.copyWith(theme: themeData, textTheme: textTheme, listSection: listSection));
+    if (backgroundImageKey != '') {
+      backgroundImage = backgroundImageKey;
+    } else {
+      backgroundImage = null;
+    }
+    emit(
+      state.copyWith(
+        theme: themeData,
+        textTheme: textTheme,
+        listSection: listSection,
+        backgroundImage: backgroundImage,
+      ),
+    );
+  }
+
+  Future<void> changeBackgroundImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      prefs.setString('image', pickedFile.path);
+      emit(state.copyWith(backgroundImage: pickedFile.path));
+    }
   }
 
   Future<void> addSection({
@@ -82,8 +109,13 @@ class SettingCubit extends Cubit<SettingState> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('theme', ThemeGlobalKey.light.toString());
     prefs.setString('font', FontSizeKey.medium.toString());
+    prefs.setString('image', '');
     emit(
-      state.copyWith(theme: AppTheme.lightTheme, textTheme: AppFontSize.mediumFontSize),
+      state.copyWith(
+        theme: AppTheme.lightTheme,
+        textTheme: AppFontSize.mediumFontSize,
+        backgroundImage: '',
+      ),
     );
   }
 

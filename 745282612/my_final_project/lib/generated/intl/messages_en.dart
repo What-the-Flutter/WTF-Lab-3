@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
         "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
+        "choose_image":
+            MessageLookupByLibrary.simpleMessage("Choose background image"),
         "cnange_font_size":
             MessageLookupByLibrary.simpleMessage("Change font size"),
         "content_add_image": MessageLookupByLibrary.simpleMessage(

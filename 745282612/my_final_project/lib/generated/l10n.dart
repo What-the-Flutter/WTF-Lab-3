@@ -369,6 +369,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Choose background image`
+  String get choose_image {
+    return Intl.message(
+      'Choose background image',
+      name: 'choose_image',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
