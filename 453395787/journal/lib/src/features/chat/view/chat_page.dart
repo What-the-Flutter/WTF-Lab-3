@@ -30,6 +30,7 @@ class ChatPage extends StatelessWidget {
         messageRepository: MessageRepository(
           messageProviderApi: context.read<Database>(),
           tagProviderApi: context.read<Database>(),
+          storageProvider: context.read<Storage>(),
           chat: chat,
         ),
         chatId: chatId,

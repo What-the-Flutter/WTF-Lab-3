@@ -8,7 +8,7 @@ class _SelectionTagPageBody extends StatelessWidget {
   });
 
   final Id? selectedId;
-  final TagList tags;
+  final IList<Tag> tags;
 
   @override
   Widget build(BuildContext context) {

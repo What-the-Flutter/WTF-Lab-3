@@ -3,11 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rxdart/rxdart.dart';
 
-import '../../../../common/models/message.dart';
-import '../../../../common/models/tag.dart';
-import '../../../../common/utils/typedefs.dart';
+import '../../../../common/models/ui/message.dart';
+import '../../../../common/models/ui/tag.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_search_cubit.freezed.dart';
@@ -19,40 +17,24 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     required MessageRepositoryApi repository,
   })  : _repository = repository,
         super(const MessageSearchState.initial()) {
-    _messageStreamUpdatesSub = _repository.filteredChatStreams.listen(
-      (event) {
-        _messageStreamSub?.cancel();
-        if (state.query != null || state.queryTags != null) {
-          emit(
-            MessageSearchState.success(
-              query: state.query ?? '',
-              queryTags: state.queryTags,
-              messages: event.value,
-            ),
-          );
-        }
-        _messageStreamSub = event.listen(
+    _messageStreamSub = _repository.messages.listen(
           (messages) {
-            emit(
-              MessageSearchState.success(
-                query: state.query!,
-                queryTags: state.queryTags,
-                messages: messages,
-              ),
-            );
-          },
+        emit(
+          MessageSearchState.success(
+            query: state.query!,
+            queryTags: state.queryTags,
+            messages: messages,
+          ),
         );
       },
     );
   }
 
   final MessageRepositoryApi _repository;
-  late StreamSubscription<ValueStream<MessageList>> _messageStreamUpdatesSub;
-  StreamSubscription<MessageList>? _messageStreamSub;
+  StreamSubscription<IList<Message>>? _messageStreamSub;
 
   @override
   Future<void> close() async {
-    _messageStreamUpdatesSub.cancel();
     _messageStreamSub?.cancel();
     super.close();
   }
@@ -67,7 +49,7 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     await _repository.search(query, state.queryTags);
   }
 
-  Future<void> onSearchTagsChanged(TagList? tags) async {
+  Future<void> onSearchTagsChanged(IList<Tag>? tags) async {
     emit(
       MessageSearchState.loading(
         query: state.query!,

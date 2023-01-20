@@ -1,10 +1,11 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/data/database/database.dart';
-import '../../../common/models/tag.dart';
+import '../../../common/data/tag_repository.dart';
+import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/typedefs.dart';
@@ -26,7 +27,7 @@ class ManageTagsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ManageTagsCubit(
-        tagProviderApi: context.read<Database>(),
+        tagRepository: context.read<TagRepository>(),
       ),
       child: BlocBuilder<ManageTagsCubit, ManageTagsState>(
         builder: (context, state) {

@@ -1,8 +1,10 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
+import '../../../common/models/ui/message.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/text_styles.dart';
@@ -19,7 +21,7 @@ class MoveMessagePage extends StatefulWidget {
   });
 
   final Id fromChatId;
-  final MessageList messages;
+  final IList<Message> messages;
 
   @override
   State<MoveMessagePage> createState() => _MoveMessagePageState();

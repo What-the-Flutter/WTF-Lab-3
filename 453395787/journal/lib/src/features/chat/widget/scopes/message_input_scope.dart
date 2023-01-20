@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../common/data/storage.dart';
 import '../../api/message_repository_api.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../data/message_repository.dart';
@@ -20,6 +21,7 @@ class MessageInputScope extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageInputCubit(
         repository: repository ?? context.read<MessageRepository>(),
+        storageProviderApi: context.read<Storage>(),
       ),
       child: child,
     );

@@ -43,6 +43,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
       create: (context) => MessageRepository(
         messageProviderApi: context.read<Database>(),
         tagProviderApi: context.read<Database>(),
+        storageProvider: context.read<Storage>(),
         chat: chat,
       ),
       child: MessageSearchScope(
@@ -59,13 +60,13 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     MessageSearchScope.of(context).onSearchTagsChanged(
                       state.map(
                         initial: (_) => null,
-                        hasSelectedState: (hasSelectedState) => hasSelectedState
-                            .tags
-                            .where(
-                              (tag) =>
-                                  hasSelectedState.selected.contains(tag),
-                            )
-                            .toIList(),
+                        hasSelectedState: (hasSelectedState) =>
+                            hasSelectedState.tags
+                                .where(
+                                  (tag) =>
+                                      hasSelectedState.selected.contains(tag),
+                                )
+                                .toIList(),
                       ),
                     );
                   },

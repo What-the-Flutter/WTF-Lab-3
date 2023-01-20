@@ -1,6 +1,7 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../common/models/tag.dart';
+import '../../../../../common/models/ui/tag.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/typedefs.dart';
 import '../../tag_selector/tag_item.dart';
@@ -15,7 +16,7 @@ class MessageTags extends StatelessWidget {
     this.onPressed,
   });
 
-  final TagList tags;
+  final IList<Tag> tags;
   final Id? selectedId;
   final double spacing;
   final WrapAlignment alignment;
@@ -30,9 +31,7 @@ class MessageTags extends StatelessWidget {
       children: tags.map(
         (tag) {
           return TagItem(
-            color: Color(
-              tag.colorCode,
-            ),
+            color: tag.color,
             text: tag.text,
             isSelected: selectedId == tag.id,
             onPressed: onPressed == null ? null : (_) => onPressed!(tag),

@@ -2,8 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../common/api/chat_repository_api.dart';
-import '../../../../common/models/chat_view.dart';
+import '../../../../common/api/repository/chat_repository_api.dart';
+import '../../../../common/models/ui/chat.dart';
+import '../../../../common/models/ui/message.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
@@ -31,7 +32,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   final ChatRepositoryApi _chatRepositoryApi;
   final MessageRepositoryApi _messageRepositoryApi;
   final Id fromChatId;
-  final MessageList messages;
+  final IList<Message> messages;
 
   void select(Id id) {
     state.map(

@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/api/chat_repository_api.dart';
-import '../../../common/models/chat_view.dart';
+import '../../../common/api/repository/chat_repository_api.dart';
+import '../../../common/models/db/db_chat.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 
 part 'manage_chat_state.dart';
@@ -31,9 +32,9 @@ class ManageChatCubit extends Cubit<ManageChatState> {
       addModeState: (addModeState) {
         final creationDate = DateTime.now();
         _repository.add(
-          ChatView(
+          Chat(
             id: '',
-            iconCodePoint: JournalIcons.icons[state.selectedIcon!].codePoint,
+            icon: JournalIcons.icons[state.selectedIcon!],
             name: addModeState.name,
             messagePreview: 'Write your first message!',
             messagePreviewCreationTime: creationDate,
@@ -46,7 +47,7 @@ class ManageChatCubit extends Cubit<ManageChatState> {
       editModeState: (editModeState) {
         _repository.update(
           editModeState.chat.copyWith(
-            iconCodePoint: JournalIcons.icons[state.selectedIcon!].codePoint,
+            icon: JournalIcons.icons[state.selectedIcon!],
             name: state.name,
           ),
         );

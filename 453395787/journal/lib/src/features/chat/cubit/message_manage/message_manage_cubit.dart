@@ -4,15 +4,16 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../../../common/extensions/date_time_extensions.dart';
-import '../../../../common/models/message.dart';
-import '../../../../common/models/tag.dart';
+import '../../../../common/models/db/db_message.dart';
+import '../../../../common/models/ui/message.dart';
+import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_manage_cubit.freezed.dart';
+
 part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
@@ -25,24 +26,19 @@ class MessageManageCubit extends Cubit<MessageManageState> {
           MessageManageState.defaultModeState(
             id: chatId,
             name: name,
-            messages: messageRepository.filteredChatStreams.value.value,
+            messages: messageRepository.messages.value,
             tags: messageRepository.tags.value,
           ),
         ) {
-    _messageStreamUpdatesSub = _repository.filteredChatStreams.listen(
-      (event) {
-        _messageStreamSub?.cancel();
-        _messageStreamSub = event.listen(
-          (messages) {
-            emit(
-              MessageManageState.defaultModeState(
-                id: chatId,
-                name: name,
-                messages: messages,
-                tags: messageRepository.tags.value,
-              ),
-            );
-          },
+    _messageStreamSub = messageRepository.messages.listen(
+      (messages) {
+        emit(
+          MessageManageState.defaultModeState(
+            id: chatId,
+            name: name,
+            messages: messages,
+            tags: messageRepository.tags.value,
+          ),
         );
       },
     );
@@ -51,12 +47,10 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   final MessageRepositoryApi _repository;
   final Id chatId;
   final String name;
-  StreamSubscription<MessageList>? _messageStreamSub;
-  late final StreamSubscription<ValueStream<MessageList>> _messageStreamUpdatesSub;
+  StreamSubscription<IList<Message>>? _messageStreamSub;
 
   @override
   Future<void> close() async {
-    _messageStreamUpdatesSub.cancel();
     _messageStreamSub?.cancel();
     super.close();
   }

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
+import 'package:logger/logger.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../common/data/chat_repository.dart';
 import '../../../../common/data/database/database.dart';
@@ -57,6 +60,7 @@ class _ChatInputState extends State<ChatInput> {
       repository: MessageRepository(
         messageProviderApi: context.read<Database>(),
         tagProviderApi: context.read<Database>(),
+        storageProvider: context.read<Storage>(),
         chat: chat,
       ),
       child: Builder(
@@ -74,14 +78,17 @@ class _ChatInputState extends State<ChatInput> {
                   },
                   editModeState: (editModeState) {
                     _controller.text = editModeState.message.text;
-                    _isTagAddingOpened =
-                        editModeState.message.tagsId.isNotEmpty;
+                    _isTagAddingOpened = editModeState.message.tags.isNotEmpty;
 
                     MessageInputScope.of(context).startEditMode(
                       editModeState.message,
                     );
                     TagSelectorScope.of(context).setSelected(
-                      editModeState.message.tagsId,
+                      editModeState.message.tags
+                          .map(
+                            (e) => e.id,
+                          )
+                          .toIList(),
                     );
                   },
                 );

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
 import '../../../common/data/chat_repository.dart';
-import '../../../common/models/chat_view.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
@@ -29,7 +29,7 @@ class ManageChatPage extends StatefulWidget {
 
 class _ManageChatPageState extends State<ManageChatPage> {
   final TextEditingController _textEditingController = TextEditingController();
-  ChatView? chatForEdit;
+  Chat? chatForEdit;
 
   @override
   void dispose() {
@@ -52,10 +52,7 @@ class _ManageChatPageState extends State<ManageChatPage> {
               name: chatForEdit!.name,
               chat: chatForEdit!,
               selectedIcon: JournalIcons.icons.indexOf(
-                IconData(
-                  chatForEdit!.iconCodePoint,
-                  fontFamily: 'MaterialIcons',
-                ),
+                chatForEdit!.icon,
               ),
             ),
       child: BlocBuilder<ManageChatCubit, ManageChatState>(

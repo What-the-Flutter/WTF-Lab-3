@@ -8,18 +8,18 @@ class MessageSearchState with _$MessageSearchState {
 
   const factory MessageSearchState.loading({
     required String query,
-    TagList? queryTags,
+    IList<Tag>? queryTags,
   }) = _Loading;
 
   const factory MessageSearchState.empty({
     required String query,
-    TagList? queryTags,
+    IList<Tag>? queryTags,
   }) = _Empty;
 
   const factory MessageSearchState.success({
     required String query,
-    TagList? queryTags,
-    required MessageList messages,
+    IList<Tag>? queryTags,
+    required IList<Message> messages,
   }) = _Success;
 
   String? get query {
@@ -31,7 +31,7 @@ class MessageSearchState with _$MessageSearchState {
     );
   }
 
-  TagList? get queryTags {
+  IList<Tag>? get queryTags {
     return mapOrNull(
       loading: (loading) => loading.queryTags,
       empty: (empty) => empty.queryTags,

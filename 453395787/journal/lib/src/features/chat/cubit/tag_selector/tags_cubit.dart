@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../common/api/tag_provider_api.dart';
-import '../../../../common/models/tag.dart';
+import '../../../../common/api/repository/tag_repository_api.dart';
+import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
 
 part 'tags_state.dart';
@@ -14,10 +14,10 @@ part 'tags_cubit.freezed.dart';
 
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
-    required TagProviderApi tagProviderApi,
-  })  : _provider = tagProviderApi,
-        super(TagsState.initial(tags: tagProviderApi.tags.value)) {
-    _tagsStreamSubscription = _provider.tags.listen((event) {
+    required TagRepositoryApi tagRepositoryApi,
+  })  : _repository = tagRepositoryApi,
+        super(TagsState.initial(tags: tagRepositoryApi.tags.value)) {
+    _tagsStreamSubscription = _repository.tags.listen((event) {
       emit(
         state.copyWith(
           tags: event,
@@ -26,8 +26,8 @@ class TagsCubit extends Cubit<TagsState> {
     });
   }
 
-  final TagProviderApi _provider;
-  late final StreamSubscription<TagList> _tagsStreamSubscription;
+  final TagRepositoryApi _repository;
+  late final StreamSubscription<IList<Tag>> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {

@@ -6,7 +6,7 @@ class _BottomChatActionSheet extends StatelessWidget {
     required this.chat,
   });
 
-  final ChatView chat;
+  final Chat chat;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +22,7 @@ class _BottomChatActionSheet extends StatelessWidget {
             child: ListTile(
               title: Text(chat.name),
               leading: Icon(
-                IconData(
-                  chat.iconCodePoint,
-                  fontFamily: 'MaterialIcons',
-                ),
+                chat.icon,
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

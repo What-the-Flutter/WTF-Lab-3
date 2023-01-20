@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../common/api/message_provider_api.dart';
-import '../../../common/api/tag_provider_api.dart';
+import '../../../common/api/provider/message_provider_api.dart';
+import '../../../common/api/provider/storage_provider_api.dart';
+import '../../../common/api/provider/tag_provider_api.dart';
 import '../../../common/extensions/iterable_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
-import '../../../common/models/chat_view.dart';
-import '../../../common/models/message.dart';
+import '../../../common/models/db/db_message.dart';
+import '../../../common/models/ui/chat.dart';
+import '../../../common/models/ui/message.dart';
+import '../../../common/models/ui/tag.dart';
+import '../../../common/utils/transformers.dart';
 import '../../../common/utils/typedefs.dart';
 import '../api/message_repository_api.dart';
 
@@ -16,50 +21,129 @@ class MessageRepository extends MessageRepositoryApi {
   MessageRepository({
     required MessageProviderApi messageProviderApi,
     required TagProviderApi tagProviderApi,
-    required ChatView chat,
+    required StorageProviderApi storageProvider,
+    required Chat chat,
   })  : _messageProviderApi = messageProviderApi,
         _tagProviderApi = tagProviderApi,
+        _storageProviderApi = storageProvider,
         _chat = chat {
-    _filteredChatStream.add(
-      _messageProviderApi.messagesOf(
-        chatId: chat.id,
-      ),
+    _providerMessageStream = messageProviderApi.messagesOf(
+      chatId: chat.id,
     );
 
-    _messagesStreamSubscription =
-        _messageProviderApi.messagesOf(chatId: chat.id).listen(
-      (event) {
-        _filteredChatStream.add(
-          _messageProviderApi.messagesOf(chatId: chat.id),
-        );
-      },
+    _messageStreamController.add(
+      _providerMessageStream.value,
+    );
+
+    _messageStreamSubscription = _providerMessageStream.listen(
+      _messageStreamController.add,
     );
   }
 
   final MessageProviderApi _messageProviderApi;
   final TagProviderApi _tagProviderApi;
+  final StorageProviderApi _storageProviderApi;
 
-  final ChatView _chat;
+  final Chat _chat;
 
-  @override
-  ChatView get chat => _chat;
+  static String _query = '';
+  static IList<Tag>? _queryTags;
 
-  @override
-  ValueStream<TagList> get tags => _tagProviderApi.tags;
+  late final ValueStream<IList<DbMessage>> _providerMessageStream;
 
-  final BehaviorSubject<ValueStream<MessageList>> _filteredChatStream =
+  final BehaviorSubject<IList<DbMessage>> _messageStreamController =
       BehaviorSubject();
 
-  late final StreamSubscription<MessageList> _messagesStreamSubscription;
+  late final StreamSubscription<IList<DbMessage>> _messageStreamSubscription;
 
   void close() {
-    _messagesStreamSubscription.cancel();
-    _filteredChatStream.close();
+    _messageStreamSubscription.cancel();
   }
 
   @override
-  ValueStream<ValueStream<MessageList>> get filteredChatStreams =>
-      _filteredChatStream.stream;
+  ValueStream<IList<Message>> get messages => _transform(
+        _filter(
+          _messageStreamController.stream.shareValueSeeded(
+            _messageStreamController.value,
+          ),
+        ),
+      );
+
+  ValueStream<IList<Message>> _transform(
+    ValueStream<IList<DbMessage>> messageStream,
+  ) {
+    final transformer = Transformers.modelsToMessagesStreamTransformer(
+      fetchFile,
+      getTag,
+    );
+
+    return messageStream.transform(transformer).shareValueSeeded(
+          Transformers.modelsToMessages(
+            messageStream.value,
+            fetchFile,
+            getTag,
+          ),
+        );
+  }
+
+  Tag getTag(Id id) {
+    final tagModel = _tagProviderApi.tags.value.firstWhere(
+      (tag) => tag.id == id,
+    );
+    return Transformers.modelToTag(tagModel);
+  }
+
+  Future<File> fetchFile(Id id) async {
+    return _storageProviderApi.load(id);
+  }
+
+  ValueStream<IList<DbMessage>> _filter(
+      ValueStream<IList<DbMessage>> messageStream) {
+    return messageStream
+        .transform(
+          _filterTransformer,
+        )
+        .shareValueSeeded(
+          _filterMessages(
+            messageStream.value,
+          ),
+        );
+  }
+
+  final StreamTransformer<IList<DbMessage>, IList<DbMessage>>
+      _filterTransformer = StreamTransformer.fromHandlers(
+    handleData: (models, sink) {
+      sink.add(
+        _filterMessages(models),
+      );
+    },
+  );
+
+  static IList<DbMessage> _filterMessages(IList<DbMessage> messages) {
+    return messages.where(
+      (message) {
+        if (_queryTags == null) {
+          return message.text.containsIgnoreCase(_query);
+        }
+        return message.tagsId.containsAll(_queryTags!.map((e) => e.id)) &&
+            message.text.containsIgnoreCase(_query);
+      },
+    ).toIList();
+  }
+
+  @override
+  Chat get chat => _chat;
+
+  @override
+  ValueStream<IList<Tag>> get tags => _tagProviderApi.tags
+      .transform(
+        Transformers.modelsToTagsStreamTransformer,
+      )
+      .shareValueSeeded(
+        Transformers.modelsToTags(
+          _tagProviderApi.tags.value,
+        ),
+      );
 
   @override
   Future<void> add(Message message) async {
@@ -68,13 +152,20 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> customAdd(Id chatId, Message message) async {
-    await _messageProviderApi.addMessage(chatId, message);
+    await _messageProviderApi.addMessage(
+      chatId,
+      await Transformers.messageToModel(
+        message,
+      ),
+    );
   }
 
   @override
   Future<void> addToFavorites(Message message) async {
     await _messageProviderApi.updateMessage(
-      message.copyWith(isFavorite: true),
+      await Transformers.messageToModel(
+        message.copyWith(isFavorite: true),
+      ),
     );
   }
 
@@ -84,8 +175,8 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  Future<void> removeAll(MessageList messages) async {
-    _messageProviderApi.deleteMessages(
+  Future<void> removeAll(IList<Message> messages) async {
+    await _messageProviderApi.deleteMessages(
       messages.map((message) => message.id).toIList(),
     );
   }
@@ -93,53 +184,25 @@ class MessageRepository extends MessageRepositoryApi {
   @override
   Future<void> removeFromFavorites(Message message) async {
     await _messageProviderApi.updateMessage(
-      message.copyWith(isFavorite: true),
+      await Transformers.messageToModel(
+        message.copyWith(isFavorite: true),
+      ),
     );
   }
 
   @override
   Future<void> update(Message message) async {
-    await _messageProviderApi.updateMessage(message);
+    await _messageProviderApi.updateMessage(
+      await Transformers.messageToModel(message),
+    );
   }
 
   @override
-  Future<void> search(String query, [TagList? tags]) async {
-    _filteredChatStream.add(
-      _applyFilter(
-        _messageProviderApi.messagesOf(chatId: chat.id),
-        query,
-        tags,
-      ),
+  Future<void> search(String query, [IList<Tag>? tags]) async {
+    MessageRepository._query = query;
+    MessageRepository._queryTags = tags;
+    _messageStreamController.add(
+      _providerMessageStream.value,
     );
-  }
-
-  ValueStream<MessageList> _applyFilter(
-    ValueStream<MessageList> messagesStream,
-    String query, [
-    TagList? tags,
-  ]) {
-    return messagesStream.map(
-      (messages) {
-        return _filterMessages(messages, query, tags);
-      },
-    ).shareValueSeeded(
-      _filterMessages(messagesStream.value, query, tags),
-    );
-  }
-
-  MessageList _filterMessages(
-    MessageList messages,
-    String query, [
-    TagList? tags,
-  ]) {
-    return messages.where(
-      (message) {
-        if (tags == null) {
-          return message.text.containsIgnoreCase(query);
-        }
-        return message.tagsId.containsAll(tags.map((e) => e.id)) &&
-            message.text.containsIgnoreCase(query);
-      },
-    ).toIList();
   }
 }

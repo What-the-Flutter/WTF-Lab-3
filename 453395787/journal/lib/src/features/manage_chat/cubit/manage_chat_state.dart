@@ -12,7 +12,7 @@ class ManageChatState with _$ManageChatState {
   const factory ManageChatState.editModeState({
     int? selectedIcon,
     required String name,
-    required ChatView chat,
+    required Chat chat,
   }) = _EditModeState;
 
   bool get isAddMode => this is _AddModeState;

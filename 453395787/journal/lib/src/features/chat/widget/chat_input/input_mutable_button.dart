@@ -28,13 +28,19 @@ class _ChatInputMutableButton extends StatelessWidget {
               source: ImageSource.camera,
             );
             if (image != null) {
-              MessageInputScope.of(context).addImages([image.path]);
+              MessageInputScope.of(context).addImages([
+                File(image.path),
+              ].lock);
             }
           },
           onTap: () async {
             final images = await ImagePicker().pickMultiImage();
-            final imagePaths = images.map((e) => e.path).toList();
-            MessageInputScope.of(context).addImages(imagePaths);
+
+            MessageInputScope.of(context).addImages(images
+                .map(
+                  (e) => File(e.path),
+                )
+                .toIList());
           },
           child: const Padding(
             padding: EdgeInsets.all(

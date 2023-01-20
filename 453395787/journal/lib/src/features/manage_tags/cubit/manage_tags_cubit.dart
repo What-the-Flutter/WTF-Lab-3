@@ -5,8 +5,10 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/api/tag_provider_api.dart';
-import '../../../common/models/tag.dart';
+import '../../../common/api/provider/tag_provider_api.dart';
+import '../../../common/api/repository/tag_repository_api.dart';
+import '../../../common/models/db/db_tag.dart';
+import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/colors.dart';
 import '../../../common/utils/typedefs.dart';
 
@@ -16,13 +18,13 @@ part 'manage_tags_cubit.freezed.dart';
 
 class ManageTagsCubit extends Cubit<ManageTagsState> {
   ManageTagsCubit({
-    required TagProviderApi tagProviderApi,
+    required TagRepositoryApi tagRepository,
   })
-      : _provider = tagProviderApi,
+      : _repository = tagRepository,
         super(
-        ManageTagsState.initial(tags: tagProviderApi.tags.value),
+        ManageTagsState.initial(tags: tagRepository.tags.value),
       ) {
-    _tagsStreamSubscription = _provider.tags.listen(
+    _tagsStreamSubscription = _repository.tags.listen(
           (event) {
         emit(
           ManageTagsState.initial(
@@ -33,8 +35,8 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     );
   }
 
-  final TagProviderApi _provider;
-  late final StreamSubscription<TagList> _tagsStreamSubscription;
+  final TagRepositoryApi _repository;
+  late final StreamSubscription<IList<Tag>> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {
@@ -46,9 +48,9 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     emit(
       ManageTagsState.addModeState(
         colors: AppColors.list,
-        newTag: Tag(
+        newTag: const Tag(
           text: 'name',
-          colorCode: Colors.grey.value,
+          color: Colors.grey,
         ),
       ),
     );
@@ -79,7 +81,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           addModeState.copyWith(
             newTag: addModeState.newTag.copyWith(
               text: text ?? addModeState.newTag.text,
-              colorCode: color?.value ?? addModeState.newTag.colorCode,
+              color: color ?? addModeState.newTag.color,
             ),
           ),
         );
@@ -89,7 +91,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           editModeState.copyWith(
             editableTag: editModeState.editableTag.copyWith(
               text: text ?? editModeState.editableTag.text,
-              colorCode: color?.value ?? editModeState.editableTag.colorCode,
+              color: color ?? editModeState.editableTag.color,
             ),
           ),
         );
@@ -100,19 +102,19 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void applyChanges() {
     state.mapOrNull(
       addModeState: (addModeState) {
-        _provider.addTag(
+        _repository.addTag(
           addModeState.newTag,
         );
       },
       editModeState: (editModeState) {
-        _provider.updateTag(
+        _repository.updateTag(
           editModeState.editableTag,
         );
       },
     );
     emit(
       ManageTagsState.initial(
-        tags: _provider.tags.value,
+        tags: _repository.tags.value,
       ),
     );
   }
@@ -148,12 +150,12 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void remove() {
     state.mapOrNull(
       selectModeState: (selectModeState) {
-        _provider.deleteTag(
+        _repository.deleteTag(
           selectModeState.selectedTag,
         );
         emit(
           ManageTagsState.initial(
-            tags: _provider.tags.value,
+            tags: _repository.tags.value,
           ),
         );
       },
@@ -163,7 +165,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void backToDefault() {
     emit(
       ManageTagsState.initial(
-        tags: _provider.tags.value,
+        tags: _repository.tags.value,
       ),
     );
   }

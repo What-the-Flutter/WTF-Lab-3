@@ -32,9 +32,7 @@ class TagSelector extends StatelessWidget {
                     Insets.small,
                   ),
                   child: TagItem(
-                    color: Color(
-                      tag.colorCode,
-                    ),
+                    color: tag.color,
                     text: tag.text,
                     isSelected: state.isSelected(tag),
                     isEnabled: true,
