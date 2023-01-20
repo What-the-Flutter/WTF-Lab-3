@@ -5,7 +5,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/api/message_provider_api.dart';
+import '../../../common/api/tag_provider_api.dart';
 import '../../../common/models/tag.dart';
 import '../../../common/utils/colors.dart';
 import '../../../common/utils/typedefs.dart';
@@ -16,13 +16,13 @@ part 'manage_tags_cubit.freezed.dart';
 
 class ManageTagsCubit extends Cubit<ManageTagsState> {
   ManageTagsCubit({
-    required MessageProviderApi messageProviderApi,
+    required TagProviderApi tagProviderApi,
   })
-      : _messageProviderApi = messageProviderApi,
+      : _provider = tagProviderApi,
         super(
-        ManageTagsState.initial(tags: messageProviderApi.tags.value),
+        ManageTagsState.initial(tags: tagProviderApi.tags.value),
       ) {
-    _tagsStreamSubscription = _messageProviderApi.tags.listen(
+    _tagsStreamSubscription = _provider.tags.listen(
           (event) {
         emit(
           ManageTagsState.initial(
@@ -33,7 +33,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
     );
   }
 
-  final MessageProviderApi _messageProviderApi;
+  final TagProviderApi _provider;
   late final StreamSubscription<TagList> _tagsStreamSubscription;
 
   @override
@@ -100,19 +100,19 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void applyChanges() {
     state.mapOrNull(
       addModeState: (addModeState) {
-        _messageProviderApi.addTag(
+        _provider.addTag(
           addModeState.newTag,
         );
       },
       editModeState: (editModeState) {
-        _messageProviderApi.updateTag(
+        _provider.updateTag(
           editModeState.editableTag,
         );
       },
     );
     emit(
       ManageTagsState.initial(
-        tags: _messageProviderApi.tags.value,
+        tags: _provider.tags.value,
       ),
     );
   }
@@ -148,12 +148,12 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void remove() {
     state.mapOrNull(
       selectModeState: (selectModeState) {
-        _messageProviderApi.deleteTag(
+        _provider.deleteTag(
           selectModeState.selectedTag,
         );
         emit(
           ManageTagsState.initial(
-            tags: _messageProviderApi.tags.value,
+            tags: _provider.tags.value,
           ),
         );
       },
@@ -163,7 +163,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   void backToDefault() {
     emit(
       ManageTagsState.initial(
-        tags: _messageProviderApi.tags.value,
+        tags: _provider.tags.value,
       ),
     );
   }

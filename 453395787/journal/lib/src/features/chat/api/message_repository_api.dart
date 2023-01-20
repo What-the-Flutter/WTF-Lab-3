@@ -7,9 +7,9 @@ import '../../../common/utils/typedefs.dart';
 abstract class MessageRepositoryApi {
   ValueStream<ValueStream<MessageList>> get filteredChatStreams;
 
-  ValueStream<TagList> get tags;
-
   ChatView get chat;
+
+  ValueStream<TagList> get tags;
 
   Future<void> add(Message message);
 

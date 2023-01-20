@@ -5,12 +5,13 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../api/chat_provider_api.dart';
 import '../../api/message_provider_api.dart';
+import '../../api/tag_provider_api.dart';
 import '../../models/chat_view.dart';
 import '../../models/message.dart';
 import '../../models/tag.dart';
 import '../../utils/typedefs.dart';
 
-class Database implements ChatProviderApi, MessageProviderApi {
+class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   static Id _userId = '';
 
   static Logger log = Logger();

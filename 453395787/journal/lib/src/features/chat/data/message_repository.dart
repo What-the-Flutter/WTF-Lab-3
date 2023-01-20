@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../common/api/message_provider_api.dart';
+import '../../../common/api/tag_provider_api.dart';
 import '../../../common/extensions/iterable_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
 import '../../../common/models/chat_view.dart';
@@ -14,27 +14,30 @@ import '../api/message_repository_api.dart';
 
 class MessageRepository extends MessageRepositoryApi {
   MessageRepository({
-    required MessageProviderApi repository,
+    required MessageProviderApi messageProviderApi,
+    required TagProviderApi tagProviderApi,
     required ChatView chat,
-  })  : _repository = repository,
+  })  : _messageProviderApi = messageProviderApi,
+        _tagProviderApi = tagProviderApi,
         _chat = chat {
     _filteredChatStream.add(
-      _repository.messagesOf(
+      _messageProviderApi.messagesOf(
         chatId: chat.id,
       ),
     );
 
     _messagesStreamSubscription =
-        _repository.messagesOf(chatId: chat.id).listen(
+        _messageProviderApi.messagesOf(chatId: chat.id).listen(
       (event) {
         _filteredChatStream.add(
-          _repository.messagesOf(chatId: chat.id),
+          _messageProviderApi.messagesOf(chatId: chat.id),
         );
       },
     );
   }
 
-  final MessageProviderApi _repository;
+  final MessageProviderApi _messageProviderApi;
+  final TagProviderApi _tagProviderApi;
 
   final ChatView _chat;
 
@@ -42,7 +45,7 @@ class MessageRepository extends MessageRepositoryApi {
   ChatView get chat => _chat;
 
   @override
-  ValueStream<TagList> get tags => _repository.tags;
+  ValueStream<TagList> get tags => _tagProviderApi.tags;
 
   final BehaviorSubject<ValueStream<MessageList>> _filteredChatStream =
       BehaviorSubject();
@@ -60,50 +63,50 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> add(Message message) async {
-    await _repository.addMessage(chat.id, message);
+    await customAdd(chat.id, message);
   }
 
   @override
   Future<void> customAdd(Id chatId, Message message) async {
-    await _repository.addMessage(chatId, message);
+    await _messageProviderApi.addMessage(chatId, message);
   }
 
   @override
   Future<void> addToFavorites(Message message) async {
-    await _repository.updateMessage(
+    await _messageProviderApi.updateMessage(
       message.copyWith(isFavorite: true),
     );
   }
 
   @override
   Future<void> remove(Message message) async {
-    _repository.deleteMessage(message.id);
+    await _messageProviderApi.deleteMessage(message.id);
   }
 
   @override
   Future<void> removeAll(MessageList messages) async {
-    _repository.deleteMessages(
+    _messageProviderApi.deleteMessages(
       messages.map((message) => message.id).toIList(),
     );
   }
 
   @override
   Future<void> removeFromFavorites(Message message) async {
-    await _repository.updateMessage(
+    await _messageProviderApi.updateMessage(
       message.copyWith(isFavorite: true),
     );
   }
 
   @override
   Future<void> update(Message message) async {
-    await _repository.updateMessage(message);
+    await _messageProviderApi.updateMessage(message);
   }
 
   @override
   Future<void> search(String query, [TagList? tags]) async {
     _filteredChatStream.add(
       _applyFilter(
-        _repository.messagesOf(chatId: chat.id),
+        _messageProviderApi.messagesOf(chatId: chat.id),
         query,
         tags,
       ),

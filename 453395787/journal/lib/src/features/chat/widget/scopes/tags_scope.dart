@@ -16,7 +16,7 @@ class TagSelectorScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TagsCubit(
-        messageProviderApi: context.read<Database>(),
+        tagProviderApi: context.read<Database>(),
       ),
       child: child,
     );

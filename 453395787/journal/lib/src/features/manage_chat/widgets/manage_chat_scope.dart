@@ -18,7 +18,7 @@ class ManageChatScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ManageChatCubit(
-        repository: context.read<ChatRepository>(),
+        chatRepository: context.read<ChatRepository>(),
         manageChatState: manageChatState,
       ),
       child: child,

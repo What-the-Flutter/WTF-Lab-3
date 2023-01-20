@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/data/chat_repository.dart';
 import '../../../common/data/database/database.dart';
+import '../../../common/data/storage.dart';
 import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../data/message_repository.dart';
@@ -27,7 +28,8 @@ class ChatPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageManageCubit(
         messageRepository: MessageRepository(
-          repository: context.read<Database>(),
+          messageProviderApi: context.read<Database>(),
+          tagProviderApi: context.read<Database>(),
           chat: chat,
         ),
         chatId: chatId,

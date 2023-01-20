@@ -8,8 +8,6 @@ import '../utils/typedefs.dart';
 abstract class MessageProviderApi {
   ValueStream<MessageList> messagesOf({required Id chatId});
 
-  ValueStream<TagList> get tags;
-
   Future<Id> addMessage(Id chatId, Message message);
 
   Future<void> deleteMessage(Id messageId);
@@ -17,10 +15,4 @@ abstract class MessageProviderApi {
   Future<void> deleteMessages(IList<Id> messagesId);
 
   Future<void> updateMessage(Message message);
-
-  Future<Id> addTag(Tag tag);
-
-  Future<void> deleteTag(Id tagId);
-
-  Future<void> updateTag(Tag tag);
 }

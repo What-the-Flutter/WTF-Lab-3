@@ -3,9 +3,9 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/api/chat_repository_api.dart';
-import '../../../../common/api/message_provider_api.dart';
 import '../../../../common/models/chat_view.dart';
 import '../../../../common/utils/typedefs.dart';
+import '../../api/message_repository_api.dart';
 
 part 'move_messages_state.dart';
 
@@ -13,23 +13,23 @@ part 'move_messages_cubit.freezed.dart';
 
 class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   MoveMessagesCubit({
-    required ChatRepositoryApi chatRepository,
-    required MessageProviderApi messageProviderApi,
+    required ChatRepositoryApi chatRepositoryApi,
+    required MessageRepositoryApi messageRepositoryApi,
     required this.fromChatId,
     required this.messages,
-  })  : _chatRepository = chatRepository,
-        _messageProviderApi = messageProviderApi,
+  })  : _chatRepositoryApi = chatRepositoryApi,
+        _messageRepositoryApi = messageRepositoryApi,
         super(
           MoveMessagesState.initial(
-            chats: chatRepository.chats.value
+            chats: chatRepositoryApi.chats.value
                 .where((chat) => chat.id != fromChatId)
                 .toIList(),
             amountOfMessages: messages.length,
           ),
         );
 
-  final ChatRepositoryApi _chatRepository;
-  final MessageProviderApi _messageProviderApi;
+  final ChatRepositoryApi _chatRepositoryApi;
+  final MessageRepositoryApi _messageRepositoryApi;
   final Id fromChatId;
   final MessageList messages;
 
@@ -85,11 +85,9 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   Future<void> move() async {
     state.mapOrNull(
       hasSelectedState: (hasSelectedState) async {
-        await _messageProviderApi.deleteMessages(
-          messages.map((message) => message.id).toIList(),
-        );
+        await _messageRepositoryApi.removeAll(messages);
         for (var message in messages) {
-          await _messageProviderApi.addMessage(
+          await _messageRepositoryApi.customAdd(
             hasSelectedState.selectedChatId,
             message,
           );

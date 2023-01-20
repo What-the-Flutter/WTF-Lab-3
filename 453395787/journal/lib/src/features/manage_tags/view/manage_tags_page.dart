@@ -26,7 +26,7 @@ class ManageTagsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ManageTagsCubit(
-        messageProviderApi: context.read<Database>(),
+        tagProviderApi: context.read<Database>(),
       ),
       child: BlocBuilder<ManageTagsCubit, ManageTagsState>(
         builder: (context, state) {

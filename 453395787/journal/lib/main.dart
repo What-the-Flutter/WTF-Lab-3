@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:journal/src/common/data/storage.dart';
 
 import 'firebase_options.dart';
 import 'src/common/bloc/journal_bloc_observer.dart';
@@ -27,15 +28,22 @@ Future<void> main() async {
 
   runApp(
     RepositoryProvider(
-      create: (context) => Database(userId: userCredential.user!.uid),
+      create: (context) => Storage(
+        userId: userCredential.user!.uid,
+      ),
       child: RepositoryProvider(
-        create: (context) => ChatRepository(
-          provider: context.read<Database>(),
+        create: (context) => Database(
+          userId: userCredential.user!.uid,
         ),
-        lazy: false,
-        child: const ThemeScope(
-          child: LocaleScope(
-            child: JournalApp(),
+        child: RepositoryProvider(
+          create: (context) => ChatRepository(
+            provider: context.read<Database>(),
+          ),
+          lazy: false,
+          child: const ThemeScope(
+            child: LocaleScope(
+              child: JournalApp(),
+            ),
           ),
         ),
       ),

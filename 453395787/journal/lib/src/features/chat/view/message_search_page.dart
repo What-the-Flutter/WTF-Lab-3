@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../common/data/chat_repository.dart';
 import '../../../common/data/database/database.dart';
+import '../../../common/data/storage.dart';
 import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
@@ -40,7 +41,8 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
         );
     return RepositoryProvider(
       create: (context) => MessageRepository(
-        repository: context.read<Database>(),
+        messageProviderApi: context.read<Database>(),
+        tagProviderApi: context.read<Database>(),
         chat: chat,
       ),
       child: MessageSearchScope(

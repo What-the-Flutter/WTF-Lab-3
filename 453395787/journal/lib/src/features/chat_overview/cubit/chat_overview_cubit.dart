@@ -14,14 +14,14 @@ part 'chat_overview_cubit.freezed.dart';
 
 class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   ChatOverviewCubit({
-    required ChatRepositoryApi repository,
-  })  : _repository = repository,
+    required ChatRepositoryApi chatRepository,
+  })  : _repository = chatRepository,
         super(
           ChatOverviewState(
             chats: ChatViewList([]),
           ),
         ) {
-    _chatsStreamSubscription = repository.chats.listen(
+    _chatsStreamSubscription = chatRepository.chats.listen(
       (event) {
         emit(
           ChatOverviewState(

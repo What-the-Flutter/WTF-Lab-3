@@ -38,6 +38,7 @@ dependencies:
   firebase_auth: ^4.2.5
   firebase_database: ^10.0.9
   envied: ^0.3.0
+  firebase_storage: ^11.0.10
 
 dev_dependencies:
   flutter_test:

@@ -17,7 +17,7 @@ class ChatOverviewScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ChatOverviewCubit(
-        repository: ChatRepository(
+        chatRepository: ChatRepository(
           provider: context.read<Database>(),
         ),
       ),

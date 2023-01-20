@@ -11,11 +11,12 @@ part 'manage_chat_cubit.freezed.dart';
 
 class ManageChatCubit extends Cubit<ManageChatState> {
   ManageChatCubit({
-    required this.repository,
+    required ChatRepositoryApi chatRepository,
     required ManageChatState manageChatState,
-  }) : super(manageChatState);
+  }) : _repository = chatRepository,
+        super(manageChatState);
 
-  final ChatRepositoryApi repository;
+  final ChatRepositoryApi _repository;
 
   void onIconSelected(int? id) {
     emit(state.copyWith(selectedIcon: id));
@@ -29,7 +30,7 @@ class ManageChatCubit extends Cubit<ManageChatState> {
     state.map(
       addModeState: (addModeState) {
         final creationDate = DateTime.now();
-        repository.add(
+        _repository.add(
           ChatView(
             id: '',
             iconCodePoint: JournalIcons.icons[state.selectedIcon!].codePoint,
@@ -43,7 +44,7 @@ class ManageChatCubit extends Cubit<ManageChatState> {
         );
       },
       editModeState: (editModeState) {
-        repository.update(
+        _repository.update(
           editModeState.chat.copyWith(
             iconCodePoint: JournalIcons.icons[state.selectedIcon!].codePoint,
             name: state.name,

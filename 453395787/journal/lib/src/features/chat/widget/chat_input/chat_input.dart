@@ -8,6 +8,7 @@ import 'package:localization/localization.dart';
 
 import '../../../../common/data/chat_repository.dart';
 import '../../../../common/data/database/database.dart';
+import '../../../../common/data/storage.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';
@@ -54,7 +55,8 @@ class _ChatInputState extends State<ChatInput> {
 
     return MessageInputScope(
       repository: MessageRepository(
-        repository: context.read<Database>(),
+        messageProviderApi: context.read<Database>(),
+        tagProviderApi: context.read<Database>(),
         chat: chat,
       ),
       child: Builder(
