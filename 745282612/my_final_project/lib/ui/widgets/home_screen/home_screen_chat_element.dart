@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/event_screen.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/home_screen_modal.dart';
 import 'package:my_final_project/ui/widgets/hovers/on_hovers_button.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
@@ -35,7 +35,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
     final stateEvent = context.watch<EventCubit>().state;
 
     return FirebaseAnimatedList(
-      query: FirebaseDatabase.instance.ref().child(_user!.uid).child('chat').orderByChild('pin'),
+      query: context.read<HomeCubit>().getQuery(_user),
       itemBuilder: (context, snapshot, animation, index) {
         final map = Map.from(snapshot.value as Map);
         final chat = Chat.fromJson(map);

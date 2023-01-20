@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
+
 import 'package:my_final_project/entities/section.dart';
 
-class SettingsState {
+class SettingsState extends Equatable {
   final List<Section> listSection;
   final bool isAdd;
 
@@ -18,4 +20,10 @@ class SettingsState {
       listSection: listSection ?? this.listSection,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        listSection,
+        isAdd,
+      ];
 }

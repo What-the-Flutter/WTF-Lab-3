@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -54,35 +53,16 @@ double sizePaddingBottom(BuildContext context, EventState state) {
   }
 }
 
-List<Event> getListEvent(Map<dynamic, dynamic> map, int chatId) {
-  final listEvent = <Event>[];
-  for (final chatElement in map.values) {
-    final map = chatElement as Map<dynamic, dynamic>;
-    final event = Event.fromJson(map);
-    listEvent.add(event);
-  }
-  final newEventList = listEvent.reversed.toList();
-  newEventList.sort(
-    (a, b) => b.messageTime.compareTo(a.messageTime),
-  );
-  return newEventList;
-}
-
 Widget listMessage(BuildContext context, EventState state, User? _user, int chatId) {
   return StreamBuilder(
-    stream: FirebaseDatabase.instance
-        .ref()
-        .child(_user?.uid ?? '')
-        .child('event')
-        .orderByChild('chatId')
-        .equalTo(chatId)
-        .onValue,
+    stream: context.read<EventCubit>().getStream(_user, chatId),
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
-        return const CircularProgressIndicator();
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       } else {
-        final Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as dynamic;
-        final eventList = getListEvent(map, chatId);
+        final eventList = context.read<EventCubit>().getEventList(snapshot);
 
         return ListView.builder(
           reverse: true,

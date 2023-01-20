@@ -6,7 +6,7 @@ import 'package:my_final_project/utils/theme/theme_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit() : super(ThemeState(theme: ThemeData()));
+  ThemeCubit() : super(ThemeState(theme: AppTheme.lightTheme));
 
   void initializer() async {
     ThemeData themeData;
@@ -14,11 +14,10 @@ class ThemeCubit extends Cubit<ThemeState> {
     final themeKey = prefs.getString('theme') ?? ThemeGlobalKey.light.toString();
     if (themeKey == ThemeGlobalKey.light.toString() || themeKey == '') {
       themeData = AppTheme.lightTheme;
-      emit(state.copyWith(theme: themeData));
     } else {
       themeData = AppTheme.darkTheme;
-      emit(state.copyWith(theme: themeData));
     }
+    emit(state.copyWith(theme: themeData));
   }
 
   Future<void> changeTheme() async {

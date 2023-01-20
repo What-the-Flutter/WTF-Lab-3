@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -258,5 +259,28 @@ class EventCubit extends Cubit<EventState> {
   List<Event> _listEventSort(List<Event> listChat) {
     listChat.sort((a, b) => a.messageTime.compareTo(b.messageTime));
     return listChat;
+  }
+
+  Stream<DatabaseEvent>? getStream(User? user, int chatId) => FirebaseDatabase.instance
+      .ref()
+      .child(user?.uid ?? '')
+      .child('event')
+      .orderByChild('chatId')
+      .equalTo(chatId)
+      .onValue;
+
+  List<Event> getEventList(AsyncSnapshot<DatabaseEvent> snapshot) {
+    final Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as dynamic;
+    final listEvent = <Event>[];
+    for (final chatElement in map.values) {
+      final map = chatElement as Map<dynamic, dynamic>;
+      final event = Event.fromJson(map);
+      listEvent.add(event);
+    }
+    final newEventList = listEvent.reversed.toList();
+    newEventList.sort(
+      (a, b) => b.messageTime.compareTo(a.messageTime),
+    );
+    return newEventList;
   }
 }

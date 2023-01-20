@@ -17,5 +17,7 @@ class ThemeState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [theme];
+  List<Object?> get props => [
+        theme,
+      ];
 }

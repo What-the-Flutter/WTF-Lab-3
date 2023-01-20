@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class ChatField {
@@ -8,7 +9,7 @@ class ChatField {
   static final String pin = 'pin';
 }
 
-class Chat {
+class Chat extends Equatable {
   final int id;
   final Icon icon;
   final String title;
@@ -58,4 +59,13 @@ class Chat {
       isPin: map['${ChatField.pin}'] == 1 ? false : true,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        icon,
+        title,
+        isPin,
+        dateCreate,
+      ];
 }

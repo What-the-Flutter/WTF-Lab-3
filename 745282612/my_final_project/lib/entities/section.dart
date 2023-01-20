@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class SectionField {
@@ -6,7 +7,7 @@ class SectionField {
   static final String titleSection = 'title';
 }
 
-class Section {
+class Section extends Equatable {
   final int id;
   final IconData iconSection;
   final String titleSection;
@@ -44,4 +45,11 @@ class Section {
       titleSection: titleSection ?? this.titleSection,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        iconSection,
+        titleSection,
+      ];
 }

@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:my_final_project/entities/chat.dart';
 
-class HomeState {
+class HomeState extends Equatable {
   final List<Chat> listChat;
   final bool isEdit;
   final Icon? iconSeleted;
@@ -29,4 +30,12 @@ class HomeState {
       isStatus: isStatus ?? this.isStatus,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        listChat,
+        isEdit,
+        iconSeleted,
+        isStatus,
+      ];
 }

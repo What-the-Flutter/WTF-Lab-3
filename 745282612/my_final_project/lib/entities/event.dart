@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class EventField {
@@ -13,7 +14,7 @@ class EventField {
   static final String isSelected = 'isSelected';
 }
 
-class Event {
+class Event extends Equatable {
   final int id;
   final bool isFavorit;
   final bool isSelected;
@@ -95,4 +96,18 @@ class Event {
       isSelected: map[EventField.isSelected] == 1 ? false : true,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        isFavorit,
+        isSelected,
+        messageContent,
+        messageType,
+        messageTime,
+        messageImage,
+        sectionIcon,
+        sectionTitle,
+        chatId,
+      ];
 }
