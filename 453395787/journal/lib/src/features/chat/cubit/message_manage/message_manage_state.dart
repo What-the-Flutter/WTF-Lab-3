@@ -7,24 +7,24 @@ class MessageManageState with _$MessageManageState {
   const factory MessageManageState.defaultModeState({
     required Id id,
     required String name,
-    required IList<Message> messages,
-    required IList<Tag> tags,
+    required MessageList messages,
+    required TagList tags,
   }) = MessageManageDefaultModeState;
 
   const factory MessageManageState.selectionModeState({
     required Id id,
     required String name,
-    required IList<Message> messages,
-    required IList<Tag> tags,
+    required MessageList messages,
+    required TagList tags,
     required ISet<Id> selected,
   }) = MessageManageSelectionModeState;
 
   const factory MessageManageState.editModeState({
     required Id id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required Message message,
-    required IList<Tag> tags,
+    required TagList tags,
   }) = MessageManageEditModeState;
 
   IList<Object> get messagesWithDates {

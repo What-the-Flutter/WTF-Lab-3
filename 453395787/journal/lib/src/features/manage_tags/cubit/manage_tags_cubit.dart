@@ -5,9 +5,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/api/provider/tag_provider_api.dart';
 import '../../../common/api/repository/tag_repository_api.dart';
-import '../../../common/models/db/db_tag.dart';
 import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/colors.dart';
 import '../../../common/utils/typedefs.dart';
@@ -19,13 +17,12 @@ part 'manage_tags_cubit.freezed.dart';
 class ManageTagsCubit extends Cubit<ManageTagsState> {
   ManageTagsCubit({
     required TagRepositoryApi tagRepository,
-  })
-      : _repository = tagRepository,
+  })  : _repository = tagRepository,
         super(
-        ManageTagsState.initial(tags: tagRepository.tags.value),
-      ) {
+          ManageTagsState.initial(tags: tagRepository.tags.value),
+        ) {
     _tagsStreamSubscription = _repository.tags.listen(
-          (event) {
+      (event) {
         emit(
           ManageTagsState.initial(
             tags: event,
@@ -36,7 +33,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
   }
 
   final TagRepositoryApi _repository;
-  late final StreamSubscription<IList<Tag>> _tagsStreamSubscription;
+  late final StreamSubscription<TagList> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {
@@ -63,7 +60,7 @@ class ManageTagsCubit extends Cubit<ManageTagsState> {
           ManageTagsState.editModeState(
             colors: AppColors.list,
             editableTag: selectModeState.tags.firstWhere(
-                  (e) => e.id == selectModeState.selectedTag,
+              (e) => e.id == selectModeState.selectedTag,
             ),
           ),
         );

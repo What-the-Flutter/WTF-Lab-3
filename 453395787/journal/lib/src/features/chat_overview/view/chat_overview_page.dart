@@ -6,7 +6,6 @@ import 'package:localization/localization.dart';
 import '../../../common/data/chat_repository.dart';
 import '../../../common/extensions/date_time_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
-import '../../../common/models/db/db_chat.dart';
 import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;

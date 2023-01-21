@@ -4,7 +4,7 @@ import '../../models/db/db_tag.dart';
 import '../../utils/typedefs.dart';
 
 abstract class TagProviderApi {
-  ValueStream<TagList> get tags;
+  ValueStream<DbTagList> get tags;
 
   Future<Id> addTag(DbTag tag);
 

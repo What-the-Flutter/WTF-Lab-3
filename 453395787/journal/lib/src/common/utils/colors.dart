@@ -2,7 +2,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppColors {
-  static final IList<Color> list = const IListConst([
+  static final IList<Color> list = const [
     Colors.pink,
     Colors.red,
     Colors.deepOrange,
@@ -21,5 +21,5 @@ abstract class AppColors {
     Colors.deepPurple,
     Colors.blueGrey,
     Colors.brown,
-  ]);
+  ].lock;
 }

@@ -5,12 +5,12 @@ class TagsState with _$TagsState {
   const TagsState._();
 
   const factory TagsState.initial({
-    required IList<Tag> tags,
+    required TagList tags,
   }) = TagsInitialState;
 
   const factory TagsState.hasSelectedState({
-    required IList<Tag> tags,
-    required IList<Tag> selected,
+    required TagList tags,
+    required TagList selected,
   }) = TagsHasSelectedState;
 
   bool isSelected(Tag tag) {

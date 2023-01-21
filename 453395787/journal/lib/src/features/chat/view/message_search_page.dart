@@ -41,9 +41,9 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
         );
     return RepositoryProvider(
       create: (context) => MessageRepository(
-        messageProviderApi: context.read<Database>(),
-        tagProviderApi: context.read<Database>(),
-        storageProvider: context.read<Storage>(),
+        messageProvider: context.read<Database>(),
+        tagProvider: context.read<Database>(),
+        storageProvider: context.read<StorageProvider>(),
         chat: chat,
       ),
       child: MessageSearchScope(

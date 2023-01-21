@@ -45,7 +45,7 @@ class _SingleImage extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
+                return const CircularProgressIndicator();
               } else {
                 return Image.file(
                   snapshot.data!,

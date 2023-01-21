@@ -28,9 +28,9 @@ class ChatPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageManageCubit(
         messageRepository: MessageRepository(
-          messageProviderApi: context.read<Database>(),
-          tagProviderApi: context.read<Database>(),
-          storageProvider: context.read<Storage>(),
+          messageProvider: context.read<Database>(),
+          tagProvider: context.read<Database>(),
+          storageProvider: context.read<StorageProvider>(),
           chat: chat,
         ),
         chatId: chatId,

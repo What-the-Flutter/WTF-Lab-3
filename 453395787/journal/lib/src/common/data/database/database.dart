@@ -18,22 +18,54 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   static Logger log = Logger();
 
   Database({required Id userId}) {
-    log.i('initialize');
     _userId = userId;
-    _initTagsStream(userId);
-    _initChatStream(userId);
+    _initTagsStream();
+    _initChatStream();
     _initChatAndMessageSynchronization();
+  }
+
+  Future<void> _initTagsStream() async {
+    final event = await _tagsRef.once(DatabaseEventType.value);
+    _tagsSubject.add(
+      _snapshotToModels(event.snapshot, DbTag.fromJson),
+    );
+
+    _tagsRef.onValue.listen(
+      (event) {
+        final tags = _snapshotToModels(event.snapshot, DbTag.fromJson);
+        log.v('Database -> new tags event -> $tags');
+        _tagsSubject.add(tags);
+      },
+    );
+  }
+
+  Future<void> _initChatStream() async {
+    final event = await _chatsRef.once(DatabaseEventType.value);
+    _chatsSubject.add(
+      _snapshotToModels(event.snapshot, DbChat.fromJson),
+    );
+
+    _chatsRef.onValue.listen(
+      (event) {
+        final chats = _snapshotToModels(event.snapshot, DbChat.fromJson);
+        log.v('Database -> new chats event -> $chats');
+        _chatsSubject.add(chats);
+      },
+    );
   }
 
   void _initChatAndMessageSynchronization() {
     _messagesRef.onValue.listen(
       (event) async {
         if (event.snapshot.exists) {
-          final messages = _transformSnapshotToMessages(event.snapshot);
+          final messages = _snapshotToModels(
+            event.snapshot,
+            DbMessage.fromJson,
+          );
+
           final messageGroups = messages.groupListsBy((e) => e.parentId);
           for (var group in messageGroups.entries) {
             final lastMessage = group.value.last;
-            log.wtf('In sync $group');
 
             await _chatsRef.child(lastMessage.parentId).update(
               {
@@ -49,88 +81,45 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
     );
   }
 
-  void _initTagsStream(Id userId) {
-    log.i('init Tags Stream');
-    _tagsRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        final tags = _transformSnapshotToTags(event.snapshot);
-        log.i('New tags: $tags');
-        tagsSubject.add(tags);
-      }
-    });
-  }
-
-  TagList _transformSnapshotToTags(DataSnapshot snapshot) {
-    final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
-    final tagsMap = dynamicMap.mapTo((key, value) => value).toIList();
-
-    var tags = IList<DbTag>();
-    for (Map<dynamic, dynamic> tagMap in tagsMap) {
-      final m = tagMap.map(
-        (key, value) {
-          return MapEntry(key as String, value as Object?);
-        },
-      );
-      tags = tags.add(
-        DbTag.fromJson(m),
-      );
+  IList<E> _snapshotToModels<E>(
+    DataSnapshot snapshot,
+    E Function(Map<String, Object?>) transformer,
+  ) {
+    if (!snapshot.exists) {
+      return IList([]);
     }
 
-    return tags;
-  }
-
-  Future<void> _initChatStream(Id userId) async {
-    log.i('init message Stream');
-    _chatsRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        final chats = _transformSnapshotToChats(event.snapshot);
-        log.i('New chats: $chats');
-        chatsSubject.add(chats);
-      } else {
-        chatsSubject.add(IList([]));
-      }
-    });
-
-    final event = await _chatsRef.once(DatabaseEventType.value);
-    chatsSubject.add(_transformSnapshotToChats(event.snapshot));
-  }
-
-  ChatViewList _transformSnapshotToChats(DataSnapshot snapshot) {
     final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
-    final chatsMap = dynamicMap.mapTo((key, value) => value).toIList();
+    final listOfMaps = dynamicMap.mapTo((key, value) => value).toIList();
 
-    var chats = IList<DbChat>();
-    for (Map<dynamic, dynamic> chatMap in chatsMap) {
-      final m = chatMap.map(
-        (key, value) {
-          return MapEntry(key as String, value as Object?);
-        },
+    var models = IList<E>();
+    for (Map<dynamic, dynamic> map in listOfMaps) {
+      final modelMap = map.map(
+        (key, value) => MapEntry(key as String, value as Object?),
       );
-      chats = chats.add(
-        DbChat.fromJson(m),
+      models = models.add(
+        transformer(modelMap),
       );
     }
-
-    return chats;
+    return models;
   }
 
-  BehaviorSubject<ChatViewList> chatsSubject = BehaviorSubject.seeded(
+  final BehaviorSubject<DbChatList> _chatsSubject = BehaviorSubject.seeded(
     IList([]),
   );
 
-  BehaviorSubject<TagList> tagsSubject = BehaviorSubject.seeded(
+  final BehaviorSubject<DbTagList> _tagsSubject = BehaviorSubject.seeded(
     IList([]),
   );
 
   @override
-  ValueStream<ChatViewList> get chats => chatsSubject.stream;
+  ValueStream<DbChatList> get chats => _chatsSubject.stream;
 
   @override
-  ValueStream<TagList> get tags => tagsSubject.stream;
+  ValueStream<DbTagList> get tags => _tagsSubject.stream;
 
   @override
   Future<Id> addChat(DbChat chat) async {
-    log.i('add Chat $chat');
     final ref = _chatsRef.push();
     await ref.set(
       chat
@@ -144,15 +133,14 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
 
   @override
   Future<void> updateChat(DbChat chat) async {
-    log.i('update Chat $chat');
     await _chatsRef.child(chat.id).update(chat.toJson());
   }
 
   @override
   Future<void> deleteChat(Id chatId) async {
-    log.i('delete Chat $chatId');
-    final messages = _transformSnapshotToMessages(
+    final messages = _snapshotToModels(
       await _messagesRef.get(),
+      DbMessage.fromJson,
     );
     final chatMessages = messages.where(
       (e) => e.parentId == chatId,
@@ -192,18 +180,22 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
   }
 
   @override
-  Future<void> deleteMessages(IList<Id> messagesId) async {
+  Future<void> deleteMessages(Iterable<Id> messagesId) async {
     messagesId.forEach(await deleteMessage);
   }
 
   @override
-  ValueStream<MessageList> messagesOf({required Id chatId}) {
-    log.i('messagesOf $chatId');
+  ValueStream<DbMessageList> messagesOf({required Id chatId}) {
     return _messagesRef.onValue.map(
       (event) {
-        log.i('messagesOf Event ${event.snapshot.value}');
+        log.v(
+            'Database -> messagesOf $chatId -> Event ${event.snapshot.value}');
         if (event.snapshot.exists) {
-          final messages = _transformSnapshotToMessages(event.snapshot);
+          final messages = _snapshotToModels(
+            event.snapshot,
+            DbMessage.fromJson,
+          );
+
           return messages
               .where(
                 (e) => e.parentId == chatId,
@@ -218,25 +210,6 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
     );
   }
 
-  MessageList _transformSnapshotToMessages(DataSnapshot snapshot) {
-    final dynamicMap = snapshot.value as Map<dynamic, dynamic>;
-    final messagesMap = dynamicMap.mapTo((key, value) => value).toIList();
-
-    var messages = IList<DbMessage>();
-    for (Map<dynamic, dynamic> messageMap in messagesMap) {
-      final m = messageMap.map(
-        (key, value) {
-          return MapEntry(key as String, value as Object?);
-        },
-      );
-      messages = messages.add(
-        DbMessage.fromJson(m),
-      );
-    }
-
-    return messages;
-  }
-
   @override
   Future<Id> addTag(DbTag tag) async {
     final ref = _tagsRef.push();
@@ -248,13 +221,12 @@ class Database implements ChatProviderApi, MessageProviderApi, TagProviderApi {
 
   @override
   Future<void> updateTag(DbTag tag) async {
-    await _tagsRef.push().set(tag.toJson());
+    await _tagsRef.child(tag.id).update(tag.toJson());
   }
 
   @override
   Future<void> deleteTag(Id tagId) async {
-    final tagRef = FirebaseDatabase.instance.ref('$_tagsRef/$tagId');
-    await tagRef.remove();
+    await _tagsRef.child(tagId).remove();
   }
 
   DatabaseReference get _usersRef {

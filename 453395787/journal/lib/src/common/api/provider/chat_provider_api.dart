@@ -4,7 +4,7 @@ import '../../models/db/db_chat.dart';
 import '../../utils/typedefs.dart';
 
 abstract class ChatProviderApi {
-  ValueStream<ChatViewList> get chats;
+  ValueStream<DbChatList> get chats;
 
   Future<Id> addChat(DbChat chat);
 

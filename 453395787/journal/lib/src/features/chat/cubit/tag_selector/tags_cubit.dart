@@ -14,10 +14,10 @@ part 'tags_cubit.freezed.dart';
 
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
-    required TagRepositoryApi tagRepositoryApi,
-  })  : _repository = tagRepositoryApi,
-        super(TagsState.initial(tags: tagRepositoryApi.tags.value)) {
-    _tagsStreamSubscription = _repository.tags.listen((event) {
+    required TagRepositoryApi tagRepository,
+  })  : _tagRepository = tagRepository,
+        super(TagsState.initial(tags: tagRepository.tags.value)) {
+    _tagsStreamSubscription = _tagRepository.tags.listen((event) {
       emit(
         state.copyWith(
           tags: event,
@@ -26,8 +26,8 @@ class TagsCubit extends Cubit<TagsState> {
     });
   }
 
-  final TagRepositoryApi _repository;
-  late final StreamSubscription<IList<Tag>> _tagsStreamSubscription;
+  final TagRepositoryApi _tagRepository;
+  late final StreamSubscription<TagList> _tagsStreamSubscription;
 
   @override
   Future<void> close() async {
@@ -87,7 +87,11 @@ class TagsCubit extends Cubit<TagsState> {
   }
 
   void setSelected(IList<Id> tagsId) {
-    final tags = state.tags.where((e) => tagsId.contains(e.id)).toIList();
+    final tags = state.tags
+        .where(
+          (e) => tagsId.contains(e.id),
+        )
+        .toIList();
     emit(
       TagsState.hasSelectedState(
         tags: state.tags,

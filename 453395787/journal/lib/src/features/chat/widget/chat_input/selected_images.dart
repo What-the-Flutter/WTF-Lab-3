@@ -35,12 +35,12 @@ class _SelectedImagesList extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                           Radius.medium,
                         ),
-                        child: StreamBuilder<File>(
-                          stream: state.message.images[index].asStream(),
+                        child: FutureBuilder<File>(
+                          future: state.message.images[index],
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.done) {
                               if (snapshot.hasError) {
-                                return Text(snapshot.error.toString());
+                                return const CircularProgressIndicator();
                               } else {
                                 return Image.file(
                                   snapshot.data!,
@@ -60,16 +60,10 @@ class _SelectedImagesList extends StatelessWidget {
                     Insets.extraLarge,
                   ),
                   onPressed: () async {
-                    /*
                     final images = await ImagePicker().pickMultiImage();
                     MessageInputScope.of(context).addImages(
-                      images
-                          .map(
-                            (e) => File(e.path),
-                          )
-                          .toList(),
+                      images.map((e) => File(e.path)).toIList(),
                     );
-                     */
                   },
                   icon: const Icon(
                     Icons.add,

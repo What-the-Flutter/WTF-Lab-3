@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common/api/repository/tag_repository_api.dart';
 import '../../../../common/data/database/database.dart';
 import '../../../../common/data/tag_repository.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
@@ -18,7 +17,7 @@ class TagSelectorScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TagsCubit(
-        tagRepositoryApi: TagRepository(
+        tagRepository: TagRepository(
           tagProvider: context.read<Database>(),
         ),
       ),

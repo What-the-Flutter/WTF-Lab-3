@@ -5,7 +5,6 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/repository/chat_repository_api.dart';
-import '../../../common/models/db/db_chat.dart';
 import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/typedefs.dart';
 
@@ -16,8 +15,7 @@ part 'chat_overview_cubit.freezed.dart';
 class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   ChatOverviewCubit({
     required ChatRepositoryApi chatRepository,
-  })  : _repository = chatRepository,
-        super(
+  }) : super(
           ChatOverviewState(
             chats: IList<Chat>([]),
           ),
@@ -35,8 +33,7 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
     );
   }
 
-  final ChatRepositoryApi _repository;
-  late StreamSubscription<IList<Chat>> _chatsStreamSubscription;
+  late StreamSubscription<ChatList> _chatsStreamSubscription;
 
   @override
   Future<void> close() async {

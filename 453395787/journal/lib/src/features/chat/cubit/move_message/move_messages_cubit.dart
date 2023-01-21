@@ -14,25 +14,25 @@ part 'move_messages_cubit.freezed.dart';
 
 class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   MoveMessagesCubit({
-    required ChatRepositoryApi chatRepositoryApi,
-    required MessageRepositoryApi messageRepositoryApi,
+    required ChatRepositoryApi chatRepository,
+    required MessageRepositoryApi messageRepository,
     required this.fromChatId,
     required this.messages,
-  })  : _chatRepositoryApi = chatRepositoryApi,
-        _messageRepositoryApi = messageRepositoryApi,
+  })  : _chatRepository = chatRepository,
+        _messageRepository = messageRepository,
         super(
           MoveMessagesState.initial(
-            chats: chatRepositoryApi.chats.value
+            chats: chatRepository.chats.value
                 .where((chat) => chat.id != fromChatId)
                 .toIList(),
             amountOfMessages: messages.length,
           ),
         );
 
-  final ChatRepositoryApi _chatRepositoryApi;
-  final MessageRepositoryApi _messageRepositoryApi;
+  final ChatRepositoryApi _chatRepository;
+  final MessageRepositoryApi _messageRepository;
   final Id fromChatId;
-  final IList<Message> messages;
+  final MessageList messages;
 
   void select(Id id) {
     state.map(
@@ -86,9 +86,9 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   Future<void> move() async {
     state.mapOrNull(
       hasSelectedState: (hasSelectedState) async {
-        await _messageRepositoryApi.removeAll(messages);
+        await _messageRepository.removeAll(messages);
         for (var message in messages) {
-          await _messageRepositoryApi.customAdd(
+          await _messageRepository.customAdd(
             hasSelectedState.selectedChatId,
             message,
           );

@@ -18,7 +18,7 @@ typedef GetTagCallback = Tag Function(Id id);
 
 abstract class Transformers {
   static final modelsToTagsStreamTransformer =
-      StreamTransformer<IList<DbTag>, IList<Tag>>.fromHandlers(
+      StreamTransformer<DbTagList, TagList>.fromHandlers(
     handleData: (models, sink) {
       sink.add(
         Transformers.modelsToTags(models),
@@ -26,7 +26,7 @@ abstract class Transformers {
     },
   );
 
-  static IList<Tag> modelsToTags(IList<DbTag> models) {
+  static TagList modelsToTags(DbTagList models) {
     return models.map(modelToTag).toIList();
   }
 
@@ -49,7 +49,7 @@ abstract class Transformers {
   }
 
   static final modelsToChatsStreamTransformer =
-      StreamTransformer<IList<DbChat>, IList<Chat>>.fromHandlers(
+      StreamTransformer<DbChatList, ChatList>.fromHandlers(
     handleData: (value, sink) {
       sink.add(
         Transformers.modelsToChats(value),
@@ -57,23 +57,23 @@ abstract class Transformers {
     },
   );
 
-  static IList<Chat> modelsToChats(IList<DbChat> chats) {
-    return chats.map(modelToChat).toIList();
+  static ChatList modelsToChats(DbChatList models) {
+    return models.map(modelToChat).toIList();
   }
 
-  static Chat modelToChat(DbChat chat) {
+  static Chat modelToChat(DbChat model) {
     return Chat(
-      id: chat.id,
-      name: chat.name,
+      id: model.id,
+      name: model.name,
       icon: IconData(
-        chat.iconCodePoint,
+        model.iconCodePoint,
         fontFamily: 'MaterialIcons',
       ),
-      isPinned: chat.isPinned,
-      creationDate: chat.creationDate,
-      messagePreview: chat.messagePreview,
-      messagePreviewCreationTime: chat.messagePreviewCreationTime,
-      messageAmount: chat.messageAmount,
+      isPinned: model.isPinned,
+      creationDate: model.creationDate,
+      messagePreview: model.messagePreview,
+      messagePreviewCreationTime: model.messagePreviewCreationTime,
+      messageAmount: model.messageAmount,
     );
   }
 
@@ -90,12 +90,12 @@ abstract class Transformers {
     );
   }
 
-  static StreamTransformer<IList<DbMessage>, IList<Message>>
+  static StreamTransformer<DbMessageList, MessageList>
       modelsToMessagesStreamTransformer(
     FetchFileCallback fetchFileCallback,
     GetTagCallback getTagCallback,
   ) {
-    return StreamTransformer<IList<DbMessage>, IList<Message>>.fromHandlers(
+    return StreamTransformer<DbMessageList, MessageList>.fromHandlers(
       handleData: (models, sink) {
         sink.add(
           Transformers.modelsToMessages(
@@ -108,8 +108,8 @@ abstract class Transformers {
     );
   }
 
-  static IList<Message> modelsToMessages(
-    IList<DbMessage> models,
+  static MessageList modelsToMessages(
+    DbMessageList models,
     FetchFileCallback fetchFileCallback,
     GetTagCallback getTagCallback,
   ) {

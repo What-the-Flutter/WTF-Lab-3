@@ -8,34 +8,30 @@ import 'package:path_provider/path_provider.dart';
 import '../api/provider/storage_provider_api.dart';
 import '../utils/typedefs.dart';
 
-class Storage extends StorageProviderApi {
+class StorageProvider extends StorageProviderApi {
   static Id _userId = '';
 
-  static final maxDownloadSize = 5 * 1024 * 1024;
-
-  Storage({required String userId}) {
+  StorageProvider({required String userId}) {
     _userId = userId;
   }
 
   @override
-  Future<File> load(Id id) async {
-    final saveDirectory = await getSaveDirectory();
-    final filePath = join(saveDirectory.path, id);
+  Future<File> load(String filename) async {
+    final filePath = await _getFilePath(filename);
+    final file = File(filePath);
 
-    if (await File(filePath).exists()) {
-      return File(filePath);
+    if (await file.exists()) {
+      return file;
     }
 
-    final file = File(filePath);
-    await _ref.child(id).writeToFile(file);
+    await _ref.child(filename).writeToFile(file);
     return file;
   }
 
   @override
   Future<void> save(File file) async {
-    final saveDirectory = await getSaveDirectory();
     final filename = basename(file.path);
-    final filePath = join(saveDirectory.path, filename);
+    final filePath = await _getFilePath(filename);
 
     await file.copy(filePath);
 
@@ -47,16 +43,16 @@ class Storage extends StorageProviderApi {
   }
 
   @override
-  Future<void> remove(Id id) async {
-    final saveDirectory = await getSaveDirectory();
-    final filePath = join(saveDirectory.path, id);
+  Future<void> remove(String filename) async {
+    final filePath = await _getFilePath(filename);
 
     await File(filePath).delete();
-    await _ref.child(id).delete();
+    await _ref.child(filename).delete();
   }
 
-  Future<Directory> getSaveDirectory() async {
-    return getApplicationDocumentsDirectory();
+  Future<String> _getFilePath(String filename) async {
+    final directory = await getApplicationDocumentsDirectory();
+    return join(directory.path, filename);
   }
 
   Reference get _ref {

@@ -1,10 +1,10 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../models/ui/chat.dart';
+import '../../utils/typedefs.dart';
 
 abstract class ChatRepositoryApi {
-  ValueStream<IList<Chat>> get chats;
+  ValueStream<ChatList> get chats;
 
   Future<void> add(Chat chat);
 

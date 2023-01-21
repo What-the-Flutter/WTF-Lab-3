@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
-import 'package:logger/logger.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../../../common/data/chat_repository.dart';
 import '../../../../common/data/database/database.dart';
@@ -58,9 +55,9 @@ class _ChatInputState extends State<ChatInput> {
 
     return MessageInputScope(
       repository: MessageRepository(
-        messageProviderApi: context.read<Database>(),
-        tagProviderApi: context.read<Database>(),
-        storageProvider: context.read<Storage>(),
+        messageProvider: context.read<Database>(),
+        tagProvider: context.read<Database>(),
+        storageProvider: context.read<StorageProvider>(),
         chat: chat,
       ),
       child: Builder(

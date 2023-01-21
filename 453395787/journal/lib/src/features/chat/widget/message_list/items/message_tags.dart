@@ -1,4 +1,3 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../common/models/ui/tag.dart';
@@ -16,7 +15,7 @@ class MessageTags extends StatelessWidget {
     this.onPressed,
   });
 
-  final IList<Tag> tags;
+  final TagList tags;
   final Id? selectedId;
   final double spacing;
   final WrapAlignment alignment;

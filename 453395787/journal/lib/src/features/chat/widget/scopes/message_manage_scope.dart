@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common/models/db/db_chat.dart';
 import '../../../../common/models/ui/chat.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../data/message_repository.dart';

@@ -21,9 +21,7 @@ class _BottomChatActionSheet extends StatelessWidget {
             ),
             child: ListTile(
               title: Text(chat.name),
-              leading: Icon(
-                chat.icon,
-              ),
+              leading: Icon(chat.icon),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -1,13 +1,11 @@
 import 'dart:io';
 
-import 'package:rxdart/rxdart.dart';
-
 import '../../utils/typedefs.dart';
 
 abstract class StorageProviderApi {
   Future<void> save(File file);
 
-  Future<File> load(Id id);
+  Future<File> load(String filename);
 
-  Future<void> remove(Id id);
+  Future<void> remove(String filename);
 }

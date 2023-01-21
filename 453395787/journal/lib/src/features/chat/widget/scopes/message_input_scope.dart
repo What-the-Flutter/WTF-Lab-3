@@ -20,8 +20,8 @@ class MessageInputScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageInputCubit(
-        repository: repository ?? context.read<MessageRepository>(),
-        storageProviderApi: context.read<Storage>(),
+        messageRepository: repository ?? context.read<MessageRepository>(),
+        storageProvider: context.read<StorageProvider>(),
       ),
       child: child,
     );

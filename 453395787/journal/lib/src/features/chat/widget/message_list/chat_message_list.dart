@@ -58,7 +58,6 @@ class ChatMessageList extends StatelessWidget {
                 },
                 child: MessageItem(
                   message: item as Message,
-                  tags: item.tags,
                   onTap: (message, isSelected) {
                     state.mapOrNull(
                       defaultModeState: (defaultModeState) {

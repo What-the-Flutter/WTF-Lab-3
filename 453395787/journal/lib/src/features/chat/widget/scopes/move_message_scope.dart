@@ -20,17 +20,17 @@ class MoveMessagesScope extends StatelessWidget {
 
   final Widget child;
   final Id fromChatId;
-  final IList<Message> messages;
+  final MessageList messages;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
-        chatRepositoryApi: context.read<ChatRepository>(),
-        messageRepositoryApi: MessageRepository(
-          messageProviderApi: context.read<Database>(),
-          tagProviderApi: context.read<Database>(),
-          storageProvider: context.read<Storage>(),
+        chatRepository: context.read<ChatRepository>(),
+        messageRepository: MessageRepository(
+          messageProvider: context.read<Database>(),
+          tagProvider: context.read<Database>(),
+          storageProvider: context.read<StorageProvider>(),
           chat: context.read<ChatRepository>().chats.value.firstWhere(
                 (e) => e.id == fromChatId,
               ),

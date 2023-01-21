@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/extensions/date_time_extensions.dart';
-import '../../../../common/models/db/db_message.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';

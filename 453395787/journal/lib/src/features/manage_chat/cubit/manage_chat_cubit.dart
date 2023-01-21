@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/repository/chat_repository_api.dart';
-import '../../../common/models/db/db_chat.dart';
 import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 

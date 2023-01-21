@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:logger/logger.dart';
 
 import '../../../../common/api/provider/storage_provider_api.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_input_cubit.freezed.dart';
@@ -16,10 +16,10 @@ part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
-    required MessageRepositoryApi repository,
-    required StorageProviderApi storageProviderApi,
-  })  : _repository = repository,
-        _storage = storageProviderApi,
+    required MessageRepositoryApi messageRepository,
+    required StorageProviderApi storageProvider,
+  })  : _repository = messageRepository,
+        _storage = storageProvider,
         super(
           MessageInputState.defaultModeState(
             message: Message(
@@ -41,19 +41,6 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   Future<void> addImages(IList<File> images) async {
-    var futureImages = IList<Future<File>>([]);
-    for (var image in images) {
-      final futureImage = Future.value(image);
-      futureImage.then(
-        (value) => Logger().wtf(
-          'Test: ${value.path}',
-        ),
-      );
-      futureImages.add(futureImage);
-    }
-
-    Logger().wtf('Size: ${futureImages.length}');
-
     emit(
       state.copyWith(
         message: state.message.copyWith(
@@ -71,18 +58,19 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.removeWhere((e) => e == image),
+          images: state.message.images.removeWhere(
+            (e) => e == image,
+          ),
         ),
       ),
     );
   }
 
   void addTag(Tag tag) {
-    final stateTags = state.message.tags;
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          tags: stateTags.add(tag),
+          tags: state.message.tags.add(tag),
         ),
       ),
     );
@@ -98,7 +86,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
   }
 
-  void setTags(IList<Tag> tags) {
+  void setTags(TagList tags) {
     emit(
       state.copyWith(
         message: state.message.copyWith(

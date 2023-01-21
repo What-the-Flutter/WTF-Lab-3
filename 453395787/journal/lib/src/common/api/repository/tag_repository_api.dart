@@ -1,12 +1,10 @@
-
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../models/ui/tag.dart';
 import '../../utils/typedefs.dart';
 
 abstract class TagRepositoryApi {
-  ValueStream<IList<Tag>> get tags;
+  ValueStream<TagList> get tags;
 
   Future<Id> addTag(Tag tag);
 

@@ -20,15 +20,15 @@ import '../api/message_repository_api.dart';
 
 class MessageRepository extends MessageRepositoryApi {
   MessageRepository({
-    required MessageProviderApi messageProviderApi,
-    required TagProviderApi tagProviderApi,
+    required MessageProviderApi messageProvider,
+    required TagProviderApi tagProvider,
     required StorageProviderApi storageProvider,
     required Chat chat,
-  })  : _messageProviderApi = messageProviderApi,
-        _tagProviderApi = tagProviderApi,
-        _storageProviderApi = storageProvider,
+  })  : _messageProvider = messageProvider,
+        _tagProvider = tagProvider,
+        _storageProvider = storageProvider,
         _chat = chat {
-    _providerMessageStream = messageProviderApi.messagesOf(
+    _providerMessageStream = messageProvider.messagesOf(
       chatId: chat.id,
     );
 
@@ -41,28 +41,28 @@ class MessageRepository extends MessageRepositoryApi {
     );
   }
 
-  final MessageProviderApi _messageProviderApi;
-  final TagProviderApi _tagProviderApi;
-  final StorageProviderApi _storageProviderApi;
+  final MessageProviderApi _messageProvider;
+  final TagProviderApi _tagProvider;
+  final StorageProviderApi _storageProvider;
 
   final Chat _chat;
 
   static String _query = '';
   static IList<Tag>? _queryTags;
 
-  late final ValueStream<IList<DbMessage>> _providerMessageStream;
+  late final ValueStream<DbMessageList> _providerMessageStream;
 
-  final BehaviorSubject<IList<DbMessage>> _messageStreamController =
+  final BehaviorSubject<DbMessageList> _messageStreamController =
       BehaviorSubject();
 
-  late final StreamSubscription<IList<DbMessage>> _messageStreamSubscription;
+  late final StreamSubscription<DbMessageList> _messageStreamSubscription;
 
   void close() {
     _messageStreamSubscription.cancel();
   }
 
   @override
-  ValueStream<IList<Message>> get messages => _transform(
+  ValueStream<MessageList> get messages => _transform(
         _filter(
           _messageStreamController.stream.shareValueSeeded(
             _messageStreamController.value,
@@ -70,8 +70,8 @@ class MessageRepository extends MessageRepositoryApi {
         ),
       );
 
-  ValueStream<IList<Message>> _transform(
-    ValueStream<IList<DbMessage>> messageStream,
+  ValueStream<MessageList> _transform(
+    ValueStream<DbMessageList> messageStream,
   ) {
     final transformer = Transformers.modelsToMessagesStreamTransformer(
       fetchFile,
@@ -88,18 +88,18 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   Tag getTag(Id id) {
-    final tagModel = _tagProviderApi.tags.value.firstWhere(
+    final tagModel = _tagProvider.tags.value.firstWhere(
       (tag) => tag.id == id,
     );
     return Transformers.modelToTag(tagModel);
   }
 
   Future<File> fetchFile(Id id) async {
-    return _storageProviderApi.load(id);
+    return _storageProvider.load(id);
   }
 
-  ValueStream<IList<DbMessage>> _filter(
-      ValueStream<IList<DbMessage>> messageStream) {
+  ValueStream<DbMessageList> _filter(
+      ValueStream<DbMessageList> messageStream) {
     return messageStream
         .transform(
           _filterTransformer,
@@ -111,7 +111,7 @@ class MessageRepository extends MessageRepositoryApi {
         );
   }
 
-  final StreamTransformer<IList<DbMessage>, IList<DbMessage>>
+  final StreamTransformer<DbMessageList, DbMessageList>
       _filterTransformer = StreamTransformer.fromHandlers(
     handleData: (models, sink) {
       sink.add(
@@ -120,7 +120,7 @@ class MessageRepository extends MessageRepositoryApi {
     },
   );
 
-  static IList<DbMessage> _filterMessages(IList<DbMessage> messages) {
+  static DbMessageList _filterMessages(DbMessageList messages) {
     return messages.where(
       (message) {
         if (_queryTags == null) {
@@ -136,13 +136,13 @@ class MessageRepository extends MessageRepositoryApi {
   Chat get chat => _chat;
 
   @override
-  ValueStream<IList<Tag>> get tags => _tagProviderApi.tags
+  ValueStream<TagList> get tags => _tagProvider.tags
       .transform(
         Transformers.modelsToTagsStreamTransformer,
       )
       .shareValueSeeded(
         Transformers.modelsToTags(
-          _tagProviderApi.tags.value,
+          _tagProvider.tags.value,
         ),
       );
 
@@ -153,7 +153,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> customAdd(Id chatId, Message message) async {
-    await _messageProviderApi.addMessage(
+    await _messageProvider.addMessage(
       chatId,
       await Transformers.messageToModel(
         message,
@@ -163,7 +163,7 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> addToFavorites(Message message) async {
-    await _messageProviderApi.updateMessage(
+    await _messageProvider.updateMessage(
       await Transformers.messageToModel(
         message.copyWith(isFavorite: true),
       ),
@@ -172,9 +172,9 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> remove(Message message) async {
-    await _messageProviderApi.deleteMessage(message.id);
+    await _messageProvider.deleteMessage(message.id);
     for (var image in message.images) {
-      _storageProviderApi.remove(
+      _storageProvider.remove(
         basename(
           (await image).path,
         ),
@@ -183,15 +183,15 @@ class MessageRepository extends MessageRepositoryApi {
   }
 
   @override
-  Future<void> removeAll(IList<Message> messages) async {
-    await _messageProviderApi.deleteMessages(
+  Future<void> removeAll(MessageList messages) async {
+    await _messageProvider.deleteMessages(
       messages.map((message) => message.id).toIList(),
     );
   }
 
   @override
   Future<void> removeFromFavorites(Message message) async {
-    await _messageProviderApi.updateMessage(
+    await _messageProvider.updateMessage(
       await Transformers.messageToModel(
         message.copyWith(isFavorite: false),
       ),
@@ -200,13 +200,13 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> update(Message message) async {
-    await _messageProviderApi.updateMessage(
+    await _messageProvider.updateMessage(
       await Transformers.messageToModel(message),
     );
   }
 
   @override
-  Future<void> search(String query, [IList<Tag>? tags]) async {
+  Future<void> search(String query, [TagList? tags]) async {
     MessageRepository._query = query;
     MessageRepository._queryTags = tags;
     _messageStreamController.add(

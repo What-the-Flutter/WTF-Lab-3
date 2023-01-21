@@ -31,7 +31,7 @@ Future<void> main() async {
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => Storage(
+          create: (context) => StorageProvider(
             userId: userCredential.user!.uid,
           ),
         ),
