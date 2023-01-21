@@ -389,6 +389,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Change bubble alignment`
+  String get change_bubble_alignment {
+    return Intl.message(
+      'Change bubble alignment',
+      name: 'change_bubble_alignment',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

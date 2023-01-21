@@ -20,6 +20,7 @@ class SettingCubit extends Cubit<SettingState> {
             theme: AppTheme.lightTheme,
             textTheme: AppFontSize.mediumFontSize,
             backgroundImage: '',
+            bubbleAlignment: 'left',
           ),
         ) {
     initializer();
@@ -30,10 +31,12 @@ class SettingCubit extends Cubit<SettingState> {
     ThemeData themeData;
     TextTheme textTheme;
     String? backgroundImage;
+    String? bubbleAlignment;
     final prefs = await SharedPreferences.getInstance();
     final themeKey = prefs.getString('theme') ?? ThemeGlobalKey.light.toString();
     final fontKey = prefs.getString('font') ?? FontSizeKey.medium.toString();
     final backgroundImageKey = prefs.getString('image') ?? '';
+    final bubbleAlignmentKey = prefs.getString('bubbleAlignment') ?? 'left';
     if (themeKey == ThemeGlobalKey.light.toString() || themeKey == '') {
       themeData = AppTheme.lightTheme;
     } else {
@@ -51,14 +54,31 @@ class SettingCubit extends Cubit<SettingState> {
     } else {
       backgroundImage = null;
     }
+    if (bubbleAlignmentKey == 'left') {
+      bubbleAlignment = 'left';
+    } else {
+      bubbleAlignment = 'right';
+    }
     emit(
       state.copyWith(
         theme: themeData,
         textTheme: textTheme,
         listSection: listSection,
         backgroundImage: backgroundImage,
+        bubbleAlignment: bubbleAlignment,
       ),
     );
+  }
+
+  Future<void> changeBubbleAligment() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (state.bubbleAlignment == 'left') {
+      prefs.setString('bubbleAlignment', 'right');
+      emit(state.copyWith(bubbleAlignment: 'right'));
+    } else {
+      prefs.setString('bubbleAlignment', 'left');
+      emit(state.copyWith(bubbleAlignment: 'left'));
+    }
   }
 
   Future<void> changeBackgroundImage() async {
@@ -110,11 +130,13 @@ class SettingCubit extends Cubit<SettingState> {
     prefs.setString('theme', ThemeGlobalKey.light.toString());
     prefs.setString('font', FontSizeKey.medium.toString());
     prefs.setString('image', '');
+    prefs.setString('bubbleAlignment', 'left');
     emit(
       state.copyWith(
         theme: AppTheme.lightTheme,
         textTheme: AppFontSize.mediumFontSize,
         backgroundImage: '',
+        bubbleAlignment: 'left',
       ),
     );
   }

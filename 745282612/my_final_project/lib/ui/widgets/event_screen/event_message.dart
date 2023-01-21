@@ -22,6 +22,15 @@ class EventMessage extends StatefulWidget {
 }
 
 class _EventMessageState extends State<EventMessage> {
+  Alignment messageBubbleAlignment() {
+    final settingBubbleAlegnment = context.watch<SettingCubit>().state.bubbleAlignment;
+    if (settingBubbleAlegnment == 'left') {
+      return widget.event.messageType == 'sender' ? Alignment.bottomLeft : Alignment.bottomRight;
+    } else {
+      return widget.event.messageType == 'sender' ? Alignment.bottomRight : Alignment.bottomLeft;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLight = context.watch<SettingCubit>().isLight();
@@ -66,8 +75,7 @@ class _EventMessageState extends State<EventMessage> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-          alignment:
-              (widget.event.messageType == 'sender' ? Alignment.bottomLeft : Alignment.bottomRight),
+          alignment: messageBubbleAlignment(),
           child: Container(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width / 2.5,

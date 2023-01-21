@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "change_bubble_alignment":
+            MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
         "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
         "choose_image":
             MessageLookupByLibrary.simpleMessage("Choose background image"),

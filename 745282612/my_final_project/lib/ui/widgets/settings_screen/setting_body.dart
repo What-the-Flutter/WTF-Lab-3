@@ -87,6 +87,23 @@ class _SettingBodyState extends State<SettingBody> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.bubble_chart),
+            title: Text(
+              S.of(context).change_bubble_alignment,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            subtitle: Text(
+              'Left/Right',
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            onTap: context.read<SettingCubit>().changeBubbleAligment,
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.share),
             title: Text(
               S.of(context).share_app,

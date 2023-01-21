@@ -9,6 +9,7 @@ class SettingState extends Equatable {
   final ThemeData theme;
   final TextTheme textTheme;
   final String backgroundImage;
+  final String bubbleAlignment;
 
   SettingState({
     this.isAdd = false,
@@ -16,6 +17,7 @@ class SettingState extends Equatable {
     required this.theme,
     required this.textTheme,
     required this.backgroundImage,
+    required this.bubbleAlignment,
   });
 
   SettingState copyWith({
@@ -24,6 +26,7 @@ class SettingState extends Equatable {
     ThemeData? theme,
     TextTheme? textTheme,
     String? backgroundImage,
+    String? bubbleAlignment,
   }) {
     return SettingState(
       isAdd: isAdd ?? this.isAdd,
@@ -31,6 +34,7 @@ class SettingState extends Equatable {
       theme: theme ?? this.theme,
       textTheme: textTheme ?? this.textTheme,
       backgroundImage: backgroundImage ?? this.backgroundImage,
+      bubbleAlignment: bubbleAlignment ?? this.bubbleAlignment,
     );
   }
 
@@ -41,5 +45,6 @@ class SettingState extends Equatable {
         theme,
         textTheme,
         backgroundImage,
+        bubbleAlignment,
       ];
 }
