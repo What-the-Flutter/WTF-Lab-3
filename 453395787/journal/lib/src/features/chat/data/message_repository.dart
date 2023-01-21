@@ -10,7 +10,6 @@ import '../../../common/api/provider/storage_provider_api.dart';
 import '../../../common/api/provider/tag_provider_api.dart';
 import '../../../common/extensions/iterable_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
-import '../../../common/models/db/db_message.dart';
 import '../../../common/models/ui/chat.dart';
 import '../../../common/models/ui/message.dart';
 import '../../../common/models/ui/tag.dart';
@@ -98,8 +97,7 @@ class MessageRepository extends MessageRepositoryApi {
     return _storageProvider.load(id);
   }
 
-  ValueStream<DbMessageList> _filter(
-      ValueStream<DbMessageList> messageStream) {
+  ValueStream<DbMessageList> _filter(ValueStream<DbMessageList> messageStream) {
     return messageStream
         .transform(
           _filterTransformer,
@@ -111,8 +109,8 @@ class MessageRepository extends MessageRepositoryApi {
         );
   }
 
-  final StreamTransformer<DbMessageList, DbMessageList>
-      _filterTransformer = StreamTransformer.fromHandlers(
+  final StreamTransformer<DbMessageList, DbMessageList> _filterTransformer =
+      StreamTransformer.fromHandlers(
     handleData: (models, sink) {
       sink.add(
         _filterMessages(models),
@@ -126,7 +124,8 @@ class MessageRepository extends MessageRepositoryApi {
         if (_queryTags == null) {
           return message.text.containsIgnoreCase(_query);
         }
-        return message.tagsId.containsAll(_queryTags!.map((e) => e.id).toIList()) &&
+        return message.tagsId
+                .containsAll(_queryTags!.map((e) => e.id).toIList()) &&
             message.text.containsIgnoreCase(_query);
       },
     ).toIList();

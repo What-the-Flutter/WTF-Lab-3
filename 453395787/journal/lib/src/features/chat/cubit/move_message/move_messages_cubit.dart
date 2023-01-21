@@ -4,7 +4,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../common/api/repository/chat_repository_api.dart';
 import '../../../../common/models/ui/chat.dart';
-import '../../../../common/models/ui/message.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 

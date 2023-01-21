@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import '../../utils/typedefs.dart';
-
 abstract class StorageProviderApi {
   Future<void> save(File file);
 
