@@ -68,6 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
         "reset_setting": MessageLookupByLibrary.simpleMessage("Reset setting"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
+        "share_app": MessageLookupByLibrary.simpleMessage("Share app"),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
         "title_instruction": m1

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/add_page_screen.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingBody extends StatefulWidget {
   const SettingBody({super.key});
@@ -83,6 +84,19 @@ class _SettingBodyState extends State<SettingBody> {
               ),
             ),
             onTap: context.read<SettingCubit>().changeBackgroundImage,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.share),
+            title: Text(
+              S.of(context).share_app,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            onTap: () {
+              Share.share('It\'s my app');
+            },
           ),
           const Divider(),
           ListTile(
