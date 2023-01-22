@@ -33,6 +33,7 @@ dependencies:
   local_auth: ^2.1.3
   permission_handler: ^10.2.0
   share_plus: ^6.3.0
+  flutter_native_splash: ^2.2.17
 
 dev_dependencies:
   flutter_test:
@@ -44,7 +45,8 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
-
+  assets:
+   - assets/logos/
   fonts:
    - family:  CustomIcons
      fonts:
