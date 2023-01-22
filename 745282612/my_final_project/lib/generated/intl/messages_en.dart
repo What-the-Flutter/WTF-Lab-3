@@ -35,6 +35,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "body_instruction": m0,
         "change_bubble_alignment":
             MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
+        "change_date_bubble": MessageLookupByLibrary.simpleMessage(
+            "Change data bubble alignment"),
         "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
         "choose_image":
             MessageLookupByLibrary.simpleMessage("Choose background image"),

@@ -21,6 +21,7 @@ class SettingCubit extends Cubit<SettingState> {
             textTheme: AppFontSize.mediumFontSize,
             backgroundImage: '',
             bubbleAlignment: 'left',
+            dateBubble: 'left',
           ),
         ) {
     initializer();
@@ -31,12 +32,14 @@ class SettingCubit extends Cubit<SettingState> {
     ThemeData themeData;
     TextTheme textTheme;
     String? backgroundImage;
-    String? bubbleAlignment;
+    String bubbleAlignment;
+    String dateBubble;
     final prefs = await SharedPreferences.getInstance();
     final themeKey = prefs.getString('theme') ?? ThemeGlobalKey.light.toString();
     final fontKey = prefs.getString('font') ?? FontSizeKey.medium.toString();
     final backgroundImageKey = prefs.getString('image') ?? '';
     final bubbleAlignmentKey = prefs.getString('bubbleAlignment') ?? 'left';
+    final dateBubbleKey = prefs.getString('dateBubble') ?? 'left';
     if (themeKey == ThemeGlobalKey.light.toString() || themeKey == '') {
       themeData = AppTheme.lightTheme;
     } else {
@@ -59,6 +62,11 @@ class SettingCubit extends Cubit<SettingState> {
     } else {
       bubbleAlignment = 'right';
     }
+    if (dateBubbleKey == 'left') {
+      dateBubble = 'left';
+    } else {
+      dateBubble = 'center';
+    }
     emit(
       state.copyWith(
         theme: themeData,
@@ -66,8 +74,20 @@ class SettingCubit extends Cubit<SettingState> {
         listSection: listSection,
         backgroundImage: backgroundImage,
         bubbleAlignment: bubbleAlignment,
+        dateBubble: dateBubble,
       ),
     );
+  }
+
+  Future<void> changeDateBubble() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (state.dateBubble == 'left') {
+      prefs.setString('dateBubble', 'center');
+      emit(state.copyWith(dateBubble: 'center'));
+    } else {
+      prefs.setString('dateBubble', 'left');
+      emit(state.copyWith(dateBubble: 'left'));
+    }
   }
 
   Future<void> changeBubbleAligment() async {
@@ -131,13 +151,14 @@ class SettingCubit extends Cubit<SettingState> {
     prefs.setString('font', FontSizeKey.medium.toString());
     prefs.setString('image', '');
     prefs.setString('bubbleAlignment', 'left');
+    prefs.setString('dateBubble', 'left');
     emit(
       state.copyWith(
-        theme: AppTheme.lightTheme,
-        textTheme: AppFontSize.mediumFontSize,
-        backgroundImage: '',
-        bubbleAlignment: 'left',
-      ),
+          theme: AppTheme.lightTheme,
+          textTheme: AppFontSize.mediumFontSize,
+          backgroundImage: '',
+          bubbleAlignment: 'left',
+          dateBubble: 'left'),
     );
   }
 

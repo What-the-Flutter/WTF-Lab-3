@@ -104,6 +104,23 @@ class _SettingBodyState extends State<SettingBody> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.align_horizontal_left),
+            title: Text(
+              S.of(context).change_date_bubble,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            subtitle: Text(
+              'Left/Center',
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
+            onTap: context.read<SettingCubit>().changeDateBubble,
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.share),
             title: Text(
               S.of(context).share_app,

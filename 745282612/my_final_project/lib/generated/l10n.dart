@@ -399,6 +399,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Change data bubble alignment`
+  String get change_date_bubble {
+    return Intl.message(
+      'Change data bubble alignment',
+      name: 'change_date_bubble',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
