@@ -41,10 +41,17 @@ class EventCubit extends Cubit<EventState> {
       messageImage: null,
       sectionIcon: selectedIcon != Icons.bubble_chart ? selectedIcon : null,
       sectionTitle: selectedTitle != 'Cancel' ? selectedTitle : null,
+      tag: state.tagTitle != 'Cancel' ? state.tagTitle : null,
     );
     await firebase.addEvent(newEvent);
     newListEvent.add(newEvent);
-    emit(state.copyWith(listEvent: newListEvent, isWrite: false));
+    emit(
+      state.copyWith(
+        listEvent: newListEvent,
+        isWrite: false,
+        tagTitle: 'Cancel',
+      ),
+    );
   }
 
   void resetFavorite() {
@@ -143,7 +150,6 @@ class EventCubit extends Cubit<EventState> {
       changeSelected();
     }
     emit(state.copyWith(listEvent: listEvent));
-    // changeSelected();
   }
 
   void changeEditText() {
@@ -188,12 +194,30 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(isSection: !state.isSection));
   }
 
+  void changeStatusTag() {
+    emit(state.copyWith(isTag: !state.isTag));
+  }
+
+  void changeSwitchSectionTag() {
+    emit(state.copyWith(switchSectionTag: !state.switchSectionTag));
+  }
+
   void _changeCountSelected() {
     final listElement = state.listEvent;
     final listSelected = listElement.where((element) => element.isSelected);
     emit(state.copyWith(countSelected: listSelected.length));
     if (state.countSelected == 0) {
       changeSelected();
+    }
+  }
+
+  void changeTagTitle(String tag) {
+    if (tag == 'Cancel') {
+      emit(state.copyWith(tagTitle: 'Cancel'));
+      changeStatusTag();
+    } else {
+      emit(state.copyWith(tagTitle: tag));
+      changeStatusTag();
     }
   }
 

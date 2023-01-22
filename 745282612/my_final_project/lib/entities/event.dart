@@ -12,6 +12,7 @@ class EventField {
   static final String messageImage = 'image';
   static final String chatId = 'chatId';
   static final String isSelected = 'isSelected';
+  static final String tag = 'tag';
 }
 
 class Event extends Equatable {
@@ -25,6 +26,7 @@ class Event extends Equatable {
   final IconData? sectionIcon;
   final String? sectionTitle;
   final int chatId;
+  final String? tag;
 
   Event({
     required this.id,
@@ -37,6 +39,7 @@ class Event extends Equatable {
     this.messageImage,
     this.sectionIcon,
     this.sectionTitle,
+    this.tag,
   });
 
   Event copyWith({
@@ -50,6 +53,7 @@ class Event extends Equatable {
     IconData? sectionIcon,
     String? sectionTitle,
     int? chatId,
+    String? tag,
   }) {
     return Event(
       id: id ?? this.id,
@@ -62,6 +66,7 @@ class Event extends Equatable {
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
       chatId: chatId ?? this.chatId,
+      tag: tag ?? this.tag,
     );
   }
 
@@ -77,6 +82,7 @@ class Event extends Equatable {
       '${EventField.chatId}': chatId,
       '${EventField.messageImage}': messageImage != null ? messageImage! : null,
       '${EventField.isSelected}': isSelected == false ? 1 : 0,
+      '${EventField.tag}': tag,
     };
   }
 
@@ -93,7 +99,8 @@ class Event extends Equatable {
           ? IconData(map['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
           : null,
       sectionTitle: map['${EventField.sectionTitle}'],
-      isSelected: map[EventField.isSelected] == 1 ? false : true,
+      isSelected: map['${EventField.isSelected}'] == 1 ? false : true,
+      tag: map['${EventField.tag}'],
     );
   }
 
@@ -109,5 +116,6 @@ class Event extends Equatable {
         sectionIcon,
         sectionTitle,
         chatId,
+        tag,
       ];
 }

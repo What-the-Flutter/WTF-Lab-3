@@ -125,6 +125,20 @@ class _EventMessageState extends State<EventMessage> {
                         ),
                 ),
                 const SizedBox(height: 3),
+                widget.event.tag != null
+                    ? Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          widget.event.tag!,
+                          style: TextStyle(
+                            color: AppColors.colorNormalGrey,
+                            fontSize:
+                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                          ),
+                        ),
+                      )
+                    : Container(),
+                const SizedBox(height: 3),
                 Row(
                   children: [
                     Expanded(

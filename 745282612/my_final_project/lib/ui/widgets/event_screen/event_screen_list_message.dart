@@ -47,7 +47,7 @@ class _EventScreenListMessageState extends State<EventScreenListMessage> {
 
 double sizePaddingBottom(BuildContext context, EventState state) {
   if (state.isSection) {
-    return MediaQuery.of(context).size.height * 0.2;
+    return MediaQuery.of(context).size.height * 0.22;
   } else if (state.isSearch) {
     return MediaQuery.of(context).size.height * 0;
   } else {
