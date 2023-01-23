@@ -10,8 +10,8 @@ import '../utils/typedefs.dart';
 
 class ChatRepository extends ChatRepositoryApi {
   ChatRepository({
-    required ChatProviderApi provider,
-  }) : _provider = provider;
+    required ChatProviderApi chatProvider,
+  }) : _provider = chatProvider;
 
   final ChatProviderApi _provider;
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/data/chat_repository.dart';
-import '../../../common/data/database/database.dart';
+import '../../../common/data/provider/chat_provider.dart';
 import '../cubit/chat_overview_cubit.dart';
 
 class ChatOverviewScope extends StatelessWidget {
@@ -18,7 +18,7 @@ class ChatOverviewScope extends StatelessWidget {
     return BlocProvider(
       create: (_) => ChatOverviewCubit(
         chatRepository: ChatRepository(
-          provider: context.read<Database>(),
+          chatProvider: context.read<ChatProvider>(),
         ),
       ),
       child: child,

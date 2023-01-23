@@ -4,7 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
 import 'common/data/chat_repository.dart';
-import 'common/data/database/database.dart';
+import 'common/data/provider/chat_provider.dart';
+import 'common/data/provider/message_provider.dart';
+import 'common/data/provider/tag_provider.dart';
 import 'common/data/storage.dart';
 import 'common/data/tag_repository.dart';
 import 'common/utils/typedefs.dart';
@@ -82,18 +84,28 @@ class _InitProviders extends StatelessWidget {
           ),
         ),
         RepositoryProvider(
-          create: (context) => Database(
+          create: (context) => ChatProvider(
+            userId: userId,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => MessageProvider(
+            userId: userId,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => TagProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
           create: (context) => ChatRepository(
-            provider: context.read<Database>(),
+            chatProvider: context.read<ChatProvider>(),
           ),
         ),
         RepositoryProvider(
           create: (context) => TagRepository(
-            tagProvider: context.read<Database>(),
+            tagProvider: context.read<TagProvider>(),
           ),
         ),
       ],

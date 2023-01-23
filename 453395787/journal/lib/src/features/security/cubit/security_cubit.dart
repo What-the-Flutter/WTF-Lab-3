@@ -2,15 +2,15 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:logger/logger.dart';
 
+import '../../../common/utils/app_logger.dart';
 import '../data/security_repository_api.dart';
 
 part 'security_state.dart';
 
 part 'security_cubit.freezed.dart';
 
-class SecurityCubit extends Cubit<SecurityState> {
+class SecurityCubit extends Cubit<SecurityState> with AppLogger {
   SecurityCubit({
     required SecurityRepositoryApi securityRepository,
   })  : _securityRepository = securityRepository,
@@ -26,7 +26,6 @@ class SecurityCubit extends Cubit<SecurityState> {
 
   final SecurityRepositoryApi _securityRepository;
   final LocalAuthentication _auth = LocalAuthentication();
-  final Logger _log = Logger();
 
   Future<void> verify() async {
     state.mapOrNull(
@@ -57,7 +56,7 @@ class SecurityCubit extends Cubit<SecurityState> {
         );
       }
     } on PlatformException catch (error, stack) {
-      _log.e('_verifyWithFingerprint', error, stack);
+      log.e('_verifyWithFingerprint', error, stack);
     }
   }
 
@@ -75,7 +74,7 @@ class SecurityCubit extends Cubit<SecurityState> {
         );
       }
     } on PlatformException catch (error, stack) {
-      _log.e('_verifyWithFingerprint', error, stack);
+      log.e('_verifyWithFingerprint', error, stack);
     }
   }
 

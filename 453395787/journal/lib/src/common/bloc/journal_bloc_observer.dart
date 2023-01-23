@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:logger/logger.dart';
 
-class JournalBlocObserver extends BlocObserver {
-  static final Logger log = Logger();
+import '../utils/app_logger.dart';
 
+class JournalBlocObserver extends BlocObserver with AppLogger {
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);

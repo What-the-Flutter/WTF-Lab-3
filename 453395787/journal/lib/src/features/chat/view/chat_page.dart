@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/data/chat_repository.dart';
-import '../../../common/data/database/database.dart';
+import '../../../common/data/provider/message_provider.dart';
+import '../../../common/data/provider/tag_provider.dart';
 import '../../../common/data/storage.dart';
 import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
@@ -28,8 +29,8 @@ class ChatPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageManageCubit(
         messageRepository: MessageRepository(
-          messageProvider: context.read<Database>(),
-          tagProvider: context.read<Database>(),
+          messageProvider: context.read<MessageProvider>(),
+          tagProvider: context.read<TagProvider>(),
           storageProvider: context.read<StorageProvider>(),
           chat: chat,
         ),

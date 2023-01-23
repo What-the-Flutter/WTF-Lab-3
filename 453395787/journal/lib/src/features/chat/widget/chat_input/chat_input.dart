@@ -7,7 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
 import '../../../../common/data/chat_repository.dart';
-import '../../../../common/data/database/database.dart';
+import '../../../../common/data/provider/message_provider.dart';
+import '../../../../common/data/provider/tag_provider.dart';
 import '../../../../common/data/storage.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
@@ -55,8 +56,8 @@ class _ChatInputState extends State<ChatInput> {
 
     return MessageInputScope(
       repository: MessageRepository(
-        messageProvider: context.read<Database>(),
-        tagProvider: context.read<Database>(),
+        messageProvider: context.read<MessageProvider>(),
+        tagProvider: context.read<TagProvider>(),
         storageProvider: context.read<StorageProvider>(),
         chat: chat,
       ),
