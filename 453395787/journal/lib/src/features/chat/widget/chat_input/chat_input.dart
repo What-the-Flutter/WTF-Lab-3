@@ -6,10 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
-import '../../../../common/data/chat_repository.dart';
+import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/data/provider/message_provider.dart';
 import '../../../../common/data/provider/tag_provider.dart';
-import '../../../../common/data/storage.dart';
+import '../../../../common/data/provider/storage_provider.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';

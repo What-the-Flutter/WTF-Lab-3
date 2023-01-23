@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
-import '../api/provider/chat_provider_api.dart';
-import '../api/repository/chat_repository_api.dart';
-import '../models/ui/chat.dart';
-import '../utils/transformers.dart';
-import '../utils/typedefs.dart';
+import '../../api/provider/chat_provider_api.dart';
+import '../../api/repository/chat_repository_api.dart';
+import '../../models/ui/chat.dart';
+import '../../utils/transformers.dart';
+import '../../utils/typedefs.dart';
 
 class ChatRepository extends ChatRepositoryApi {
   ChatRepository({

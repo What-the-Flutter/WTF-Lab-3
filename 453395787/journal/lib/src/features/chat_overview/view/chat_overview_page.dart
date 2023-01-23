@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/data/chat_repository.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../../../common/extensions/date_time_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
 import '../../../common/models/ui/chat.dart';

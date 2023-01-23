@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../common/data/provider/tag_provider.dart';
-import '../../../../common/data/tag_repository.dart';
+import '../../../../common/data/repository/tag_repository.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
 
 class TagSelectorScope extends StatelessWidget {

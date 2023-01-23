@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../common/data/chat_repository.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../../../common/data/provider/message_provider.dart';
 import '../../../common/data/provider/tag_provider.dart';
-import '../../../common/data/storage.dart';
+import '../../../common/data/provider/storage_provider.dart';
 import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';

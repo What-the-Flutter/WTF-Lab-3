@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common/data/storage.dart';
+import '../../../../common/data/provider/storage_provider.dart';
 import '../../api/message_repository_api.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../data/message_repository.dart';

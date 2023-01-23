@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
-import '../api/provider/tag_provider_api.dart';
-import '../api/repository/tag_repository_api.dart';
-import '../models/ui/tag.dart';
-import '../utils/transformers.dart';
-import '../utils/typedefs.dart';
+import '../../api/provider/tag_provider_api.dart';
+import '../../api/repository/tag_repository_api.dart';
+import '../../models/ui/tag.dart';
+import '../../utils/transformers.dart';
+import '../../utils/typedefs.dart';
 
 class TagRepository extends TagRepositoryApi {
   TagRepository({

@@ -4,9 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../api/provider/storage_provider_api.dart';
-import '../utils/app_logger.dart';
-import '../utils/typedefs.dart';
+import '../../api/provider/storage_provider_api.dart';
+import '../../utils/app_logger.dart';
+import '../../utils/typedefs.dart';
 
 class StorageProvider extends StorageProviderApi with AppLogger {
   static Id _userId = '';

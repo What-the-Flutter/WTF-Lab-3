@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/data/tag_repository.dart';
+import '../../../common/data/repository/tag_repository.dart';
 import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
