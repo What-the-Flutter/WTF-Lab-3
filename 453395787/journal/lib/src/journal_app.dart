@@ -3,42 +3,48 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
-import 'features/locale/cubit/locale_cubit.dart';
+import 'common/data/chat_repository.dart';
+import 'common/data/database/database.dart';
+import 'common/data/storage.dart';
+import 'common/data/tag_repository.dart';
+import 'common/utils/typedefs.dart';
 import 'features/locale/data/locale_repository_api.dart';
+import 'features/locale/locale.dart';
 import 'features/theme/theme.dart';
 import 'routes.dart';
 
 class JournalApp extends StatelessWidget {
   const JournalApp({
     super.key,
+    required this.userId,
   });
+
+  final Id userId;
 
   @override
   Widget build(BuildContext context) {
     LocalJsonLocalization.delegate.directories = ['assets/lang/'];
 
-    return BlocBuilder<ThemeCubit, ThemeState>(
-      builder: (context, state) {
-        return BlocBuilder<LocaleCubit, LocaleState>(
-          builder: (context, localeState) {
-            return MaterialApp.router(
-              title: 'Journal',
-              theme: ThemeData(
-                useMaterial3: true,
-                colorSchemeSeed: state.color,
-                brightness:
-                    state.isDarkMode ? Brightness.dark : Brightness.light,
-              ),
-              locale: localeState.locale,
-              routerConfig: Navigation.router,
-              localizationsDelegates: _localizationDelegates,
-              supportedLocales: LocaleRepositoryApi.supportedLocales,
-              localeResolutionCallback: _localeResolution,
-              debugShowCheckedModeBanner: false,
-            );
-          },
-        );
-      },
+    return _InitProviders(
+      userId: userId,
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            title: 'Journal',
+            theme: ThemeData(
+              useMaterial3: true,
+              colorSchemeSeed: state.color,
+              brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
+            ),
+            locale: context.watch<LocaleCubit>().state.locale,
+            routerConfig: Navigation.router,
+            localizationsDelegates: _localizationDelegates,
+            supportedLocales: LocaleRepositoryApi.supportedLocales,
+            localeResolutionCallback: _localeResolution,
+            debugShowCheckedModeBanner: false,
+          );
+        },
+      ),
     );
   }
 
@@ -53,5 +59,45 @@ class JournalApp extends StatelessWidget {
     return supportedLocales.contains(locale)
         ? locale
         : const Locale('en', 'US');
+  }
+}
+
+class _InitProviders extends StatelessWidget {
+  const _InitProviders({
+    super.key,
+    required this.child,
+    required this.userId,
+  });
+
+  final Widget child;
+  final Id userId;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => StorageProvider(
+            userId: userId,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => Database(
+            userId: userId,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => ChatRepository(
+            provider: context.read<Database>(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => TagRepository(
+            tagProvider: context.read<Database>(),
+          ),
+        ),
+      ],
+      child: child,
+    );
   }
 }

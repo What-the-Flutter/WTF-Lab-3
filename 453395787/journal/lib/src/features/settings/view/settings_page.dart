@@ -7,6 +7,8 @@ import '../../../common/utils/locale.dart' as locale;
 import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
 import '../../locale/locale.dart';
+import '../../security/security.dart';
+import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -62,6 +64,20 @@ class SettingsPage extends StatelessWidget {
                 builder: (context) => const ChoiceColorSheet(
                   showExampleMessages: false,
                   showDarkModeButton: true,
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.security_outlined),
+            title: Text(
+              locale.SettingsPage.securityItem.i18n(),
+            ),
+            onTap: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => SecuritySettings(
+                  securityRepository: SecurityRepository(),
                 ),
               );
             },

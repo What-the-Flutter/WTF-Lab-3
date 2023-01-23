@@ -13,8 +13,8 @@ class LocaleRepository implements LocaleRepositoryApi {
 
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    var langCode = await prefs.getString(_localeLanguageCodeKey);
-    var countryCode = await prefs.getString(_localeCountryCodeKey);
+    final langCode = await prefs.getString(_localeLanguageCodeKey);
+    final countryCode = await prefs.getString(_localeCountryCodeKey);
 
     if (langCode != null) {
       _locale = Locale(langCode, countryCode);
