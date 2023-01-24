@@ -24,4 +24,6 @@ abstract class SettingsRepositoryApi {
   bool get isCenterDateBubbleShown;
 
   Future<void> setCenterDateBubbleShown(bool isCenterDateBubbleShown);
+
+  Future<void> resetToDefault();
 }

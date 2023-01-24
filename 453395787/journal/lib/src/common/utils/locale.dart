@@ -23,6 +23,10 @@ abstract class SettingsPage {
   static const String bubbleAlignmentItemTitle = 'settings_item_bubble_alignment_title';
   static const String bubbleAlignmentItemSubtitle = 'settings_item_bubble_alignment_subtitle';
   static const String centerDateBubbleItem = 'settings_item_date_bubble_visibility';
+
+  static const String resetItem = 'settings_item_reset';
+  static const String resetConfirmationTitle = 'settings_item_reset_confirmation_title';
+  static const String resetConfirmationSubtitle = 'settings_item_reset_confirmation_subtitle';
 }
 
 abstract class Actions {

@@ -19,6 +19,9 @@
   "settings_item_bubble_alignment_title": "Выравнивание сообщений",
   "settings_item_bubble_alignment_subtitle": "Использовать выравнивание по левому краю",
   "settings_item_date_bubble_visibility": "Показывать дату в центре",
+  "settings_item_reset": "Сбросить настройки",
+  "settings_item_reset_confirmation_title": "Сбросить настройки",
+  "settings_item_reset_confirmation_subtitle": "Вы уверены, что хотите сбросить настройки?",
 
   "action_ok": "Ок",
   "action_yes": "Да",

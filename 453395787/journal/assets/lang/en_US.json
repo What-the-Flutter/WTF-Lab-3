@@ -19,6 +19,9 @@
   "settings_item_bubble_alignment_title": "Message Alignment",
   "settings_item_bubble_alignment_subtitle": "Force left-to-right bubble alignment",
   "settings_item_date_bubble_visibility": "Center Date Bubble",
+  "settings_item_reset": "Reset All",
+  "settings_item_reset_confirmation_title": "Reset all preferences",
+  "settings_item_reset_confirmation_subtitle": "Are you sure you want to reset all preferences?",
 
   "action_ok": "Ok",
   "action_yes": "Yes",

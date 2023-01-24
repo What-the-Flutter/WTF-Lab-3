@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/utils/default_values.dart';
 import 'settings_repository_api.dart';
 
 class SettingsRepository extends SettingsRepositoryApi {
@@ -70,5 +71,12 @@ class SettingsRepository extends SettingsRepositoryApi {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_messageAlignmentKey, messageAlignment.name);
     _messageAlignment = messageAlignment;
+  }
+
+  @override
+  Future<void> resetToDefault() async {
+    await setFontSize(DefaultValues.fontSize);
+    await setMessageAlignment(DefaultValues.messageAlignment);
+    await setCenterDateBubbleShown(DefaultValues.isCenterDateBubbleShown);
   }
 }

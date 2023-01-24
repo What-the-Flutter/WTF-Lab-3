@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
 import '../../../common/utils/locale.dart' as locale;
+import '../../../common/widget/confirmation_dialog.dart';
 import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
 import '../../locale/locale.dart';
+import '../../security/cubit/security_cubit.dart';
 import '../../security/security.dart';
 import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
@@ -120,6 +122,26 @@ class SettingsPage extends StatelessWidget {
               context.read<SettingsCubit>().changeBubbleDateVisibility(
                     isToggle,
                   );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.refresh_outlined),
+            title: Text(
+              locale.SettingsPage.resetItem.i18n(),
+            ),
+            onTap: () async {
+              final isConfirmed = await showConfirmationDialog(
+                title: locale.SettingsPage.resetConfirmationTitle.i18n(),
+                content: locale.SettingsPage.resetConfirmationSubtitle.i18n(),
+                context: context,
+              );
+
+              if (isConfirmed != null && isConfirmed) {
+                context.read<SettingsCubit>().resetToDefault();
+                context.read<SecurityCubit>().resetToDefault();
+                context.read<ThemeCubit>().resetToDefault();
+                context.read<LocaleCubit>().resetToDefault();
+              }
             },
           ),
         ],
