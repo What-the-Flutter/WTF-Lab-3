@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/generated/l10n.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class InfoPage extends StatelessWidget {
   final Icon icon;
@@ -25,7 +25,7 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return AlertDialog(
       title: Row(
@@ -41,9 +41,9 @@ class InfoPage extends StatelessWidget {
           ),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 30,
+              fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
             ),
           ),
         ],
@@ -53,13 +53,33 @@ class InfoPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(S.of(context).created),
-            Text(DateFormat.yMd().add_jm().format(dateCreate)),
+            Text(
+              S.of(context).created,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            Text(
+              DateFormat.yMd().add_jm().format(dateCreate),
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
-            Text(S.of(context).last_event),
-            Text(dateLastEvent),
+            Text(
+              S.of(context).last_event,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            Text(
+              dateLastEvent,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+              ),
+            ),
           ],
         ),
       ),

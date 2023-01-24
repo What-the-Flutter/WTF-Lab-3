@@ -33,7 +33,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "change_bubble_alignment":
+            MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
+        "change_date_bubble": MessageLookupByLibrary.simpleMessage(
+            "Change data bubble alignment"),
         "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
+        "choose_image":
+            MessageLookupByLibrary.simpleMessage("Choose background image"),
+        "cnange_font_size":
+            MessageLookupByLibrary.simpleMessage("Change font size"),
         "content_add_image": MessageLookupByLibrary.simpleMessage(
             "If you click on the  camera icon, you can add an image from the camera, if you click on the photo icon, you can add an image from the phone."),
         "create_page":
@@ -62,7 +70,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
+        "reset_setting": MessageLookupByLibrary.simpleMessage("Reset setting"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
+        "share_app": MessageLookupByLibrary.simpleMessage("Share app"),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
         "title_instruction": m1

@@ -10,8 +10,7 @@ import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart'
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
-import 'package:my_final_project/utils/theme/theme_state.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_state.dart';
 
 class MainApp extends StatefulWidget {
   final User? user;
@@ -51,7 +50,7 @@ class _MainAppState extends State<MainApp> {
           create: (_) => MenuCubit(),
         ),
         BlocProvider(
-          create: (_) => SettingsCubit(user: widget.user),
+          create: (_) => SettingCubit(user: widget.user),
         ),
         BlocProvider(
           create: (_) => HomeCubit(user: widget.user),
@@ -59,11 +58,8 @@ class _MainAppState extends State<MainApp> {
         BlocProvider(
           create: (_) => EventCubit(user: widget.user),
         ),
-        BlocProvider(
-          create: (_) => ThemeCubit(),
-        ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      child: BlocBuilder<SettingCubit, SettingState>(
         builder: (context, state) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -76,7 +72,11 @@ class _MainAppState extends State<MainApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: S.delegate.supportedLocales,
-            home: status ? const Menu() : null,
+            home: status
+                ? const Menu()
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
           );
         },
       ),

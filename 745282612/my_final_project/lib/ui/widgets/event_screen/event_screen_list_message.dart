@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_message.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class EventScreenListMessage extends StatefulWidget {
   final int chatId;
@@ -46,7 +47,7 @@ class _EventScreenListMessageState extends State<EventScreenListMessage> {
 
 double sizePaddingBottom(BuildContext context, EventState state) {
   if (state.isSection) {
-    return MediaQuery.of(context).size.height * 0.2;
+    return MediaQuery.of(context).size.height * 0.22;
   } else if (state.isSearch) {
     return MediaQuery.of(context).size.height * 0;
   } else {
@@ -54,44 +55,30 @@ double sizePaddingBottom(BuildContext context, EventState state) {
   }
 }
 
-List<Event> getListEvent(Map<dynamic, dynamic> map, int chatId) {
-  final listEvent = <Event>[];
-  for (final chatElement in map.values) {
-    final map = chatElement as Map<dynamic, dynamic>;
-    final event = Event.fromJson(map);
-    listEvent.add(event);
-  }
-  final newEventList = listEvent.reversed.toList();
-  newEventList.sort(
-    (a, b) => b.messageTime.compareTo(a.messageTime),
-  );
-  return newEventList;
-}
-
 Widget listMessage(BuildContext context, EventState state, User? _user, int chatId) {
   return StreamBuilder(
-    stream: FirebaseDatabase.instance
-        .ref()
-        .child(_user?.uid ?? '')
-        .child('event')
-        .orderByChild('chatId')
-        .equalTo(chatId)
-        .onValue,
+    stream: context.read<EventCubit>().getStream(_user, chatId),
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
-        return const CircularProgressIndicator();
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       } else {
-        final Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as dynamic;
-        final eventList = getListEvent(map, chatId);
+        final eventList = context.read<EventCubit>().getEventList(snapshot);
 
         return ListView.builder(
           reverse: true,
           padding: EdgeInsets.only(bottom: sizePaddingBottom(context, state)),
           itemCount: eventList.length,
           itemBuilder: (context, index) {
-            return EventMessage(
-              event: eventList[index],
-              isSelected: state.isSelected,
+            return Column(
+              children: [
+                dateEvent(context, index, eventList),
+                EventMessage(
+                  event: eventList[index],
+                  isSelected: state.isSelected,
+                )
+              ],
             );
           },
         );
@@ -109,10 +96,45 @@ Widget listFavorite(BuildContext context, List<Event> listMessageFavorite, Event
     itemCount: listReversed.length,
     itemBuilder: (context, index) {
       final event = listReversed[index];
-      return EventMessage(
-        event: event,
-        isSelected: state.isSelected,
+      return Column(
+        children: [
+          dateEvent(context, index, listReversed),
+          EventMessage(
+            event: event,
+            isSelected: state.isSelected,
+          ),
+        ],
       );
     },
   );
+}
+
+Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
+  final isLight = context.watch<SettingCubit>().isLight();
+
+  return index == eventList.length - 1 ||
+          DateFormat.yMMMMd().format(eventList[index].messageTime) !=
+              DateFormat.yMMMMd().format(eventList[index + 1].messageTime)
+      ? Container(
+          alignment: context.watch<SettingCubit>().state.dateBubble == 'left'
+              ? Alignment.centerLeft
+              : Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          child: Container(
+            alignment: Alignment.center,
+            width: 150,
+            height: 30,
+            decoration: BoxDecoration(
+              color: isLight ? Colors.red : Colors.purple,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              DateFormat.yMMMEd().format(eventList[index].messageTime),
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+          ),
+        )
+      : const SizedBox();
 }

@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class EventField {
@@ -11,9 +12,10 @@ class EventField {
   static final String messageImage = 'image';
   static final String chatId = 'chatId';
   static final String isSelected = 'isSelected';
+  static final String tag = 'tag';
 }
 
-class Event {
+class Event extends Equatable {
   final int id;
   final bool isFavorit;
   final bool isSelected;
@@ -24,6 +26,7 @@ class Event {
   final IconData? sectionIcon;
   final String? sectionTitle;
   final int chatId;
+  final String? tag;
 
   Event({
     required this.id,
@@ -36,6 +39,7 @@ class Event {
     this.messageImage,
     this.sectionIcon,
     this.sectionTitle,
+    this.tag,
   });
 
   Event copyWith({
@@ -49,6 +53,7 @@ class Event {
     IconData? sectionIcon,
     String? sectionTitle,
     int? chatId,
+    String? tag,
   }) {
     return Event(
       id: id ?? this.id,
@@ -61,6 +66,7 @@ class Event {
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
       chatId: chatId ?? this.chatId,
+      tag: tag ?? this.tag,
     );
   }
 
@@ -76,6 +82,7 @@ class Event {
       '${EventField.chatId}': chatId,
       '${EventField.messageImage}': messageImage != null ? messageImage! : null,
       '${EventField.isSelected}': isSelected == false ? 1 : 0,
+      '${EventField.tag}': tag,
     };
   }
 
@@ -92,7 +99,23 @@ class Event {
           ? IconData(map['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
           : null,
       sectionTitle: map['${EventField.sectionTitle}'],
-      isSelected: map[EventField.isSelected] == 1 ? false : true,
+      isSelected: map['${EventField.isSelected}'] == 1 ? false : true,
+      tag: map['${EventField.tag}'],
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        isFavorit,
+        isSelected,
+        messageContent,
+        messageType,
+        messageTime,
+        messageImage,
+        sectionIcon,
+        sectionTitle,
+        chatId,
+        tag,
+      ];
 }

@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventMessage extends StatefulWidget {
   final Event event;
@@ -22,9 +22,18 @@ class EventMessage extends StatefulWidget {
 }
 
 class _EventMessageState extends State<EventMessage> {
+  Alignment messageBubbleAlignment() {
+    final settingBubbleAlegnment = context.watch<SettingCubit>().state.bubbleAlignment;
+    if (settingBubbleAlegnment == 'left') {
+      return widget.event.messageType == 'sender' ? Alignment.bottomLeft : Alignment.bottomRight;
+    } else {
+      return widget.event.messageType == 'sender' ? Alignment.bottomRight : Alignment.bottomLeft;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return Dismissible(
       background: Container(
@@ -66,8 +75,7 @@ class _EventMessageState extends State<EventMessage> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-          alignment:
-              (widget.event.messageType == 'sender' ? Alignment.bottomLeft : Alignment.bottomRight),
+          alignment: messageBubbleAlignment(),
           child: Container(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width / 2.5,
@@ -93,7 +101,13 @@ class _EventMessageState extends State<EventMessage> {
                     ? Row(
                         children: [
                           Icon(widget.event.sectionIcon),
-                          Text(widget.event.sectionTitle!),
+                          Text(
+                            widget.event.sectionTitle!,
+                            style: TextStyle(
+                              fontSize:
+                                  context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                            ),
+                          ),
                         ],
                       )
                     : Container(),
@@ -104,17 +118,36 @@ class _EventMessageState extends State<EventMessage> {
                       ? Image.network(widget.event.messageImage!)
                       : Text(
                           widget.event.messageContent,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                            fontSize:
+                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                          ),
                         ),
                 ),
+                const SizedBox(height: 3),
+                widget.event.tag != null
+                    ? Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          widget.event.tag!,
+                          style: TextStyle(
+                            color: AppColors.colorNormalGrey,
+                            fontSize:
+                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                          ),
+                        ),
+                      )
+                    : Container(),
                 const SizedBox(height: 3),
                 Row(
                   children: [
                     Expanded(
                       child: Text(
                         DateFormat('hh:mm a').format(widget.event.messageTime),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.colorNormalGrey,
+                          fontSize:
+                              context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                         ),
                       ),
                     ),

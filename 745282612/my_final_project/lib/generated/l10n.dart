@@ -349,6 +349,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Change font size`
+  String get cnange_font_size {
+    return Intl.message(
+      'Change font size',
+      name: 'cnange_font_size',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset setting`
+  String get reset_setting {
+    return Intl.message(
+      'Reset setting',
+      name: 'reset_setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose background image`
+  String get choose_image {
+    return Intl.message(
+      'Choose background image',
+      name: 'choose_image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share app`
+  String get share_app {
+    return Intl.message(
+      'Share app',
+      name: 'share_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change bubble alignment`
+  String get change_bubble_alignment {
+    return Intl.message(
+      'Change bubble alignment',
+      name: 'change_bubble_alignment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change data bubble alignment`
+  String get change_date_bubble {
+    return Intl.message(
+      'Change data bubble alignment',
+      name: 'change_date_bubble',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

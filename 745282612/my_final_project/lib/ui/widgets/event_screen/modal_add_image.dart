@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -21,14 +21,20 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return AlertDialog(
       title: Text(
         S.of(context).title_add_image,
+        style: TextStyle(
+          fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+        ),
       ),
       content: Text(
         S.of(context).content_add_image,
+        style: TextStyle(
+          fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+        ),
       ),
       actions: <Widget>[
         TextButton(

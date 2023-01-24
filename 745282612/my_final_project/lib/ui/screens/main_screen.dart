@@ -8,7 +8,7 @@ import 'package:my_final_project/ui/widgets/main_screen/main_screen_body.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_bottom.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_drawer.dart';
 import 'package:my_final_project/ui/widgets/main_screen/main_screen_floating_button.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -21,7 +21,7 @@ class _MenuState extends State<Menu> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<ThemeCubit>(context).initializer();
+    BlocProvider.of<SettingCubit>(context).initializer();
   }
 
   @override

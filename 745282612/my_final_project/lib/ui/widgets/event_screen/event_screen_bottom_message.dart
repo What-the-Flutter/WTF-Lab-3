@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_section.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_tags.dart';
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_cubit.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
@@ -90,13 +92,25 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     );
   }
 
+  Widget sectionOrTag(EventState eventState, SettingState settingState) {
+    if (eventState.switchSectionTag) {
+      return eventState.isTag ? const EventTag() : Container();
+    } else {
+      return eventState.isSection
+          ? EventSection(
+              stateSetting: settingState,
+            )
+          : Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<ThemeCubit>().isLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final stateSetting = context.watch<SettingsCubit>().state;
+        final stateSetting = context.watch<SettingCubit>().state;
         editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
@@ -105,8 +119,8 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
             constraints: BoxConstraints(
               minWidth: MediaQuery.of(context).size.width,
               maxWidth: MediaQuery.of(context).size.width,
-              maxHeight: state.isSection
-                  ? MediaQuery.of(context).size.height * 0.2
+              maxHeight: state.isSection || state.isTag
+                  ? MediaQuery.of(context).size.height * 0.22
                   : MediaQuery.of(context).size.height * 0.1,
             ),
             child: ColoredBox(
@@ -114,47 +128,20 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  state.isSection
-                      ? Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: stateSetting.listSection.length,
-                            itemBuilder: (context, index) {
-                              final items = stateSetting.listSection[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        context.read<EventCubit>().changeSectionIcon(
-                                              icon: items.iconSection,
-                                              sectionTitle: items.titleSection,
-                                            );
-                                      },
-                                      child: CircleAvatar(
-                                        backgroundColor: isLight
-                                            ? AppColors.colorLightBlue
-                                            : AppColors.colorLightGrey,
-                                        foregroundColor: Colors.white,
-                                        radius: 25,
-                                        child: Icon(items.iconSection),
-                                      ),
-                                    ),
-                                    Text(items.titleSection),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Container(),
+                  sectionOrTag(state, stateSetting),
                   Row(
                     children: [
                       TextButton(
-                        onPressed: context.read<EventCubit>().changeSection,
+                        onPressed: () {
+                          if (state.switchSectionTag) {
+                            context.read<EventCubit>().changeStatusTag();
+                          } else {
+                            context.read<EventCubit>().changeSection();
+                          }
+                        },
+                        onLongPress: context.read<EventCubit>().changeSwitchSectionTag,
                         child: Icon(
-                          state.sectionIcon,
+                          state.switchSectionTag ? Icons.tag : state.sectionIcon,
                           size: 30,
                           color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
