@@ -10,6 +10,8 @@ import '../../locale/locale.dart';
 import '../../security/security.dart';
 import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
+import '../cubit/settings_cubit.dart';
+import '../widget/font_size_selector.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -78,6 +80,20 @@ class SettingsPage extends StatelessWidget {
                 context: context,
                 builder: (context) => SecuritySettings(
                   securityRepository: SecurityRepository(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.text_fields_outlined),
+            title: Text(
+              locale.SettingsPage.fontSizeItem.i18n(),
+            ),
+            onTap: () {
+              showFloatingModalBottomSheet(
+                context: context,
+                builder: (context) => FontSizeSelector(
+                  defaultFontSize: context.read<SettingsCubit>().state.fontSize,
                 ),
               );
             },

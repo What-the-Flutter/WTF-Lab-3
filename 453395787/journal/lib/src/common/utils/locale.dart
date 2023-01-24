@@ -14,6 +14,10 @@ abstract class SettingsPage {
   static const String themeItem = 'settings_item_theme';
   static const String securityItem = 'settings_item_security';
   static const String securityPageTitle = 'settings_page_security_title';
+  static const String fontSizeItem = 'settings_item_font_size';
+  static const String fontSizeSmall = 'settings_item_font_size_small';
+  static const String fontSizeMedium = 'settings_item_font_size_medium';
+  static const String fontSizeLarge = 'settings_item_font_size_large';
 }
 
 abstract class Actions {

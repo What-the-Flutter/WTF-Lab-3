@@ -11,6 +11,10 @@
   "settings_item_theme": "Тема",
   "settings_page_tags_title": "Управление тегами",
   "settings_item_security": "Безопасность",
+  "settings_item_font_size": "Размер шрифта",
+  "settings_item_font_size_small": "Маленький",
+  "settings_item_font_size_medium": "Средний",
+  "settings_item_font_size_large": "Большой",
   "settings_page_security_title": "Входить по отпечатку пальца или FaceId?",
 
   "action_ok": "Ок",

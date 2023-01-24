@@ -12,6 +12,7 @@ import 'common/data/repository/tag_repository.dart';
 import 'common/utils/typedefs.dart';
 import 'features/locale/data/locale_repository_api.dart';
 import 'features/locale/locale.dart';
+import 'features/settings/cubit/settings_cubit.dart';
 import 'features/theme/theme.dart';
 import 'routes.dart';
 
@@ -34,6 +35,14 @@ class JournalApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'Journal',
             theme: ThemeData(
+              textTheme: Theme.of(context).textTheme.apply(
+                    bodyColor: state.isDarkMode ? Colors.white : Colors.black,
+                    fontSizeFactor: context
+                        .watch<SettingsCubit>()
+                        .state
+                        .fontSize
+                        .scaleFactor,
+                  ),
               useMaterial3: true,
               colorSchemeSeed: state.color,
               brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
