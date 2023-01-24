@@ -1,66 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../pages/home.dart';
 import '../theme/colors.dart';
-import '../theme/themes.dart';
+import '../theme/fonts.dart';
+import '../theme/theme_cubit.dart';
+import '../theme/theme_state.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/theme_button.dart';
+import 'home_page/home.dart';
 
 class ChatJournal extends StatefulWidget {
   const ChatJournal({super.key});
 
+  final title = 'Home';
+
   @override
   State<ChatJournal> createState() => _ChatJournalState();
-// This widget is the root of your application.
-
 }
 
 class _ChatJournalState extends State<ChatJournal> {
-  final _title = 'Home';
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      theme: Themes.light,
-      home: _mainPage(),
+    final themeCubit = ThemeCubit();
+    return BlocProvider<ThemeCubit>(
+      create: (context) => themeCubit,
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          {
+            return MaterialApp(
+              theme: state.theme,
+              home: _mainPage(context),
+            );
+          }
+        },
+      ),
     );
   }
 
-  Widget _mainPage() {
+  Widget _mainPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_title),
+        title: Text(
+          widget.title,
+        ),
         centerTitle: true,
         actions: const [
           ThemeButton(),
         ],
       ),
-      drawer: _drawer(),
-      body: const HomePage(),
+      drawer: _drawer(context),
+      body: HomePage(),
       bottomNavigationBar: const BottomNavigation(),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  Widget _drawer() {
+  Widget _drawer(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: ChatJournalColors.primaryColor,
+            decoration: BoxDecoration(
+              color: BlocProvider.of<ThemeCubit>(context).isLight()
+                  ? ChatJournalColors.green
+                  : ChatJournalColors.black,
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
                 DateFormat('MMM d, y').format(DateTime.now()),
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold),
+                style: Fonts.drawerFont,
               ),
             ),
           ),

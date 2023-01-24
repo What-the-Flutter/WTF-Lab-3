@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
+import 'colors.dart';
 
 enum _Themes {
   _light,
@@ -7,23 +7,39 @@ enum _Themes {
 }
 
 class Themes {
-  static final light = ThemeData(
+  static final eventColor = ChatJournalColors.lightGreen;
+  static final selectedEventColor = ChatJournalColors.accentLightGreen;
+  static const _floatingActionButtonTheme = FloatingActionButtonThemeData(
+    backgroundColor: ChatJournalColors.accentYellow,
+  );
+
+  static final lightTheme = ThemeData(
     appBarTheme: const AppBarTheme(
-      color: ChatJournalColors.primaryColor,
+      color: ChatJournalColors.green,
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: ChatJournalColors.fabColor,
+    floatingActionButtonTheme: _floatingActionButtonTheme,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: ChatJournalColors.green,
+      unselectedItemColor: Colors.blueGrey,
+      backgroundColor: ChatJournalColors.white,
     ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor:
-            MaterialStateProperty.all(ChatJournalColors.questionnaireBotColor),
-      ),
+    primaryColor: ChatJournalColors.green,
+    backgroundColor: ChatJournalColors.white,
+    brightness: Brightness.light,
+  );
+
+  static final darkTheme = ThemeData(
+    primaryColor: ChatJournalColors.black,
+    backgroundColor: ChatJournalColors.black,
+    brightness: Brightness.dark,
+    appBarTheme: const AppBarTheme(
+      color: ChatJournalColors.black,
     ),
-    primaryColor: ChatJournalColors.primaryColor,
-    backgroundColor: ChatJournalColors.backgroundColor,
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: ChatJournalColors.backgroundColor,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: ChatJournalColors.accentYellow,
+      unselectedItemColor: ChatJournalColors.iconGray,
+      backgroundColor: ChatJournalColors.black,
     ),
+    floatingActionButtonTheme: _floatingActionButtonTheme,
   );
 }
