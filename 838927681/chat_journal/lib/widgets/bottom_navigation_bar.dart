@@ -28,6 +28,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         ),
       ),
       child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
@@ -55,8 +56,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
           )
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.blueGrey,
         onTap: _onItemTapped,
       ),
     );

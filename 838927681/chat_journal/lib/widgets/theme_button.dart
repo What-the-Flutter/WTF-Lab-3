@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../theme/theme_cubit.dart';
 
 class ThemeButton extends StatefulWidget {
   const ThemeButton({super.key});
@@ -8,20 +11,17 @@ class ThemeButton extends StatefulWidget {
 }
 
 class _ThemeButtonState extends State<ThemeButton> {
-  bool _isDark = false;
-
-  void _onThemeIconTap() {
-    setState(() {
-      _isDark = !_isDark;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    var iconData = _isDark ? Icons.light_mode : Icons.dark_mode;
+    final isLight = BlocProvider.of<ThemeCubit>(context).isLight();
+    var iconData = isLight ? Icons.light_mode : Icons.dark_mode;
     return IconButton(
       icon: Icon(iconData),
-      onPressed: _onThemeIconTap,
+      onPressed: () {
+        setState(() {
+          BlocProvider.of<ThemeCubit>(context).changeTheme();
+        });
+      },
     );
   }
 }

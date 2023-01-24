@@ -1,83 +1,89 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-import '../models/chat.dart';
-import '../models/event.dart';
-import '../theme/colors.dart';
+import '../../models/chat.dart';
+import '../../models/event.dart';
+import '../../theme/colors.dart';
+import '../../theme/fonts.dart';
+import '../../theme/theme_cubit.dart';
+import '../chat_page/chat_page_cubit.dart';
+import '../chat_page/chat_page_state.dart';
 
 class ChatPage extends StatefulWidget {
   final Chat chat;
+  final chatCubit = ChatCubit();
+  final _controller = TextEditingController();
 
-  const ChatPage({required this.chat, super.key});
+  ChatPage({required this.chat, super.key});
 
   @override
-  State<ChatPage> createState() => ChatPageState(chat: chat);
+  State<ChatPage> createState() => ChatPageState();
 }
 
 class ChatPageState extends State<ChatPage> {
-  final Chat chat;
-  final _controller = TextEditingController();
-  bool _isTyping = false;
-  bool _isEditing = false;
-  bool _isSelecting = false;
-  bool _isFavoritesMode = false;
-  bool _isSendingImage = false;
-  int _selectedIndex = 0;
-  final favorites = <Event>{};
-
-  ChatPageState({required this.chat});
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            _isSelecting ? '' : chat.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-          leading: !_isSelecting
-              ? IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(Icons.arrow_back))
-              : IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isSelecting = false;
-                    });
-                  },
-                  icon: const Icon(Icons.close),
+    return BlocProvider<ChatCubit>(
+      create: (context) => widget.chatCubit,
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: BlocBuilder<ChatCubit, ChatState>(
+            bloc: widget.chatCubit,
+            builder: (context, state) {
+              widget.chatCubit.loadEvents(widget.chat.events);
+              return Scaffold(
+                appBar: AppBar(
+                  centerTitle: state.isSelecting ? false : true,
+                  title: Text(
+                    state.isSelecting
+                        ? state.selectedCount.toString()
+                        : widget.chat.name,
+                    style: Fonts.chatPageTitle,
+                  ),
+                  leading: !state.isSelecting
+                      ? IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(widget.chat);
+                          },
+                          icon: const Icon(Icons.arrow_back))
+                      : IconButton(
+                          onPressed: () {
+                            setState(() {
+                              widget.chatCubit.selectionToFalse();
+                            });
+                          },
+                          icon: const Icon(Icons.close),
+                        ),
+                  actions: state.isSelecting
+                      ? _eventActions(state)
+                      : _appBarActions(state),
                 ),
-          actions: _isSelecting ? _eventActions() : _appBarActions(),
-        ),
-        body: _chatBody(chat, _isTyping, _controller),
+                body: _chatBody(),
+              );
+            }),
       ),
     );
   }
 
-  List<Widget> _eventActions() {
+  List<Widget> _eventActions(ChatState state) {
     return [
       IconButton(
         icon: const Icon(Icons.reply),
         onPressed: () {},
       ),
-      chat.events[_selectedIndex].image == null
+      !widget.chatCubit.state.isSelectedImage &&
+              widget.chatCubit.state.selectedCount == 1
           ? IconButton(
               onPressed: _editEvent,
               icon: const Icon(Icons.edit),
             )
           : Container(),
-      chat.events[_selectedIndex].image == null
+      !widget.chatCubit.state.isSelectedImage
           ? IconButton(
               onPressed: _copyEvent,
               icon: const Icon(Icons.copy),
@@ -85,7 +91,7 @@ class ChatPageState extends State<ChatPage> {
           : Container(),
       IconButton(
         onPressed: _bookmarkEvent,
-        icon: Icon(chat.events[_selectedIndex].isFavorite
+        icon: Icon(widget.chatCubit.state.events[state.selectedIndex].isFavorite
             ? Icons.bookmark
             : Icons.bookmark_border_outlined),
       ),
@@ -98,41 +104,54 @@ class ChatPageState extends State<ChatPage> {
 
   void _editEvent() {
     setState(() {
-      _isSelecting = !_isSelecting;
-      _isEditing = true;
-      _controller.text = chat.events[_selectedIndex].text;
+      widget.chatCubit.changeSelection();
+      widget.chatCubit.editingToValue(true);
+      widget._controller.text = widget
+          .chatCubit.state.events[widget.chatCubit.state.selectedIndex].text;
     });
   }
 
   void _copyEvent() {
+    var clipboardText = '';
+    if (widget.chatCubit.state.selectedCount == 1) {
+      clipboardText = widget
+          .chatCubit.state.events[widget.chatCubit.state.selectedIndex].text;
+    } else {
+      for (final event in widget.chatCubit.state.events) {
+        if (event.isSelected) {
+          clipboardText += '${event.text} ';
+        }
+      }
+    }
     Clipboard.setData(
       ClipboardData(
-        text: chat.events[_selectedIndex].text,
+        text: clipboardText,
       ),
     );
     setState(() {
-      _isSelecting = !_isSelecting;
+      widget.chatCubit.changeSelection();
     });
   }
 
   void _bookmarkEvent() {
     setState(() {
-      _isSelecting = false;
-      addToOrRemoveFromFavorites(chat.events[_selectedIndex]);
+      widget.chatCubit.changeIsFavoriteEvent();
+      widget.chatCubit.selectionToFalse();
     });
   }
 
   void _deleteEvent() {
     setState(() {
-      _isSelecting = false;
-      if (chat.events[_selectedIndex].isFavorite) {
-        chat.favoritesCount--;
+      final isFavorite = widget.chatCubit.state
+          .events[widget.chatCubit.state.selectedIndex].isFavorite;
+      if (isFavorite) {
+        widget.chatCubit.decrementFavoritesCount();
       }
-      chat.events.removeAt(_selectedIndex);
+      widget.chatCubit.deleteEvents();
     });
   }
 
-  List<Widget> _appBarActions() {
+  List<Widget> _appBarActions(ChatState state) {
     return [
       IconButton(
         icon: const Icon(Icons.search),
@@ -141,37 +160,32 @@ class ChatPageState extends State<ChatPage> {
       IconButton(
         onPressed: () {
           setState(() {
-            _isFavoritesMode = !_isFavoritesMode;
+            widget.chatCubit.changeIsSendingImageToValue(false);
+            widget.chatCubit.changeFavoritesMode();
           });
         },
-        icon: _isFavoritesMode
+        icon: state.isFavoritesMode
             ? const Icon(Icons.bookmark)
             : const Icon(Icons.bookmark_border_outlined),
-      )
+      ),
     ];
   }
 
-  void addToOrRemoveFromFavorites(Event event) {
-    if (event.isFavorite) {
-      event.isFavorite = false;
-      chat.favoritesCount--;
-    } else {
-      event.isFavorite = true;
-      chat.favoritesCount++;
-    }
-  }
-  Widget _chatBody(Chat chat, bool isTyping, TextEditingController controller) {
-    final eventCount = chat.events.length;
+  Widget _chatBody() {
+    final eventCount = widget.chatCubit.state.events.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        (eventCount != 0 && !_isFavoritesMode) ||
-                (_isFavoritesMode && chat.favoritesCount != 0)
+        (eventCount != 0 && !widget.chatCubit.state.isFavoritesMode) ||
+                (widget.chatCubit.state.isFavoritesMode &&
+                    widget.chatCubit.state.favoritesCount != 0)
             ? Flexible(child: _chatWithEvents())
             : _chatWithNoEvents(),
         eventCount != 0 ? Container() : Expanded(child: Container()),
-        _isSendingImage ? _sendImageOptions() : Container(),
+        widget.chatCubit.state.isSendingImage
+            ? _sendImageOptions()
+            : Container(),
         _inputPanel(),
       ],
     );
@@ -197,10 +211,10 @@ class ChatPageState extends State<ChatPage> {
           source: isGallery ? ImageSource.gallery : ImageSource.camera,
         );
         if (media != null) {
-          final image = File(media.path);
+          final imagePath = media.path;
           setState(() {
-            chat.events.add(Event(
-                text: '', dateTime: DateTime.now(), image: Image.file(image)));
+            widget.chatCubit.addEvent(Event(
+                text: '', dateTime: DateTime.now(), imagePath: imagePath));
           });
         }
       },
@@ -229,9 +243,6 @@ class ChatPageState extends State<ChatPage> {
               Expanded(
                 child: Text(
                   isGallery ? 'Open gallery' : 'Open camera',
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
                 ),
               ),
             ],
@@ -242,13 +253,13 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget _favoriteEvents() {
-    final eventCount = chat.events.length;
+    final eventCount = widget.chatCubit.state.events.length;
     return ListView.builder(
       itemCount: eventCount,
       padding: EdgeInsets.zero,
       reverse: true,
       itemBuilder: (context, index) {
-        return chat.events[eventCount - 1 - index].isFavorite
+        return widget.chatCubit.state.events[eventCount - 1 - index].isFavorite
             ? _event(eventCount - 1 - index)
             : Container();
       },
@@ -256,11 +267,13 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget _chatWithEvents() {
-    return _isFavoritesMode ? _favoriteEvents() : _allEvents();
+    return widget.chatCubit.state.isFavoritesMode
+        ? _favoriteEvents()
+        : _allEvents();
   }
 
   Widget _allEvents() {
-    final eventCount = chat.events.length;
+    final eventCount = widget.chatCubit.state.events.length;
     return Column(
       children: [
         Flexible(
@@ -278,24 +291,30 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget _event(int index) {
+    final eventColor = BlocProvider.of<ThemeCubit>(context).isLight()
+        ? ChatJournalColors.lightGreen
+        : ChatJournalColors.darkGray;
+    final selectedEventColor = BlocProvider.of<ThemeCubit>(context).isLight()
+        ? ChatJournalColors.accentLightGreen
+        : ChatJournalColors.lightGray;
     return Align(
       alignment: Alignment.centerLeft,
       child: GestureDetector(
         onLongPress: () {
           setState(() {
-            _selectedIndex = index;
-            _isSelecting = !_isSelecting;
+            widget.chatCubit.changeSelectedIndex(index);
+            widget.chatCubit.changeSelection();
           });
         },
         onTap: () {
-          _selectedIndex = index;
-          if (!_isSelecting) {
+          widget.chatCubit.changeSelectedIndex(index);
+          if (!widget.chatCubit.state.isSelecting) {
             setState(() {
-              addToOrRemoveFromFavorites(chat.events[index]);
+              widget.chatCubit.changeIsFavoriteEvent();
             });
           } else {
             setState(() {
-              _isSelecting = false;
+              widget.chatCubit.changeSelectedItem(index);
             });
           }
         },
@@ -315,20 +334,23 @@ class ChatPageState extends State<ChatPage> {
                   ),
                   constraints: const BoxConstraints(maxWidth: 300),
                   decoration: BoxDecoration(
-                    color: ChatJournalColors.eventColor,
+                    color: widget.chatCubit.state.events[index].isSelected
+                        ? selectedEventColor
+                        : eventColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      chat.events[index].image == null
+                      widget.chatCubit.state.events[index].imagePath == ''
                           ? _messageEvent(index)
-                          : chat.events[index].image!,
+                          : Image.file(File(
+                              widget.chatCubit.state.events[index].imagePath)),
                       _eventDate(index),
                     ],
                   ),
                 ),
-                chat.events[index].isFavorite
+                widget.chatCubit.state.events[index].isFavorite
                     ? const Icon(Icons.bookmark)
                     : Container(),
               ],
@@ -340,23 +362,29 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget _dateSeparator(int index) {
-    if (index != 0 &&
-        _isOneDay(
-            chat.events[index].dateTime, chat.events[index - 1].dateTime)) {
-      return Container();
+    final bool isOneDay;
+    if (index != 0) {
+      isOneDay = _isOneDay(widget.chatCubit.state.events[index].dateTime,
+          widget.chatCubit.state.events[index - 1].dateTime);
     } else {
-      final textDate = _getTextDate(chat.events[index].dateTime);
+      isOneDay = false;
+    }
+    if (!isOneDay) {
+      final textDate =
+          _getTextDate(widget.chatCubit.state.events[index].dateTime);
       return Align(
         alignment: Alignment.centerLeft,
         child: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(5),
               bottomLeft: Radius.circular(5),
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            color: Colors.redAccent,
+            color: BlocProvider.of<ThemeCubit>(context).isLight()
+                ? ChatJournalColors.lightRed
+                : ChatJournalColors.lightGray,
           ),
           padding: const EdgeInsets.symmetric(
             vertical: 5,
@@ -370,6 +398,8 @@ class ChatPageState extends State<ChatPage> {
           child: Text(textDate),
         ),
       );
+    } else {
+      return Container();
     }
   }
 
@@ -406,22 +436,17 @@ class ChatPageState extends State<ChatPage> {
 
   Widget _messageEvent(int index) {
     return Text(
-      chat.events[index].text,
-      style: const TextStyle(
-        fontSize: 16,
-        color: Colors.black,
-      ),
+      widget.chatCubit.state.events[index].text,
+      style: Fonts.eventFont,
       textAlign: TextAlign.left,
     );
   }
 
   Widget _eventDate(int index) {
     return Text(
-      DateFormat('h:mm a').format(chat.events[index].dateTime),
-      style: const TextStyle(
-        color: Colors.grey,
-        fontSize: 16,
-      ),
+      DateFormat('h:mm a')
+          .format(widget.chatCubit.state.events[index].dateTime),
+      style: Fonts.eventDateFont,
       textAlign: TextAlign.left,
     );
   }
@@ -433,28 +458,24 @@ class ChatPageState extends State<ChatPage> {
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: ChatJournalColors.eventColor,
+            color: BlocProvider.of<ThemeCubit>(context).isLight()
+                ? ChatJournalColors.lightGreen
+                : ChatJournalColors.lightGray,
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Column(
             children: [
               Text(
-                _chatWithNoEventsTitle(chat.name),
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                ),
+                _chatWithNoEventsTitle(widget.chat.name),
+                style: Fonts.chatWithNoEventsFont,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               Text(
-                _isFavoritesMode
+                widget.chatCubit.state.isFavoritesMode
                     ? _chatWithNoFavoritesText()
-                    : _chatWithNoEventsText(chat.name),
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
-                ),
+                    : _chatWithNoEventsText(widget.chat.name),
+                style: Fonts.chatWithNoEventsFont,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -464,21 +485,18 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  String _chatWithNoEventsTitle(String title) {
-    return 'This is page where you can track everything about "$title"!';
-  }
+  String _chatWithNoEventsTitle(String title) =>
+      'This is page where you can track everything about "$title"!';
 
-  String _chatWithNoEventsText(String title) {
-    return 'Add your first event to "$title" page by entering some text box below '
-        'and hitting the send button. Long tap the send button to align the event'
-        ' in the opposite direction. Tap on the bookmark icon on the top right corner'
-        'to show the bookmarked events only.';
-  }
+  String _chatWithNoEventsText(String title) =>
+      'Add your first event to "$title" page by entering some text box below '
+      'and hitting the send button. Long tap the send button to align the event'
+      ' in the opposite direction. Tap on the bookmark icon on the top right corner'
+      'to show the bookmarked events only.';
 
-  String _chatWithNoFavoritesText() {
-    return 'You don\'t seem to have any bookmarked events yet. '
-        'You can bookmark an event by single tapping the event';
-  }
+  String _chatWithNoFavoritesText() =>
+      'You don\'t seem to have any bookmarked events yet. '
+      'You can bookmark an event by single tapping the event';
 
   Widget _inputPanel() {
     return Padding(
@@ -492,8 +510,8 @@ class ChatPageState extends State<ChatPage> {
               color: Colors.grey,
             ),
           ),
-          Expanded(child: _textField(_controller)),
-          _isTyping || _controller.text.isNotEmpty
+          Expanded(child: _textField()),
+          widget.chatCubit.state.isTyping || widget._controller.text.isNotEmpty
               ? _sendButton()
               : _sendImage(),
         ],
@@ -501,20 +519,22 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _textField(TextEditingController controller) {
+  Widget _textField() {
     return Focus(
       onFocusChange: (value) {
         setState(
           () {
-            _isTyping = value;
+            widget.chatCubit.changeIsTypingToValue(value);
           },
         );
       },
       child: TextField(
-        controller: controller,
+        controller: widget._controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
-          fillColor: Colors.grey[200],
+          fillColor: BlocProvider.of<ThemeCubit>(context).isLight()
+              ? Colors.grey[200]
+              : ChatJournalColors.lightGray,
           filled: true,
         ),
       ),
@@ -523,7 +543,7 @@ class ChatPageState extends State<ChatPage> {
 
   Widget _sendButton() {
     return IconButton(
-      icon: _isEditing
+      icon: widget.chatCubit.state.isEditing
           ? const Icon(
               Icons.done,
               color: Colors.grey,
@@ -533,27 +553,29 @@ class ChatPageState extends State<ChatPage> {
               color: Colors.grey,
             ),
       onPressed: () {
-        _isEditing ? _finishEditingEvent() : _addEvent();
+        widget.chatCubit.state.isEditing ? _finishEditingEvent() : _addEvent();
       },
     );
   }
 
   void _addEvent() {
-    if (_controller.text.isNotEmpty) {
+    if (widget._controller.text.isNotEmpty) {
       setState(() {
-        chat.events
-            .add(Event(text: _controller.text, dateTime: DateTime.now()));
-        _controller.clear();
+        widget.chatCubit.addEvent(
+            Event(text: widget._controller.text, dateTime: DateTime.now()));
+        widget.chatCubit.favoritesModeToFalse();
+        widget._controller.clear();
       });
     }
   }
 
   void _finishEditingEvent() {
-    if (_controller.text.isNotEmpty) {
+    if (widget._controller.text.isNotEmpty) {
       setState(() {
-        _isEditing = false;
-        chat.events[_selectedIndex].text = _controller.text;
-        _controller.clear();
+        widget.chatCubit.editingToValue(false);
+        widget.chatCubit.state.events[widget.chatCubit.state.selectedIndex]
+            .text = widget._controller.text;
+        widget._controller.clear();
       });
     }
   }
@@ -566,7 +588,8 @@ class ChatPageState extends State<ChatPage> {
       ),
       onPressed: () {
         setState(() {
-          _isSendingImage = !_isSendingImage;
+          widget.chatCubit.changeIsSendingImageToValue(
+              !widget.chatCubit.state.isSendingImage);
         });
       },
     );
