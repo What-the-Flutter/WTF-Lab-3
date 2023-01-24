@@ -11,6 +11,7 @@ import '../../security/security.dart';
 import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
 import '../cubit/settings_cubit.dart';
+import '../data/settings_repository_api.dart';
 import '../widget/font_size_selector.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -98,7 +99,60 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
+          SwitchItem(
+            title: locale.SettingsPage.bubbleAlignmentItemTitle.i18n(),
+            subtitle: locale.SettingsPage.bubbleAlignmentItemSubtitle.i18n(),
+            icon: Icons.format_align_left_outlined,
+            isToggle: context.watch<SettingsCubit>().state.messageAlignment ==
+                MessageAlignment.left,
+            onToggle: (isToggle) {
+              context.read<SettingsCubit>().changeMessageAlignment(
+                    isToggle ? MessageAlignment.left : MessageAlignment.right,
+                  );
+            },
+          ),
+          SwitchItem(
+            title: locale.SettingsPage.centerDateBubbleItem.i18n(),
+            icon: Icons.date_range_outlined,
+            isToggle:
+                context.watch<SettingsCubit>().state.isCenterDateBubbleShown,
+            onToggle: (isToggle) {
+              context.read<SettingsCubit>().changeBubbleDateVisibility(
+                    isToggle,
+                  );
+            },
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class SwitchItem extends StatelessWidget {
+  const SwitchItem({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.icon,
+    required this.isToggle,
+    required this.onToggle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final IconData icon;
+  final bool isToggle;
+  final void Function(bool isToggle) onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: subtitle == null ? null : Text(subtitle!),
+      trailing: Switch(
+        value: isToggle,
+        onChanged: onToggle,
       ),
     );
   }

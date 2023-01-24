@@ -4,6 +4,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/utils/insets.dart';
+import '../../../settings/cubit/settings_cubit.dart';
+import '../../../settings/data/settings_repository_api.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../scopes/message_manage_scope.dart';
 import 'items/message_item.dart';
@@ -19,7 +21,12 @@ class ChatMessageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MessageManageCubit, MessageManageState>(
       builder: (context, state) {
-        final messagesWithDates = state.messagesWithDates.reversed.toList();
+        final List<Object> messages;
+        if (context.read<SettingsCubit>().state.isCenterDateBubbleShown) {
+          messages = state.messagesWithDates.reversed.toList();
+        } else {
+          messages = state.messages.reversed.toList();
+        }
 
         return SlidableAutoCloseBehavior(
           child: ListView.builder(
@@ -28,12 +35,12 @@ class ChatMessageList extends StatelessWidget {
             padding: const EdgeInsets.only(
               bottom: Insets.small,
             ),
-            itemCount: messagesWithDates.length,
+            itemCount: messages.length,
             itemBuilder: (context, index) {
-              final item = messagesWithDates[index];
+              final item = messages[index];
               if (item is DateTime) {
                 return TimeItem(
-                  dateTime: messagesWithDates[index] as DateTime,
+                  dateTime: messages[index] as DateTime,
                 );
               }
 
@@ -58,6 +65,11 @@ class ChatMessageList extends StatelessWidget {
                 },
                 child: MessageItem(
                   message: item as Message,
+                  alignment:
+                      context.read<SettingsCubit>().state.messageAlignment ==
+                              MessageAlignment.right
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
                   onTap: (message, isSelected) {
                     state.mapOrNull(
                       defaultModeState: (defaultModeState) {

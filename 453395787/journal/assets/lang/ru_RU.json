@@ -16,6 +16,9 @@
   "settings_item_font_size_medium": "Средний",
   "settings_item_font_size_large": "Большой",
   "settings_page_security_title": "Входить по отпечатку пальца или FaceId?",
+  "settings_item_bubble_alignment_title": "Выравнивание сообщений",
+  "settings_item_bubble_alignment_subtitle": "Использовать выравнивание по левому краю",
+  "settings_item_date_bubble_visibility": "Показывать дату в центре",
 
   "action_ok": "Ок",
   "action_yes": "Да",

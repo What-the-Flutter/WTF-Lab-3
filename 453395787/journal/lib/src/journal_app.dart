@@ -37,6 +37,8 @@ class JournalApp extends StatelessWidget {
             theme: ThemeData(
               textTheme: Theme.of(context).textTheme.apply(
                     bodyColor: state.isDarkMode ? Colors.white : Colors.black,
+                    displayColor:
+                        state.isDarkMode ? Colors.white60 : Colors.black54,
                     fontSizeFactor: context
                         .watch<SettingsCubit>()
                         .state

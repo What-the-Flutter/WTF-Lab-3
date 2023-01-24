@@ -10,7 +10,18 @@ enum FontSize {
   final double scaleFactor;
 }
 
+enum MessageAlignment { left, right }
+
 abstract class SettingsRepositoryApi {
   FontSize get fontSize;
+
   Future<void> setFontSize(FontSize fontSize);
+
+  MessageAlignment get messageAlignment;
+
+  Future<void> setMessageAlignment(MessageAlignment messageAlignment);
+
+  bool get isCenterDateBubbleShown;
+
+  Future<void> setCenterDateBubbleShown(bool isCenterDateBubbleShown);
 }
