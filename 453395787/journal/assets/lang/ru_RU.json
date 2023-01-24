@@ -22,6 +22,8 @@
   "settings_item_reset": "Сбросить настройки",
   "settings_item_reset_confirmation_title": "Сбросить настройки",
   "settings_item_reset_confirmation_subtitle": "Вы уверены, что хотите сбросить настройки?",
+  "settings_item_share": "Поделиться",
+  "settings_share_app_text": "Следите за своей жизнью вместе с Journal - простое и элегантное приложение для заметок. https://github.com/AlexanderSimakov/WTF-Lab-3/tree/main/453395787/journal",
 
   "action_ok": "Ок",
   "action_yes": "Да",

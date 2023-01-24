@@ -22,6 +22,8 @@
   "settings_item_reset": "Reset All",
   "settings_item_reset_confirmation_title": "Reset all preferences",
   "settings_item_reset_confirmation_subtitle": "Are you sure you want to reset all preferences?",
+  "settings_item_share": "Share App",
+  "settings_share_app_text": "Keep track of your life with Journal, a simple and elegant chat-based journal. https://github.com/AlexanderSimakov/WTF-Lab-3/tree/main/453395787/journal",
 
   "action_ok": "Ok",
   "action_yes": "Yes",

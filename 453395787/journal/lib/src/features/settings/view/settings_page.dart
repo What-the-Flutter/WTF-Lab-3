@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/widget/confirmation_dialog.dart';
@@ -142,6 +143,17 @@ class SettingsPage extends StatelessWidget {
                 context.read<ThemeCubit>().resetToDefault();
                 context.read<LocaleCubit>().resetToDefault();
               }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.share_outlined),
+            title: Text(
+              locale.SettingsPage.shareItem.i18n(),
+            ),
+            onTap: () async {
+              await Share.share(
+                locale.SettingsPage.shareAppText.i18n(),
+              );
             },
           ),
         ],

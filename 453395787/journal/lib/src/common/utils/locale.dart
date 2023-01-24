@@ -12,6 +12,8 @@ abstract class SettingsPage {
   static const String tagItem = 'settings_item_tags';
   static const String languageItem = 'settings_item_languages';
   static const String themeItem = 'settings_item_theme';
+  static const String shareItem = 'settings_item_share';
+  static const String shareAppText = 'settings_share_app_text';
   static const String securityItem = 'settings_item_security';
   static const String securityPageTitle = 'settings_page_security_title';
 
