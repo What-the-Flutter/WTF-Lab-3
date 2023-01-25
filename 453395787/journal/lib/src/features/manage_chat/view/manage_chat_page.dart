@@ -8,7 +8,6 @@ import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
-import '../../../common/utils/typedefs.dart';
 import '../cubit/manage_chat_cubit.dart';
 import '../widgets/manage_chat_scope.dart';
 
@@ -22,7 +21,7 @@ class ManageChatPage extends StatefulWidget {
     this.chatId,
   });
 
-  final Id? chatId;
+  final String? chatId;
 
   @override
   State<ManageChatPage> createState() => _ManageChatPageState();
@@ -34,8 +33,8 @@ class _ManageChatPageState extends State<ManageChatPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _textEditingController.dispose();
+    super.dispose();
   }
 
   @override

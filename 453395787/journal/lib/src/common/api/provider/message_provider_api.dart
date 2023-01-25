@@ -4,13 +4,13 @@ import '../../models/db/db_message.dart';
 import '../../utils/typedefs.dart';
 
 abstract class MessageProviderApi {
-  ValueStream<DbMessageList> messagesOf({required Id chatId});
+  ValueStream<DbMessageList> messagesOf({required String chatId});
 
-  Future<Id> addMessage(Id chatId, DbMessage message);
+  Future<String> addMessage(String chatId, DbMessage message);
 
-  Future<void> deleteMessage(Id messageId);
+  Future<void> deleteMessage(String messageId);
 
-  Future<void> deleteMessages(Iterable<Id> messagesId);
+  Future<void> deleteMessages(Iterable<String> messagesId);
 
   Future<void> updateMessage(DbMessage message);
 }

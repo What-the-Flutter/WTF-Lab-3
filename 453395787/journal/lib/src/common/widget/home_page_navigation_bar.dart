@@ -37,34 +37,36 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return Scaffold(
-        body: widget.child,
-        bottomNavigationBar: NavigationBar(
-          onDestinationSelected: (index) {
-            _onBottomNavigationTap(context, index);
-          },
-          selectedIndex: _selectedPage,
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.home),
-              label: locale.Pages.home.i18n(),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.view_day_outlined),
-              label: locale.Pages.daily.i18n(),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.timeline),
-              label: locale.Pages.timeline.i18n(),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.settings_outlined),
-              label: locale.Pages.settings.i18n(),
-            ),
-          ],
-        ),
-      );
-    });
+    return Builder(
+      builder: (context) {
+        return Scaffold(
+          body: widget.child,
+          bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (index) {
+              _onBottomNavigationTap(context, index);
+            },
+            selectedIndex: _selectedPage,
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.home),
+                label: locale.Pages.home.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.view_day_outlined),
+                label: locale.Pages.daily.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.timeline),
+                label: locale.Pages.timeline.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.settings_outlined),
+                label: locale.Pages.settings.i18n(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

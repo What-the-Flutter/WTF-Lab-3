@@ -17,8 +17,8 @@ class _AddEditTagPageBodyState extends State<_AddEditTagPageBody> {
 
   @override
   void initState() {
-    _controller.text = widget.tagForEdit.text;
     super.initState();
+    _controller.text = widget.tagForEdit.text;
   }
 
   @override

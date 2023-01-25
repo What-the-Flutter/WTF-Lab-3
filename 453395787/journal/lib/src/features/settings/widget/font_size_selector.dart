@@ -24,8 +24,8 @@ class _FontSizeSelectorState extends State<FontSizeSelector> {
 
   @override
   void initState() {
-    _fontSize = widget.defaultFontSize;
     super.initState();
+    _fontSize = widget.defaultFontSize;
   }
 
   @override

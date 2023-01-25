@@ -37,25 +37,26 @@ class _SingleImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-        borderRadius: BorderRadius.circular(
-          Radius.medium,
-        ),
-        child: FutureBuilder<File>(
-          future: image,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return const CircularProgressIndicator();
-              } else {
-                return Image.file(
-                  snapshot.data!,
-                  fit: BoxFit.cover,
-                );
-              }
+      borderRadius: BorderRadius.circular(
+        Radius.medium,
+      ),
+      child: FutureBuilder<File>(
+        future: image,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return const CircularProgressIndicator();
+            } else {
+              return Image.file(
+                snapshot.data!,
+                fit: BoxFit.cover,
+              );
             }
-            return const CircularProgressIndicator();
-          },
-        ));
+          }
+          return const CircularProgressIndicator();
+        },
+      ),
+    );
   }
 }
 

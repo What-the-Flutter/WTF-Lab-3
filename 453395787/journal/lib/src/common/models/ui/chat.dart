@@ -8,7 +8,7 @@ part 'chat.freezed.dart';
 @freezed
 class Chat with _$Chat {
   const factory Chat({
-    @Default('') Id id,
+    @Default('') String id,
     @Default('') String name,
     required IconData icon,
     @Default(false) bool isPinned,

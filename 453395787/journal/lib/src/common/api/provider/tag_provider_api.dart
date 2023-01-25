@@ -6,9 +6,9 @@ import '../../utils/typedefs.dart';
 abstract class TagProviderApi {
   ValueStream<DbTagList> get tags;
 
-  Future<Id> addTag(DbTag tag);
+  Future<String> addTag(DbTag tag);
 
-  Future<void> deleteTag(Id tagId);
+  Future<void> deleteTag(String tagId);
 
   Future<void> updateTag(DbTag tag);
 }

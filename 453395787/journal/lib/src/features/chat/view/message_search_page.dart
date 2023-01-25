@@ -26,7 +26,7 @@ class MessageSearchPage extends StatefulWidget {
     required this.chatId,
   });
 
-  final Id chatId;
+  final String chatId;
 
   @override
   State<MessageSearchPage> createState() => _MessageSearchPageState();

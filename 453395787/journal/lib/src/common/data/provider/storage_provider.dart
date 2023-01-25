@@ -9,7 +9,7 @@ import '../../utils/app_logger.dart';
 import '../../utils/typedefs.dart';
 
 class StorageProvider extends StorageProviderApi with AppLogger {
-  static Id _userId = '';
+  static String _userId = '';
 
   StorageProvider({required String userId}) {
     _userId = userId;

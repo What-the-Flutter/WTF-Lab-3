@@ -3,7 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../utils/typedefs.dart';
 
 abstract class BaseProvider {
-  Id get userId;
+  String get userId;
 
   DatabaseReference get usersRef {
     return FirebaseDatabase.instance.ref('users/$userId');

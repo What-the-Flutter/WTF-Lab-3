@@ -14,8 +14,8 @@ class Message with _$Message {
   const Message._();
 
   const factory Message({
-    @Default('') Id id,
-    @Default('') Id parentId,
+    @Default('') String id,
+    @Default('') String parentId,
     @Default('') String text,
     required DateTime dateTime,
     @Default(IListConst([])) IList<Future<File>> images,

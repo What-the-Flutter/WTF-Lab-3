@@ -7,7 +7,7 @@ class _SelectionTagPageBody extends StatelessWidget {
     this.selectedId,
   });
 
-  final Id? selectedId;
+  final String? selectedId;
   final IList<Tag> tags;
 
   @override
@@ -21,7 +21,7 @@ class _SelectionTagPageBody extends StatelessWidget {
           alignment: WrapAlignment.start,
           onPressed: (tag) {
             context.read<ManageTagsCubit>().onTagPressed(tag);
-          }
+          },
         ),
         const Spacer(),
         Row(

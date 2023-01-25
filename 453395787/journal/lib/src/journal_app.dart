@@ -3,13 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
-import 'common/data/repository/chat_repository.dart';
 import 'common/data/provider/chat_provider.dart';
 import 'common/data/provider/message_provider.dart';
-import 'common/data/provider/tag_provider.dart';
 import 'common/data/provider/storage_provider.dart';
+import 'common/data/provider/tag_provider.dart';
+import 'common/data/repository/chat_repository.dart';
 import 'common/data/repository/tag_repository.dart';
-import 'common/utils/typedefs.dart';
 import 'features/locale/data/locale_repository_api.dart';
 import 'features/locale/locale.dart';
 import 'features/settings/cubit/settings_cubit.dart';
@@ -22,7 +21,7 @@ class JournalApp extends StatelessWidget {
     required this.userId,
   });
 
-  final Id userId;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +82,7 @@ class _InitProviders extends StatelessWidget {
   });
 
   final Widget child;
-  final Id userId;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {

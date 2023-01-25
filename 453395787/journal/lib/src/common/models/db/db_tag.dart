@@ -9,7 +9,7 @@ part 'db_tag.g.dart';
 @freezed
 class DbTag with _$DbTag {
   const factory DbTag({
-    @Default('') Id id,
+    @Default('') String id,
     @Default('') String text,
     required int colorCode,
   }) = _DbTag;

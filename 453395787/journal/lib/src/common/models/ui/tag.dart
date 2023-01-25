@@ -8,7 +8,7 @@ part 'tag.freezed.dart';
 @freezed
 class Tag with _$Tag {
   const factory Tag({
-    @Default('') Id id,
+    @Default('') String id,
     @Default('') String text,
     required Color color,
 }) = _Tag;

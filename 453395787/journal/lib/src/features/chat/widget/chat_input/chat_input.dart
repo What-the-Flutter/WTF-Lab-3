@@ -6,14 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
-import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/data/provider/message_provider.dart';
-import '../../../../common/data/provider/tag_provider.dart';
 import '../../../../common/data/provider/storage_provider.dart';
+import '../../../../common/data/provider/tag_provider.dart';
+import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';
-import '../../../../common/utils/typedefs.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
@@ -23,7 +22,6 @@ import '../scopes/tags_scope.dart';
 import '../tag_selector/tag_selector.dart';
 
 part 'input_mutable_button.dart';
-
 part 'selected_images.dart';
 
 class ChatInput extends StatefulWidget {
@@ -32,7 +30,7 @@ class ChatInput extends StatefulWidget {
     required this.chatId,
   });
 
-  final Id chatId;
+  final String chatId;
 
   @override
   State<ChatInput> createState() => _ChatInputState();

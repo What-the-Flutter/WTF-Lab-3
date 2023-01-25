@@ -18,7 +18,7 @@ class ChatPage extends StatelessWidget {
     required this.chatId,
   });
 
-  final Id chatId;
+  final String chatId;
 
   @override
   Widget build(BuildContext context) {

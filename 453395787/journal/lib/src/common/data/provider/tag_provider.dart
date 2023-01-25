@@ -12,13 +12,13 @@ import 'base_provider.dart';
 class TagProvider extends BaseProvider
     with AppLogger
     implements TagProviderApi {
-  final Id _userId;
+  final String _userId;
 
   @override
-  Id get userId => _userId;
+  String get userId => _userId;
 
   TagProvider({
-    required Id userId,
+    required String userId,
   }) : _userId = userId {
     _initTagsStream();
   }
@@ -46,7 +46,7 @@ class TagProvider extends BaseProvider
   ValueStream<DbTagList> get tags => _tagsSubject.stream;
 
   @override
-  Future<Id> addTag(DbTag tag) async {
+  Future<String> addTag(DbTag tag) async {
     final ref = tagsRef.push();
     ref.set(
       tag.copyWith(id: ref.key!).toJson(),
@@ -60,7 +60,7 @@ class TagProvider extends BaseProvider
   }
 
   @override
-  Future<void> deleteTag(Id tagId) async {
+  Future<void> deleteTag(String tagId) async {
     await tagsRef.child(tagId).remove();
   }
 }

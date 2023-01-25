@@ -19,13 +19,13 @@ class SecuritySettings extends StatefulWidget {
 }
 
 class _SecuritySettingsState extends State<SecuritySettings> {
-  late bool _verifyUserThenAppStarted;
+  late bool _mustVerifyUserThenAppStarted;
 
   @override
   void initState() {
-    _verifyUserThenAppStarted =
-        widget.securityRepository.verifyMethod != VerifyMethod.none;
     super.initState();
+    _mustVerifyUserThenAppStarted =
+        widget.securityRepository.verifyMethod != VerifyMethod.none;
   }
 
   @override
@@ -46,13 +46,13 @@ class _SecuritySettingsState extends State<SecuritySettings> {
             title: Text(
               locale.Actions.yes.i18n(),
             ),
-            value: _verifyUserThenAppStarted,
+            value: _mustVerifyUserThenAppStarted,
             onChanged: (isChecked) async {
               widget.securityRepository.setVerifyMethod(
                 VerifyMethod.fingerprint,
               );
               setState(() {
-                _verifyUserThenAppStarted = true;
+                _mustVerifyUserThenAppStarted = true;
               });
             },
           ),
@@ -60,13 +60,13 @@ class _SecuritySettingsState extends State<SecuritySettings> {
             title: Text(
               locale.Actions.no.i18n(),
             ),
-            value: !_verifyUserThenAppStarted,
+            value: !_mustVerifyUserThenAppStarted,
             onChanged: (isChecked) async {
               widget.securityRepository.setVerifyMethod(
                 VerifyMethod.none,
               );
               setState(() {
-                _verifyUserThenAppStarted = false;
+                _mustVerifyUserThenAppStarted = false;
               });
             },
           ),

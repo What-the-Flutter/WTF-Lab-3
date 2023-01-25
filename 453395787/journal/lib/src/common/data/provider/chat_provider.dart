@@ -14,13 +14,13 @@ import 'base_provider.dart';
 class ChatProvider extends BaseProvider
     with AppLogger
     implements ChatProviderApi {
-  final Id _userId;
+  final String _userId;
 
   @override
-  Id get userId => _userId;
+  String get userId => _userId;
 
   ChatProvider({
-    required Id userId,
+    required String userId,
   }) : _userId = userId {
     _initChatStream();
     _initChatAndMessageSynchronization();
@@ -75,7 +75,7 @@ class ChatProvider extends BaseProvider
   ValueStream<DbChatList> get chats => _chatsSubject.stream;
 
   @override
-  Future<Id> addChat(DbChat chat) async {
+  Future<String> addChat(DbChat chat) async {
     final ref = chatsRef.push();
     await ref.set(
       chat
@@ -93,7 +93,7 @@ class ChatProvider extends BaseProvider
   }
 
   @override
-  Future<void> deleteChat(Id chatId) async {
+  Future<void> deleteChat(String chatId) async {
     final messages = (await messagesRef.get()).toModels(
       DbMessage.fromJson,
     );

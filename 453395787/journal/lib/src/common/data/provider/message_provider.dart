@@ -12,15 +12,15 @@ import 'base_provider.dart';
 class MessageProvider extends BaseProvider
     with AppLogger
     implements MessageProviderApi {
-  final Id _userId;
+  final String _userId;
 
   @override
-  Id get userId => _userId;
+  String get userId => _userId;
 
-  MessageProvider({required Id userId}) : _userId = userId;
+  MessageProvider({required String userId}) : _userId = userId;
 
   @override
-  Future<Id> addMessage(Id chatId, DbMessage message) async {
+  Future<String> addMessage(String chatId, DbMessage message) async {
     final ref = messagesRef.push();
     await ref.set(
       message
@@ -41,7 +41,7 @@ class MessageProvider extends BaseProvider
   }
 
   @override
-  ValueStream<DbMessageList> messagesOf({required Id chatId}) {
+  ValueStream<DbMessageList> messagesOf({required String chatId}) {
     return messagesRef.onValue.map(
       (event) {
         log.v(
@@ -71,7 +71,7 @@ class MessageProvider extends BaseProvider
   }
 
   @override
-  Future<void> deleteMessages(Iterable<Id> messagesId) async {
+  Future<void> deleteMessages(Iterable<String> messagesId) async {
     messagesId.forEach(await deleteMessage);
   }
 }

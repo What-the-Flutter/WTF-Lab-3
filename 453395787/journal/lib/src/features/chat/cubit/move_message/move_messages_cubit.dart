@@ -30,10 +30,10 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
 
   final ChatRepositoryApi _chatRepository;
   final MessageRepositoryApi _messageRepository;
-  final Id fromChatId;
+  final String fromChatId;
   final MessageList messages;
 
-  void select(Id id) {
+  void select(String id) {
     state.map(
       initial: (initial) {
         emit(
@@ -54,7 +54,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
     );
   }
 
-  void unselect(Id id) {
+  void unselect(String id) {
     state.mapOrNull(
       hasSelectedState: (hasSelectedState) {
         emit(
@@ -67,7 +67,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
     );
   }
 
-  void toggleSelection(Id id) {
+  void toggleSelection(String id) {
     state.map(
       initial: (initial) {
         select(id);
@@ -87,7 +87,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
       hasSelectedState: (hasSelectedState) async {
         await _messageRepository.removeAll(messages);
         for (var message in messages) {
-          await _messageRepository.customAdd(
+          await _messageRepository.addToOtherChat(
             hasSelectedState.selectedChatId,
             message,
           );

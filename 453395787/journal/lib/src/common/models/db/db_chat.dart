@@ -9,7 +9,7 @@ part 'db_chat.g.dart';
 @freezed
 class DbChat with _$DbChat {
   const factory DbChat({
-    @Default('') Id id,
+    @Default('') String id,
     @Default('') String name,
     required int iconCodePoint,
     @Default(false) bool isPinned,

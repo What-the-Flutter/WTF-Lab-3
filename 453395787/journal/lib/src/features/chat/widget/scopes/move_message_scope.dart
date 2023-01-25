@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/data/provider/message_provider.dart';
-import '../../../../common/data/provider/tag_provider.dart';
 import '../../../../common/data/provider/storage_provider.dart';
+import '../../../../common/data/provider/tag_provider.dart';
+import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../cubit/move_message/move_messages_cubit.dart';
 import '../../data/message_repository.dart';
@@ -18,7 +18,7 @@ class MoveMessagesScope extends StatelessWidget {
   });
 
   final Widget child;
-  final Id fromChatId;
+  final String fromChatId;
   final MessageList messages;
 
   @override

@@ -14,5 +14,3 @@ typedef DbChatList = IList<DbChat>;
 typedef TagList = IList<Tag>;
 typedef MessageList = IList<Message>;
 typedef ChatList = IList<Chat>;
-
-typedef Id = String;

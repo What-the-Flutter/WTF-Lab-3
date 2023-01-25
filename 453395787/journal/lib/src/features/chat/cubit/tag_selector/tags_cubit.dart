@@ -86,7 +86,7 @@ class TagsCubit extends Cubit<TagsState> {
     });
   }
 
-  void setSelected(IList<Id> tagsId) {
+  void setSelected(IList<String> tagsId) {
     final tags = state.tags
         .where(
           (e) => tagsId.contains(e.id),

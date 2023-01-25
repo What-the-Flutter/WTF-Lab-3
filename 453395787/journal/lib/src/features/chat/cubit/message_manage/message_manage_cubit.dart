@@ -44,7 +44,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
   }
 
   final MessageRepositoryApi _repository;
-  final Id chatId;
+  final String chatId;
   final String name;
   StreamSubscription<IList<Message>>? _messageStreamSub;
 

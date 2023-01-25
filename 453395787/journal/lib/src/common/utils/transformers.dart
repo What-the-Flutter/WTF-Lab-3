@@ -13,8 +13,8 @@ import '../models/ui/message.dart';
 import '../models/ui/tag.dart';
 import 'typedefs.dart';
 
-typedef FetchFileCallback = Future<File> Function(Id id);
-typedef GetTagCallback = Tag Function(Id id);
+typedef FetchFileCallback = Future<File> Function(String id);
+typedef GetTagCallback = Tag Function(String id);
 
 abstract class Transformers {
   static final modelsToTagsStreamTransformer =

@@ -6,9 +6,9 @@ import '../../utils/typedefs.dart';
 abstract class ChatProviderApi {
   ValueStream<DbChatList> get chats;
 
-  Future<Id> addChat(DbChat chat);
+  Future<String> addChat(DbChat chat);
 
-  Future<void> deleteChat(Id chatId);
+  Future<void> deleteChat(String chatId);
 
   Future<void> updateChat(DbChat chat);
 }
