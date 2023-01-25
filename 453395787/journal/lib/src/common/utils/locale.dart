@@ -15,6 +15,7 @@ abstract class SettingsPage {
   static const String shareItem = 'settings_item_share';
   static const String shareAppText = 'settings_share_app_text';
   static const String securityItem = 'settings_item_security';
+  static const String chatItem = 'settings_item_chat';
   static const String securityPageTitle = 'settings_page_security_title';
 
   static const String fontSizeItem = 'settings_item_font_size';
@@ -29,6 +30,9 @@ abstract class SettingsPage {
   static const String resetItem = 'settings_item_reset';
   static const String resetConfirmationTitle = 'settings_item_reset_confirmation_title';
   static const String resetConfirmationSubtitle = 'settings_item_reset_confirmation_subtitle';
+
+  static const String changeBackgroundImage = 'settings_change_background_image';
+  static const String removeBackgroundImage = 'settings_remove_background_image';
 }
 
 abstract class Actions {

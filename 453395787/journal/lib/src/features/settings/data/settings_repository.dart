@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/utils/default_values.dart';
@@ -8,15 +12,18 @@ class SettingsRepository extends SettingsRepositoryApi {
   static final String _isCenterDateBubbleShownKey =
       'isCenterDateBubbleShownKey';
   static final String _messageAlignmentKey = 'messageAlignmentKey';
+  static final String _imagePathKey = 'imagePathKey';
 
   static FontSize _fontSize = FontSize.medium;
   static bool _isCenterDateBubbleShown = true;
   static MessageAlignment _messageAlignment = MessageAlignment.right;
+  static String? _imagePath;
 
   static Future<void> init() async {
     await _initFontSizeProperty();
     await _initIsCenterDateBubbleShownProperty();
     await _initMessageAlignmentProperty();
+    await _initImagePathProperty();
   }
 
   static Future<void> _initFontSizeProperty() async {
@@ -41,6 +48,11 @@ class SettingsRepository extends SettingsRepositoryApi {
     if (messageAlignmentName != null) {
       _messageAlignment = MessageAlignment.values.byName(messageAlignmentName);
     }
+  }
+
+  static Future<void> _initImagePathProperty() async {
+    final prefs = await SharedPreferences.getInstance();
+    _imagePath = prefs.getString(_imagePathKey);
   }
 
   @override
@@ -71,6 +83,34 @@ class SettingsRepository extends SettingsRepositoryApi {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_messageAlignmentKey, messageAlignment.name);
     _messageAlignment = messageAlignment;
+  }
+
+  @override
+  String? get backgroundImagePath => _imagePath;
+
+  @override
+  Future<void> setBackgroundImagePath(String? imagePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    final directory = await getApplicationDocumentsDirectory();
+
+    if (imagePath != null) {
+      final filename = basename(imagePath);
+      final path = join(directory.path, filename);
+
+      await File(imagePath).copy(path);
+      await prefs.setString(_imagePathKey, path);
+
+      _imagePath = path;
+    } else {
+      await prefs.remove(_imagePathKey);
+
+      if (_imagePath != null) {
+        final filename = basename(_imagePath!);
+        await File(join(directory.path, filename)).delete();
+      }
+
+      _imagePath = null;
+    }
   }
 
   @override

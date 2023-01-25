@@ -6,5 +6,6 @@ class SettingsState with _$SettingsState {
     required FontSize fontSize,
     required MessageAlignment messageAlignment,
     required bool isCenterDateBubbleShown,
+    String? imagePath,
   }) = _SettingsState;
 }

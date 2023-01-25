@@ -156,6 +156,15 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.chat_outlined),
+            title: Text(
+              locale.SettingsPage.chatItem.i18n(),
+            ),
+            onTap: () async {
+              context.go(Navigation.chatSettingsPagePath);
+            },
+          ),
         ],
       ),
     );

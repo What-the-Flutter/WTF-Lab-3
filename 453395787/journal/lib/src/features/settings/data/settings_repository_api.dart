@@ -25,5 +25,9 @@ abstract class SettingsRepositoryApi {
 
   Future<void> setCenterDateBubbleShown(bool isCenterDateBubbleShown);
 
+  String? get backgroundImagePath;
+
+  Future<void> setBackgroundImagePath(String? imagePath);
+
   Future<void> resetToDefault();
 }

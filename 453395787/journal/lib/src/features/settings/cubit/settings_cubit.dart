@@ -17,6 +17,7 @@ class SettingsCubit extends Cubit<SettingsState> {
             fontSize: settingsRepository.fontSize,
             messageAlignment: settingsRepository.messageAlignment,
             isCenterDateBubbleShown: settingsRepository.isCenterDateBubbleShown,
+            imagePath: settingsRepository.backgroundImagePath,
           ),
         );
 
@@ -45,6 +46,15 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
     await _settingsRepository.setMessageAlignment(messageAlignment);
+  }
+
+  Future<void> changeBackgroundImagePath(String? path) async {
+    await _settingsRepository.setBackgroundImagePath(path);
+    emit(
+      state.copyWith(
+        imagePath: _settingsRepository.backgroundImagePath,
+      ),
+    );
   }
 
   Future<void> resetToDefault() async {

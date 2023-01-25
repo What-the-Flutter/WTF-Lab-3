@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/data/repository/chat_repository.dart';
 import '../../../common/data/provider/message_provider.dart';
-import '../../../common/data/provider/tag_provider.dart';
 import '../../../common/data/provider/storage_provider.dart';
-import '../../../common/utils/typedefs.dart';
+import '../../../common/data/provider/tag_provider.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../data/message_repository.dart';
 import '../widget/app_bar/chat_app_bar.dart';
