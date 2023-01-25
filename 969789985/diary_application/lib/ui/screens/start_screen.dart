@@ -1,12 +1,18 @@
-import 'package:flutter/cupertino.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:provider/provider.dart';
 
-import '../../basic/repositories/chat_repository.dart';
+import '../../basic/providers/chat_list_provider.dart';
+import '../../basic/themes/app_theme.dart';
 import '../../widgets/chat_list/chat_list_view.dart';
-import 'new_chat_screen.dart';
+import '../../widgets/common/navigation_drawer.dart';
+import '../../widgets/common/theme_switcher.dart';
+import '../utils/dimensions.dart';
+import '../utils/themes.dart';
+import 'chat/new_chat_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -16,160 +22,127 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
-  int _selectedIndexPage = 0;
-  String _appBarTitle = 'Home';
-  bool _isAppBarActions = true;
-  bool _isFabVisible = true;
+  final TextEditingController _searchTextEditingController =
+      TextEditingController();
 
-  final ChatRepository _chatRepository = ChatRepository.get();
+  int _selectedIndexPage = 0;
+  bool _isFabVisible = true;
 
   @override
   void initState() {
     super.initState();
 
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        systemNavigationBarColor: Color(0xFFf1eaea),
-      ),
-    );
+    Future.delayed(Duration.zero, () {
+      final appTheme = ThemeChanger.of(context).appTheme;
+
+      appTheme.isDarkMode
+          ? SystemChrome.setSystemUIOverlayStyle(
+              const SystemUiOverlayStyle(
+                systemNavigationBarColor: Color(AppColors.primaryDark),
+              ),
+            )
+          : SystemChrome.setSystemUIOverlayStyle(
+              const SystemUiOverlayStyle(
+                systemNavigationBarColor: Color(AppColors.primaryLight),
+              ),
+            );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final animatedAppBarSwitcher = AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      transitionBuilder: (child, animation) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.0, -2.0),
-            end: const Offset(0.0, 0.0),
-          ).animate(animation),
-          child: child,
+    return Consumer<ChatListProvider>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          extendBody: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            actions: [
+              ThemeSwitcher(),
+            ],
+          ),
+          drawer: const NavigationDrawer(),
+          floatingActionButton: _floatingActionButton(),
+          bottomNavigationBar: _bottomNavigationBar(),
+          body: _pagesContent(provider),
         );
       },
-      child: Text(
-        _appBarTitle,
-        key: ValueKey<String>(_appBarTitle),
-        style: const TextStyle(fontSize: 24),
-      ),
-    );
-
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        actions: [
-          _isAppBarActions
-              ? IconButton(onPressed: () {}, icon: const Icon(Icons.search))
-              : Container(width: 0),
-          _isAppBarActions
-              ? IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.invert_colors),
-                )
-              : Container(width: 0)
-        ],
-      ),
-      drawer: _navigationDrawer(),
-      floatingActionButton: _floatingActionButton(),
-      bottomNavigationBar: _bottomNavigationBar(),
-      body: _pageContent(),
     );
   }
 
-  Widget _pageContent() {
+  Widget _pagesContent(ChatListProvider provider) {
     switch (_selectedIndexPage) {
       case 0:
-        return Column(
-          children: [
-            const SizedBox(height: 15),
-            Expanded(
-              child: NotificationListener<UserScrollNotification>(
-                onNotification: (notification) {
-                  if (notification.direction == ScrollDirection.forward) {
-                    if (!_isFabVisible) setState(() => _isFabVisible = true);
-                  } else if (notification.direction ==
-                      ScrollDirection.reverse) {
-                    if (_isFabVisible) setState(() => _isFabVisible = false);
-                  }
-
-                  return true;
-                },
-                child: HomeListView(chatsList: _chatRepository.chats),
-              ),
-            ),
-          ],
-        );
+        return _homeContent(provider);
       default:
         return const Center(child: CircularProgressIndicator());
     }
   }
 
-  Widget _bottomNavigationBar() => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColorLight,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(25.0),
-            topRight: Radius.circular(25.0),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          child: GNav(
-            gap: 5,
-            tabBackgroundColor: Theme.of(context).primaryColor,
-            tabs: const [
-              GButton(icon: Icons.home_filled, text: 'Home'),
-              GButton(icon: Icons.list_alt, text: 'Daily'),
-              GButton(icon: Icons.timeline, text: 'Timeline'),
-              GButton(icon: Icons.explore, text: 'Explore')
-            ],
-            onTabChange: (index) {
-              setState(
-                () {
-                  _selectedIndexPage = index;
-                  switch (_selectedIndexPage) {
-                    case 0:
-                      _isAppBarActions = true;
-                      _isFabVisible = true;
-                      break;
-                    default:
-                      _isAppBarActions = false;
-                      _isFabVisible = false;
-                      break;
-                  }
-                },
-              );
-            },
-          ),
-        ),
-      );
+  Widget _homeContent(ChatListProvider provider) {
+    return Column(
+      children: [
+        const SizedBox(height: Insets.applicationConstantMedium),
+        Expanded(
+          child: NotificationListener<UserScrollNotification>(
+            onNotification: (notification) {
+              if (notification.direction == ScrollDirection.forward) {
+                if (!_isFabVisible) setState(() => _isFabVisible = true);
+              } else if (notification.direction == ScrollDirection.reverse) {
+                if (_isFabVisible) setState(() => _isFabVisible = false);
+              }
 
-  Widget _navigationDrawer() => Drawer(
-        child: ListView(
-          padding: const EdgeInsets.all(0),
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.grey[300]!,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
-                ),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              return true;
+            },
+            child: HomeListView(
+              chatsList: provider.repository.chats
+                  .sort((a, b) => b.isPinned.compareTo(a.isPinned)),
+              provider: provider,
+              searchTextEditingController: _searchTextEditingController,
             ),
-          ],
+          ),
         ),
-      );
+      ],
+    );
+  }
+
+  Widget _bottomNavigationBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(Radii.applicationConstant),
+          topRight: Radius.circular(Radii.applicationConstant),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Insets.applicationConstantSmall,
+          vertical: Insets.applicationConstantSmall,
+        ),
+        child: GNav(
+          gap: 5,
+          tabBackgroundColor: Theme.of(context).primaryColor,
+          tabs: const [
+            GButton(icon: Icons.home_filled, text: 'Home'),
+            GButton(icon: Icons.my_library_books_outlined, text: 'Daily'),
+            GButton(icon: Icons.timeline, text: 'Timeline'),
+            GButton(icon: Icons.explore, text: 'Explore')
+          ],
+          onTabChange: (index) {
+            setState(() => _selectedIndexPage = index);
+          },
+        ),
+      ),
+    );
+  }
 
   Widget _floatingActionButton() => AnimatedSlide(
-        duration: const Duration(milliseconds: 300),
+        curve: _isFabVisible ? Curves.fastOutSlowIn : Curves.decelerate,
+        duration: const Duration(milliseconds: 400),
         offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 400),
           opacity: _isFabVisible ? 1 : 0,
           child: FloatingActionButton(
             onPressed: _toNewChatScreen,

@@ -32,6 +32,7 @@ class ChatProvider extends ChangeNotifier {
   var _selectedItemsCount = 0;
   var _isEditMode = false;
   var _isFavoriteMode = false;
+  bool _isSearchMode = false;
 
   bool get isSelectMode => _isSelectMode;
 
@@ -42,6 +43,8 @@ class ChatProvider extends ChangeNotifier {
   bool get isFavoriteMode => _isFavoriteMode;
 
   MessageModel get message => _message;
+
+  bool get isSearchMode => _isSearchMode;
 
   void add(MessageModel message) {
     if (!_update(message)) {
@@ -83,6 +86,16 @@ class ChatProvider extends ChangeNotifier {
     return true;
   }
 
+  void startSearchMode() {
+    _isSearchMode = true;
+    notifyListeners();
+  }
+
+  void endSearchMode() {
+    _isSearchMode = false;
+    notifyListeners();
+  }
+
   void startEditMode() {
     _isEditMode = true;
     notifyListeners();
@@ -90,6 +103,7 @@ class ChatProvider extends ChangeNotifier {
 
   void endEditMode() {
     _isEditMode = false;
+    notifyListeners();
   }
 
   void selectMessage(int index) {
@@ -122,14 +136,10 @@ class ChatProvider extends ChangeNotifier {
   }
 
   bool hasFavorites() {
-    var m = messages.firstWhere((element) => element.isFavorite,
+    final mes = messages.firstWhere((element) => element.isFavorite,
         orElse: MessageModel.new);
 
-    if(m.isFavorite) {
-      return true;
-    } else {
-      return false;
-    }
+    return mes.isFavorite;
   }
 
   void addToFavorites(MessageModel message) {
@@ -175,9 +185,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void copySelectedToBuffer() async {
-    var mes = messages.reversed.where((element) => selectedItems[element.id]!);
+    final mes = messages.reversed.where((element) => selectedItems[element.id]!);
 
-    var text = mes.sortedReversed().map((e) => e.messageText).join('\n');
+    final text = mes.sortedReversed().map((e) => e.messageText).join('\n');
 
     await Clipboard.setData(
       ClipboardData(
@@ -185,5 +195,9 @@ class ChatProvider extends ChangeNotifier {
       ),
     );
   }
+
+  void updateSearchMode() => _isSearchMode = !_isSearchMode;
+
+  void updateListeners() => notifyListeners();
 
 }
