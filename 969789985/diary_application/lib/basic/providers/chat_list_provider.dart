@@ -30,4 +30,6 @@ class ChatListProvider extends ChangeNotifier {
 
   ChatModel chatById(int id) =>
       _repository.chats.firstWhere((el) => el.id == id);
+
+  void updateListeners() => notifyListeners();
 }

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../basic/providers/chat_provider.dart';
 import '../../basic/utils/extensions.dart';
+import '../../ui/utils/dimensions.dart';
 
 class ChatInputField extends StatefulWidget {
   ChatInputField({
@@ -45,10 +46,10 @@ class _ChatInputFieldState extends State<ChatInputField> {
           AnimatedContainer(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(25.0),
-                topLeft: Radius.circular(25.0),
+                topRight: Radius.circular(Radii.applicationConstant),
+                topLeft: Radius.circular(Radii.applicationConstant),
               ),
-              color: Theme.of(context).cardColor,
+              color: Theme.of(context).primaryColorLight,
             ),
             duration: const Duration(milliseconds: 200),
             child: TextField(
@@ -57,7 +58,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 if (widget.chatTextFieldController.text.isEmpty &&
                     _imageFileList.isEmpty) {
                   setState(() => _buttonRightModuleIcon = Icons.mic_rounded);
-                } else if (widget.chatTextFieldController.text.length == 1) {
+                } else if (widget.chatTextFieldController.text.isNotEmpty) {
                   setState(() => _buttonRightModuleIcon = Icons.send);
                 }
               },
@@ -66,33 +67,37 @@ class _ChatInputFieldState extends State<ChatInputField> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
-                  vertical: 25.0,
-                  horizontal: 15.0,
+                  vertical: Insets.applicationConstantLarge,
+                  horizontal: Insets.applicationConstantMedium,
                 ),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: SizedBox(
-                    width: 100.0,
-                    child: Row(
-                      children: [
-                        _attachButton(context),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.new_label_outlined),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: _animatedSendButton(),
-                ),
+                prefixIcon: _prefixIcon(),
+                suffixIcon: _suffixIcon(),
                 hintText: 'Message',
               ),
             ),
           ),
         ],
+      );
+
+  Widget _prefixIcon() => Padding(
+        padding: const EdgeInsets.only(left: Insets.small),
+        child: SizedBox(
+          width: 100.0,
+          child: Row(
+            children: [
+              _attachButton(context),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.new_label_outlined),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _suffixIcon() => Padding(
+        padding: const EdgeInsets.only(right: Insets.medium),
+        child: _animatedSendButton(),
       );
 
   Widget _attachButton(BuildContext context) => AnimatedScale(
@@ -120,20 +125,20 @@ class _ChatInputFieldState extends State<ChatInputField> {
       );
 
   Widget _photoPlacer() => _imageFileList.isEmpty
-      ? Container(height: 0)
+      ? Container(height: Insets.none)
       : SizedBox(
           height: 200.0,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: Insets.medium),
             child: ListView.builder(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               itemCount: _imageFileList.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(Insets.small),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(Insets.medium),
                     child: Image.file(
                       File(
                         _imageFileList[index],
@@ -157,13 +162,13 @@ class _ChatInputFieldState extends State<ChatInputField> {
         height: 180.0,
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 5.0,
-            right: 15.0,
+            left: Insets.small,
+            right: Insets.large,
             bottom: 70.0,
           ),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
+              borderRadius: BorderRadius.circular(Radii.applicationConstant),
               color: Colors.transparent,
             ),
             child: Column(
@@ -171,10 +176,10 @@ class _ChatInputFieldState extends State<ChatInputField> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                  onPressed: _pickImage,
+                  onPressed: () => _pickImages(source: ImageSource.camera),
                   icon: const Icon(Icons.camera_alt_outlined),
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: Insets.applicationConstantSmall),
                 IconButton(
                   onPressed: _pickImages,
                   icon: const Icon(Icons.image),
@@ -187,27 +192,19 @@ class _ChatInputFieldState extends State<ChatInputField> {
     ).whenComplete(() => setState(() => _scale = 1.0));
   }
 
-  Future _pickImage() async {
-    try{
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      if (image == null) return;
-      setState(() {
-        _buttonRightModuleIcon = Icons.send;
-        _imageFileList.add(image.path);
-      });
-    } on PlatformException catch (e) {
-      print(e);
-      Navigator.of(context).pop();
-    }
-  }
-
-  Future _pickImages() async {
+  Future _pickImages({ImageSource? source}) async {
     try {
-      final images = await ImagePicker().pickMultiImage();
-      if (images.isEmpty) return;
+      final images = List<XFile?>.empty(growable: true);
+      if (source != null) {
+        images.add(await ImagePicker().pickImage(source: source));
+      } else {
+        images.addAll(await ImagePicker().pickMultiImage());
+      }
+      if (images.contains(null)) return;
       setState(() {
         _buttonRightModuleIcon = Icons.send;
-        _imageFileList.addAll(images.map((e) => e.path).toList());
+        _imageFileList.addAll(images.map((e) => e!.path));
+        Navigator.pop(context);
       });
     } on PlatformException catch (e) {
       print(e);

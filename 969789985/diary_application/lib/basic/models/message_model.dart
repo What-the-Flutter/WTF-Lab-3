@@ -1,9 +1,14 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 class MessageModel {
+  final int id;
+  final String messageText;
+  final DateTime sendDate;
+  final IList<String> images;
+  final bool isFavorite;
+
   MessageModel({
     int? id,
     this.messageText = '',
@@ -14,13 +19,6 @@ class MessageModel {
         sendDate = sendDate ?? DateTime.now(),
         images = images ?? IList(),
         isFavorite = isFavorite ?? false;
-
-  final int id;
-  final String messageText;
-  final DateTime sendDate;
-  final IList<String> images;
-  final bool isFavorite;
-
 
   MessageModel copyWith({
     int? id,
