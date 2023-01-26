@@ -12,6 +12,7 @@ import 'common/data/repository/tag_repository.dart';
 import 'features/locale/data/locale_repository_api.dart';
 import 'features/locale/locale.dart';
 import 'features/settings/cubit/settings_cubit.dart';
+import 'features/text_tags/text_tags.dart';
 import 'features/theme/theme.dart';
 import 'routes.dart';
 
@@ -116,6 +117,13 @@ class _InitProviders extends StatelessWidget {
         RepositoryProvider(
           create: (context) => TagRepository(
             tagProvider: context.read<TagProvider>(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => TextTagRepository(
+            textTagFirebaseProvider: TextTagFirebaseProvider(
+              userId: userId,
+            ),
           ),
         ),
       ],
