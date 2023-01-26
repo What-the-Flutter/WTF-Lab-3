@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/widget/confirmation_dialog.dart';
-import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
 import '../../locale/locale.dart';
 import '../../security/cubit/security_cubit.dart';
@@ -38,7 +37,7 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.languageItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => const LanguageSelector(),
               );
@@ -65,7 +64,7 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.themeItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => const ChoiceColorSheet(
                   showExampleMessages: false,
@@ -80,7 +79,7 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.securityItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => SecuritySettings(
                   securityRepository: SecurityRepository(),
@@ -94,7 +93,7 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.fontSizeItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => FontSizeSelector(
                   defaultFontSize: context.read<SettingsCubit>().state.fontSize,

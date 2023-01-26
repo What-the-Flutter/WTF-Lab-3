@@ -28,7 +28,7 @@ class ChatList extends StatelessWidget {
                     );
                   },
                   onLongPress: () {
-                    showFloatingModalBottomSheet(
+                    showModalBottomSheet(
                       context: context,
                       builder: (_) => _BottomChatActionSheet(
                         chat: state.chats[index],

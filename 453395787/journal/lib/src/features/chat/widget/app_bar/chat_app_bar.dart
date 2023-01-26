@@ -8,7 +8,6 @@ import 'package:localization/localization.dart';
 import '../../../../common/extensions/string_extensions.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/widget/confirmation_dialog.dart';
-import '../../../../common/widget/floating_bottom_sheet.dart';
 import '../../../../routes.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../view/move_message.dart';
