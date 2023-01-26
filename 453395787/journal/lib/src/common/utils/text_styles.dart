@@ -23,6 +23,12 @@ abstract class TextStyles {
         );
   }
 
+  static TextStyle defaultHighlighted(BuildContext context) {
+    return DefaultTextStyle.of(context).style.copyWith(
+      color: Theme.of(context).colorScheme.primary,
+    );
+  }
+
   static TextStyle bodyRed(BuildContext context) {
     return Theme.of(context).textTheme.bodyText1!.copyWith(
           color: Colors.red,

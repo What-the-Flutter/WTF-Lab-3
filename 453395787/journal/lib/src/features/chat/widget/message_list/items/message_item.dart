@@ -7,6 +7,7 @@ import '../../../../../common/models/ui/message.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/radius.dart';
 import '../../../../../common/utils/text_styles.dart';
+import '../../../../../common/widget/regex_text_highlight.dart';
 import 'message_tags.dart';
 
 part 'message_images.dart';
