@@ -6,7 +6,7 @@
   "bot": "Questionnaire Bot",
   "chatDescription": "No events. Click to create one.",
   "attach": "Attachment",
-  "increaseButtonHint": "Increment",
+  "add": "Add new chat",
   "messageNotificationTitle": "This is the page where you can track everything about \"{}\"!",
   "messageNotificationDesc": "Add your first event to \"{}\" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event In the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.",
   "jan": "Jan",
@@ -26,5 +26,17 @@
   "attachDialogInfo": "How would you like to upload an image?",
   "cancel": "Cancel",
   "gallery": "Gallery",
-  "camera": "Camera"
+  "camera": "Camera",
+  "addNewChat": "Create a new Page",
+  "addPageLabel": "Name of the Page",
+  "infoChat": "Info",
+  "pinChat": "Pin/Unpin page",
+  "archiveChat": "Archive Page",
+  "editChat": "Edit Page",
+  "deleteChat": "Delete Page",
+  "created": "Created",
+  "latestEvent": "Latest Event",
+  "ok": "OK",
+  "archivedPage": "Archived Pages",
+  "countArchived": "Pages Archived"
 }

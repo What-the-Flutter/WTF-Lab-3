@@ -4,10 +4,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'l10n/l10n.dart';
-import 'models/chat_provider.dart';
-import 'pages/bottom_nav_bar.dart';
+import 'provider/chat_provider.dart';
 import 'theme/custom_user_theme.dart';
 import 'theme/theme_inherited.dart';
+import 'ui/pages/bottom_nav_bar.dart';
 
 void main() async {
   runApp(const CustomUserTheme(child: ChatJournalApplication()));

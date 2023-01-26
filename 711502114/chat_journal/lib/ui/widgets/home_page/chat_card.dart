@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-import '../models/chat.dart';
-import '../theme/colors.dart';
-import '../utils/utils.dart';
+import '../../../models/chat.dart';
+import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
+  final Chat chat;
+  final Widget? extraWidget;
+
   const ChatCard({
     Key? key,
     required this.chat,
+    this.extraWidget,
   }) : super(key: key);
-
-  final Chat chat;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +21,11 @@ class ChatCard extends StatelessWidget {
     final desc = local?.chatDescription ?? '';
     final attach = local?.attach ?? '';
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.1)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -31,7 +35,7 @@ class ChatCard extends StatelessWidget {
             child: _buildText(desc, attach),
             flex: 1,
           ),
-          _buildTimeText(context),
+          extraWidget ?? _buildTimeText(context),
           const SizedBox(
             width: 25,
           )
@@ -40,16 +44,26 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  Container _buildIcon() {
-    return Container(
-      width: 60,
-      height: 60,
-      padding: const EdgeInsets.all(14),
-      decoration: const BoxDecoration(
-        color: circleMessageColor,
-        shape: BoxShape.circle,
-      ),
-      child: SvgPicture.asset(chat.assetsLink, color: Colors.white),
+  Widget _buildIcon() {
+    return Stack(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          padding: const EdgeInsets.all(14),
+          decoration: const BoxDecoration(
+            color: circleMessageColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(chat.iconData),
+        ),
+        if (chat.isPin)
+          Positioned(
+            right: -5,
+            bottom: -1,
+            child: Icon(Icons.push_pin, color: pinIconColor),
+          )
+      ],
     );
   }
 

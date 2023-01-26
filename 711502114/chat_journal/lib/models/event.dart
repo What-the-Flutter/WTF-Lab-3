@@ -1,18 +1,31 @@
 class Event {
-  String message;
+  final String message;
   final DateTime dateTime;
-  bool isFavorite;
-  bool isSelected;
+  final bool isFavorite;
+  final bool isSelected;
   final String? photoPath;
 
-  Event(
-    this.message,
-    this.dateTime, {
+  Event({
+    required this.message,
+    required this.dateTime,
     this.isFavorite = false,
     this.isSelected = false,
     this.photoPath,
   });
 
-  @override
-  String toString() => message;
+  Event copyWith({
+    String? message,
+    DateTime? dateTime,
+    bool? isFavorite,
+    bool? isSelected,
+    String? photoPath,
+  }) {
+    return Event(
+      message: message ?? this.message,
+      dateTime: dateTime ?? this.dateTime,
+      isFavorite: isFavorite ?? this.isFavorite,
+      isSelected: isSelected ?? this.isSelected,
+      photoPath: photoPath ?? this.photoPath,
+    );
+  }
 }
