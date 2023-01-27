@@ -7,18 +7,12 @@ import '../../extensions/snapshot_extension.dart';
 import '../../models/db/db_tag.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/typedefs.dart';
-import 'base_provider.dart';
 
-class TagProvider extends BaseProvider
-    with AppLogger
-    implements TagProviderApi {
-  final Id _userId;
+class TagFirebaseProvider with AppLogger implements TagProviderApi {
+  final String _userId;
 
-  @override
-  Id get userId => _userId;
-
-  TagProvider({
-    required Id userId,
+  TagFirebaseProvider({
+    required String userId,
   }) : _userId = userId {
     _initTagsStream();
   }
@@ -46,7 +40,7 @@ class TagProvider extends BaseProvider
   ValueStream<DbTagList> get tags => _tagsSubject.stream;
 
   @override
-  Future<Id> addTag(DbTag tag) async {
+  Future<String> addTag(DbTag tag) async {
     final ref = tagsRef.push();
     ref.set(
       tag.copyWith(id: ref.key!).toJson(),
@@ -60,7 +54,10 @@ class TagProvider extends BaseProvider
   }
 
   @override
-  Future<void> deleteTag(Id tagId) async {
+  Future<void> deleteTag(String tagId) async {
     await tagsRef.child(tagId).remove();
   }
+
+  DatabaseReference get tagsRef =>
+      FirebaseDatabase.instance.ref('users/$_userId/tags');
 }

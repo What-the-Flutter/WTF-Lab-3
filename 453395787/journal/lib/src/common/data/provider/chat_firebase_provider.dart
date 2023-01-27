@@ -9,30 +9,27 @@ import '../../models/db/db_chat.dart';
 import '../../models/db/db_message.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/typedefs.dart';
-import 'base_provider.dart';
+import 'database_references.dart';
 
-class ChatProvider extends BaseProvider
-    with AppLogger
+class ChatFirebaseProvider
+    with AppLogger, ChatsDatabaseReference, MessagesDatabaseReference
     implements ChatProviderApi {
-  final Id _userId;
+  final String _userId;
 
-  @override
-  Id get userId => _userId;
-
-  ChatProvider({
-    required Id userId,
+  ChatFirebaseProvider({
+    required String userId,
   }) : _userId = userId {
     _initChatStream();
     _initChatAndMessageSynchronization();
   }
 
   Future<void> _initChatStream() async {
-    final event = await chatsRef.once(DatabaseEventType.value);
+    final event = await chatsRef(_userId).once(DatabaseEventType.value);
     _chatsSubject.add(
       event.snapshot.toModels(DbChat.fromJson),
     );
 
-    chatsRef.onValue.listen(
+    chatsRef(_userId).onValue.listen(
       (event) {
         final chats = event.snapshot.toModels(DbChat.fromJson);
         log.v('Database -> new chats event -> $chats');
@@ -42,7 +39,7 @@ class ChatProvider extends BaseProvider
   }
 
   void _initChatAndMessageSynchronization() {
-    messagesRef.onValue.listen(
+    messagesRef(_userId).onValue.listen(
       (event) async {
         if (event.snapshot.exists) {
           final messages = event.snapshot.toModels(
@@ -53,7 +50,7 @@ class ChatProvider extends BaseProvider
           for (var group in messageGroups.entries) {
             final lastMessage = group.value.last;
 
-            await chatsRef.child(lastMessage.parentId).update(
+            await chatsRef(_userId).child(lastMessage.parentId).update(
               {
                 'messagePreview': lastMessage.text,
                 'messagePreviewCreationTime':
@@ -75,8 +72,8 @@ class ChatProvider extends BaseProvider
   ValueStream<DbChatList> get chats => _chatsSubject.stream;
 
   @override
-  Future<Id> addChat(DbChat chat) async {
-    final ref = chatsRef.push();
+  Future<String> addChat(DbChat chat) async {
+    final ref = chatsRef(_userId).push();
     await ref.set(
       chat
           .copyWith(
@@ -89,12 +86,12 @@ class ChatProvider extends BaseProvider
 
   @override
   Future<void> updateChat(DbChat chat) async {
-    await chatsRef.child(chat.id).update(chat.toJson());
+    await chatsRef(_userId).child(chat.id).update(chat.toJson());
   }
 
   @override
-  Future<void> deleteChat(Id chatId) async {
-    final messages = (await messagesRef.get()).toModels(
+  Future<void> deleteChat(String chatId) async {
+    final messages = (await messagesRef(_userId).get()).toModels(
       DbMessage.fromJson,
     );
     final chatMessages = messages.where(
@@ -102,9 +99,9 @@ class ChatProvider extends BaseProvider
     );
 
     for (var chatMessage in chatMessages) {
-      await messagesRef.child(chatMessage.id).remove();
+      await messagesRef(_userId).child(chatMessage.id).remove();
     }
 
-    await chatsRef.child(chatId).remove();
+    await chatsRef(_userId).child(chatId).remove();
   }
 }

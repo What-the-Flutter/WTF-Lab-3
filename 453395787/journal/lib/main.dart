@@ -8,6 +8,8 @@ import 'src/common/bloc/journal_bloc_observer.dart';
 import 'src/features/locale/locale.dart';
 import 'src/features/security/data/security_repository.dart';
 import 'src/features/security/view/verify_user.dart';
+import 'src/features/settings/data/settings_repository.dart';
+import 'src/features/settings/widget/settings_scope.dart';
 import 'src/features/theme/theme.dart';
 import 'src/journal_app.dart';
 
@@ -23,13 +25,16 @@ Future<void> main() async {
   await ThemeRepository.init();
   await LocaleRepository.init();
   await SecurityRepository.init();
+  await SettingsRepository.init();
 
   runApp(
     LocaleScope(
       child: ThemeScope(
         child: VerifyUser(
-          child: JournalApp(
-            userId: userCredential.user!.uid,
+          child: SettingsScope(
+            child: JournalApp(
+              userId: userCredential.user!.uid,
+            ),
           ),
         ),
       ),

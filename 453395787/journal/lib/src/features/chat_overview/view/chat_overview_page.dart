@@ -12,7 +12,6 @@ import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';
 import '../../../common/widget/confirmation_dialog.dart';
-import '../../../common/widget/floating_bottom_sheet.dart';
 import '../../../routes.dart';
 import '../../theme/theme.dart';
 import '../cubit/chat_overview_cubit.dart';
@@ -43,7 +42,7 @@ class ChatOverviewPage extends StatelessWidget {
               ThemeScope.of(context).toggleDarkMode();
             },
             onLongPress: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => const ChoiceColorSheet(),
               );

@@ -6,9 +6,9 @@ import '../../utils/typedefs.dart';
 abstract class TagRepositoryApi {
   ValueStream<TagList> get tags;
 
-  Future<Id> addTag(Tag tag);
+  Future<String> addTag(Tag tag);
 
-  Future<void> deleteTag(Id tagId);
+  Future<void> deleteTag(String tagId);
 
   Future<void> updateTag(Tag tag);
 }

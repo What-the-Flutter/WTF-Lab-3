@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../common/utils/locale.dart' as locale;
-import '../../../common/widget/floating_bottom_sheet.dart';
+import '../../../common/widget/confirmation_dialog.dart';
 import '../../../routes.dart';
 import '../../locale/locale.dart';
+import '../../security/cubit/security_cubit.dart';
 import '../../security/security.dart';
 import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
+import '../cubit/settings_cubit.dart';
+import '../widget/font_size_selector.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -27,15 +31,12 @@ class SettingsPage extends StatelessWidget {
       body: Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.language_outlined),
+            leading: const Icon(Icons.chat_outlined),
             title: Text(
-              locale.SettingsPage.languageItem.i18n(),
+              locale.SettingsPage.chatItem.i18n(),
             ),
-            onTap: () {
-              showFloatingModalBottomSheet(
-                context: context,
-                builder: (context) => const LanguageSelector(),
-              );
+            onTap: () async {
+              context.go(Navigation.chatSettingsPagePath);
             },
           ),
           ListTile(
@@ -50,21 +51,14 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(
-              context.watch<ThemeCubit>().state.isDarkMode
-                  ? Icons.light_mode_outlined
-                  : Icons.dark_mode_outlined,
-            ),
+            leading: const Icon(Icons.language_outlined),
             title: Text(
-              locale.SettingsPage.themeItem.i18n(),
+              locale.SettingsPage.languageItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
-                builder: (context) => const ChoiceColorSheet(
-                  showExampleMessages: false,
-                  showDarkModeButton: true,
-                ),
+                builder: (context) => const LanguageSelector(),
               );
             },
           ),
@@ -74,12 +68,57 @@ class SettingsPage extends StatelessWidget {
               locale.SettingsPage.securityItem.i18n(),
             ),
             onTap: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 builder: (context) => SecuritySettings(
                   securityRepository: SecurityRepository(),
                 ),
               );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.text_fields_outlined),
+            title: Text(
+              locale.SettingsPage.fontSizeItem.i18n(),
+            ),
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => FontSizeSelector(
+                  defaultFontSize: context.read<SettingsCubit>().state.fontSize,
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.share_outlined),
+            title: Text(
+              locale.SettingsPage.shareItem.i18n(),
+            ),
+            onTap: () async {
+              await Share.share(
+                locale.SettingsPage.shareAppText.i18n(),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.refresh_outlined),
+            title: Text(
+              locale.SettingsPage.resetItem.i18n(),
+            ),
+            onTap: () async {
+              final isConfirmed = await showConfirmationDialog(
+                title: locale.SettingsPage.resetConfirmationTitle.i18n(),
+                content: locale.SettingsPage.resetConfirmationSubtitle.i18n(),
+                context: context,
+              );
+
+              if (isConfirmed != null && isConfirmed) {
+                context.read<SettingsCubit>().resetToDefault();
+                context.read<SecurityCubit>().resetToDefault();
+                context.read<ThemeCubit>().resetToDefault();
+                context.read<LocaleCubit>().resetToDefault();
+              }
             },
           ),
         ],

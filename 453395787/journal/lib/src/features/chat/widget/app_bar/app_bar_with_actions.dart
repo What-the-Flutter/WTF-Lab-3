@@ -59,7 +59,7 @@ class _AppBarWithActions extends StatelessWidget {
           ),
           onPressed: () {
             final id = MessageManageScope.of(context).state.id;
-            showFloatingModalBottomSheet(
+            showModalBottomSheet(
               context: context,
               builder: (context) => MoveMessagePage(
                 fromChatId: id,

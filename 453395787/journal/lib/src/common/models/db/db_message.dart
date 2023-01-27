@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../extensions/date_time_extensions.dart';
-import '../../utils/typedefs.dart';
 
 part 'db_message.freezed.dart';
 
@@ -14,12 +13,12 @@ class DbMessage with _$DbMessage {
   const DbMessage._();
 
   factory DbMessage({
-    @Default('') Id id,
-    @Default('') Id parentId,
+    @Default('') String id,
+    @Default('') String parentId,
     @Default('') String text,
     required DateTime dateTime,
     @Default(IListConst([])) IList<String> images,
-    @Default(IListConst([])) IList<Id> tagsId,
+    @Default(IListConst([])) IList<String> tagsId,
     @Default(false) bool isFavorite,
   }) = _DbMessage;
 

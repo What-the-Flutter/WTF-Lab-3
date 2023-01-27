@@ -86,14 +86,14 @@ class MessageRepository extends MessageRepositoryApi {
         );
   }
 
-  Tag getTag(Id id) {
+  Tag getTag(String id) {
     final tagModel = _tagProvider.tags.value.firstWhere(
       (tag) => tag.id == id,
     );
     return Transformers.modelToTag(tagModel);
   }
 
-  Future<File> fetchFile(Id id) async {
+  Future<File> fetchFile(String id) async {
     return _storageProvider.load(id);
   }
 
@@ -147,11 +147,11 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> add(Message message) async {
-    await customAdd(chat.id, message);
+    await addToOtherChat(chat.id, message);
   }
 
   @override
-  Future<void> customAdd(Id chatId, Message message) async {
+  Future<void> addToOtherChat(String chatId, Message message) async {
     await _messageProvider.addMessage(
       chatId,
       await Transformers.messageToModel(

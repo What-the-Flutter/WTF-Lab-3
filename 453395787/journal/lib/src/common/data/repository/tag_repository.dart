@@ -27,7 +27,7 @@ class TagRepository extends TagRepositoryApi {
       );
 
   @override
-  Future<Id> addTag(Tag tag) async {
+  Future<String> addTag(Tag tag) async {
     return _provider.addTag(
       Transformers.tagToModel(tag),
     );
@@ -41,7 +41,7 @@ class TagRepository extends TagRepositoryApi {
   }
 
   @override
-  Future<void> deleteTag(Id tagId) async {
+  Future<void> deleteTag(String tagId) async {
     await _provider.deleteTag(tagId);
   }
 }

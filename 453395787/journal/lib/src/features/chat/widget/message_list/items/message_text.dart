@@ -17,7 +17,12 @@ class _MessageText extends StatelessWidget {
         right: Insets.medium,
         bottom: Insets.none,
       ),
-      child: Text(text),
+      child: RegexTextHighlight(
+        text: text,
+        highlightRegex: RegExp(r'#\w+'),
+        highlightStyle: TextStyles.messageHighlighted(context),
+        nonHighlightStyle: TextStyles.messageText(context),
+      ),
     );
   }
 }

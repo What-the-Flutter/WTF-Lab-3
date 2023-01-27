@@ -9,6 +9,7 @@ import 'features/chat_overview/chats_overview.dart';
 import 'features/manage_chat/manage_chat.dart';
 import 'features/manage_tags/manage_tags.dart';
 import 'features/settings/settings.dart';
+import 'features/settings/view/chat_settings_page.dart';
 
 abstract class Navigation {
   static final GoRouter router = GoRouter(
@@ -60,6 +61,12 @@ abstract class Navigation {
             pageBuilder: (context, state) => const NoTransitionPage(
               child: SettingsPage(),
             ),
+            routes: [
+              GoRoute(
+                path: _routerChatSettingsPagePath,
+                builder: (context, state) => const ChatSettingsPage(),
+              ),
+            ],
           ),
         ],
       ),
@@ -91,17 +98,24 @@ abstract class Navigation {
   static const _routerDailyPagePath = '/daily';
   static const _routerTimelinePagePath = '/timeline';
   static const _routerSettingsPagePath = '/settings';
+  static const _routerChatSettingsPagePath = 'chat';
   static const _routerChatPagePath = '/chat/:chatId';
   static const _routerManageTagsPagePath = '/tags';
   static const _routerChatSearchPagePath = 'search';
 
   static const homePagePath = _routerHomePagePath;
-  static const addChatPagePath = '$_routerHomePagePath/add';
-  static const editChatPagePath = '$_routerHomePagePath/edit/:chatId';
+  static const addChatPagePath = '$_routerHomePagePath/'
+      '$_routerAddChatPagePath';
+
+  static const editChatPagePath = '$_routerHomePagePath/'
+      '$_routerEditChatPagePath';
   static const dailyPagePath = _routerDailyPagePath;
   static const timelinePagePath = _routerTimelinePagePath;
   static const settingsPagePath = _routerSettingsPagePath;
+  static const chatSettingsPagePath = '$_routerSettingsPagePath/'
+      '$_routerChatSettingsPagePath';
   static const chatPagePath = _routerChatPagePath;
   static const manageTagsPagePath = _routerManageTagsPagePath;
-  static const chatSearchPagePath = '$_routerChatPagePath/search';
+  static const chatSearchPagePath = '$_routerChatPagePath/'
+      '$_routerChatSearchPagePath';
 }

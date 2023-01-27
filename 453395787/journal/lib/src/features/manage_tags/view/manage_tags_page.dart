@@ -8,7 +8,6 @@ import '../../../common/data/repository/tag_repository.dart';
 import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
-import '../../../common/utils/typedefs.dart';
 import '../../../routes.dart';
 import '../../chat/chat.dart';
 import '../../theme/theme.dart';

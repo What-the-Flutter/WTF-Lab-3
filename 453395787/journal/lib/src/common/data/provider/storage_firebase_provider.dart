@@ -6,12 +6,11 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../api/provider/storage_provider_api.dart';
 import '../../utils/app_logger.dart';
-import '../../utils/typedefs.dart';
 
-class StorageProvider extends StorageProviderApi with AppLogger {
-  static Id _userId = '';
+class StorageFirebaseProvider extends StorageProviderApi with AppLogger {
+  static String _userId = '';
 
-  StorageProvider({required String userId}) {
+  StorageFirebaseProvider({required String userId}) {
     _userId = userId;
   }
 

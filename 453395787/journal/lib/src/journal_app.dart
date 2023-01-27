@@ -3,15 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
+import 'common/data/provider/chat_firebase_provider.dart';
+import 'common/data/provider/message_firebase_provider.dart';
+import 'common/data/provider/storage_firebase_provider.dart';
+import 'common/data/provider/tag_firebase_provider.dart';
 import 'common/data/repository/chat_repository.dart';
-import 'common/data/provider/chat_provider.dart';
-import 'common/data/provider/message_provider.dart';
-import 'common/data/provider/tag_provider.dart';
-import 'common/data/provider/storage_provider.dart';
 import 'common/data/repository/tag_repository.dart';
-import 'common/utils/typedefs.dart';
 import 'features/locale/data/locale_repository_api.dart';
 import 'features/locale/locale.dart';
+import 'features/settings/cubit/settings_cubit.dart';
+import 'features/text_tags/text_tags.dart';
 import 'features/theme/theme.dart';
 import 'routes.dart';
 
@@ -21,7 +22,7 @@ class JournalApp extends StatelessWidget {
     required this.userId,
   });
 
-  final Id userId;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,16 @@ class JournalApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'Journal',
             theme: ThemeData(
+              textTheme: Theme.of(context).textTheme.apply(
+                    bodyColor: state.isDarkMode ? Colors.white : Colors.black,
+                    displayColor:
+                        state.isDarkMode ? Colors.white60 : Colors.black54,
+                    fontSizeFactor: context
+                        .watch<SettingsCubit>()
+                        .state
+                        .fontSize
+                        .scaleFactor,
+                  ),
               useMaterial3: true,
               colorSchemeSeed: state.color,
               brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
@@ -72,40 +83,47 @@ class _InitProviders extends StatelessWidget {
   });
 
   final Widget child;
-  final Id userId;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => StorageProvider(
+          create: (context) => StorageFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => ChatProvider(
+          create: (context) => ChatFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => MessageProvider(
+          create: (context) => MessageFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => TagProvider(
+          create: (context) => TagFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
           create: (context) => ChatRepository(
-            chatProvider: context.read<ChatProvider>(),
+            chatProvider: context.read<ChatFirebaseProvider>(),
           ),
         ),
         RepositoryProvider(
           create: (context) => TagRepository(
-            tagProvider: context.read<TagProvider>(),
+            tagProvider: context.read<TagFirebaseProvider>(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => TextTagRepository(
+            textTagFirebaseProvider: TextTagFirebaseProvider(
+              userId: userId,
+            ),
           ),
         ),
       ],

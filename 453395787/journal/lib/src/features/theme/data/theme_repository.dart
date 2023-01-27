@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/utils/default_values.dart';
 import 'theme_repository_api.dart';
 
 class ThemeRepository extends ThemeRepositoryApi {
@@ -37,5 +38,11 @@ class ThemeRepository extends ThemeRepositoryApi {
     final prefs = await SharedPreferences.getInstance();
     ThemeRepository._isDarkMode = isDarkMode;
     await prefs.setBool(_isDarkModeKey, isDarkMode);
+  }
+
+  @override
+  Future<void> resetToDefault() async {
+    await setDarkMode(DefaultValues.isDarkMode);
+    await setColor(DefaultValues.color);
   }
 }

@@ -5,22 +5,22 @@ class MessageManageState with _$MessageManageState {
   const MessageManageState._();
 
   const factory MessageManageState.defaultModeState({
-    required Id id,
+    required String id,
     required String name,
     required MessageList messages,
     required TagList tags,
   }) = MessageManageDefaultModeState;
 
   const factory MessageManageState.selectionModeState({
-    required Id id,
+    required String id,
     required String name,
     required MessageList messages,
     required TagList tags,
-    required ISet<Id> selected,
+    required ISet<String> selected,
   }) = MessageManageSelectionModeState;
 
   const factory MessageManageState.editModeState({
-    required Id id,
+    required String id,
     required String name,
     required MessageList messages,
     required Message message,

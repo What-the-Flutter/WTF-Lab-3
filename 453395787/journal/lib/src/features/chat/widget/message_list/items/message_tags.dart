@@ -16,7 +16,7 @@ class MessageTags extends StatelessWidget {
   });
 
   final TagList tags;
-  final Id? selectedId;
+  final String? selectedId;
   final double spacing;
   final WrapAlignment alignment;
   final void Function(Tag tag)? onPressed;

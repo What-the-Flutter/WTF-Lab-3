@@ -83,4 +83,8 @@ class SecurityCubit extends Cubit<SecurityState> with AppLogger {
       const SecurityState.success(),
     );
   }
+
+  Future<void> resetToDefault() async {
+    await _securityRepository.resetToDefault();
+  }
 }

@@ -8,4 +8,6 @@ abstract class ThemeRepositoryApi {
   Future<void> setColor(Color color);
 
   Future<void> setDarkMode(bool isDarkMode);
+
+  Future<void> resetToDefault();
 }

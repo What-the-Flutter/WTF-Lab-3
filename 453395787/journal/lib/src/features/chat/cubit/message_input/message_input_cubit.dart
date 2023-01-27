@@ -8,6 +8,7 @@ import '../../../../common/api/provider/storage_provider_api.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
+import '../../../text_tags/text_tags.dart';
 import '../../api/message_repository_api.dart';
 
 part 'message_input_cubit.freezed.dart';
@@ -18,8 +19,10 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
     required MessageRepositoryApi messageRepository,
     required StorageProviderApi storageProvider,
-  })  : _repository = messageRepository,
+    required TextTagRepositoryApi textTagRepository,
+  })  : _messageRepository = messageRepository,
         _storage = storageProvider,
+        _textTagRepository = textTagRepository,
         super(
           MessageInputState.defaultModeState(
             message: Message(
@@ -29,8 +32,9 @@ class MessageInputCubit extends Cubit<MessageInputState> {
           ),
         );
 
-  final MessageRepositoryApi _repository;
+  final MessageRepositoryApi _messageRepository;
   final StorageProviderApi _storage;
+  final TextTagRepositoryApi _textTagRepository;
 
   void onTextChanged(String text) {
     emit(
@@ -103,10 +107,12 @@ class MessageInputCubit extends Cubit<MessageInputState> {
 
     state.map(
       defaultModeState: (defaultModeState) {
-        _repository.add(state.message);
+        _messageRepository.add(state.message);
+        _textTagRepository.addFromText(state.message.text);
       },
       editModeState: (editModeState) {
-        _repository.update(state.message);
+        _messageRepository.update(state.message);
+        _textTagRepository.addFromText(state.message.text);
       },
     );
     emit(

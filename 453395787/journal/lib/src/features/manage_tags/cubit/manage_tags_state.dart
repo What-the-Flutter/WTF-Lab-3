@@ -18,6 +18,6 @@ class ManageTagsState with _$ManageTagsState {
 
   const factory ManageTagsState.selectModeState({
     required TagList tags,
-    required Id selectedTag,
+    required String selectedTag,
   }) = _SelectModeState;
 }
