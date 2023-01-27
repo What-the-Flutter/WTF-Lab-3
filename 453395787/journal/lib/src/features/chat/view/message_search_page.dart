@@ -1,12 +1,15 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../common/data/chat_repository.dart';
-import '../../../common/data/database/chat_database.dart';
+import '../../../common/data/repository/chat_repository.dart';
+import '../../../common/data/provider/message_provider.dart';
+import '../../../common/data/provider/tag_provider.dart';
+import '../../../common/data/provider/storage_provider.dart';
+import '../../../common/utils/typedefs.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
-import '../cubit/tag_selector/tags_state.dart';
 import '../data/message_repository.dart';
 import '../widget/chat_input/chat_input.dart';
 import '../widget/message_list/chat_message_list.dart';
@@ -23,7 +26,7 @@ class MessageSearchPage extends StatefulWidget {
     required this.chatId,
   });
 
-  final int chatId;
+  final Id chatId;
 
   @override
   State<MessageSearchPage> createState() => _MessageSearchPageState();
@@ -39,7 +42,9 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
         );
     return RepositoryProvider(
       create: (context) => MessageRepository(
-        repository: context.read<ChatDatabase>(),
+        messageProvider: context.read<MessageProvider>(),
+        tagProvider: context.read<TagProvider>(),
+        storageProvider: context.read<StorageProvider>(),
         chat: chat,
       ),
       child: MessageSearchScope(
@@ -48,7 +53,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
           child: Builder(
             builder: (context) {
               _isInputFieldShown = context.watch<MessageManageCubit>().state
-                  is MessageManageEditMode;
+                  is MessageManageEditModeState;
 
               return TagSelectorScope(
                 child: BlocListener<TagsCubit, TagsState>(
@@ -56,7 +61,13 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     MessageSearchScope.of(context).onSearchTagsChanged(
                       state.map(
                         initial: (_) => null,
-                        hasSelected: (hasSelected) => hasSelected.selected,
+                        hasSelectedState: (hasSelectedState) =>
+                            hasSelectedState.tags
+                                .where(
+                                  (tag) =>
+                                      hasSelectedState.selected.contains(tag),
+                                )
+                                .toIList(),
                       ),
                     );
                   },
@@ -65,7 +76,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     body: Column(
                       children: [
                         const TagSelector(),
-                        Expanded(
+                        const Expanded(
                           child: ChatMessageList(),
                         ),
                         Visibility(

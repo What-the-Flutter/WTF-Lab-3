@@ -11,10 +11,15 @@ abstract class Pages {
 abstract class SettingsPage {
   static const String tagItem = 'settings_item_tags';
   static const String languageItem = 'settings_item_languages';
+  static const String themeItem = 'settings_item_theme';
+  static const String securityItem = 'settings_item_security';
+  static const String securityPageTitle = 'settings_page_security_title';
 }
 
 abstract class Actions {
   static const String ok = 'action_ok';
+  static const String yes = 'action_yes';
+  static const String no = 'action_no';
   static const String cancel = 'action_cancel';
   static const String remove = 'action_remove';
   static const String add = 'action_add';

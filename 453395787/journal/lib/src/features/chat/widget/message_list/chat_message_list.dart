@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../../../../common/models/message.dart';
+import '../../../../common/models/ui/message.dart';
 import '../../../../common/utils/insets.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../scopes/message_manage_scope.dart';
@@ -11,7 +11,7 @@ import 'items/slideable_message_container.dart';
 import 'items/time_item.dart';
 
 class ChatMessageList extends StatelessWidget {
-  ChatMessageList({
+  const ChatMessageList({
     super.key,
   });
 
@@ -40,15 +40,15 @@ class ChatMessageList extends StatelessWidget {
               return SlidableMessageContainer(
                 valueKey: ValueKey(item),
                 isEditMode: state.maybeMap(
-                  editMode: (_) => true,
+                  editModeState: (_) => true,
                   orElse: () => false,
                 ),
                 onEdit: () {
                   state.mapOrNull(
-                    defaultMode: (defaultMode) {
+                    defaultModeState: (_) {
                       MessageManageScope.of(context).startEditMode(item);
                     },
-                    editMode: (editMode) {
+                    editModeState: (_) {
                       MessageManageScope.of(context).endEditMode();
                     },
                   );
@@ -60,8 +60,15 @@ class ChatMessageList extends StatelessWidget {
                   message: item as Message,
                   onTap: (message, isSelected) {
                     state.mapOrNull(
-                      selectionMode: (selectionMode) {
-                        if (selectionMode.selected.contains(message.id)) {
+                      defaultModeState: (defaultModeState) {
+                        if (message.isFavorite) {
+                          MessageManageScope.of(context).removeFromFavorites(message);
+                        } else {
+                          MessageManageScope.of(context).addToFavorites(message);
+                        }
+                      },
+                      selectionModeState: (selectionModeState) {
+                        if (selectionModeState.selected.contains(message.id)) {
                           MessageManageScope.of(context).select(message);
                         } else {
                           MessageManageScope.of(context).unselect(message);
@@ -71,11 +78,11 @@ class ChatMessageList extends StatelessWidget {
                   },
                   onLongPress: (message, isSelected) {
                     state.mapOrNull(
-                      defaultMode: (defaultMode) {
+                      defaultModeState: (defaultModeState) {
                         MessageManageScope.of(context).select(message);
                       },
-                      selectionMode: (selectionMode) {
-                        if (selectionMode.selected.contains(message.id)) {
+                      selectionModeState: (selectionModeState) {
+                        if (selectionModeState.selected.contains(message.id)) {
                           MessageManageScope.of(context).unselect(message);
                         } else {
                           MessageManageScope.of(context).select(message);
@@ -84,8 +91,8 @@ class ChatMessageList extends StatelessWidget {
                     );
                   },
                   isSelected: state.maybeMap(
-                    selectionMode: (selectionMode) {
-                      return selectionMode.selected.contains(item.id);
+                    selectionModeState: (selectionModeState) {
+                      return selectionModeState.selected.contains(item.id);
                     },
                     orElse: () => false,
                   ),

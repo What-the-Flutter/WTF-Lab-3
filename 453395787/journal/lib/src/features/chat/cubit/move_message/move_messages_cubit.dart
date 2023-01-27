@@ -2,10 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../common/api/chat_repository_api.dart';
-import '../../../../common/api/message_provider_api.dart';
-import '../../../../common/models/chat_view.dart';
+import '../../../../common/api/repository/chat_repository_api.dart';
+import '../../../../common/models/ui/chat.dart';
 import '../../../../common/utils/typedefs.dart';
+import '../../api/message_repository_api.dart';
 
 part 'move_messages_state.dart';
 
@@ -14,11 +14,11 @@ part 'move_messages_cubit.freezed.dart';
 class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   MoveMessagesCubit({
     required ChatRepositoryApi chatRepository,
-    required MessageProviderApi messageProviderApi,
+    required MessageRepositoryApi messageRepository,
     required this.fromChatId,
     required this.messages,
   })  : _chatRepository = chatRepository,
-        _messageProviderApi = messageProviderApi,
+        _messageRepository = messageRepository,
         super(
           MoveMessagesState.initial(
             chats: chatRepository.chats.value
@@ -29,24 +29,24 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
         );
 
   final ChatRepositoryApi _chatRepository;
-  final MessageProviderApi _messageProviderApi;
-  final int fromChatId;
+  final MessageRepositoryApi _messageRepository;
+  final Id fromChatId;
   final MessageList messages;
 
-  void select(int id) {
+  void select(Id id) {
     state.map(
       initial: (initial) {
         emit(
-          MoveMessagesState.withSelected(
+          MoveMessagesState.hasSelectedState(
             chats: initial.chats,
             amountOfMessages: initial.amountOfMessages,
             selectedChatId: id,
           ),
         );
       },
-      withSelected: (withSelected) {
+      hasSelectedState: (hasSelectedState) {
         emit(
-          withSelected.copyWith(
+          hasSelectedState.copyWith(
             selectedChatId: id,
           ),
         );
@@ -54,26 +54,26 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
     );
   }
 
-  void unselect(int id) {
+  void unselect(Id id) {
     state.mapOrNull(
-      withSelected: (withSelected) {
+      hasSelectedState: (hasSelectedState) {
         emit(
           MoveMessagesState.initial(
-            chats: withSelected.chats,
-            amountOfMessages: withSelected.amountOfMessages,
+            chats: hasSelectedState.chats,
+            amountOfMessages: hasSelectedState.amountOfMessages,
           ),
         );
       },
     );
   }
 
-  void toggleSelection(int id) {
+  void toggleSelection(Id id) {
     state.map(
       initial: (initial) {
         select(id);
       },
-      withSelected: (withSelected) {
-        if (withSelected.selectedChatId == id) {
+      hasSelectedState: (hasSelectedState) {
+        if (hasSelectedState.selectedChatId == id) {
           unselect(id);
         } else {
           select(id);
@@ -84,13 +84,11 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
 
   Future<void> move() async {
     state.mapOrNull(
-      withSelected: (withSelected) async {
-        await _messageProviderApi.deleteMessages(
-          messages.map((message) => message.id).toIList(),
-        );
+      hasSelectedState: (hasSelectedState) async {
+        await _messageRepository.removeAll(messages);
         for (var message in messages) {
-          await _messageProviderApi.addMessage(
-            withSelected.selectedChatId,
+          await _messageRepository.customAdd(
+            hasSelectedState.selectedChatId,
             message,
           );
         }

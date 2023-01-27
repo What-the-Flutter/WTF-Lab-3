@@ -4,25 +4,28 @@ part of 'message_manage_cubit.dart';
 class MessageManageState with _$MessageManageState {
   const MessageManageState._();
 
-  const factory MessageManageState.defaultMode({
-    required int id,
+  const factory MessageManageState.defaultModeState({
+    required Id id,
     required String name,
     required MessageList messages,
-  }) = MessageManageDefaultMode;
+    required TagList tags,
+  }) = MessageManageDefaultModeState;
 
-  const factory MessageManageState.selectionMode({
-    required int id,
+  const factory MessageManageState.selectionModeState({
+    required Id id,
     required String name,
     required MessageList messages,
-    required ISet<int> selected,
-  }) = MessageManageSelectionMode;
+    required TagList tags,
+    required ISet<Id> selected,
+  }) = MessageManageSelectionModeState;
 
-  const factory MessageManageState.editMode({
-    required int id,
+  const factory MessageManageState.editModeState({
+    required Id id,
     required String name,
     required MessageList messages,
     required Message message,
-  }) = MessageManageEditMode;
+    required TagList tags,
+  }) = MessageManageEditModeState;
 
   IList<Object> get messagesWithDates {
     if (messages.isEmpty) {
@@ -45,12 +48,12 @@ class MessageManageState with _$MessageManageState {
 
   bool? get hasMoreFavoritesInSelected {
     return mapOrNull(
-      selectionMode: (selectionMode) {
+      selectionModeState: (selectionModeState) {
         var amountOfFavorites = 0;
         var amountOfOther = 0;
 
-        final selectedMessages = selectionMode.messages.where(
-          (message) => selectionMode.selected.contains(
+        final selectedMessages = selectionModeState.messages.where(
+          (message) => selectionModeState.selected.contains(
             message.id,
           ),
         );

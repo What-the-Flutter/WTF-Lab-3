@@ -1,7 +1,7 @@
 part of '../view/chat_overview_page.dart';
 
 class ChatList extends StatelessWidget {
-  ChatList({
+  const ChatList({
     super.key,
   });
 
@@ -22,7 +22,7 @@ class ChatList extends StatelessWidget {
                   chat: state.chats[index],
                   onTap: () {
                     context.go(
-                      PagePaths.chat.path.withArgs(
+                      Navigation.chatPagePath.withArgs(
                         {':chatId': '${state.chats[index].id}'},
                       ),
                     );

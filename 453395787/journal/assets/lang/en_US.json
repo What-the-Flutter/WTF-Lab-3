@@ -8,9 +8,14 @@
 
   "settings_item_tags": "Tags",
   "settings_item_languages": "Languages",
+  "settings_item_theme": "Theme",
   "settings_page_tags_title": "Manage tags",
+  "settings_item_security": "Security",
+  "settings_page_security_title": "Enable Fingerprint or FaceId unlock?",
 
   "action_ok": "Ok",
+  "action_yes": "Yes",
+  "action_no": "No",
   "action_cancel": "Cancel",
   "action_remove": "Remove",
   "action_add": "Add",

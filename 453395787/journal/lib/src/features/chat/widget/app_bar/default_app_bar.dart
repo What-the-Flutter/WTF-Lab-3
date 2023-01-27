@@ -6,7 +6,7 @@ class _DefaultAppBar extends StatelessWidget {
     super.key,
   });
 
-  final MessageManageDefaultMode state;
+  final MessageManageDefaultModeState state;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class _DefaultAppBar extends StatelessWidget {
       leading: IconButton(
         onPressed: () {
           context.go(
-            PagePaths.home.path,
+            Navigation.homePagePath,
           );
         },
         icon: const Icon(
@@ -29,7 +29,7 @@ class _DefaultAppBar extends StatelessWidget {
           onPressed: () {
             final id = MessageManageScope.of(context).state.id;
             context.go(
-              PagePaths.chatSearch.path.withArgs(
+              Navigation.chatSearchPagePath.withArgs(
                 {':chatId': '$id'},
               ),
             );

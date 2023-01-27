@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/api/chat_repository_api.dart';
-import '../../../common/models/chat_view.dart';
+import '../../../common/api/repository/chat_repository_api.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/typedefs.dart';
 
 part 'chat_overview_state.dart';
@@ -14,14 +14,13 @@ part 'chat_overview_cubit.freezed.dart';
 
 class ChatOverviewCubit extends Cubit<ChatOverviewState> {
   ChatOverviewCubit({
-    required ChatRepositoryApi repository,
-  })  : _repository = repository,
-        super(
+    required ChatRepositoryApi chatRepository,
+  }) : super(
           ChatOverviewState(
-            chats: ChatViewList([]),
+            chats: IList<Chat>([]),
           ),
         ) {
-    _subscription = repository.chats.listen(
+    _chatsStreamSubscription = chatRepository.chats.listen(
       (event) {
         emit(
           ChatOverviewState(
@@ -34,12 +33,11 @@ class ChatOverviewCubit extends Cubit<ChatOverviewState> {
     );
   }
 
-  final ChatRepositoryApi _repository;
-  late StreamSubscription<ChatViewList> _subscription;
+  late StreamSubscription<ChatList> _chatsStreamSubscription;
 
   @override
   Future<void> close() async {
-    _subscription.cancel();
+    _chatsStreamSubscription.cancel();
     super.close();
   }
 }

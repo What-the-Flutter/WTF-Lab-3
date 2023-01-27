@@ -1,141 +1,215 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../common/api/message_provider_api.dart';
+import '../../../common/api/provider/message_provider_api.dart';
+import '../../../common/api/provider/storage_provider_api.dart';
+import '../../../common/api/provider/tag_provider_api.dart';
 import '../../../common/extensions/iterable_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
-import '../../../common/models/chat_view.dart';
-import '../../../common/models/message.dart';
+import '../../../common/models/ui/chat.dart';
+import '../../../common/models/ui/message.dart';
+import '../../../common/models/ui/tag.dart';
+import '../../../common/utils/transformers.dart';
 import '../../../common/utils/typedefs.dart';
 import '../api/message_repository_api.dart';
 
 class MessageRepository extends MessageRepositoryApi {
   MessageRepository({
-    required MessageProviderApi repository,
-    required ChatView chat,
-  })  : _repository = repository,
+    required MessageProviderApi messageProvider,
+    required TagProviderApi tagProvider,
+    required StorageProviderApi storageProvider,
+    required Chat chat,
+  })  : _messageProvider = messageProvider,
+        _tagProvider = tagProvider,
+        _storageProvider = storageProvider,
         _chat = chat {
-    _filteredChatStream.add(
-      _repository.messagesOf(
-        chatId: chat.id,
-      ),
+    _providerMessageStream = messageProvider.messagesOf(
+      chatId: chat.id,
     );
 
-    _subscription = _repository.messagesOf(chatId: chat.id).listen(
-      (event) {
-        _filteredChatStream.add(
-          _repository.messagesOf(chatId: chat.id),
-        );
-      },
+    _messageStreamController.add(
+      _providerMessageStream.value,
+    );
+
+    _messageStreamSubscription = _providerMessageStream.listen(
+      _messageStreamController.add,
     );
   }
 
-  final MessageProviderApi _repository;
+  final MessageProviderApi _messageProvider;
+  final TagProviderApi _tagProvider;
+  final StorageProviderApi _storageProvider;
 
-  final ChatView _chat;
+  final Chat _chat;
 
-  @override
-  ChatView get chat => _chat;
+  static String _query = '';
+  static IList<Tag>? _queryTags;
 
-  @override
-  ValueStream<TagList> get tags => _repository.tags;
+  late final ValueStream<DbMessageList> _providerMessageStream;
 
-  final BehaviorSubject<ValueStream<MessageList>> _filteredChatStream =
+  final BehaviorSubject<DbMessageList> _messageStreamController =
       BehaviorSubject();
 
-  late final StreamSubscription<MessageList> _subscription;
+  late final StreamSubscription<DbMessageList> _messageStreamSubscription;
 
   void close() {
-    _subscription.cancel();
-    _filteredChatStream.close();
+    _messageStreamSubscription.cancel();
   }
 
   @override
-  ValueStream<ValueStream<MessageList>> get filteredChatStreams =>
-      _filteredChatStream.stream;
+  ValueStream<MessageList> get messages => _transform(
+        _filter(
+          _messageStreamController.stream.shareValueSeeded(
+            _messageStreamController.value,
+          ),
+        ),
+      );
+
+  ValueStream<MessageList> _transform(
+    ValueStream<DbMessageList> messageStream,
+  ) {
+    final transformer = Transformers.modelsToMessagesStreamTransformer(
+      fetchFile,
+      getTag,
+    );
+
+    return messageStream.transform(transformer).shareValueSeeded(
+          Transformers.modelsToMessages(
+            messageStream.value,
+            fetchFile,
+            getTag,
+          ),
+        );
+  }
+
+  Tag getTag(Id id) {
+    final tagModel = _tagProvider.tags.value.firstWhere(
+      (tag) => tag.id == id,
+    );
+    return Transformers.modelToTag(tagModel);
+  }
+
+  Future<File> fetchFile(Id id) async {
+    return _storageProvider.load(id);
+  }
+
+  ValueStream<DbMessageList> _filter(ValueStream<DbMessageList> messageStream) {
+    return messageStream
+        .transform(
+          _filterTransformer,
+        )
+        .shareValueSeeded(
+          _filterMessages(
+            messageStream.value,
+          ),
+        );
+  }
+
+  final StreamTransformer<DbMessageList, DbMessageList> _filterTransformer =
+      StreamTransformer.fromHandlers(
+    handleData: (models, sink) {
+      sink.add(
+        _filterMessages(models),
+      );
+    },
+  );
+
+  static DbMessageList _filterMessages(DbMessageList messages) {
+    return messages.where(
+      (message) {
+        if (_queryTags == null) {
+          return message.text.containsIgnoreCase(_query);
+        }
+        return message.tagsId
+                .containsAll(_queryTags!.map((e) => e.id).toIList()) &&
+            message.text.containsIgnoreCase(_query);
+      },
+    ).toIList();
+  }
+
+  @override
+  Chat get chat => _chat;
+
+  @override
+  ValueStream<TagList> get tags => _tagProvider.tags
+      .transform(
+        Transformers.modelsToTagsStreamTransformer,
+      )
+      .shareValueSeeded(
+        Transformers.modelsToTags(
+          _tagProvider.tags.value,
+        ),
+      );
 
   @override
   Future<void> add(Message message) async {
-    await _repository.addMessage(chat.id, message);
+    await customAdd(chat.id, message);
   }
 
   @override
-  Future<void> customAdd(int chatId, Message message) async {
-    await _repository.addMessage(chatId, message);
+  Future<void> customAdd(Id chatId, Message message) async {
+    await _messageProvider.addMessage(
+      chatId,
+      await Transformers.messageToModel(
+        message,
+      ),
+    );
   }
 
   @override
   Future<void> addToFavorites(Message message) async {
-    await _repository.updateMessage(
-      message.copyWith(isFavorite: true),
+    await _messageProvider.updateMessage(
+      await Transformers.messageToModel(
+        message.copyWith(isFavorite: true),
+      ),
     );
   }
 
   @override
   Future<void> remove(Message message) async {
-    _repository.deleteMessage(message.id);
+    await _messageProvider.deleteMessage(message.id);
+    for (var image in message.images) {
+      _storageProvider.remove(
+        basename(
+          (await image).path,
+        ),
+      );
+    }
   }
 
   @override
   Future<void> removeAll(MessageList messages) async {
-    _repository.deleteMessages(
+    await _messageProvider.deleteMessages(
       messages.map((message) => message.id).toIList(),
     );
   }
 
   @override
   Future<void> removeFromFavorites(Message message) async {
-    await _repository.updateMessage(
-      message.copyWith(isFavorite: true),
+    await _messageProvider.updateMessage(
+      await Transformers.messageToModel(
+        message.copyWith(isFavorite: false),
+      ),
     );
   }
 
   @override
   Future<void> update(Message message) async {
-    await _repository.updateMessage(message);
+    await _messageProvider.updateMessage(
+      await Transformers.messageToModel(message),
+    );
   }
 
   @override
   Future<void> search(String query, [TagList? tags]) async {
-    _filteredChatStream.add(
-      _applyFilter(
-        _repository.messagesOf(chatId: chat.id),
-        query,
-        tags,
-      ),
+    MessageRepository._query = query;
+    MessageRepository._queryTags = tags;
+    _messageStreamController.add(
+      _providerMessageStream.value,
     );
-  }
-
-  ValueStream<MessageList> _applyFilter(
-    ValueStream<MessageList> stream,
-    String query, [
-    TagList? tags,
-  ]) {
-    return stream.map(
-      (chat) {
-        return _filterMessages(chat, query, tags);
-      },
-    ).shareValueSeeded(
-      _filterMessages(stream.value, query, tags),
-    );
-  }
-
-  MessageList _filterMessages(
-    MessageList messages,
-    String query, [
-    TagList? tags,
-  ]) {
-    return messages.where(
-      (message) {
-        if (tags == null) {
-          return message.text.containsIgnoreCase(query);
-        } else {
-          return message.tags.containsAll(tags) &&
-              message.text.containsIgnoreCase(query);
-        }
-      },
-    ).toIList();
   }
 }

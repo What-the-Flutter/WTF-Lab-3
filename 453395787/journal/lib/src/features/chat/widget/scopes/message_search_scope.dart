@@ -16,7 +16,7 @@ class MessageSearchScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageSearchCubit(
-        repository: context.read<MessageRepository>(),
+        messageRepository: context.read<MessageRepository>(),
       ),
       child: child,
     );

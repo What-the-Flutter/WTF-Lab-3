@@ -6,8 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
-import '../../../../common/data/chat_repository.dart';
-import '../../../../common/data/database/chat_database.dart';
+import '../../../../common/data/repository/chat_repository.dart';
+import '../../../../common/data/provider/message_provider.dart';
+import '../../../../common/data/provider/tag_provider.dart';
+import '../../../../common/data/provider/storage_provider.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';
@@ -15,22 +17,22 @@ import '../../../../common/utils/typedefs.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
-import '../../cubit/tag_selector/tags_state.dart';
 import '../../data/message_repository.dart';
 import '../scopes/message_input_scope.dart';
 import '../scopes/tags_scope.dart';
 import '../tag_selector/tag_selector.dart';
 
 part 'input_mutable_button.dart';
+
 part 'selected_images.dart';
 
 class ChatInput extends StatefulWidget {
-  ChatInput({
+  const ChatInput({
     super.key,
     required this.chatId,
   });
 
-  final int chatId;
+  final Id chatId;
 
   @override
   State<ChatInput> createState() => _ChatInputState();
@@ -54,7 +56,9 @@ class _ChatInputState extends State<ChatInput> {
 
     return MessageInputScope(
       repository: MessageRepository(
-        repository: context.read<ChatDatabase>(),
+        messageProvider: context.read<MessageProvider>(),
+        tagProvider: context.read<TagProvider>(),
+        storageProvider: context.read<StorageProvider>(),
         chat: chat,
       ),
       child: Builder(
@@ -63,22 +67,26 @@ class _ChatInputState extends State<ChatInput> {
             child: BlocListener<MessageManageCubit, MessageManageState>(
               listener: (context, state) {
                 state.mapOrNull(
-                  defaultMode: (defaultMode) {
+                  defaultModeState: (_) {
                     _controller.text = '';
                     _isTagAddingOpened = false;
 
                     MessageInputScope.of(context).endEditMode();
                     TagSelectorScope.of(context).reset();
                   },
-                  editMode: (editMode) {
-                    _controller.text = editMode.message.text;
-                    _isTagAddingOpened = editMode.message.tags.isNotEmpty;
+                  editModeState: (editModeState) {
+                    _controller.text = editModeState.message.text;
+                    _isTagAddingOpened = editModeState.message.tags.isNotEmpty;
 
                     MessageInputScope.of(context).startEditMode(
-                      editMode.message,
+                      editModeState.message,
                     );
                     TagSelectorScope.of(context).setSelected(
-                      editMode.message.tags,
+                      editModeState.message.tags
+                          .map(
+                            (e) => e.id,
+                          )
+                          .toIList(),
                     );
                   },
                 );
@@ -97,14 +105,19 @@ class _ChatInputState extends State<ChatInput> {
                           BlocListener<TagsCubit, TagsState>(
                             listener: (context, state) {
                               state.map(
-                                initial: (initial) {
+                                initial: (_) {
                                   MessageInputScope.of(context).setTags(
                                     IList([]),
                                   );
                                 },
-                                hasSelected: (hasSelected) {
+                                hasSelectedState: (hasSelectedState) {
                                   MessageInputScope.of(context).setTags(
-                                    hasSelected.selected,
+                                    hasSelectedState.tags
+                                        .where(
+                                          (tag) => hasSelectedState.selected
+                                              .contains(tag),
+                                        )
+                                        .toIList(),
                                   );
                                 },
                               );
@@ -138,7 +151,8 @@ class _ChatInputState extends State<ChatInput> {
                                     maxLines: null,
                                     decoration: InputDecoration(
                                       isCollapsed: true,
-                                      hintText: locale.Hints.inputMessage.i18n(),
+                                      hintText:
+                                          locale.Hints.inputMessage.i18n(),
                                       border: const OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                       ),

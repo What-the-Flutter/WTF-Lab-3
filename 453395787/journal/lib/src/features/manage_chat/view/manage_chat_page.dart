@@ -3,15 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/data/chat_repository.dart';
-import '../../../common/models/chat_view.dart';
+import '../../../common/data/repository/chat_repository.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
+import '../../../common/utils/typedefs.dart';
 import '../cubit/manage_chat_cubit.dart';
 import '../widgets/manage_chat_scope.dart';
 
 part '../widgets/chat_icons.dart';
+
 part '../widgets/selectable_icon.dart';
 
 class ManageChatPage extends StatefulWidget {
@@ -20,7 +22,7 @@ class ManageChatPage extends StatefulWidget {
     this.chatId,
   });
 
-  final int? chatId;
+  final Id? chatId;
 
   @override
   State<ManageChatPage> createState() => _ManageChatPageState();
@@ -28,7 +30,7 @@ class ManageChatPage extends StatefulWidget {
 
 class _ManageChatPageState extends State<ManageChatPage> {
   final TextEditingController _textEditingController = TextEditingController();
-  ChatView? chatForEdit;
+  Chat? chatForEdit;
 
   @override
   void dispose() {
@@ -39,7 +41,6 @@ class _ManageChatPageState extends State<ManageChatPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.chatId != null) {
-      print(context.read<ChatRepository>().chats.value);
       chatForEdit = context.read<ChatRepository>().chats.value.firstWhere(
             (chat) => chat.id == widget.chatId,
           );
@@ -47,8 +48,8 @@ class _ManageChatPageState extends State<ManageChatPage> {
     }
     return ManageChatScope(
       manageChatState: chatForEdit == null
-          ? const ManageChatState.adding()
-          : ManageChatState.editing(
+          ? const ManageChatState.addModeState()
+          : ManageChatState.editModeState(
               name: chatForEdit!.name,
               chat: chatForEdit!,
               selectedIcon: JournalIcons.icons.indexOf(

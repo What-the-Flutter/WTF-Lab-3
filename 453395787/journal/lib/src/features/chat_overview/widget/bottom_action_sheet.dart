@@ -6,7 +6,7 @@ class _BottomChatActionSheet extends StatelessWidget {
     required this.chat,
   });
 
-  final ChatView chat;
+  final Chat chat;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _BottomChatActionSheet extends StatelessWidget {
             onTap: () {
               context.pop();
               context.go(
-                PagePaths.chatEditing.path.withArgs(
+                Navigation.editChatPagePath.withArgs(
                   {':chatId': '${chat.id}'},
                 ),
               );
@@ -103,15 +103,14 @@ class _BottomChatActionSheet extends StatelessWidget {
     final hours = duration.inHours - days * 24;
     if (days == 0 && hours == 0) {
       return locale.Info.lastMessageRecently.i18n();
-    }
-    if (hours == 0) {
+    } else if (hours == 0) {
       return locale.Info.lastMessageWithDays.i18n([days.toString()]);
-    } else {
-      return locale.Info.lastMessageWithDaysAndHours.i18n([
-        days.toString(),
-        hours.toString(),
-      ]);
     }
+
+    return locale.Info.lastMessageWithDaysAndHours.i18n([
+      days.toString(),
+      hours.toString(),
+    ]);
   }
 }
 

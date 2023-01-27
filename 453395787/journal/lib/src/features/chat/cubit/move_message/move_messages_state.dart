@@ -3,13 +3,13 @@ part of 'move_messages_cubit.dart';
 @freezed
 class MoveMessagesState with _$MoveMessagesState {
   const factory MoveMessagesState.initial({
-    required ChatViewList chats,
+    required ChatList chats,
     required int amountOfMessages,
   }) = _InitialState;
 
-  const factory MoveMessagesState.withSelected({
-    required ChatViewList chats,
+  const factory MoveMessagesState.hasSelectedState({
+    required ChatList chats,
     required int amountOfMessages,
-    required int selectedChatId,
-  }) = _WithSelectedState;
+    required Id selectedChatId,
+  }) = _HasSelectedState;
 }

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../common/models/message.dart';
-import '../../../../common/models/tag.dart';
+import '../../../../common/api/provider/storage_provider_api.dart';
+import '../../../../common/models/ui/message.dart';
+import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../api/message_repository_api.dart';
 
@@ -13,15 +16,21 @@ part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
-    required MessageRepositoryApi repository,
-  })  : _repository = repository,
+    required MessageRepositoryApi messageRepository,
+    required StorageProviderApi storageProvider,
+  })  : _repository = messageRepository,
+        _storage = storageProvider,
         super(
-          MessageInputState.defaultMode(
-            message: Message(),
+          MessageInputState.defaultModeState(
+            message: Message(
+              parentId: '',
+              dateTime: DateTime.now(),
+            ),
           ),
         );
 
   final MessageRepositoryApi _repository;
+  final StorageProviderApi _storage;
 
   void onTextChanged(String text) {
     emit(
@@ -31,21 +40,27 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
   }
 
-  void addImages(List<String> images) {
+  Future<void> addImages(IList<File> images) async {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.addAll(images.lock),
+          images: state.message.images.addAll(
+            images.map(
+              Future.value,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void removeImage(String image) {
+  void removeImage(Future<File> image) {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.remove(image),
+          images: state.message.images.removeWhere(
+            (e) => e == image,
+          ),
         ),
       ),
     );
@@ -82,24 +97,31 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   void send() {
+    for (var image in state.message.images) {
+      image.then(_storage.save);
+    }
+
     state.map(
-      defaultMode: (defaultMode) {
+      defaultModeState: (defaultModeState) {
         _repository.add(state.message);
       },
-      editMode: (editMode) {
+      editModeState: (editModeState) {
         _repository.update(state.message);
       },
     );
     emit(
-      MessageInputState.defaultMode(
-        message: Message(),
+      MessageInputState.defaultModeState(
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }
 
   void startEditMode(Message message) {
     emit(
-      MessageInputState.editMode(
+      MessageInputState.editModeState(
         message: message,
       ),
     );
@@ -107,8 +129,11 @@ class MessageInputCubit extends Cubit<MessageInputState> {
 
   void endEditMode() {
     emit(
-      MessageInputState.defaultMode(
-        message: Message(),
+      MessageInputState.defaultModeState(
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }

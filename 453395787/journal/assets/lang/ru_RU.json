@@ -8,9 +8,14 @@
 
   "settings_item_tags": "Теги",
   "settings_item_languages": "Языки",
+  "settings_item_theme": "Тема",
   "settings_page_tags_title": "Управление тегами",
+  "settings_item_security": "Безопасность",
+  "settings_page_security_title": "Входить по отпечатку пальца или FaceId?",
 
   "action_ok": "Ок",
+  "action_yes": "Да",
+  "action_no": "Нет",
   "action_cancel": "Отменить",
   "action_remove": "Удалить",
   "action_add": "Добавить",

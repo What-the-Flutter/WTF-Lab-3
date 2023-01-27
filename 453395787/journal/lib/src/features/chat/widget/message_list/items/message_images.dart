@@ -16,13 +16,13 @@ class _MessageImages extends StatelessWidget {
       );
     } else if (message.images.length.isEven) {
       return _EvenAmountOfImages(
-        images: message.images.toList(),
-      );
-    } else {
-      return _OddAmountOfImages(
-        images: message.images.toList(),
+        images: message.images,
       );
     }
+
+    return _OddAmountOfImages(
+      images: message.images,
+    );
   }
 }
 
@@ -32,19 +32,30 @@ class _SingleImage extends StatelessWidget {
     required this.image,
   });
 
-  final String image;
+  final Future<File> image;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(
-        Radius.medium,
-      ),
-      child: Image.file(
-        File(image),
-        fit: BoxFit.cover,
-      ),
-    );
+        borderRadius: BorderRadius.circular(
+          Radius.medium,
+        ),
+        child: FutureBuilder<File>(
+          future: image,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return const CircularProgressIndicator();
+              } else {
+                return Image.file(
+                  snapshot.data!,
+                  fit: BoxFit.cover,
+                );
+              }
+            }
+            return const CircularProgressIndicator();
+          },
+        ));
   }
 }
 
@@ -55,7 +66,7 @@ class _EvenAmountOfImages extends StatelessWidget {
     this.skipFirst = false,
   });
 
-  final List<String> images;
+  final IList<Future<File>> images;
   final bool skipFirst;
 
   @override
@@ -90,7 +101,7 @@ class _OddAmountOfImages extends StatelessWidget {
     required this.images,
   });
 
-  final List<String> images;
+  final IList<Future<File>> images;
 
   @override
   Widget build(BuildContext context) {

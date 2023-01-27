@@ -18,7 +18,7 @@ class MoveMessagePage extends StatefulWidget {
     required this.messages,
   });
 
-  final int fromChatId;
+  final Id fromChatId;
   final MessageList messages;
 
   @override
@@ -62,7 +62,7 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
                           },
                         );
                       },
-                      withSelected: (withSelected) {
+                      hasSelectedState: (hasSelectedState) {
                         return ChatItem(
                           chat: chat,
                           onTap: () {
@@ -70,7 +70,7 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
                               chat.id,
                             );
                           },
-                          isSelected: withSelected.selectedChatId == chat.id,
+                          isSelected: hasSelectedState.selectedChatId == chat.id,
                         );
                       },
                     );
@@ -91,7 +91,7 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
                               ),
                             );
                           },
-                          withSelected: (withSelected) {
+                          hasSelectedState: (hasSelectedState) {
                             return TextButton(
                               onPressed: () {
                                 MoveMessagesScope.of(context).move();

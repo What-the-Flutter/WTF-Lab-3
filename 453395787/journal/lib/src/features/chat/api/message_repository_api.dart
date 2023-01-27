@@ -1,19 +1,19 @@
 import 'package:rxdart/rxdart.dart';
 
-import '../../../common/models/chat_view.dart';
-import '../../../common/models/message.dart';
+import '../../../common/models/ui/chat.dart';
+import '../../../common/models/ui/message.dart';
 import '../../../common/utils/typedefs.dart';
 
 abstract class MessageRepositoryApi {
-  ValueStream<ValueStream<MessageList>> get filteredChatStreams;
+  ValueStream<MessageList> get messages;
+
+  Chat get chat;
 
   ValueStream<TagList> get tags;
 
-  ChatView get chat;
-
   Future<void> add(Message message);
 
-  Future<void> customAdd(int chatId, Message message);
+  Future<void> customAdd(Id chatId, Message message);
 
   Future<void> update(Message message);
 

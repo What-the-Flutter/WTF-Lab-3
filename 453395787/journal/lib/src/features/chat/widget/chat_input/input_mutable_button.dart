@@ -6,7 +6,7 @@ class _ChatInputMutableButton extends StatelessWidget {
     required this.onSend,
   });
 
-  final Callback onSend;
+  final VoidCallback onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +20,35 @@ class _ChatInputMutableButton extends StatelessWidget {
             ),
             onPressed: onSend,
           );
-        } else {
-          return InkWell(
-            onLongPress: () async {
-              final image = await ImagePicker().pickImage(
-                source: ImageSource.camera,
-              );
-              if (image != null) {
-                MessageInputScope.of(context).addImages([image.path]);
-              }
-            },
-            onTap: () async {
-              final images = await ImagePicker().pickMultiImage();
-              final imagePaths = images.map((e) => e.path).toList();
-              MessageInputScope.of(context).addImages(imagePaths);
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(
-                Insets.medium,
-              ),
-              child: Icon(
-                Icons.photo_album_outlined,
-              ),
-            ),
-          );
         }
+
+        return InkWell(
+          onLongPress: () async {
+            final image = await ImagePicker().pickImage(
+              source: ImageSource.camera,
+            );
+            if (image != null) {
+              MessageInputScope.of(context).addImages(
+                [
+                  File(image.path),
+                ].lock,
+              );
+            }
+          },
+          onTap: () async {
+            final images = await ImagePicker().pickMultiImage();
+            final imageFiles = images.map((e) => File(e.path)).toIList();
+            MessageInputScope.of(context).addImages(imageFiles);
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(
+              Insets.medium,
+            ),
+            child: Icon(
+              Icons.photo_album_outlined,
+            ),
+          ),
+        );
       },
     );
   }

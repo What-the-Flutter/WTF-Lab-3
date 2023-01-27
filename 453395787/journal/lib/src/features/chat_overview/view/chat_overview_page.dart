@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/data/chat_repository.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../../../common/extensions/date_time_extensions.dart';
 import '../../../common/extensions/string_extensions.dart';
-import '../../../common/models/chat_view.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/radius.dart';
@@ -45,7 +45,7 @@ class ChatOverviewPage extends StatelessWidget {
             onLongPress: () {
               showFloatingModalBottomSheet(
                 context: context,
-                builder: (context) => ChoiceColorSheet(),
+                builder: (context) => const ChoiceColorSheet(),
               );
             },
             child: Padding(
@@ -61,11 +61,11 @@ class ChatOverviewPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ChatList(),
+      body: const ChatList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.go(
-            PagePaths.chatAdding.path,
+            Navigation.addChatPagePath,
           );
         },
         child: const Icon(Icons.add),
