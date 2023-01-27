@@ -16,14 +16,12 @@ class EventAction {
   List<Event> get events => _events;
 
   bool _isFavorite = false;
+  bool _isSelectedMode = false;
+  bool _isEditMode = false;
 
   bool get favorite => _isFavorite;
 
-  bool _isSelectedMode = false;
-
   bool get selectedMode => _isSelectedMode;
-
-  bool _isEditMode = false;
 
   bool get editMode => _isEditMode;
 

@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'event.dart';
 
-class Chat {
+class Chat extends Equatable {
   final String title;
   final List<Event> events;
   final IconData iconData;
@@ -34,4 +35,14 @@ class Chat {
       isArchive: isArchive ?? this.isArchive,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        title,
+        events,
+        iconData,
+        creationTime,
+        isPin,
+        isArchive,
+      ];
 }

@@ -1,4 +1,6 @@
-class Event {
+import 'package:equatable/equatable.dart';
+
+class Event extends Equatable {
   final String message;
   final DateTime dateTime;
   final bool isFavorite;
@@ -28,4 +30,13 @@ class Event {
       photoPath: photoPath ?? this.photoPath,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        message,
+        dateTime,
+        isFavorite,
+        isSelected,
+        photoPath,
+      ];
 }

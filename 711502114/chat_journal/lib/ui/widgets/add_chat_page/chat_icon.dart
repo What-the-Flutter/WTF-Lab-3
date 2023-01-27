@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 
 class ChatIcon extends StatelessWidget {
-  const ChatIcon(
-      {Key? key,
-      required this.child,
-      required this.index,
-      required this.pageIndex})
-      : super(key: key);
+  const ChatIcon({
+    Key? key,
+    required this.child,
+    required this.index,
+    required this.pageIndex,
+  }) : super(key: key);
 
   final Widget child;
   final int index, pageIndex;

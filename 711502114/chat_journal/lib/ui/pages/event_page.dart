@@ -5,13 +5,12 @@ import 'package:provider/provider.dart';
 import '../../models/chat.dart';
 import '../../models/event.dart';
 import '../../provider/chat_provider.dart';
-import '../../theme/colors.dart';
 import '../tools/event_action.dart';
-import '../widgets/messenger_page/attach_dialog.dart';
-import '../widgets/messenger_page/event_box.dart';
-import '../widgets/messenger_page/info_box.dart';
-import '../widgets/messenger_page/keyboard_icon.dart';
-import '../widgets/messenger_page/tool_menu_icon.dart';
+import '../widgets/event_page/attach_dialog.dart';
+import '../widgets/event_page/event_box.dart';
+import '../widgets/event_page/event_keyboard.dart';
+import '../widgets/event_page/info_box.dart';
+import '../widgets/event_page/tool_menu_icon.dart';
 
 class MessengerPage extends StatefulWidget {
   const MessengerPage({Key? key, required this.chat}) : super(key: key);
@@ -23,14 +22,15 @@ class MessengerPage extends StatefulWidget {
 }
 
 class _MessengerPageState extends State<MessengerPage> {
-  final _fieldText = TextEditingController();
   final _bookMark = Icons.bookmark_border_outlined;
-  AppLocalizations? _local;
+  late final TextEditingController _fieldText;
+  late AppLocalizations? _local;
   late EventAction _action;
 
   @override
   void initState() {
     super.initState();
+    _fieldText = TextEditingController();
     _action = EventAction(widget.chat, _fieldText);
   }
 
@@ -42,7 +42,7 @@ class _MessengerPageState extends State<MessengerPage> {
     return WillPopScope(
       onWillPop: _handleBackButton,
       child: Scaffold(
-        appBar: _action.selectedMode ? _buildSelectedAppBar() : _buildAppBar(),
+        appBar: _buildAppBar(),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,7 +50,15 @@ class _MessengerPageState extends State<MessengerPage> {
               widget.chat.events.isNotEmpty
                   ? _buildMessageList(size)
                   : InfoBox(size: size, mainTitle: widget.chat.title),
-              _getInputBox(size),
+              EventKeyboard(
+                width: size.width,
+                fieldText: _fieldText,
+                fieldHint: _local?.enterFieldHint ?? '',
+                isEditMode: _action.editMode,
+                openDialog: _openDialog,
+                sendEvent: _sendEvent,
+                turnOffEditMode: _turnOffEditMode,
+              ),
             ],
           ),
         ),
@@ -59,67 +67,66 @@ class _MessengerPageState extends State<MessengerPage> {
   }
 
   AppBar _buildAppBar() {
+    final selected = _action.selectedMode;
     return AppBar(
-      title: Text(widget.chat.title),
-      centerTitle: true,
+      title: selected ? null : Text(widget.chat.title),
+      centerTitle: !selected,
+      leading: selected
+          ? ToolMenuIcon(
+              icon: Icons.close,
+              onPressed: () => setState(() {
+                _action.disableSelect();
+                Provider.of<ChatProvider>(context, listen: false).update();
+              }),
+            )
+          : null,
       actions: <Widget>[
-        ToolMenuIcon(
-          icon: Icons.search,
-          onPressed: () => setState(() {
-            _action.lookForWords();
-          }),
-        ),
-        ToolMenuIcon(
-          icon: _action.favorite ? Icons.bookmark : _bookMark,
-          color: _action.favorite ? Colors.yellow : null,
-          onPressed: () => setState(() {
-            _action.showFavorites();
-          }),
-        ),
-      ],
-    );
-  }
-
-  AppBar _buildSelectedAppBar() {
-    return AppBar(
-      leading: ToolMenuIcon(
-        icon: Icons.close,
-        onPressed: () => setState(() {
-          _action.disableSelect();
-          Provider.of<ChatProvider>(context, listen: false).update();
-        }),
-      ),
-      actions: <Widget>[
-        Expanded(
-          child: Align(
-            alignment: const Alignment(0, 0.15),
-            child: Text(
-              '${_action.selectedItemIndexes.length}',
-              style: const TextStyle(
-                fontSize: 25,
+        if (selected) ...[
+          Expanded(
+            child: Align(
+              alignment: const Alignment(0, 0.15),
+              child: Text(
+                '${_action.selectedItemIndexes.length}',
+                style: const TextStyle(
+                  fontSize: 25,
+                ),
               ),
             ),
           ),
-        ),
-        _createEditIcon(),
-        ToolMenuIcon(
-          icon: Icons.copy,
-          onPressed: () => setState(() {
-            _action.copyText();
-          }),
-        ),
-        ToolMenuIcon(
-          icon: _bookMark,
-          onPressed: () => setState(() {
-            _action.changeFavoriteStatus();
-          }),
-        ),
-        ToolMenuIcon(
-          icon: Icons.delete,
-          onPressed: () => setState(() {
-            _action.deleteMessage();
-          }),
-        ),
+          _createEditIcon(),
+          ToolMenuIcon(
+            icon: Icons.copy,
+            onPressed: () => setState(() {
+              _action.copyText();
+            }),
+          ),
+          ToolMenuIcon(
+            icon: _bookMark,
+            onPressed: () => setState(() {
+              _action.changeFavoriteStatus();
+            }),
+          ),
+          ToolMenuIcon(
+            icon: Icons.delete,
+            onPressed: () => setState(() {
+              _action.deleteMessage();
+            }),
+          ),
+        ] else ...[
+          ToolMenuIcon(
+            icon: Icons.search,
+            onPressed: () => setState(() {
+              _action.lookForWords();
+            }),
+          ),
+          ToolMenuIcon(
+            icon: _action.favorite ? Icons.bookmark : _bookMark,
+            color: _action.favorite ? Colors.yellow : null,
+            onPressed: () => setState(() {
+              _action.showFavorites();
+            }),
+          ),
+        ]
       ],
     );
   }
@@ -169,45 +176,6 @@ class _MessengerPageState extends State<MessengerPage> {
     });
   }
 
-  Widget _getInputBox(Size size) {
-    return Container(
-      width: size.width,
-      color: messageBlocColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          KeyBoardIcon(
-            icon: Icons.attach_file,
-            onPressed: _openDialog,
-          ),
-          Expanded(
-            child: TextField(
-              controller: _fieldText,
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: 5,
-              textInputAction: TextInputAction.newline,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: _local?.enterFieldHint ?? '',
-                hintStyle: TextStyle(
-                  fontSize: 20,
-                  color: secondaryMessageTextColor,
-                ),
-              ),
-              style: const TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ),
-          KeyBoardIcon(
-            icon: !_action.editMode ? Icons.send : Icons.edit,
-            onPressed: !_action.editMode ? _sendEvent : _turnOffEditMode,
-          ),
-        ],
-      ),
-    );
-  }
-
   void _openDialog() {
     AttachDialog(context, _local, _sendEvent).open();
   }
@@ -232,6 +200,8 @@ class _MessengerPageState extends State<MessengerPage> {
   void _turnOffEditMode() {
     setState(() {
       _action.turnOffEditMode();
+
+      Provider.of<ChatProvider>(context, listen: false).update();
     });
   }
 

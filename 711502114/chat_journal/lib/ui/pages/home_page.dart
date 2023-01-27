@@ -11,7 +11,7 @@ import '../widgets/home_page/archive_row.dart';
 import '../widgets/home_page/chat_card.dart';
 import '../widgets/home_page/popup_bottom_menu.dart';
 import 'add_chat_page.dart';
-import 'messenger_page.dart';
+import 'event_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -62,30 +62,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createBotBox(BuildContext context) {
-    return Container(
-      width: 365,
-      height: 63,
-      decoration: BoxDecoration(
-        color: botBackgroundColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset(
-            'assets/bot.svg',
-            height: 25,
-            width: 25,
-            color: iconColor,
-          ),
-          const SizedBox(width: 28),
-          Text(
-            AppLocalizations.of(context)?.bot ?? '',
-            style: const TextStyle(
-              fontSize: 18,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: botBackgroundColor,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/bot.svg',
+              height: 25,
+              width: 25,
+              color: iconColor,
             ),
-          )
-        ],
+            const SizedBox(width: 28),
+            Text(
+              AppLocalizations.of(context)?.bot ?? '',
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
