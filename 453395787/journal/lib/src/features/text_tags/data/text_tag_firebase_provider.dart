@@ -9,7 +9,7 @@ import '../model/text_tag.dart';
 
 class TextTagFirebaseProvider
     with AppLogger
-    implements TextTagFirebaseProviderApi {
+    implements TextTagProviderApi {
   final String _userId;
 
   TextTagFirebaseProvider({

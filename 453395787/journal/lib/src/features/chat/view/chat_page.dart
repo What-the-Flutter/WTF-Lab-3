@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/data/provider/message_provider.dart';
-import '../../../common/data/provider/storage_provider.dart';
-import '../../../common/data/provider/tag_provider.dart';
+import '../../../common/data/provider/message_firebase_provider.dart';
+import '../../../common/data/provider/storage_firebase_provider.dart';
+import '../../../common/data/provider/tag_firebase_provider.dart';
 import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../data/message_repository.dart';
@@ -28,9 +28,9 @@ class ChatPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MessageManageCubit(
         messageRepository: MessageRepository(
-          messageProvider: context.read<MessageProvider>(),
-          tagProvider: context.read<TagProvider>(),
-          storageProvider: context.read<StorageProvider>(),
+          messageProvider: context.read<MessageFirebaseProvider>(),
+          tagProvider: context.read<TagFirebaseProvider>(),
+          storageProvider: context.read<StorageFirebaseProvider>(),
           chat: chat,
         ),
         chatId: chatId,

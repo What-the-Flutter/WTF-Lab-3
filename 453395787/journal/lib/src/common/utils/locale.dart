@@ -23,16 +23,23 @@ abstract class SettingsPage {
   static const String fontSizeMedium = 'settings_item_font_size_medium';
   static const String fontSizeLarge = 'settings_item_font_size_large';
 
-  static const String bubbleAlignmentItemTitle = 'settings_item_bubble_alignment_title';
-  static const String bubbleAlignmentItemSubtitle = 'settings_item_bubble_alignment_subtitle';
-  static const String centerDateBubbleItem = 'settings_item_date_bubble_visibility';
+  static const String bubbleAlignmentItemTitle =
+      'settings_item_bubble_alignment_title';
+  static const String bubbleAlignmentItemSubtitle =
+      'settings_item_bubble_alignment_subtitle';
+  static const String centerDateBubbleItem =
+      'settings_item_date_bubble_visibility';
 
   static const String resetItem = 'settings_item_reset';
-  static const String resetConfirmationTitle = 'settings_item_reset_confirmation_title';
-  static const String resetConfirmationSubtitle = 'settings_item_reset_confirmation_subtitle';
+  static const String resetConfirmationTitle =
+      'settings_item_reset_confirmation_title';
+  static const String resetConfirmationSubtitle =
+      'settings_item_reset_confirmation_subtitle';
 
-  static const String changeBackgroundImage = 'settings_change_background_image';
-  static const String removeBackgroundImage = 'settings_remove_background_image';
+  static const String changeBackgroundImage =
+      'settings_change_background_image';
+  static const String removeBackgroundImage =
+      'settings_remove_background_image';
 }
 
 abstract class Actions {
@@ -48,6 +55,8 @@ abstract class Actions {
   static const String move = 'action_move';
   static const String pin = 'action_pin';
   static const String unpin = 'action_unpin';
+  static const String switchToDayMode = 'action_switch_to_day_mode';
+  static const String switchToNightMode = 'action_switch_to_night_mode';
 }
 
 abstract class Results {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../utils/typedefs.dart';
-
 part 'chat.freezed.dart';
 
 @freezed

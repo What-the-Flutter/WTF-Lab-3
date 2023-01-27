@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../extensions/date_time_extensions.dart';
-import '../../utils/typedefs.dart';
 
 part 'db_message.freezed.dart';
 

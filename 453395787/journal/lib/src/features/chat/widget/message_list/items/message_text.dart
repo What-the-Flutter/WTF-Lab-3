@@ -20,7 +20,8 @@ class _MessageText extends StatelessWidget {
       child: RegexTextHighlight(
         text: text,
         highlightRegex: RegExp(r'#\w+'),
-        highlightStyle: TextStyles.defaultHighlighted(context),
+        highlightStyle: TextStyles.messageHighlighted(context),
+        nonHighlightStyle: TextStyles.messageText(context),
       ),
     );
   }

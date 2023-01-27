@@ -30,15 +30,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     await _settingsRepository.setFontSize(fontSize);
   }
 
-  Future<void> changeBubbleDateVisibility(bool isVisible) async {
-    emit(
-      state.copyWith(
-        isCenterDateBubbleShown: isVisible,
-      ),
-    );
-    await _settingsRepository.setCenterDateBubbleShown(isVisible);
-  }
-
   Future<void> changeMessageAlignment(MessageAlignment messageAlignment) async {
     emit(
       state.copyWith(
@@ -46,6 +37,15 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
     await _settingsRepository.setMessageAlignment(messageAlignment);
+  }
+
+  Future<void> changeBubbleDateVisibility(bool isVisible) async {
+    emit(
+      state.copyWith(
+        isCenterDateBubbleShown: isVisible,
+      ),
+    );
+    await _settingsRepository.setCenterDateBubbleShown(isVisible);
   }
 
   Future<void> changeBackgroundImagePath(String? path) async {

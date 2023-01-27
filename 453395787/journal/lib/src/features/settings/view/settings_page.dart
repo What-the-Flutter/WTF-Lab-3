@@ -13,7 +13,6 @@ import '../../security/security.dart';
 import '../../security/widget/verify_method_selector.dart';
 import '../../theme/theme.dart';
 import '../cubit/settings_cubit.dart';
-import '../data/settings_repository_api.dart';
 import '../widget/font_size_selector.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -32,15 +31,12 @@ class SettingsPage extends StatelessWidget {
       body: Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.language_outlined),
+            leading: const Icon(Icons.chat_outlined),
             title: Text(
-              locale.SettingsPage.languageItem.i18n(),
+              locale.SettingsPage.chatItem.i18n(),
             ),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => const LanguageSelector(),
-              );
+            onTap: () async {
+              context.go(Navigation.chatSettingsPagePath);
             },
           ),
           ListTile(
@@ -55,21 +51,14 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(
-              context.watch<ThemeCubit>().state.isDarkMode
-                  ? Icons.light_mode_outlined
-                  : Icons.dark_mode_outlined,
-            ),
+            leading: const Icon(Icons.language_outlined),
             title: Text(
-              locale.SettingsPage.themeItem.i18n(),
+              locale.SettingsPage.languageItem.i18n(),
             ),
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => const ChoiceColorSheet(
-                  showExampleMessages: false,
-                  showDarkModeButton: true,
-                ),
+                builder: (context) => const LanguageSelector(),
               );
             },
           ),
@@ -101,27 +90,15 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          SwitchItem(
-            title: locale.SettingsPage.bubbleAlignmentItemTitle.i18n(),
-            subtitle: locale.SettingsPage.bubbleAlignmentItemSubtitle.i18n(),
-            icon: Icons.format_align_left_outlined,
-            isToggle: context.watch<SettingsCubit>().state.messageAlignment ==
-                MessageAlignment.left,
-            onToggle: (isToggle) {
-              context.read<SettingsCubit>().changeMessageAlignment(
-                    isToggle ? MessageAlignment.left : MessageAlignment.right,
-                  );
-            },
-          ),
-          SwitchItem(
-            title: locale.SettingsPage.centerDateBubbleItem.i18n(),
-            icon: Icons.date_range_outlined,
-            isToggle:
-                context.watch<SettingsCubit>().state.isCenterDateBubbleShown,
-            onToggle: (isToggle) {
-              context.read<SettingsCubit>().changeBubbleDateVisibility(
-                    isToggle,
-                  );
+          ListTile(
+            leading: const Icon(Icons.share_outlined),
+            title: Text(
+              locale.SettingsPage.shareItem.i18n(),
+            ),
+            onTap: () async {
+              await Share.share(
+                locale.SettingsPage.shareAppText.i18n(),
+              );
             },
           ),
           ListTile(
@@ -144,57 +121,7 @@ class SettingsPage extends StatelessWidget {
               }
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.share_outlined),
-            title: Text(
-              locale.SettingsPage.shareItem.i18n(),
-            ),
-            onTap: () async {
-              await Share.share(
-                locale.SettingsPage.shareAppText.i18n(),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.chat_outlined),
-            title: Text(
-              locale.SettingsPage.chatItem.i18n(),
-            ),
-            onTap: () async {
-              context.go(Navigation.chatSettingsPagePath);
-            },
-          ),
         ],
-      ),
-    );
-  }
-}
-
-class SwitchItem extends StatelessWidget {
-  const SwitchItem({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.icon,
-    required this.isToggle,
-    required this.onToggle,
-  });
-
-  final String title;
-  final String? subtitle;
-  final IconData icon;
-  final bool isToggle;
-  final void Function(bool isToggle) onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: subtitle == null ? null : Text(subtitle!),
-      trailing: Switch(
-        value: isToggle,
-        onChanged: onToggle,
       ),
     );
   }

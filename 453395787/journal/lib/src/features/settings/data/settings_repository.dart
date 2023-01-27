@@ -66,16 +66,6 @@ class SettingsRepository extends SettingsRepositoryApi {
   }
 
   @override
-  bool get isCenterDateBubbleShown => _isCenterDateBubbleShown;
-
-  @override
-  Future<void> setCenterDateBubbleShown(bool isCenterDateBubbleShown) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_isCenterDateBubbleShownKey, isCenterDateBubbleShown);
-    _isCenterDateBubbleShown = isCenterDateBubbleShown;
-  }
-
-  @override
   MessageAlignment get messageAlignment => _messageAlignment;
 
   @override
@@ -83,6 +73,16 @@ class SettingsRepository extends SettingsRepositoryApi {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_messageAlignmentKey, messageAlignment.name);
     _messageAlignment = messageAlignment;
+  }
+
+  @override
+  bool get isCenterDateBubbleShown => _isCenterDateBubbleShown;
+
+  @override
+  Future<void> setCenterDateBubbleShown(bool isCenterDateBubbleShown) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isCenterDateBubbleShownKey, isCenterDateBubbleShown);
+    _isCenterDateBubbleShown = isCenterDateBubbleShown;
   }
 
   @override

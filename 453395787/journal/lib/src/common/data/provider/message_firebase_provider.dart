@@ -7,21 +7,20 @@ import '../../extensions/snapshot_extension.dart';
 import '../../models/db/db_message.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/typedefs.dart';
-import 'base_provider.dart';
+import 'database_references.dart';
 
-class MessageProvider extends BaseProvider
-    with AppLogger
+class MessageFirebaseProvider
+    with AppLogger, MessagesDatabaseReference
     implements MessageProviderApi {
   final String _userId;
 
-  @override
-  String get userId => _userId;
-
-  MessageProvider({required String userId}) : _userId = userId;
+  MessageFirebaseProvider({
+    required String userId,
+  }) : _userId = userId;
 
   @override
   Future<String> addMessage(String chatId, DbMessage message) async {
-    final ref = messagesRef.push();
+    final ref = messagesRef(_userId).push();
     await ref.set(
       message
           .copyWith(
@@ -35,14 +34,14 @@ class MessageProvider extends BaseProvider
 
   @override
   Future<void> updateMessage(DbMessage message) async {
-    await messagesRef.child(message.id).update(
+    await messagesRef(_userId).child(message.id).update(
           message.toJson(),
         );
   }
 
   @override
   ValueStream<DbMessageList> messagesOf({required String chatId}) {
-    return messagesRef.onValue.map(
+    return messagesRef(_userId).onValue.map(
       (event) {
         log.v(
             'Database -> messagesOf $chatId -> Event ${event.snapshot.value}');
@@ -67,7 +66,7 @@ class MessageProvider extends BaseProvider
 
   @override
   Future<void> deleteMessage(String messageId) async {
-    await messagesRef.child(messageId).remove();
+    await messagesRef(_userId).child(messageId).remove();
   }
 
   @override

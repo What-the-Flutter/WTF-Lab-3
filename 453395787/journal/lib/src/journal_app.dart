@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
-import 'common/data/provider/chat_provider.dart';
-import 'common/data/provider/message_provider.dart';
-import 'common/data/provider/storage_provider.dart';
-import 'common/data/provider/tag_provider.dart';
+import 'common/data/provider/chat_firebase_provider.dart';
+import 'common/data/provider/message_firebase_provider.dart';
+import 'common/data/provider/storage_firebase_provider.dart';
+import 'common/data/provider/tag_firebase_provider.dart';
 import 'common/data/repository/chat_repository.dart';
 import 'common/data/repository/tag_repository.dart';
 import 'features/locale/data/locale_repository_api.dart';
@@ -90,33 +90,33 @@ class _InitProviders extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => StorageProvider(
+          create: (context) => StorageFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => ChatProvider(
+          create: (context) => ChatFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => MessageProvider(
+          create: (context) => MessageFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
-          create: (context) => TagProvider(
+          create: (context) => TagFirebaseProvider(
             userId: userId,
           ),
         ),
         RepositoryProvider(
           create: (context) => ChatRepository(
-            chatProvider: context.read<ChatProvider>(),
+            chatProvider: context.read<ChatFirebaseProvider>(),
           ),
         ),
         RepositoryProvider(
           create: (context) => TagRepository(
-            tagProvider: context.read<TagProvider>(),
+            tagProvider: context.read<TagFirebaseProvider>(),
           ),
         ),
         RepositoryProvider(

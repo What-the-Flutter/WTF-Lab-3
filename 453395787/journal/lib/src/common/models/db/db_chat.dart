@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../utils/typedefs.dart';
-
 part 'db_chat.freezed.dart';
 
 part 'db_chat.g.dart';
@@ -19,6 +17,5 @@ class DbChat with _$DbChat {
     @Default(0) int messageAmount,
   }) = _DbChat;
 
-  factory DbChat.fromJson(Map<String, Object?> json) =>
-      _$DbChatFromJson(json);
+  factory DbChat.fromJson(Map<String, Object?> json) => _$DbChatFromJson(json);
 }

@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../utils/typedefs.dart';
-
 part 'db_tag.freezed.dart';
 
 part 'db_tag.g.dart';

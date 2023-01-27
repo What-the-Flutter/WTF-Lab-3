@@ -4,7 +4,6 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../extensions/date_time_extensions.dart';
-import '../../utils/typedefs.dart';
 import 'tag.dart';
 
 part 'message.freezed.dart';

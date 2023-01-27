@@ -7,10 +7,10 @@ import '../model/text_tag.dart';
 
 class TextTagRepository implements TextTagRepositoryApi {
   const TextTagRepository({
-    required TextTagFirebaseProviderApi textTagFirebaseProvider,
+    required TextTagProviderApi textTagFirebaseProvider,
   }) : _provider = textTagFirebaseProvider;
 
-  final TextTagFirebaseProviderApi _provider;
+  final TextTagProviderApi _provider;
 
   @override
   ValueStream<IList<TextTag>> get textTags => _provider.textTags;
