@@ -409,6 +409,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Your timeline is empty!`
+  String get timeline_empty {
+    return Intl.message(
+      'Your timeline is empty!',
+      name: 'timeline_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.`
+  String get timeline_empty_info {
+    return Intl.message(
+      'There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.',
+      name: 'timeline_empty_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filters`
+  String get filter {
+    return Intl.message(
+      'Filters',
+      name: 'filter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to select a {rate} you want to include to the filter. All {rate} are included by default.`
+  String filter_info(String rate) {
+    return Intl.message(
+      'Tap to select a $rate you want to include to the filter. All $rate are included by default.',
+      name: 'filter_info',
+      desc: '',
+      args: [rate],
+    );
+  }
+
+  /// `Jump to date`
+  String get jump_to_date {
+    return Intl.message(
+      'Jump to date',
+      name: 'jump_to_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get reset {
+    return Intl.message(
+      'Reset',
+      name: 'reset',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

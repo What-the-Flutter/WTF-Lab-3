@@ -33,7 +33,7 @@ class _MenuState extends State<Menu> {
           appBar: MainScreenAppBar(index: state.index),
           body: MainScreenBody(index: state.index),
           drawer: const MainScreenDrawer(),
-          floatingActionButton: const MainScreenFloatingButton(),
+          floatingActionButton: MainScreenFloatingButton(menuStatus: state.menuStatus),
           bottomNavigationBar: MainScreenBottomNavigation(
             index: state.index,
             selected: changeIndex,

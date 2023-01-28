@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
-import 'package:my_final_project/ui/widgets/event_screen/event_message.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_action.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class EventScreenListMessage extends StatefulWidget {
@@ -74,7 +74,7 @@ Widget listMessage(BuildContext context, EventState state, User? _user, int chat
             return Column(
               children: [
                 dateEvent(context, index, eventList),
-                EventMessage(
+                EventAction(
                   event: eventList[index],
                   isSelected: state.isSelected,
                 )
@@ -99,7 +99,7 @@ Widget listFavorite(BuildContext context, List<Event> listMessageFavorite, Event
       return Column(
         children: [
           dateEvent(context, index, listReversed),
-          EventMessage(
+          EventAction(
             event: event,
             isSelected: state.isSelected,
           ),

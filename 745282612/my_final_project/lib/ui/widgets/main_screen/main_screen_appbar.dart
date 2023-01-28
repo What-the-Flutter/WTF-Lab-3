@@ -28,19 +28,38 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.invert_colors),
-          onPressed: context.read<SettingCubit>().changeTheme,
-        ),
-      ],
-      title: Text(
-        _listTitle[widget.index],
-        style: TextStyle(
-          fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
-        ),
-      ),
-    );
+    return widget.index == 2
+        ? AppBar(
+            title: Text(
+              _listTitle[widget.index],
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+              ),
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.turned_in_not),
+              ),
+            ],
+          )
+        : AppBar(
+            title: Text(
+              _listTitle[widget.index],
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.invert_colors),
+                onPressed: context.read<SettingCubit>().changeTheme,
+              ),
+            ],
+          );
   }
 }
