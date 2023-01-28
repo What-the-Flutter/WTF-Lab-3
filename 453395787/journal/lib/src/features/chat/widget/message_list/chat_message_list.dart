@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+import '../../../../common/features/settings/data/settings_repository_api.dart';
+import '../../../../common/features/settings/settings.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/utils/insets.dart';
-import '../../../settings/cubit/settings_cubit.dart';
-import '../../../settings/data/settings_repository_api.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../scopes/message_manage_scope.dart';
 import 'items/message_item.dart';

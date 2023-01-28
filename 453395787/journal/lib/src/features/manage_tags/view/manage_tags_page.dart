@@ -5,12 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
 import '../../../common/data/repository/tag_repository.dart';
+import '../../../common/features/theme/theme.dart';
 import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../routes.dart';
 import '../../chat/chat.dart';
-import '../../theme/theme.dart';
 import '../cubit/manage_tags_cubit.dart';
 
 part '../widget/selection_tag_page_body.dart';

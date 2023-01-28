@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/utils/default_values.dart';
+import '../../../utils/default_values.dart';
 import '../data/theme_repository_api.dart';
 
 part 'theme_state.dart';

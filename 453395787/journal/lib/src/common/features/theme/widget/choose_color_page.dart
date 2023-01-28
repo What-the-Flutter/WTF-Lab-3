@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/models/ui/message.dart';
-import '../../../common/utils/insets.dart';
-import '../../../common/utils/locale.dart' as locale;
-import '../../chat/chat.dart';
+import '../../../../features/chat/chat.dart';
+import '../../../models/ui/message.dart';
+import '../../../utils/insets.dart';
+import '../../../utils/locale.dart' as locale;
 import '../cubit/theme_cubit.dart';
 import 'color_selector.dart';
 import 'theme_scope.dart';

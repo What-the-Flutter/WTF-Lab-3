@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../common/utils/default_values.dart';
+import '../../../utils/default_values.dart';
 import 'theme_repository_api.dart';
 
 class ThemeRepository extends ThemeRepositoryApi {

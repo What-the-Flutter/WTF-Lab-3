@@ -12,22 +12,24 @@ class _TextTagList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          ...tags.map(
-            (tag) => Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Insets.extraSmall,
-              ),
-              child: TextTagChip(
-                tag: tag,
-                onPressed: () => onPressed(tag),
+    return SizedBox(
+      height: 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: tags.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Insets.extraSmall,
+            ),
+            child: TextTagChip(
+              tag: tags[index],
+              onPressed: () => onPressed(
+                tags[index],
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

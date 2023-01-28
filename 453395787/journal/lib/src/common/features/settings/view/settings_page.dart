@@ -4,13 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../common/utils/locale.dart' as locale;
-import '../../../common/widget/confirmation_dialog.dart';
-import '../../../routes.dart';
-import '../../locale/locale.dart';
-import '../../security/cubit/security_cubit.dart';
-import '../../security/security.dart';
-import '../../security/widget/verify_method_selector.dart';
+import '../../../../features/locale/locale.dart';
+import '../../../../features/security/security.dart';
+import '../../../../routes.dart';
+import '../../../utils/locale.dart' as locale;
+import '../../../widget/confirmation_dialog.dart';
 import '../../theme/theme.dart';
 import '../cubit/settings_cubit.dart';
 import '../widget/font_size_selector.dart';
@@ -84,9 +82,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => FontSizeSelector(
-                  defaultFontSize: context.read<SettingsCubit>().state.fontSize,
-                ),
+                builder: (context) => const FontSizeSelector(),
               );
             },
           ),

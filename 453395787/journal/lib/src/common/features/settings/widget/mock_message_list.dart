@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/models/ui/message.dart';
-import '../../../common/utils/insets.dart';
-import '../../chat/chat.dart';
-import '../../chat/widget/message_list/items/time_item.dart';
-import '../../chat/widget/message_list/with_background_image.dart';
+import '../../../../features/chat/chat.dart';
+import '../../../models/ui/message.dart';
+import '../../../utils/insets.dart';
 import '../cubit/settings_cubit.dart';
 import '../data/settings_repository_api.dart';
 

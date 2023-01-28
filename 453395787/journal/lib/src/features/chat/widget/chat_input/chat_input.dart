@@ -27,7 +27,11 @@ part 'input_mutable_button.dart';
 
 part 'selected_images.dart';
 
-part 'bloc_synchronization.dart';
+part 'message_manage_bloc_listener.dart';
+
+part 'text_tag_bloc_listener.dart';
+
+part 'chat_input_scopes_and_listeners.dart';
 
 class ChatInput extends StatefulWidget {
   const ChatInput({
@@ -53,122 +57,101 @@ class _ChatInputState extends State<ChatInput> {
 
   @override
   Widget build(BuildContext context) {
-    return MessageInputScope(
-      repository: MessageRepository(
-        messageProvider: context.read<MessageFirebaseProvider>(),
-        tagProvider: context.read<TagFirebaseProvider>(),
-        storageProvider: context.read<StorageFirebaseProvider>(),
-        chat: context.read<ChatRepository>().chats.value.firstWhere(
-              (chat) => chat.id == widget.chatId,
+    return _ChatInputScopesAndListeners(
+      chatId: widget.chatId,
+      inputTextController: _controller,
+      onDefaultModeStarted: () {
+        _controller.text = '';
+        _isTagAddingOpened = false;
+      },
+      onEditModeStarted: (message) {
+        _controller.text = message.text;
+        _isTagAddingOpened = message.tags.isNotEmpty;
+      },
+      child: BlocBuilder<MessageInputCubit, MessageInputState>(
+        builder: (context, state) {
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).hoverColor,
             ),
-      ),
-      child: Builder(
-        builder: (context) {
-          return TagSelectorScope(
-            child: TextTagSelectorScope(
-              child: _BlocSynchronization(
-                onDefaultModeStarted: () {
-                  _controller.text = '';
-                  _isTagAddingOpened = false;
-                },
-                onEditModeStarted: (message) {
-                  _controller.text = message.text;
-                  _isTagAddingOpened = message.tags.isNotEmpty;
-                },
-                inputTextController: _controller,
-                child: BlocBuilder<MessageInputCubit, MessageInputState>(
-                  builder: (context, state) {
-                    return DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).hoverColor,
+            child: Column(
+              children: [
+                const TextTagSelector(),
+                if (state.message.images.isNotEmpty)
+                  const _SelectedImagesList(),
+                if (_isTagAddingOpened)
+                  BlocListener<TagsCubit, TagsState>(
+                    listener: (context, state) {
+                      state.map(
+                        initial: (_) {
+                          MessageInputScope.of(context).setTags(
+                            IList([]),
+                          );
+                        },
+                        hasSelectedState: (hasSelectedState) {
+                          MessageInputScope.of(context).setTags(
+                            hasSelectedState.tags
+                                .where(
+                                  (tag) =>
+                                      hasSelectedState.selected.contains(tag),
+                                )
+                                .toIList(),
+                          );
+                        },
+                      );
+                    },
+                    child: const TagSelector(),
+                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _isTagAddingOpened = !_isTagAddingOpened;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.tag_outlined,
                       ),
-                      child: Column(
-                        children: [
-                          const TextTagSelector(),
-                          if (state.message.images.isNotEmpty)
-                            const _SelectedImagesList(),
-                          if (_isTagAddingOpened)
-                            BlocListener<TagsCubit, TagsState>(
-                              listener: (context, state) {
-                                state.map(
-                                  initial: (_) {
-                                    MessageInputScope.of(context).setTags(
-                                      IList([]),
-                                    );
-                                  },
-                                  hasSelectedState: (hasSelectedState) {
-                                    MessageInputScope.of(context).setTags(
-                                      hasSelectedState.tags
-                                          .where(
-                                            (tag) => hasSelectedState.selected
-                                                .contains(tag),
-                                          )
-                                          .toIList(),
-                                    );
-                                  },
-                                );
-                              },
-                              child: const TagSelector(),
-                            ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isTagAddingOpened = !_isTagAddingOpened;
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.tag_outlined,
-                                ),
-                              ),
-                              Expanded(
-                                child: LimitedBox(
-                                  maxHeight:
-                                      MediaQuery.of(context).size.width * 0.2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(
-                                      Insets.medium,
-                                    ),
-                                    child: TextFormField(
-                                      controller: _controller,
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      maxLines: null,
-                                      decoration: InputDecoration(
-                                        isCollapsed: true,
-                                        hintText:
-                                            locale.Hints.inputMessage.i18n(),
-                                        border: const OutlineInputBorder(
-                                          borderSide: BorderSide.none,
-                                        ),
-                                      ),
-                                      onChanged: (text) {
-                                        MessageInputScope.of(context)
-                                            .onTextChanged(text);
-                                        context
-                                            .read<TextTagCubit>()
-                                            .onInputTextChanged(text);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              _ChatInputMutableButton(
-                                onSend: () {
-                                  MessageInputScope.of(context).send();
-                                  _controller.clear();
-                                  _isTagAddingOpened = false;
-                                },
-                              ),
-                            ],
+                    ),
+                    Expanded(
+                      child: LimitedBox(
+                        maxHeight: MediaQuery.of(context).size.width * 0.2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(
+                            Insets.medium,
                           ),
-                        ],
+                          child: TextFormField(
+                            controller: _controller,
+                            textCapitalization: TextCapitalization.sentences,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              hintText: locale.Hints.inputMessage.i18n(),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: (text) {
+                              MessageInputScope.of(context).onTextChanged(text);
+                              context
+                                  .read<TextTagCubit>()
+                                  .onInputTextChanged(text);
+                            },
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    _ChatInputMutableButton(
+                      onSend: () {
+                        MessageInputScope.of(context).send();
+                        _controller.clear();
+                        _isTagAddingOpened = false;
+                      },
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           );
         },

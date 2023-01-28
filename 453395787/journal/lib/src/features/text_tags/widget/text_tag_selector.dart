@@ -23,9 +23,7 @@ class TextTagSelector extends StatelessWidget {
           initial: (initial) => const SizedBox(),
           success: (success) => _TextTagList(
             tags: success.tags,
-            onPressed: (tag) {
-              context.read<TextTagCubit>().onTagPressed(tag);
-            },
+            onPressed: context.read<TextTagCubit>().onTagPressed,
           ),
           addModeState: (addModeState) => Center(
             child: TextTagChip(

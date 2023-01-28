@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../settings/cubit/settings_cubit.dart';
+import '../../../../common/features/settings/settings.dart';
 
 class WithBackgroundImage extends StatelessWidget {
   const WithBackgroundImage({

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/utils/default_values.dart';
+import '../../../utils/default_values.dart';
 import '../data/settings_repository_api.dart';
 
 part 'settings_state.dart';

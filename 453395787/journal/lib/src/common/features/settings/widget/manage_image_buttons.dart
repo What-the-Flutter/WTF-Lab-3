@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localization/localization.dart';
 
-import '../../../common/utils/locale.dart' as locale;
-import '../../../common/utils/text_styles.dart';
+import '../../../utils/locale.dart' as locale;
+import '../../../utils/text_styles.dart';
 import '../cubit/settings_cubit.dart';
 
 class ManageImageButtons extends StatelessWidget {

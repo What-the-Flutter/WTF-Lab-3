@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../common/utils/default_values.dart';
+import '../../../utils/default_values.dart';
 import 'settings_repository_api.dart';
 
 class SettingsRepository extends SettingsRepositoryApi {

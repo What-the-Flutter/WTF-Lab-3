@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/utils/colors.dart';
-import '../../../common/utils/insets.dart';
-import '../../../common/utils/radius.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/insets.dart';
+import '../../../utils/radius.dart';
 import '../theme.dart';
 
 class ColorSelector extends StatelessWidget {
