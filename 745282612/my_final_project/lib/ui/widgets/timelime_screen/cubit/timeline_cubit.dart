@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 import 'package:my_final_project/data/db/firebase_provider.dart';
+import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_state.dart';
 
 class TimelineCubit extends Cubit<TimelineState> {
@@ -79,7 +80,12 @@ class TimelineCubit extends Cubit<TimelineState> {
       filterTags: [],
       filterList: allEvent,
       filterDateTime: null,
+      searchText: '',
     ));
+  }
+
+  void changeFavoriteStatus() {
+    emit(state.copyWith(isFavorite: !state.isFavorite));
   }
 
   Future<void> filterEventList() async {
@@ -88,7 +94,8 @@ class TimelineCubit extends Cubit<TimelineState> {
     if (state.filterChat.isEmpty &&
         state.filterSection.isEmpty &&
         state.filterTags.isEmpty &&
-        state.filterDateTime == null) {
+        state.filterDateTime == null &&
+        state.searchText == '') {
     } else {
       if (state.filterChat.isNotEmpty) {
         filterEventList.removeWhere((element) => !state.filterChat.contains(element.chatId));
@@ -105,8 +112,20 @@ class TimelineCubit extends Cubit<TimelineState> {
             DateFormat.yMd().format(element.messageTime) !=
             DateFormat.yMd().format(state.filterDateTime!));
       }
+      if (state.searchText != '') {
+        filterEventList.removeWhere((element) =>
+            !element.messageContent.toLowerCase().contains(state.searchText.toLowerCase()));
+      }
     }
     emit(state.copyWith(filterList: filterEventList));
+  }
+
+  List<Event> filterFavoriteList() {
+    return state.filterList.reversed.where((element) => element.isFavorit).toList();
+  }
+
+  void searchText(String text) {
+    emit(state.copyWith(searchText: text));
   }
 
   bool isSelectedSection(String sectionId) => state.filterSection.contains(sectionId);

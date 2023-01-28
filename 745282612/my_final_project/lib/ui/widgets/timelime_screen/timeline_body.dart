@@ -14,7 +14,9 @@ class TimelineBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TimelineCubit, TimelineState>(
       builder: (context, state) {
-        final eventListReversed = state.filterList.reversed.toList();
+        final eventListReversed = state.isFavorite
+            ? context.read<TimelineCubit>().filterFavoriteList()
+            : state.filterList.reversed.toList();
         return eventListReversed.isEmpty
             ? const TimeLineInstruction()
             : ListView.builder(

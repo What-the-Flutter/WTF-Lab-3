@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
+import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 
 class MainScreenAppBar extends StatefulWidget implements PreferredSizeWidget {
   final int index;
@@ -38,12 +39,12 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
             ),
             actions: [
               IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.search),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.turned_in_not),
+                onPressed: context.read<TimelineCubit>().changeFavoriteStatus,
+                icon: Icon(
+                  context.watch<TimelineCubit>().state.isFavorite
+                      ? Icons.turned_in
+                      : Icons.turned_in_not,
+                ),
               ),
             ],
           )

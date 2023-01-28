@@ -7,6 +7,8 @@ class TimelineState extends Equatable {
   final List<String> filterTags;
   final List<String> filterSection;
   final DateTime? filterDateTime;
+  final bool isFavorite;
+  final String searchText;
 
   TimelineState({
     required this.filterList,
@@ -14,6 +16,8 @@ class TimelineState extends Equatable {
     required this.filterTags,
     required this.filterSection,
     required this.filterDateTime,
+    this.isFavorite = false,
+    this.searchText = '',
   });
 
   TimelineState copyWith({
@@ -22,6 +26,8 @@ class TimelineState extends Equatable {
     List<String>? filterTags,
     List<String>? filterSection,
     DateTime? filterDateTime,
+    bool? isFavorite,
+    String? searchText,
   }) {
     return TimelineState(
       filterTags: filterTags ?? this.filterTags,
@@ -29,6 +35,8 @@ class TimelineState extends Equatable {
       filterChat: filterChat ?? this.filterChat,
       filterSection: filterSection ?? this.filterSection,
       filterDateTime: filterDateTime,
+      isFavorite: isFavorite ?? this.isFavorite,
+      searchText: searchText ?? this.searchText,
     );
   }
 
@@ -39,5 +47,7 @@ class TimelineState extends Equatable {
         filterTags,
         filterSection,
         filterDateTime,
+        isFavorite,
+        searchText,
       ];
 }
