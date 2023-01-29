@@ -9,7 +9,7 @@ import '../../../../common/extensions/date_time_extensions.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
-import '../../api/message_repository_api.dart';
+import '../../api/chat_messages_repository_api.dart';
 
 part 'message_manage_cubit.freezed.dart';
 
@@ -17,7 +17,7 @@ part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
   MessageManageCubit({
-    required MessageRepositoryApi messageRepository,
+    required ChatMessagesRepositoryApi messageRepository,
     required this.chatId,
     required this.name,
   })  : _repository = messageRepository,
@@ -43,7 +43,7 @@ class MessageManageCubit extends Cubit<MessageManageState> {
     );
   }
 
-  final MessageRepositoryApi _repository;
+  final ChatMessagesRepositoryApi _repository;
   final String chatId;
   final String name;
   StreamSubscription<IList<Message>>? _messageStreamSub;

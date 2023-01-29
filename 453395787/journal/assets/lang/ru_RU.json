@@ -40,6 +40,7 @@
   "action_move": "Переместить",
   "action_pin": "Закрепить",
   "action_unpin": "Открепить",
+  "action_reset": "Сбросить",
   "action_switch_to_day_mode": "Переключиться на Светлую Тему",
   "action_switch_to_night_mode": "Переключиться на Темную Тему",
 

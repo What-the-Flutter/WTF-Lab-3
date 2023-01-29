@@ -9,6 +9,7 @@ import 'features/chat/chat.dart';
 import 'features/chat_overview/chats_overview.dart';
 import 'features/manage_chat/manage_chat.dart';
 import 'features/manage_tags/manage_tags.dart';
+import 'features/timeline/timeline.dart';
 
 abstract class Navigation {
   static final GoRouter router = GoRouter(
@@ -49,10 +50,8 @@ abstract class Navigation {
           ),
           GoRoute(
             path: _routerTimelinePagePath,
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: EmptyPage(
-                title: locale.Pages.timeline.i18n(),
-              ),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: TimelinePage(),
             ),
           ),
           GoRoute(

@@ -4,7 +4,7 @@ import '../../../common/models/ui/chat.dart';
 import '../../../common/models/ui/message.dart';
 import '../../../common/utils/typedefs.dart';
 
-abstract class MessageRepositoryApi {
+abstract class ChatMessagesRepositoryApi {
   ValueStream<MessageList> get messages;
 
   Chat get chat;

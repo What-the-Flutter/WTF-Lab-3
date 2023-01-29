@@ -6,7 +6,7 @@ import '../../../common/data/provider/storage_firebase_provider.dart';
 import '../../../common/data/provider/tag_firebase_provider.dart';
 import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
-import '../data/message_repository.dart';
+import '../data/chat_messages_repository.dart';
 import '../widget/app_bar/chat_app_bar.dart';
 import '../widget/chat_input/chat_input.dart';
 import '../widget/message_list/chat_message_list.dart';
@@ -27,7 +27,7 @@ class ChatPage extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => MessageManageCubit(
-        messageRepository: MessageRepository(
+        messageRepository: ChatMessagesRepository(
           messageProvider: context.read<MessageFirebaseProvider>(),
           tagProvider: context.read<TagFirebaseProvider>(),
           storageProvider: context.read<StorageFirebaseProvider>(),

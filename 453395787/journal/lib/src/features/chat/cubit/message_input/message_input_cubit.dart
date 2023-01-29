@@ -9,7 +9,7 @@ import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../../text_tags/text_tags.dart';
-import '../../api/message_repository_api.dart';
+import '../../api/chat_messages_repository_api.dart';
 
 part 'message_input_cubit.freezed.dart';
 
@@ -17,7 +17,7 @@ part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
-    required MessageRepositoryApi messageRepository,
+    required ChatMessagesRepositoryApi messageRepository,
     required StorageProviderApi storageProvider,
     required TextTagRepositoryApi textTagRepository,
   })  : _messageRepository = messageRepository,
@@ -32,7 +32,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
           ),
         );
 
-  final MessageRepositoryApi _messageRepository;
+  final ChatMessagesRepositoryApi _messageRepository;
   final StorageProviderApi _storage;
   final TextTagRepositoryApi _textTagRepository;
 

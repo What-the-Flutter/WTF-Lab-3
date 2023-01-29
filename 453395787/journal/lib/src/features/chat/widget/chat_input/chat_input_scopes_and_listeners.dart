@@ -19,7 +19,7 @@ class _ChatInputScopesAndListeners extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MessageInputScope(
-      repository: MessageRepository(
+      repository: ChatMessagesRepository(
         messageProvider: context.read<MessageFirebaseProvider>(),
         tagProvider: context.read<TagFirebaseProvider>(),
         storageProvider: context.read<StorageFirebaseProvider>(),

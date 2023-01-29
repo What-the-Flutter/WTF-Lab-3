@@ -15,10 +15,10 @@ import '../../../common/models/ui/message.dart';
 import '../../../common/models/ui/tag.dart';
 import '../../../common/utils/transformers.dart';
 import '../../../common/utils/typedefs.dart';
-import '../api/message_repository_api.dart';
+import '../api/chat_messages_repository_api.dart';
 
-class MessageRepository extends MessageRepositoryApi {
-  MessageRepository({
+class ChatMessagesRepository extends ChatMessagesRepositoryApi {
+  ChatMessagesRepository({
     required MessageProviderApi messageProvider,
     required TagProviderApi tagProvider,
     required StorageProviderApi storageProvider,
@@ -206,8 +206,8 @@ class MessageRepository extends MessageRepositoryApi {
 
   @override
   Future<void> search(String query, [TagList? tags]) async {
-    MessageRepository._query = query;
-    MessageRepository._queryTags = tags;
+    ChatMessagesRepository._query = query;
+    ChatMessagesRepository._queryTags = tags;
     _messageStreamController.add(
       _providerMessageStream.value,
     );

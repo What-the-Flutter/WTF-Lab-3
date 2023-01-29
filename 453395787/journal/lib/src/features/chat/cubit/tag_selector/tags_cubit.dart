@@ -15,8 +15,15 @@ part 'tags_cubit.freezed.dart';
 class TagsCubit extends Cubit<TagsState> {
   TagsCubit({
     required TagRepositoryApi tagRepository,
+    IList<Tag>? selectedTags,
   })  : _tagRepository = tagRepository,
         super(TagsState.initial(tags: tagRepository.tags.value)) {
+    if (selectedTags != null) {
+      emit(
+        TagsState.hasSelectedState(tags: state.tags, selected: selectedTags),
+      );
+    }
+
     _tagsStreamSubscription = _tagRepository.tags.listen((event) {
       emit(
         state.copyWith(

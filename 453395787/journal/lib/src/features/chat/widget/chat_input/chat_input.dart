@@ -18,7 +18,7 @@ import '../../../text_tags/text_tags.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
 import '../../cubit/tag_selector/tags_cubit.dart';
-import '../../data/message_repository.dart';
+import '../../data/chat_messages_repository.dart';
 import '../scopes/message_input_scope.dart';
 import '../scopes/tags_scope.dart';
 import '../tag_selector/tag_selector.dart';
