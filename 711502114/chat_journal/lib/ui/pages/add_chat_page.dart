@@ -1,11 +1,12 @@
 // ignore_for_file: omit_local_variable_types
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
+import '../../cubit/home/home_cubit.dart';
+import '../../cubit/home/home_state.dart';
 import '../../models/chat.dart';
-import '../../provider/chat_provider.dart';
 import '../../utils/icons.dart';
 import '../../utils/utils.dart';
 import '../widgets/add_chat_page/add_chat_keyboard.dart';
@@ -13,9 +14,8 @@ import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
   final Chat? chat;
-  final int? chatIndex;
 
-  const AddChatPage({Key? key, this.chat, this.chatIndex}) : super(key: key);
+  const AddChatPage({Key? key, this.chat}) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -69,12 +69,18 @@ class _AddChatPageState extends State<AddChatPage> {
           ],
         ),
       ),
-      floatingActionButton: Align(
-        alignment: const Alignment(1, 0.87),
-        child: FloatingActionButton(
-          onPressed: _addOrEditChat,
-          child: Icon(_fabIcon),
-        ),
+      floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, _) {
+          return Align(
+            alignment: const Alignment(1, 0.87),
+            child: FloatingActionButton(
+              onPressed: () {
+                _addOrEditChat(context);
+              },
+              child: Icon(_fabIcon),
+            ),
+          );
+        },
       ),
     );
   }
@@ -120,17 +126,17 @@ class _AddChatPageState extends State<AddChatPage> {
     }
   }
 
-  void _addOrEditChat() {
+  void _addOrEditChat(BuildContext context) {
     if (_fieldText.text.isNotEmpty) {
-      final provider = Provider.of<ChatProvider>(context, listen: false);
+      final cubit = context.read<HomeCubit>();
       if (widget.chat == null) {
-        provider.add(
+        cubit.add(
           title: _fieldText.text,
           iconData: _icons[_iconIndex],
         );
       } else {
-        provider.edit(
-          widget.chatIndex ?? 0,
+        cubit.edit(
+          widget.chat?.id ?? 0,
           title: _fieldText.text,
           iconData: _icons[_iconIndex],
         );

@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
-import '../../../provider/chat_provider.dart';
+import '../../../cubit/home/home_cubit.dart';
+import '../../../models/chat.dart';
 import 'chat_functions.dart';
 
 class PopupBottomMenu extends StatelessWidget {
-  final int index;
+  final HomeCubit cubit;
+  final Chat chat;
 
-  const PopupBottomMenu({super.key, required this.index});
+  const PopupBottomMenu({
+    super.key,
+    required this.cubit,
+    required this.chat,
+  });
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
-    final provider = Provider.of<ChatProvider>(context, listen: false);
     final functions = ChatFunctions(
       context: context,
-      provider: provider,
-      index: index,
+      cubit: cubit,
+      chat: chat,
     );
     return Wrap(
       children: [

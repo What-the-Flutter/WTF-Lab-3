@@ -1,23 +1,20 @@
 // ignore_for_file: omit_local_variable_types
 
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/chat.dart';
 import '../../models/event.dart';
+import 'event_state.dart';
 
-class EventAction {
-  final Chat chat;
-  final TextEditingController fieldText;
-  final List<int> selectedItemIndexes = [];
-
-  late List<Event> _events;
-
-  List<Event> get events => _events;
-
+class EventCubit extends Cubit<EventState> {
   bool _isFavorite = false;
   bool _isSelectedMode = false;
   bool _isEditMode = false;
+
+  late List<Event> _events;
+  final List<int> selectedItemIndexes = [];
 
   bool get favorite => _isFavorite;
 
@@ -25,11 +22,17 @@ class EventAction {
 
   bool get editMode => _isEditMode;
 
-  EventAction(
-    this.chat,
-    this.fieldText,
-  ) {
-    _events = chat.events;
+  List<Event> get events => _events;
+
+  EventCubit() : super(EventState(events: []));
+
+  void init(Chat chat) {
+    emit(state.copyWith(events: chat.events));
+    _events = state.events;
+  }
+
+  void update() {
+    emit(state.copyWith(events: state.events));
   }
 
   void lookForWords() {}
@@ -37,33 +40,41 @@ class EventAction {
   void showFavorites() {
     _isFavorite = !_isFavorite;
     if (_isFavorite) {
-      _events = chat.events.where((element) => element.isFavorite).toList();
+      _events = state.events.where((element) => element.isFavorite).toList();
     } else {
-      _events = chat.events;
+      _events = state.events;
     }
   }
 
-  void disableSelect() {
+  void disableSelect([TextEditingController? fieldText]) {
     for (int i in selectedItemIndexes) {
       events[i] = events[i].copyWith(isSelected: false);
     }
 
-    fieldText.clear();
+    fieldText?.clear();
     _isEditMode = false;
 
     finishEditMode();
   }
 
-  void turnOnEditMode() {
+  void turnOnEditMode(TextEditingController fieldText) {
     _isEditMode = true;
     fieldText.text = events[selectedItemIndexes.last].message;
   }
 
-  void turnOffEditMode() {
+  void turnOffEditMode(TextEditingController fieldText) {
     _isEditMode = false;
     events[selectedItemIndexes.last] =
         events[selectedItemIndexes.last].copyWith(message: fieldText.text);
-    disableSelect();
+    disableSelect(fieldText);
+  }
+
+  void addEvent(String message, [String? path]) {
+    events.add(Event(
+      message: message,
+      dateTime: DateTime.now(),
+      photoPath: path,
+    ));
   }
 
   void copyText() {

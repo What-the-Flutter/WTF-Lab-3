@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'event.dart';
 
 class Chat extends Equatable {
+  final int id;
   final String title;
   final List<Event> events;
   final IconData iconData;
@@ -12,6 +13,7 @@ class Chat extends Equatable {
   final bool isArchive;
 
   Chat({
+    required this.id,
     required this.title,
     required this.events,
     required this.iconData,
@@ -21,12 +23,14 @@ class Chat extends Equatable {
   });
 
   Chat copyWith({
+    int? id,
     String? title,
     IconData? iconData,
     bool? isPin,
     bool? isArchive,
   }) {
     return Chat(
+      id: id ?? this.id,
       title: title ?? this.title,
       events: events,
       iconData: iconData ?? this.iconData,
@@ -38,6 +42,7 @@ class Chat extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         title,
         events,
         iconData,

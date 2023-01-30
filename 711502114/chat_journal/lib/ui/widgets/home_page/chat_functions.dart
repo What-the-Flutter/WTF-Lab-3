@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
 
-import '../../../provider/chat_provider.dart';
+import '../../../cubit/home/home_cubit.dart';
+import '../../../models/chat.dart';
 import '../../../utils/utils.dart';
 import '../../pages/add_chat_page.dart';
 import 'info_chat_dialog.dart';
 
 class ChatFunctions {
   final BuildContext context;
-  final ChatProvider provider;
-  final int index;
+  final HomeCubit cubit;
+  final Chat chat;
 
   ChatFunctions({
     required this.context,
-    required this.provider,
-    required this.index,
+    required this.cubit,
+    required this.chat,
   });
 
   void showChatInfo() {
     closePage(context);
     showDialog(
       context: context,
-      builder: (_) => InfoChatDialog(chat: provider.chats[index]),
+      builder: (_) => InfoChatDialog(chat: chat),
     );
   }
 
   void pinChat() {
-    provider.changePin(index);
+    cubit.changePin(chat.id);
     closePage(context);
   }
 
   void archiveChat() {
-    provider.archive(index);
+    cubit.archive(chat.id);
     closePage(context);
   }
 
   void editChat() {
     closePage(context);
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => AddChatPage(
-        chat: provider.chats[index],
-        chatIndex: index,
-      ),
+      builder: (_) => AddChatPage(chat: chat),
     ));
   }
 
   void deleteChat() {
-    provider.delete(index);
+    cubit.delete(chat.id);
     closePage(context);
   }
 }

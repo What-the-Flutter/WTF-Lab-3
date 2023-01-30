@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../cubit/event/event_cubit.dart';
+import '../../cubit/event/event_state.dart';
+import '../../cubit/home/home_cubit.dart';
 import '../../models/chat.dart';
-import '../../models/event.dart';
-import '../../provider/chat_provider.dart';
-import '../tools/event_action.dart';
 import '../widgets/event_page/attach_dialog.dart';
 import '../widgets/event_page/event_box.dart';
 import '../widgets/event_page/event_keyboard.dart';
@@ -25,59 +26,67 @@ class _MessengerPageState extends State<MessengerPage> {
   final _bookMark = Icons.bookmark_border_outlined;
   late final TextEditingController _fieldText;
   late AppLocalizations? _local;
-  late EventAction _action;
 
   @override
   void initState() {
     super.initState();
     _fieldText = TextEditingController();
-    _action = EventAction(widget.chat, _fieldText);
   }
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<EventCubit>(context).init(widget.chat);
     _local = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
 
     return WillPopScope(
       onWillPop: _handleBackButton,
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              widget.chat.events.isNotEmpty
-                  ? _buildMessageList(size)
-                  : InfoBox(size: size, mainTitle: widget.chat.title),
-              EventKeyboard(
-                width: size.width,
-                fieldText: _fieldText,
-                fieldHint: _local?.enterFieldHint ?? '',
-                isEditMode: _action.editMode,
-                openDialog: _openDialog,
-                sendEvent: _sendEvent,
-                turnOffEditMode: _turnOffEditMode,
+      child: BlocBuilder<EventCubit, EventState>(
+        builder: (context, state) {
+          final cubit = context.read<EventCubit>();
+          return Scaffold(
+            appBar: _buildAppBar(cubit),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  widget.chat.events.isNotEmpty
+                      ? _buildMessageList(size, cubit)
+                      : InfoBox(size: size, mainTitle: widget.chat.title),
+                  EventKeyboard(
+                    width: size.width,
+                    fieldText: _fieldText,
+                    fieldHint: _local?.enterFieldHint ?? '',
+                    isEditMode: cubit.editMode,
+                    openDialog: _openDialog,
+                    sendEvent: _sendEvent,
+                    turnOffEditMode: _turnOffEditMode,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  AppBar _buildAppBar() {
-    final selected = _action.selectedMode;
+  AppBar _buildAppBar(EventCubit cubit) {
+    final selected = cubit.selectedMode;
     return AppBar(
       title: selected ? null : Text(widget.chat.title),
       centerTitle: !selected,
       leading: selected
           ? ToolMenuIcon(
               icon: Icons.close,
-              onPressed: () => setState(() {
-                _action.disableSelect();
-                Provider.of<ChatProvider>(context, listen: false).update();
-              }),
+              onPressed: () {
+                setState(
+                  () {
+                    cubit.disableSelect();
+                    BlocProvider.of<HomeCubit>(context, listen: false).update();
+                  },
+                );
+              },
             )
           : null,
       actions: <Widget>[
@@ -86,94 +95,107 @@ class _MessengerPageState extends State<MessengerPage> {
             child: Align(
               alignment: const Alignment(0, 0.15),
               child: Text(
-                '${_action.selectedItemIndexes.length}',
+                '${cubit.selectedItemIndexes.length}',
                 style: const TextStyle(
                   fontSize: 25,
                 ),
               ),
             ),
           ),
-          _createEditIcon(),
+          _createEditIcon(cubit),
           ToolMenuIcon(
             icon: Icons.copy,
-            onPressed: () => setState(() {
-              _action.copyText();
-            }),
+            onPressed: () {
+              setState(() {
+                cubit.copyText();
+              });
+            },
           ),
           ToolMenuIcon(
             icon: _bookMark,
-            onPressed: () => setState(() {
-              _action.changeFavoriteStatus();
-            }),
+            onPressed: () {
+              setState(() {
+                cubit.changeFavoriteStatus();
+              });
+            },
           ),
           ToolMenuIcon(
             icon: Icons.delete,
-            onPressed: () => setState(() {
-              _action.deleteMessage();
-            }),
+            onPressed: () {
+              setState(() {
+                Provider.of<HomeCubit>(context, listen: false).update();
+                cubit.deleteMessage();
+              });
+            },
           ),
         ] else ...[
           ToolMenuIcon(
             icon: Icons.search,
-            onPressed: () => setState(() {
-              _action.lookForWords();
-            }),
+            onPressed: () {
+              setState(() {
+                cubit.lookForWords();
+              });
+            },
           ),
           ToolMenuIcon(
-            icon: _action.favorite ? Icons.bookmark : _bookMark,
-            color: _action.favorite ? Colors.yellow : null,
-            onPressed: () => setState(() {
-              _action.showFavorites();
-            }),
+            icon: cubit.favorite ? Icons.bookmark : _bookMark,
+            color: cubit.favorite ? Colors.yellow : null,
+            onPressed: () {
+              setState(() {
+                cubit.showFavorites();
+              });
+            },
           ),
         ]
       ],
     );
   }
 
-  Widget _createEditIcon() {
+  Widget _createEditIcon(EventCubit cubit) {
     final icon = Icons.edit;
-    if (_action.selectedItemIndexes.length == 1 && !_action.editMode) {
+    if (cubit.selectedItemIndexes.length == 1 && !cubit.editMode) {
       return ToolMenuIcon(
         icon: icon,
-        onPressed: () => setState(() {
-          _action.turnOnEditMode();
-        }),
+        onPressed: () {
+          cubit.turnOnEditMode(_fieldText);
+        },
       );
     } else {
       return ToolMenuIcon(icon: icon, color: Colors.transparent);
     }
   }
 
-  Widget _buildMessageList(Size size) {
+  Widget _buildMessageList(Size size, EventCubit cubit) {
     return Expanded(
       child: ListView.builder(
         reverse: true,
-        itemCount: _action.events.length,
+        itemCount: cubit.events.length,
         itemBuilder: (_, i) {
-          final index = _action.events.length - 1 - i;
+          final index = cubit.events.length - 1 - i;
           return InkWell(
             child: EventBox(
-              event: _action.events[index],
+              event: cubit.events[index],
               size: size,
-              isSelected: _action.events[index].isSelected,
+              isSelected: cubit.events[index].isSelected,
             ),
             onTap: () {
-              _selectElement(index, _action.selectedMode);
+              if (!cubit.editMode && cubit.selectedMode) {
+                setState(() {
+                  cubit.handleSelecting(index);
+                });
+              }
             },
             onLongPress: () {
-              _selectElement(index);
+              if (!cubit.editMode) {
+                setState(() {
+                  cubit.handleSelecting(index);
+                });
+              }
             },
           );
         },
       ),
     );
-  }
-
-  void _selectElement(int index, [bool extraCondition = true]) {
-    setState(() {
-      if (!_action.editMode && extraCondition) _action.handleSelecting(index);
-    });
   }
 
   void _openDialog() {
@@ -184,33 +206,26 @@ class _MessengerPageState extends State<MessengerPage> {
     if (_fieldText.text.isEmpty && path == null) return;
 
     setState(() {
-      widget.chat.events.add(
-        Event(
-          message: _fieldText.text,
-          dateTime: DateTime.now(),
-          photoPath: path,
-        ),
-      );
+      BlocProvider.of<EventCubit>(context).addEvent(_fieldText.text, path);
+      BlocProvider.of<HomeCubit>(context, listen: false).update();
       _fieldText.clear();
-
-      Provider.of<ChatProvider>(context, listen: false).update();
     });
   }
 
   void _turnOffEditMode() {
     setState(() {
-      _action.turnOffEditMode();
+      BlocProvider.of<EventCubit>(context).turnOffEditMode(_fieldText);
 
-      Provider.of<ChatProvider>(context, listen: false).update();
+      BlocProvider.of<HomeCubit>(context, listen: false).update();
     });
   }
 
   Future<bool> _handleBackButton() async {
-    if (!_action.selectedMode) {
+    if (!BlocProvider.of<EventCubit>(context).selectedMode) {
       return true;
     } else {
       setState(() {
-        _action.disableSelect();
+        BlocProvider.of<EventCubit>(context).disableSelect();
       });
       return false;
     }

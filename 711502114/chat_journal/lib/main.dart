@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 
+import 'cubit/event/event_cubit.dart';
+import 'cubit/home/home_cubit.dart';
+import 'cubit/menu/menu_cubit.dart';
 import 'l10n/l10n.dart';
-import 'provider/chat_provider.dart';
 import 'theme/custom_user_theme.dart';
 import 'theme/theme_inherited.dart';
-import 'ui/pages/bottom_nav_bar.dart';
+import 'ui/pages/menu.dart';
 
 void main() async {
   runApp(const CustomUserTheme(child: ChatJournalApplication()));
@@ -18,9 +20,11 @@ class ChatJournalApplication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        BlocProvider(create: (_) => MenuCubit()),
+        BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => EventCubit()),
       ],
       child: MaterialApp(
         theme: ThemeInherited.of(context).themeData,
@@ -32,7 +36,7 @@ class ChatJournalApplication extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
-        home: const BottomNavBar(),
+        home: const BottomMenu(),
       ),
     );
   }
