@@ -11,6 +11,7 @@ import '../../../../common/data/provider/storage_firebase_provider.dart';
 import '../../../../common/data/provider/tag_firebase_provider.dart';
 import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/models/ui/message.dart';
+import '../../../../common/utils/animation_duration.dart';
 import '../../../../common/utils/insets.dart';
 import '../../../../common/utils/locale.dart' as locale;
 import '../../../../common/utils/radius.dart';
@@ -76,32 +77,37 @@ class _ChatInputState extends State<ChatInput> {
             ),
             child: Column(
               children: [
+                BlocListener<TagsCubit, TagsState>(
+                  listener: (context, state) {
+                    state.map(
+                      initial: (_) {
+                        MessageInputScope.of(context).setTags(
+                          IList([]),
+                        );
+                      },
+                      hasSelectedState: (hasSelectedState) {
+                        MessageInputScope.of(context).setTags(
+                          hasSelectedState.tags
+                              .where(
+                                (tag) =>
+                                    hasSelectedState.selected.contains(tag),
+                              )
+                              .toIList(),
+                        );
+                      },
+                    );
+                  },
+                  child: AnimatedSize(
+                    duration: AnimationDuration.small,
+                    curve: Curves.easeInOutCubic,
+                    child: _isTagAddingOpened
+                        ? const TagSelector()
+                        : const SizedBox(),
+                  ),
+                ),
                 const TextTagSelector(),
                 if (state.message.images.isNotEmpty)
                   const _SelectedImagesList(),
-                if (_isTagAddingOpened)
-                  BlocListener<TagsCubit, TagsState>(
-                    listener: (context, state) {
-                      state.map(
-                        initial: (_) {
-                          MessageInputScope.of(context).setTags(
-                            IList([]),
-                          );
-                        },
-                        hasSelectedState: (hasSelectedState) {
-                          MessageInputScope.of(context).setTags(
-                            hasSelectedState.tags
-                                .where(
-                                  (tag) =>
-                                      hasSelectedState.selected.contains(tag),
-                                )
-                                .toIList(),
-                          );
-                        },
-                      );
-                    },
-                    child: const TagSelector(),
-                  ),
                 Row(
                   children: [
                     IconButton(

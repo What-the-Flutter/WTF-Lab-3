@@ -41,6 +41,7 @@ dependencies:
   share_plus: ^6.3.0
   flutter_native_splash: ^2.2.17
   badges: ^3.0.2
+  lottie: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -60,3 +61,4 @@ flutter:
     - assets/lang/
     - assets/images/flutter_logo.png
     - assets/images/flutter_logo_dark.png
+    - assets/animations/light_dark_mode.json

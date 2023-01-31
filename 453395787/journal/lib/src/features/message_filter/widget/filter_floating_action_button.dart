@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/message_filter_cubit.dart';
 import '../view/message_filter.dart';
-import 'message_filter_scope.dart';
 
 class FilterFloatingActionButton extends StatelessWidget {
   const FilterFloatingActionButton({

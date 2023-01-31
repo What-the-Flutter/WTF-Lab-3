@@ -6,9 +6,7 @@ import '../../../../features/chat/chat.dart';
 import '../../../models/ui/message.dart';
 import '../../../utils/insets.dart';
 import '../../../utils/locale.dart' as locale;
-import '../cubit/theme_cubit.dart';
-import 'color_selector.dart';
-import 'theme_scope.dart';
+import '../theme.dart';
 
 class ChoiceColorSheet extends StatelessWidget {
   const ChoiceColorSheet({

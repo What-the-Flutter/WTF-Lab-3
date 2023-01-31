@@ -19,6 +19,7 @@ import '../widget/chat_item.dart';
 import '../widget/chat_overview_scope.dart';
 
 part '../widget/bottom_action_sheet.dart';
+
 part '../widget/chat_list.dart';
 
 class ChatOverviewPage extends StatelessWidget {
@@ -47,15 +48,11 @@ class ChatOverviewPage extends StatelessWidget {
                 builder: (context) => const ChoiceColorSheet(),
               );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(
+            child: const Padding(
+              padding: EdgeInsets.all(
                 Insets.medium,
               ),
-              child: Icon(
-                context.watch<ThemeCubit>().state.isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-              ),
+              child: AnimatedThemeIcon(),
             ),
           ),
         ],

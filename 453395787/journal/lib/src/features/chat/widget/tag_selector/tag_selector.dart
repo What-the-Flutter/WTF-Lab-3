@@ -70,6 +70,8 @@ class TagSelector extends StatelessWidget {
                   ),
                 );
               }
+
+              return null;
             },
           ),
         );

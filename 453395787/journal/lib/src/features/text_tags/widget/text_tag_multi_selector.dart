@@ -58,6 +58,8 @@ class TextTagMultiSelector extends StatelessWidget {
                   ),
                 );
               }
+
+              return null;
             },
           ),
         );
