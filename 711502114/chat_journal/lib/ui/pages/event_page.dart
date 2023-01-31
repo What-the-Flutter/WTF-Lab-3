@@ -6,12 +6,15 @@ import 'package:provider/provider.dart';
 import '../../cubit/event/event_cubit.dart';
 import '../../cubit/event/event_state.dart';
 import '../../cubit/home/home_cubit.dart';
+import '../../cubit/search/search_cubit.dart';
 import '../../models/chat.dart';
+import '../../utils/utils.dart';
 import '../widgets/event_page/attach_dialog.dart';
 import '../widgets/event_page/event_box.dart';
 import '../widgets/event_page/event_keyboard.dart';
 import '../widgets/event_page/info_box.dart';
 import '../widgets/event_page/tool_menu_icon.dart';
+import 'search_page.dart';
 
 class MessengerPage extends StatefulWidget {
   const MessengerPage({Key? key, required this.chat}) : super(key: key);
@@ -57,10 +60,9 @@ class _MessengerPageState extends State<MessengerPage> {
                     width: size.width,
                     fieldText: _fieldText,
                     fieldHint: _local?.enterFieldHint ?? '',
-                    isEditMode: cubit.editMode,
+                    rightIcon: !cubit.editMode ? Icons.send : Icons.edit,
                     openDialog: _openDialog,
-                    sendEvent: _sendEvent,
-                    turnOffEditMode: _turnOffEditMode,
+                    action: !cubit.editMode ? _sendEvent : _turnOffEditMode,
                   ),
                 ],
               ),
@@ -90,65 +92,80 @@ class _MessengerPageState extends State<MessengerPage> {
             )
           : null,
       actions: <Widget>[
-        if (selected) ...[
-          Expanded(
-            child: Align(
-              alignment: const Alignment(0, 0.15),
-              child: Text(
-                '${cubit.selectedItemIndexes.length}',
-                style: const TextStyle(
-                  fontSize: 25,
-                ),
-              ),
-            ),
-          ),
-          _createEditIcon(cubit),
-          ToolMenuIcon(
-            icon: Icons.copy,
-            onPressed: () {
-              setState(() {
-                cubit.copyText();
-              });
-            },
-          ),
-          ToolMenuIcon(
-            icon: _bookMark,
-            onPressed: () {
-              setState(() {
-                cubit.changeFavoriteStatus();
-              });
-            },
-          ),
-          ToolMenuIcon(
-            icon: Icons.delete,
-            onPressed: () {
-              setState(() {
-                Provider.of<HomeCubit>(context, listen: false).update();
-                cubit.deleteMessage();
-              });
-            },
-          ),
-        ] else ...[
-          ToolMenuIcon(
-            icon: Icons.search,
-            onPressed: () {
-              setState(() {
-                cubit.lookForWords();
-              });
-            },
-          ),
-          ToolMenuIcon(
-            icon: cubit.favorite ? Icons.bookmark : _bookMark,
-            color: cubit.favorite ? Colors.yellow : null,
-            onPressed: () {
-              setState(() {
-                cubit.showFavorites();
-              });
-            },
-          ),
-        ]
+        if (selected)
+          ..._initEditAppBarTools(cubit)
+        else
+          ..._initUsualAppBarTools(cubit),
       ],
     );
+  }
+
+  List<Widget> _initUsualAppBarTools(EventCubit cubit) {
+    return [
+      ToolMenuIcon(
+        icon: Icons.search,
+        onPressed: () {
+          openNewPage(
+            context,
+            BlocProvider(
+              create: (_) => SearchCubit(cubit.events),
+              child: const SearchPage(),
+            ),
+          );
+        },
+      ),
+      ToolMenuIcon(
+        icon: cubit.favorite ? Icons.bookmark : _bookMark,
+        color: cubit.favorite ? Colors.yellow : null,
+        onPressed: () {
+          setState(() {
+            cubit.showFavorites();
+          });
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _initEditAppBarTools(EventCubit cubit) {
+    return [
+      Expanded(
+        child: Align(
+          alignment: const Alignment(0, 0.15),
+          child: Text(
+            '${cubit.selectedItemIndexes.length}',
+            style: const TextStyle(
+              fontSize: 25,
+            ),
+          ),
+        ),
+      ),
+      _createEditIcon(cubit),
+      ToolMenuIcon(
+        icon: Icons.copy,
+        onPressed: () {
+          setState(() {
+            cubit.copyText();
+          });
+        },
+      ),
+      ToolMenuIcon(
+        icon: _bookMark,
+        onPressed: () {
+          setState(() {
+            cubit.changeFavoriteStatus();
+          });
+        },
+      ),
+      ToolMenuIcon(
+        icon: Icons.delete,
+        onPressed: () {
+          setState(() {
+            Provider.of<HomeCubit>(context, listen: false).update();
+            cubit.deleteMessage();
+          });
+        },
+      ),
+    ];
   }
 
   Widget _createEditIcon(EventCubit cubit) {
@@ -157,7 +174,9 @@ class _MessengerPageState extends State<MessengerPage> {
       return ToolMenuIcon(
         icon: icon,
         onPressed: () {
-          cubit.turnOnEditMode(_fieldText);
+          setState(() {
+            cubit.turnOnEditMode(_fieldText);
+          });
         },
       );
     } else {

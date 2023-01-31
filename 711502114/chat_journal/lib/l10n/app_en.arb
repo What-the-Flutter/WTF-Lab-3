@@ -23,6 +23,7 @@
   "dec": "Dec",
   "today": "Today",
   "enterFieldHint": "Enter event",
+  "searchFieldHint": "Search...",
   "attachDialogInfo": "How would you like to upload an image?",
   "cancel": "Cancel",
   "gallery": "Gallery",

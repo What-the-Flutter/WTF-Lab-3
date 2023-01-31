@@ -35,8 +35,6 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(events: state.events));
   }
 
-  void lookForWords() {}
-
   void showFavorites() {
     _isFavorite = !_isFavorite;
     if (_isFavorite) {

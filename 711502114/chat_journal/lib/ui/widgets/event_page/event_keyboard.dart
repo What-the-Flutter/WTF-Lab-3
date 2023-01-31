@@ -7,20 +7,18 @@ class EventKeyboard extends StatelessWidget {
   final double width;
   final TextEditingController fieldText;
   final String fieldHint;
-  final bool isEditMode;
+  final IconData rightIcon;
   final void Function() openDialog;
-  final void Function() sendEvent;
-  final void Function() turnOffEditMode;
+  final void Function() action;
 
   const EventKeyboard({
     Key? key,
     required this.width,
     required this.fieldText,
     required this.fieldHint,
-    required this.isEditMode,
+    required this.rightIcon,
     required this.openDialog,
-    required this.sendEvent,
-    required this.turnOffEditMode,
+    required this.action,
   }) : super(key: key);
 
   @override
@@ -54,10 +52,7 @@ class EventKeyboard extends StatelessWidget {
               style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
-          KeyBoardIcon(
-            icon: !isEditMode ? Icons.send : Icons.edit,
-            onPressed: !isEditMode ? sendEvent : turnOffEditMode,
-          ),
+          KeyBoardIcon(icon: rightIcon, onPressed: action),
         ],
       ),
     );
