@@ -28,51 +28,47 @@ class FilterByLabels extends StatelessWidget {
                   else
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      child: Container(
-                        width: 115,
-                        child: TextButton(
-                          style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              context
+                      child: GestureDetector(
+                        onTap: () {
+                          context
+                              .read<TimelineCubit>()
+                              .changeFilterSection(listSection[i].titleSection);
+                        },
+                        child: UnconstrainedBox(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: context
                                       .watch<TimelineCubit>()
                                       .isSelectedSection(listSection[i].titleSection)
                                   ? Colors.green
                                   : isLight
                                       ? Colors.red
                                       : Colors.purple,
-                            ),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(16),
-                                ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10.0),
                               ),
                             ),
-                          ),
-                          onPressed: () {
-                            context
-                                .read<TimelineCubit>()
-                                .changeFilterSection(listSection[i].titleSection);
-                          },
-                          child: Row(
-                            children: [
-                              Icon(listSection[i].iconSection),
-                              const SizedBox(
-                                width: 1,
-                              ),
-                              Text(
-                                listSection[i].titleSection,
-                                style: TextStyle(
-                                  fontSize: context
-                                      .watch<SettingCubit>()
-                                      .state
-                                      .textTheme
-                                      .bodyText1!
-                                      .fontSize,
+                            child: Row(
+                              children: [
+                                Icon(listSection[i].iconSection),
+                                const SizedBox(
+                                  width: 1,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  listSection[i].titleSection,
+                                  style: TextStyle(
+                                    fontSize: context
+                                        .watch<SettingCubit>()
+                                        .state
+                                        .textTheme
+                                        .bodyText1!
+                                        .fontSize,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

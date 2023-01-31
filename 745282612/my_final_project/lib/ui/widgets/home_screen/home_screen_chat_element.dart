@@ -36,6 +36,9 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
 
     return FirebaseAnimatedList(
       query: context.read<HomeCubit>().getQuery(_user),
+      defaultChild: const Center(
+        child: CircularProgressIndicator(),
+      ),
       itemBuilder: (context, snapshot, animation, index) {
         final map = Map.from(snapshot.value as Map);
         final chat = Chat.fromJson(map);

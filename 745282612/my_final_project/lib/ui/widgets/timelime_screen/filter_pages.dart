@@ -31,47 +31,44 @@ class _FilterByPagesState extends State<FilterByPages> {
                 for (int i = 0; i < listChat.length; i++)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: Container(
-                      width: 115,
-                      child: TextButton(
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            context.watch<TimelineCubit>().isSelectedChat(listChat[i].id)
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<TimelineCubit>().changeFilterPages(listChat[i].id);
+                      },
+                      child: UnconstrainedBox(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: context.watch<TimelineCubit>().isSelectedChat(listChat[i].id)
                                 ? Colors.green
                                 : isLight
                                     ? Colors.red
                                     : Colors.purple,
-                          ),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10.0),
                             ),
                           ),
-                        ),
-                        onPressed: () {
-                          context.read<TimelineCubit>().changeFilterPages(listChat[i].id);
-                        },
-                        child: Row(
-                          children: [
-                            listChat[i].icon,
-                            const SizedBox(
-                              width: 1,
-                            ),
-                            Text(
-                              listChat[i].title,
-                              style: TextStyle(
-                                fontSize: context
-                                    .watch<SettingCubit>()
-                                    .state
-                                    .textTheme
-                                    .bodyText1!
-                                    .fontSize,
+                          child: Row(
+                            children: [
+                              listChat[i].icon,
+                              const SizedBox(
+                                width: 1,
                               ),
-                            ),
-                          ],
+                              Text(
+                                listChat[i].title,
+                                style: TextStyle(
+                                  fontSize: context
+                                      .watch<SettingCubit>()
+                                      .state
+                                      .textTheme
+                                      .bodyText1!
+                                      .fontSize,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // ),
                         ),
                       ),
                     ),

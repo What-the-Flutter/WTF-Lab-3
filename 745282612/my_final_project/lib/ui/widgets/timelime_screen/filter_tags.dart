@@ -29,34 +29,34 @@ class FilterByTags extends StatelessWidget {
                   else
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      child: Container(
-                        width: 115,
-                        child: TextButton(
-                          style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              context.watch<TimelineCubit>().isSelectedTag(listTags[i])
+                      child: GestureDetector(
+                        onTap: () {
+                          context.read<TimelineCubit>().changeFilterTags(listTags[i]);
+                        },
+                        child: UnconstrainedBox(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: context.watch<TimelineCubit>().isSelectedTag(listTags[i])
                                   ? Colors.green
                                   : isLight
                                       ? Colors.red
                                       : Colors.purple,
-                            ),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(16),
-                                ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10.0),
                               ),
                             ),
-                          ),
-                          onPressed: () {
-                            context.read<TimelineCubit>().changeFilterTags(listTags[i]);
-                          },
-                          child: Text(
-                            listTags[i],
-                            style: TextStyle(
-                              fontSize:
-                                  context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                            child: Text(
+                              listTags[i],
+                              style: TextStyle(
+                                fontSize: context
+                                    .watch<SettingCubit>()
+                                    .state
+                                    .textTheme
+                                    .bodyText1!
+                                    .fontSize,
+                              ),
                             ),
                           ),
                         ),

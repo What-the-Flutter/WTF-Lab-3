@@ -20,7 +20,7 @@ class TimelineCubit extends Cubit<TimelineState> {
             filterDateTime: null,
           ),
         ) {
-    initializer();
+    // initializer();
   }
 
   void initializer() async {
@@ -73,15 +73,16 @@ class TimelineCubit extends Cubit<TimelineState> {
   }
 
   Future<void> resetFilter() async {
-    final allEvent = await firebase.getAllEvent();
-    emit(state.copyWith(
-      filterChat: [],
-      filterSection: [],
-      filterTags: [],
-      filterList: allEvent,
-      filterDateTime: null,
-      searchText: '',
-    ));
+    emit(
+      state.copyWith(
+        filterChat: [],
+        filterSection: [],
+        filterTags: [],
+        filterList: [],
+        filterDateTime: null,
+        searchText: '',
+      ),
+    );
   }
 
   void changeFavoriteStatus() {
@@ -96,6 +97,7 @@ class TimelineCubit extends Cubit<TimelineState> {
         state.filterTags.isEmpty &&
         state.filterDateTime == null &&
         state.searchText == '') {
+      emit(state.copyWith(filterList: []));
     } else {
       if (state.filterChat.isNotEmpty) {
         filterEventList.removeWhere((element) => !state.filterChat.contains(element.chatId));
@@ -116,8 +118,8 @@ class TimelineCubit extends Cubit<TimelineState> {
         filterEventList.removeWhere((element) =>
             !element.messageContent.toLowerCase().contains(state.searchText.toLowerCase()));
       }
+      emit(state.copyWith(filterList: filterEventList));
     }
-    emit(state.copyWith(filterList: filterEventList));
   }
 
   List<Event> filterFavoriteList() {
