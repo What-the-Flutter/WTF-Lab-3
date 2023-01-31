@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/models/ui/chat.dart';
 import '../../../common/models/ui/tag.dart';
+import '../../../common/utils/filter.dart';
 import '../../text_tags/model/text_tag.dart';
 
 part 'message_filter_state.dart';
@@ -32,6 +33,7 @@ class MessageFilterCubit extends Cubit<MessageFilterState> {
         selectedTags: tags,
       ),
     );
+    _filter = _filter.copyWith(tags: tags);
   }
 
   void setSelectedTextTags(IList<TextTag> tags) {
@@ -40,6 +42,7 @@ class MessageFilterCubit extends Cubit<MessageFilterState> {
         selectedTextTags: tags,
       ),
     );
+    _filter = _filter.copyWith(textTags: tags);
   }
 
   void setSelectedChats(IList<Chat> chats) {
@@ -48,5 +51,10 @@ class MessageFilterCubit extends Cubit<MessageFilterState> {
         selectedChats: chats,
       ),
     );
+    _filter = _filter.copyWith(chats: chats);
   }
+
+  Filter _filter = const Filter();
+
+  Filter get filter => _filter;
 }

@@ -5,7 +5,6 @@ import '../../../../features/chat/chat.dart';
 import '../../../models/ui/message.dart';
 import '../../../utils/insets.dart';
 import '../cubit/settings_cubit.dart';
-import '../data/settings_repository_api.dart';
 
 class MockMessageList extends StatelessWidget {
   const MockMessageList({super.key});
@@ -32,9 +31,6 @@ class MockMessageList extends StatelessWidget {
                     text: 'Hello world',
                     dateTime: DateTime.now(),
                   ),
-                  alignment: state.messageAlignment == MessageAlignment.left
-                      ? MainAxisAlignment.start
-                      : MainAxisAlignment.end,
                 ),
                 MessageItem(
                   message: Message(
@@ -42,9 +38,6 @@ class MockMessageList extends StatelessWidget {
                     text: 'You can customize theme here',
                     dateTime: DateTime.now(),
                   ),
-                  alignment: state.messageAlignment == MessageAlignment.left
-                      ? MainAxisAlignment.start
-                      : MainAxisAlignment.end,
                 ),
               ],
             );
