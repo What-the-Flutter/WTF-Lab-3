@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/add_page_screen.dart';
@@ -13,7 +14,54 @@ class SettingBody extends StatefulWidget {
   State<SettingBody> createState() => _SettingBodyState();
 }
 
-class _SettingBodyState extends State<SettingBody> {
+class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStateMixin {
+  late AnimationController _resetAnimationController;
+
+  @override
+  void initState() {
+    _resetAnimationController = AnimationController(
+      vsync: this,
+    );
+    _resetAnimationController.addStatusListener(
+      (status) async {
+        if (status == AnimationStatus.completed) {
+          Navigator.pop(context);
+          _resetAnimationController.reset();
+        }
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _resetAnimationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> showResetDialog(BuildContext context) => showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierLabel: 'Dialog',
+        transitionDuration: const Duration(milliseconds: 400),
+        pageBuilder: (_, __, ___) {
+          return Column(
+            children: <Widget>[
+              Expanded(
+                child: Lottie.asset(
+                  'assets/update.json',
+                  controller: _resetAnimationController,
+                  onLoaded: (composition) {
+                    _resetAnimationController.duration = composition.duration;
+                    _resetAnimationController.forward();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,7 +103,10 @@ class _SettingBodyState extends State<SettingBody> {
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeTheme,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().changeTheme();
+            },
           ),
           const Divider(),
           ListTile(
@@ -72,7 +123,10 @@ class _SettingBodyState extends State<SettingBody> {
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeFontSize,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().changeFontSize();
+            },
           ),
           const Divider(),
           ListTile(
@@ -100,7 +154,10 @@ class _SettingBodyState extends State<SettingBody> {
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeBubbleAligment,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().changeBubbleAligment();
+            },
           ),
           const Divider(),
           ListTile(
@@ -117,7 +174,10 @@ class _SettingBodyState extends State<SettingBody> {
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeDateBubble,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().changeDateBubble();
+            },
           ),
           const Divider(),
           ListTile(
@@ -141,7 +201,10 @@ class _SettingBodyState extends State<SettingBody> {
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().resetSetting,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().resetSetting();
+            },
           ),
           const Divider(),
         ],

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:my_final_project/ui/widgets/event_screen/event_message.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_screen_list_message.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_state.dart';
-import 'package:my_final_project/ui/widgets/timelime_screen/timeline_instruction.dart';
 
 class TimelineBody extends StatelessWidget {
   const TimelineBody({super.key});
@@ -18,7 +18,7 @@ class TimelineBody extends StatelessWidget {
             ? context.read<TimelineCubit>().filterFavoriteList()
             : state.filterList.reversed.toList();
         return eventListReversed.isEmpty
-            ? const TimeLineInstruction()
+            ? Center(child: Lottie.asset('assets/empty_search.json'))
             : ListView.builder(
                 reverse: true,
                 itemCount: eventListReversed.length,

@@ -1,10 +1,11 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/add_page_screen.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/timeline_filter.dart';
+import 'package:my_final_project/utils/constants/app_colors.dart';
 
-class MainScreenFloatingButton extends StatelessWidget {
+class MainScreenFloatingButton extends StatefulWidget {
   final String menuStatus;
 
   const MainScreenFloatingButton({
@@ -12,41 +13,44 @@ class MainScreenFloatingButton extends StatelessWidget {
     required this.menuStatus,
   });
 
-  Widget floatingIcon() {
-    if (menuStatus == 'timeline') {
-      return const Icon(Icons.filter_list_sharp);
-    } else {
-      return const Icon(Icons.add);
-    }
-  }
+  @override
+  State<MainScreenFloatingButton> createState() => _MainScreenFloatingButtonState();
+}
 
-  void floatingOnPressed(BuildContext context) {
-    if (menuStatus == 'timeline') {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const TimelineFilter(),
-        ),
+class _MainScreenFloatingButtonState extends State<MainScreenFloatingButton> {
+  final _containerTransitionType = ContainerTransitionType.fade;
+
+  Widget floatingIcon() {
+    if (widget.menuStatus == 'timeline') {
+      return const Icon(
+        Icons.filter_list_sharp,
+        color: Colors.black,
       );
     } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const AddNewScreen(
-            textController: '',
-          ),
-        ),
+      return const Icon(
+        Icons.add,
+        color: Colors.black,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: S.of(context).add_new_event,
-      child: FloatingActionButton(
+    return OpenContainer(
+      transitionType: _containerTransitionType,
+      transitionDuration: const Duration(seconds: 1),
+      openBuilder: (context, _) => widget.menuStatus == 'timeline'
+          ? const TimelineFilter()
+          : const AddNewScreen(textController: ''),
+      closedElevation: 0,
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(32),
+      ),
+      closedColor: AppColors.colorLightYellow,
+      closedBuilder: (context, _) => SizedBox(
+        width: 60,
+        height: 60,
         child: floatingIcon(),
-        onPressed: () {
-          floatingOnPressed(context);
-        },
       ),
     );
   }
