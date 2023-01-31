@@ -37,6 +37,7 @@ dependencies:
   lottie: ^2.2.0
   persian_datetime_picker: ^2.5.0
   animations: ^2.0.7
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

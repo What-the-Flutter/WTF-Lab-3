@@ -27,6 +27,9 @@ class FilterOther extends StatelessWidget {
               context.watch<TimelineCubit>().isSelectedDataTime()
                   ? DateFormat.yMMMEd().format(context.read<TimelineCubit>().state.filterDateTime!)
                   : 'None',
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
             ),
             onTap: () {
               showDatePicker(
@@ -42,6 +45,23 @@ class FilterOther extends StatelessWidget {
                 },
               );
             },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.image),
+            title: Text(
+              S.of(context).picture,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            trailing: Text(
+              context.watch<TimelineCubit>().state.onlyPicture,
+              style: TextStyle(
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+              ),
+            ),
+            onTap: context.read<TimelineCubit>().changeStatusImage,
           ),
           const Divider(),
           ListTile(

@@ -61,5 +61,6 @@
     }
   },
   "jump_to_date": "Jump to date",
-  "reset" : "Reset"
+  "reset" : "Reset",
+  "picture": "Only picture"
 }

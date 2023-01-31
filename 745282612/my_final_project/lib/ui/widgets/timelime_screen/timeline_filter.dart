@@ -17,8 +17,8 @@ class TimelineFilter extends StatelessWidget {
       body: const FilterBody(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.done),
-        onPressed: () {
-          context.read<TimelineCubit>().filterEventList();
+        onPressed: () async {
+          await context.read<TimelineCubit>().filterEventList();
           Navigator.of(context).pop();
         },
       ),

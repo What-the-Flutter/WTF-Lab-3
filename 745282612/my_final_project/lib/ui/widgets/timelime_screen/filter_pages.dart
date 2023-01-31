@@ -68,7 +68,6 @@ class _FilterByPagesState extends State<FilterByPages> {
                               ),
                             ],
                           ),
-                          // ),
                         ),
                       ),
                     ),

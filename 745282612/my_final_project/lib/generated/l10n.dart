@@ -469,6 +469,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Only picture`
+  String get picture {
+    return Intl.message(
+      'Only picture',
+      name: 'picture',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

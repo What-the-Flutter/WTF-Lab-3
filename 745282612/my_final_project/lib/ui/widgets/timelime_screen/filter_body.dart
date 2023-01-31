@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 
+import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_labels.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_other.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_pages.dart';

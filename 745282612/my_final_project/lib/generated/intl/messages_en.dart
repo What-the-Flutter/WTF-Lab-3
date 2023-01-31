@@ -73,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "no_search_title":
             MessageLookupByLibrary.simpleMessage("No search result available"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "picture": MessageLookupByLibrary.simpleMessage("Only picture"),
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),

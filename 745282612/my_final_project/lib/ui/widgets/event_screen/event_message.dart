@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -71,7 +72,14 @@ class _EventMessageState extends State<EventMessage> {
             Align(
               alignment: Alignment.bottomLeft,
               child: widget.event.messageImage != null
-                  ? Image.network(widget.event.messageImage!)
+                  ? CachedNetworkImage(
+                      progressIndicatorBuilder: (context, url, progress) => Center(
+                        child: CircularProgressIndicator(
+                          value: progress.progress,
+                        ),
+                      ),
+                      imageUrl: widget.event.messageImage!,
+                    )
                   : Text(
                       widget.event.messageContent,
                       style: TextStyle(
