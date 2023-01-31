@@ -1,6 +1,6 @@
 {
-    "name": "namer_app",
-    "short_name": "namer_app",
+    "name": "journal",
+    "short_name": "journal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

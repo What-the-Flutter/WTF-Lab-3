@@ -1,4 +1,4 @@
-# namer_app
+# journal
 
 A new Flutter project.
 
