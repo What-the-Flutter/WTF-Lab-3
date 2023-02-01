@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../common/models/ui/chat.dart';
 import '../../cubit/message_manage/message_manage_cubit.dart';
-import '../../data/message_repository.dart';
+import '../../data/chat_messages_repository.dart';
 
 class MessageManageScope extends StatelessWidget {
   const MessageManageScope({
@@ -19,7 +19,7 @@ class MessageManageScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageManageCubit(
-        messageRepository: context.read<MessageRepository>(),
+        chatMessagesRepository: context.read<ChatMessagesRepository>(),
         chatId: chat.id,
         name: chat.name,
       ),

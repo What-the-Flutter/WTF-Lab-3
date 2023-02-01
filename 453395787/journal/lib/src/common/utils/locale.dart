@@ -55,6 +55,7 @@ abstract class Actions {
   static const String move = 'action_move';
   static const String pin = 'action_pin';
   static const String unpin = 'action_unpin';
+  static const String reset = 'action_reset';
   static const String switchToDayMode = 'action_switch_to_day_mode';
   static const String switchToNightMode = 'action_switch_to_night_mode';
 }

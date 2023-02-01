@@ -7,7 +7,7 @@ import '../../../../common/data/provider/tag_firebase_provider.dart';
 import '../../../../common/data/repository/chat_repository.dart';
 import '../../../../common/utils/typedefs.dart';
 import '../../cubit/move_message/move_messages_cubit.dart';
-import '../../data/message_repository.dart';
+import '../../data/chat_messages_repository.dart';
 
 class MoveMessagesScope extends StatelessWidget {
   const MoveMessagesScope({
@@ -26,7 +26,7 @@ class MoveMessagesScope extends StatelessWidget {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
         chatRepository: context.read<ChatRepository>(),
-        messageRepository: MessageRepository(
+        chatMessagesRepository: ChatMessagesRepository(
           messageProvider: context.read<MessageFirebaseProvider>(),
           tagProvider: context.read<TagFirebaseProvider>(),
           storageProvider: context.read<StorageFirebaseProvider>(),

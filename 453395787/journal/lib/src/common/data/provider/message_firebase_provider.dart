@@ -40,11 +40,31 @@ class MessageFirebaseProvider
   }
 
   @override
+  ValueStream<DbMessageList> get messages =>
+      messagesRef(_userId).onValue.map((event) {
+        log.v('Database -> messages -> '
+            'Event ${event.snapshot.value}');
+        if (event.snapshot.exists) {
+          final messages = event.snapshot.toModels(
+            DbMessage.fromJson,
+          );
+          return messages
+              .sorted((a, b) => a.dateTime.compareTo(b.dateTime))
+              .toIList();
+        }
+
+        return IList<DbMessage>([]);
+      }).shareValueSeeded(
+        IList([]),
+      );
+
+  @override
   ValueStream<DbMessageList> messagesOf({required String chatId}) {
     return messagesRef(_userId).onValue.map(
       (event) {
-        log.v(
-            'Database -> messagesOf $chatId -> Event ${event.snapshot.value}');
+        log.v('Database -> messagesOf $chatId -> '
+            'Event ${event.snapshot.value}');
+
         if (event.snapshot.exists) {
           final messages = event.snapshot.toModels(
             DbMessage.fromJson,

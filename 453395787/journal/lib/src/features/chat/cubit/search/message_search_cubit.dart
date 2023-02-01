@@ -7,7 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../common/models/ui/message.dart';
 import '../../../../common/models/ui/tag.dart';
 import '../../../../common/utils/typedefs.dart';
-import '../../api/message_repository_api.dart';
+import '../../api/chat_messages_repository_api.dart';
 
 part 'message_search_cubit.freezed.dart';
 
@@ -15,8 +15,8 @@ part 'message_search_state.dart';
 
 class MessageSearchCubit extends Cubit<MessageSearchState> {
   MessageSearchCubit({
-    required MessageRepositoryApi messageRepository,
-  })  : _repository = messageRepository,
+    required ChatMessagesRepositoryApi chatMessagesRepository,
+  })  : _repository = chatMessagesRepository,
         super(const MessageSearchState.initial()) {
     _messageStreamSub = _repository.messages.listen(
           (messages) {
@@ -31,7 +31,7 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
     );
   }
 
-  final MessageRepositoryApi _repository;
+  final ChatMessagesRepositoryApi _repository;
   StreamSubscription<MessageList>? _messageStreamSub;
 
   @override

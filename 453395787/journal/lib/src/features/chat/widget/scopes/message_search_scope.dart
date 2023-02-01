@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubit/search/message_search_cubit.dart';
-import '../../data/message_repository.dart';
+import '../../data/chat_messages_repository.dart';
 
 class MessageSearchScope extends StatelessWidget {
   const MessageSearchScope({
@@ -16,7 +16,7 @@ class MessageSearchScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageSearchCubit(
-        messageRepository: context.read<MessageRepository>(),
+        chatMessagesRepository: context.read<ChatMessagesRepository>(),
       ),
       child: child,
     );

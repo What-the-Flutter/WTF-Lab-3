@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../common/utils/default_values.dart';
+import '../utils/verify_method_enum.dart';
 import 'security_repository_api.dart';
 
 class SecurityRepository implements SecurityRepositoryApi {
@@ -38,6 +38,6 @@ class SecurityRepository implements SecurityRepositoryApi {
 
   @override
   Future<void> resetToDefault() async {
-    await setVerifyMethod(DefaultValues.verifyMethod);
+    await setVerifyMethod(SecurityRepositoryApi.defaultVerifyMethod);
   }
 }

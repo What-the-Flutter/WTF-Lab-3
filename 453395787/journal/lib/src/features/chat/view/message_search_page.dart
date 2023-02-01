@@ -9,7 +9,7 @@ import '../../../common/data/provider/tag_firebase_provider.dart';
 import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
-import '../data/message_repository.dart';
+import '../data/chat_messages_repository.dart';
 import '../widget/chat_input/chat_input.dart';
 import '../widget/message_list/chat_message_list.dart';
 import '../widget/scopes/message_manage_scope.dart';
@@ -40,7 +40,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
           (chat) => chat.id == widget.chatId,
         );
     return RepositoryProvider(
-      create: (context) => MessageRepository(
+      create: (context) => ChatMessagesRepository(
         messageProvider: context.read<MessageFirebaseProvider>(),
         tagProvider: context.read<TagFirebaseProvider>(),
         storageProvider: context.read<StorageFirebaseProvider>(),

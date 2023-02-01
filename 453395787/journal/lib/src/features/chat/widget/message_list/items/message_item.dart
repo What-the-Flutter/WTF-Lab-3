@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../common/data/repository/chat_repository.dart';
+import '../../../../../common/features/settings/settings.dart';
 import '../../../../../common/models/ui/message.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/radius.dart';
@@ -13,6 +16,8 @@ import 'message_tags.dart';
 part 'message_images.dart';
 
 part 'message_text.dart';
+
+part 'message_chat_name.dart';
 
 typedef SelectedMessageCallback = void Function(
   Message message,
@@ -26,14 +31,14 @@ class MessageItem extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.isSelected = false,
-    this.alignment = MainAxisAlignment.end,
+    this.isChatNameShown = false,
   });
 
   final Message message;
   final SelectedMessageCallback? onTap;
   final SelectedMessageCallback? onLongPress;
   final bool isSelected;
-  final MainAxisAlignment alignment;
+  final bool isChatNameShown;
 
   double get _widthScaleFactor => isSelected ? 0.75 : 0.8;
 
@@ -42,7 +47,11 @@ class MessageItem extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Row(
-          mainAxisAlignment: alignment,
+          mainAxisAlignment:
+              context.read<SettingsCubit>().state.messageAlignment ==
+                      MessageAlignment.right
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
           children: [
             LimitedBox(
               maxWidth: MediaQuery.of(context).size.width * _widthScaleFactor,
@@ -86,6 +95,17 @@ class MessageItem extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        if (isChatNameShown)
+                          _MessageChatName(
+                            chatName: context
+                                .read<ChatRepository>()
+                                .chats
+                                .value
+                                .firstWhere(
+                                  (chat) => chat.id == message.parentId,
+                                )
+                                .name,
+                          ),
                         if (message.images.isNotEmpty)
                           _MessageImages(
                             message: message,

@@ -5,12 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'firebase_options.dart';
 import 'src/common/bloc/journal_bloc_observer.dart';
+import 'src/common/features/settings/settings.dart';
+import 'src/common/features/theme/theme.dart';
 import 'src/features/locale/locale.dart';
 import 'src/features/security/data/security_repository.dart';
 import 'src/features/security/view/verify_user.dart';
-import 'src/features/settings/data/settings_repository.dart';
-import 'src/features/settings/widget/settings_scope.dart';
-import 'src/features/theme/theme.dart';
 import 'src/journal_app.dart';
 
 Future<void> main() async {
