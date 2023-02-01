@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../utils/default_values.dart';
 import 'theme_repository_api.dart';
 
 class ThemeRepository extends ThemeRepositoryApi {
@@ -42,7 +41,7 @@ class ThemeRepository extends ThemeRepositoryApi {
 
   @override
   Future<void> resetToDefault() async {
-    await setDarkMode(DefaultValues.isDarkMode);
-    await setColor(DefaultValues.color);
+    await setDarkMode(ThemeRepositoryApi.defaultIsDarkMode);
+    await setColor(ThemeRepositoryApi.defaultColor);
   }
 }

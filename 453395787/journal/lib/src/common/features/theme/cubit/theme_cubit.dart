@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../utils/default_values.dart';
 import '../data/theme_repository_api.dart';
 
 part 'theme_state.dart';
@@ -47,9 +46,9 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   Future<void> resetToDefault() async {
     emit(
-      ThemeState(
-        color: DefaultValues.color,
-        isDarkMode: DefaultValues.isDarkMode,
+      const ThemeState(
+        color: ThemeRepositoryApi.defaultColor,
+        isDarkMode: ThemeRepositoryApi.defaultIsDarkMode,
       ),
     );
     await _repository.resetToDefault();

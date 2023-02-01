@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../common/utils/default_values.dart';
 import '../data/locale_repository_api.dart';
 
 part 'locale_state.dart';
@@ -30,8 +29,8 @@ class LocaleCubit extends Cubit<LocaleState> {
 
   Future<void> resetToDefault() async {
     emit(
-      LocaleState(
-        DefaultValues.locale,
+      const LocaleState(
+        LocaleRepositoryApi.defaultLocale,
       ),
     );
     _repository.resetToDefault();

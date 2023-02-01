@@ -5,6 +5,7 @@ import 'package:local_auth/local_auth.dart';
 
 import '../../../common/utils/app_logger.dart';
 import '../data/security_repository_api.dart';
+import '../utils/verify_method_enum.dart';
 
 part 'security_state.dart';
 

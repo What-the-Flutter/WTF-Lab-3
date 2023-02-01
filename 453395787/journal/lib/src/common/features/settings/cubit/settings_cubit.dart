@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../utils/default_values.dart';
 import '../settings.dart';
 
 part 'settings_state.dart';
@@ -61,10 +60,11 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> resetToDefault() async {
     emit(
-      SettingsState(
-        fontScaleFactor: DefaultValues.fontScaleFactor,
-        messageAlignment: DefaultValues.messageAlignment,
-        isCenterDateBubbleShown: DefaultValues.isCenterDateBubbleShown,
+      const SettingsState(
+        fontScaleFactor: SettingsRepositoryApi.defaultFontScaleFactor,
+        messageAlignment: SettingsRepositoryApi.defaultMessageAlignment,
+        isCenterDateBubbleShown:
+            SettingsRepositoryApi.defaultIsCenterDateBubbleShown,
       ),
     );
   }

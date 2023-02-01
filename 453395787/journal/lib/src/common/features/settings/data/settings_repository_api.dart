@@ -1,6 +1,13 @@
 import '../settings.dart';
 
 abstract class SettingsRepositoryApi {
+  static const FontScaleFactor defaultFontScaleFactor = FontScaleFactor.medium;
+
+  static const MessageAlignment defaultMessageAlignment =
+      MessageAlignment.right;
+
+  static const bool defaultIsCenterDateBubbleShown = true;
+
   FontScaleFactor get fontScaleFactor;
 
   Future<void> setFontScaleFactor(FontScaleFactor fontScaleFactor);

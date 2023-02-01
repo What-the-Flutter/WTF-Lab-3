@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../utils/default_values.dart';
 import '../settings.dart';
 
 class SettingsRepository extends SettingsRepositoryApi {
@@ -115,8 +114,10 @@ class SettingsRepository extends SettingsRepositoryApi {
 
   @override
   Future<void> resetToDefault() async {
-    await setFontScaleFactor(DefaultValues.fontScaleFactor);
-    await setMessageAlignment(DefaultValues.messageAlignment);
-    await setCenterDateBubbleShown(DefaultValues.isCenterDateBubbleShown);
+    await setFontScaleFactor(SettingsRepositoryApi.defaultFontScaleFactor);
+    await setMessageAlignment(SettingsRepositoryApi.defaultMessageAlignment);
+    await setCenterDateBubbleShown(
+      SettingsRepositoryApi.defaultIsCenterDateBubbleShown,
+    );
   }
 }

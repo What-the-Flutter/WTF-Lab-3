@@ -12,6 +12,8 @@ abstract class LocaleRepositoryApi {
         'Русский',
       ].lock;
 
+  static const Locale? defaultLocale = null;
+
   Locale? get locale;
 
   Future<void> setLocale(Locale? locale);
