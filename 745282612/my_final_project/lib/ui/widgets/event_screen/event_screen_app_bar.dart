@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/copy_message_button.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
@@ -46,7 +47,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               eventState.countSelected.toString(),
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
               ),
             ),
           ],
@@ -101,10 +102,10 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: TextField(
           controller: controller,
           onChanged: (value) => BlocProvider.of<EventCubit>(context).searchText(value),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             filled: true,
             border: InputBorder.none,
-            hintText: 'Search',
+            hintText: S.of(context).search,
           ),
         ),
         actions: [
@@ -133,7 +134,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: Text(
           title,
           style: TextStyle(
-            fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+            fontSize: context.read<SettingCubit>().state.textTheme.headline2!.fontSize,
           ),
         ),
         centerTitle: true,

@@ -16,7 +16,7 @@ class EventSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Expanded(
       child: ListView.builder(
@@ -45,7 +45,7 @@ class EventSection extends StatelessWidget {
                 Text(
                   items.titleSection,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                   ),
                 ),
               ],

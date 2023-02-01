@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_section.dart';
@@ -128,7 +129,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -174,10 +175,10 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
                       Expanded(
                         child: TextField(
                           controller: state.editText != '' ? editController : widget.controller,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             filled: true,
                             border: InputBorder.none,
-                            labelText: 'Enter Event',
+                            labelText: S.of(context).enter_event,
                           ),
                         ),
                       ),

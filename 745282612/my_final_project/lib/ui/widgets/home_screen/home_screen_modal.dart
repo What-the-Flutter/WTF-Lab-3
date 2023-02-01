@@ -54,7 +54,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).info,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -72,7 +72,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).pin_unpin,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -87,7 +87,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).archive_page,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -112,7 +112,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).edit_page,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),
@@ -130,7 +130,7 @@ class HomeScreenModal extends StatelessWidget {
                 title: Text(
                   S.of(context).delete_page,
                   style: TextStyle(
-                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   ),
                 ),
               ),

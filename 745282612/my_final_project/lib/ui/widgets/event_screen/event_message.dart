@@ -28,7 +28,7 @@ class _EventMessageState extends State<EventMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
@@ -62,7 +62,7 @@ class _EventMessageState extends State<EventMessage> {
                         widget.event.sectionTitle!,
                         style: TextStyle(
                           fontSize:
-                              context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                              context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                         ),
                       ),
                     ],
@@ -83,7 +83,7 @@ class _EventMessageState extends State<EventMessage> {
                   : Text(
                       widget.event.messageContent,
                       style: TextStyle(
-                        fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                        fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                       ),
                     ),
             ),
@@ -95,7 +95,7 @@ class _EventMessageState extends State<EventMessage> {
                       widget.event.tag!,
                       style: TextStyle(
                         color: AppColors.colorNormalGrey,
-                        fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                        fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                       ),
                     ),
                   )
@@ -108,7 +108,7 @@ class _EventMessageState extends State<EventMessage> {
                     DateFormat('hh:mm a').format(widget.event.messageTime),
                     style: TextStyle(
                       color: AppColors.colorNormalGrey,
-                      fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                      fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
                     ),
                   ),
                 ),

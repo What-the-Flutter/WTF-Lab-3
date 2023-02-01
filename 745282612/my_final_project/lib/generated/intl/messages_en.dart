@@ -36,6 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "bubble_alignment": MessageLookupByLibrary.simpleMessage("Left/Right"),
         "change_bubble_alignment":
             MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
         "change_date_bubble": MessageLookupByLibrary.simpleMessage(
@@ -51,18 +52,27 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Create a new Page"),
         "created": MessageLookupByLibrary.simpleMessage("Created"),
         "daily_label": MessageLookupByLibrary.simpleMessage("Daily"),
+        "daily_title": MessageLookupByLibrary.simpleMessage("Daily"),
+        "date_bubble": MessageLookupByLibrary.simpleMessage("Left/Center"),
+        "delete_element":
+            MessageLookupByLibrary.simpleMessage("Delete element!"),
         "delete_page": MessageLookupByLibrary.simpleMessage("Delete Page"),
         "edit_page": MessageLookupByLibrary.simpleMessage("Edit Page"),
+        "enter_event": MessageLookupByLibrary.simpleMessage("Enter Event"),
         "event_modal_title": MessageLookupByLibrary.simpleMessage(
             "Select the page you want to migrate the selected event to!"),
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "exit_the_app": MessageLookupByLibrary.simpleMessage("Exit the app"),
         "explore_label": MessageLookupByLibrary.simpleMessage("Explore"),
+        "explore_title": MessageLookupByLibrary.simpleMessage("Explore"),
         "filter": MessageLookupByLibrary.simpleMessage("Filters"),
         "filter_info": m1,
+        "font_size": MessageLookupByLibrary.simpleMessage("Small/Medium/Large"),
         "home_label": MessageLookupByLibrary.simpleMessage("Home"),
+        "home_title": MessageLookupByLibrary.simpleMessage("Home"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
         "jump_to_date": MessageLookupByLibrary.simpleMessage("Jump to date"),
+        "labels": MessageLookupByLibrary.simpleMessage("Labels"),
         "last_event": MessageLookupByLibrary.simpleMessage("Last Event"),
         "name_of_the_page":
             MessageLookupByLibrary.simpleMessage("Name of the page"),
@@ -73,19 +83,24 @@ class MessageLookup extends MessageLookupByLibrary {
         "no_search_title":
             MessageLookupByLibrary.simpleMessage("No search result available"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "others": MessageLookupByLibrary.simpleMessage("Others"),
+        "pages": MessageLookupByLibrary.simpleMessage("Pages"),
         "picture": MessageLookupByLibrary.simpleMessage("Only picture"),
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
         "reset": MessageLookupByLibrary.simpleMessage("Reset"),
         "reset_setting": MessageLookupByLibrary.simpleMessage("Reset setting"),
+        "search": MessageLookupByLibrary.simpleMessage("Search"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "share_app": MessageLookupByLibrary.simpleMessage("Share app"),
+        "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "timeline_empty":
             MessageLookupByLibrary.simpleMessage("Your timeline is empty!"),
         "timeline_empty_info": MessageLookupByLibrary.simpleMessage(
             "There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu."),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
+        "timeline_title": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
         "title_instruction": m2
       };

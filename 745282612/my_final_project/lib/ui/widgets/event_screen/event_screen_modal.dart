@@ -34,7 +34,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {

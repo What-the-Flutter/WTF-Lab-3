@@ -62,5 +62,19 @@
   },
   "jump_to_date": "Jump to date",
   "reset" : "Reset",
-  "picture": "Only picture"
+  "picture": "Only picture",
+  "delete_element" : "Delete element!",
+  "search" : "Search",
+  "enter_event" : "Enter Event",
+  "home_title" : "Home",
+  "daily_title" : "Daily",
+  "timeline_title": "Timeline",
+  "explore_title" : "Explore",
+  "font_size": "Small/Medium/Large",
+  "bubble_alignment" : "Left/Right",
+  "date_bubble" : "Left/Center",
+  "pages" : "Pages",
+  "tags" : "Tags",
+  "labels" : "Labels",
+  "others" : "Others"
 }

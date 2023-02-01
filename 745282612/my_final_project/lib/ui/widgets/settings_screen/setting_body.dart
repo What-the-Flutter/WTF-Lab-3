@@ -23,7 +23,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
       vsync: this,
     );
     _resetAnimationController.addStatusListener(
-      (status) async {
+      (status) {
         if (status == AnimationStatus.completed) {
           Navigator.pop(context);
           _resetAnimationController.reset();
@@ -103,8 +103,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeTheme();
             },
           ),
@@ -118,13 +117,12 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
               ),
             ),
             subtitle: Text(
-              'Small/Medium/Large',
+              S.of(context).font_size,
               style: TextStyle(
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeFontSize();
             },
           ),
@@ -149,13 +147,12 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
               ),
             ),
             subtitle: Text(
-              'Left/Right',
+              S.of(context).bubble_alignment,
               style: TextStyle(
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeBubbleAligment();
             },
           ),
@@ -169,13 +166,12 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
               ),
             ),
             subtitle: Text(
-              'Left/Center',
+              S.of(context).date_bubble,
               style: TextStyle(
                 fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeDateBubble();
             },
           ),

@@ -10,8 +10,8 @@ class FilterByLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final listSection = context.watch<SettingCubit>().state.listSection;
-    final isLight = context.watch<SettingCubit>().isLight();
+    final listSection = context.read<SettingCubit>().state.listSection;
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +60,7 @@ class FilterByLabels extends StatelessWidget {
                                   listSection[i].titleSection,
                                   style: TextStyle(
                                     fontSize: context
-                                        .watch<SettingCubit>()
+                                        .read<SettingCubit>()
                                         .state
                                         .textTheme
                                         .bodyText1!

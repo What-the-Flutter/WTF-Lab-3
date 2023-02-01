@@ -21,19 +21,19 @@ class MyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return AlertDialog(
       title: Text(
         S.of(context).title_add_image,
         style: TextStyle(
-          fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+          fontSize: context.read<SettingCubit>().state.textTheme.headline2!.fontSize,
         ),
       ),
       content: Text(
         S.of(context).content_add_image,
         style: TextStyle(
-          fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+          fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
         ),
       ),
       actions: <Widget>[

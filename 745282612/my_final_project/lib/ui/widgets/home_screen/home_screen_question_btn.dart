@@ -38,7 +38,7 @@ class HomeScreenQuestionButton extends StatelessWidget {
               Text(
                 S.of(context).questionnaire,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
                   fontWeight: FontWeight.bold,
                   color: isLight ? Colors.black : Colors.white,
                 ),

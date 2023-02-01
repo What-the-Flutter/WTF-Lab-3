@@ -16,8 +16,8 @@ class FilterByPages extends StatefulWidget {
 class _FilterByPagesState extends State<FilterByPages> {
   @override
   Widget build(BuildContext context) {
-    final listChat = context.watch<HomeCubit>().state.listChat;
-    final isLight = context.watch<SettingCubit>().isLight();
+    final listChat = context.read<HomeCubit>().state.listChat;
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class _FilterByPagesState extends State<FilterByPages> {
                                 listChat[i].title,
                                 style: TextStyle(
                                   fontSize: context
-                                      .watch<SettingCubit>()
+                                      .read<SettingCubit>()
                                       .state
                                       .textTheme
                                       .bodyText1!

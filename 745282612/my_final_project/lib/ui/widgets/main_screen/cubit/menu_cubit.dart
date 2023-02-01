@@ -7,15 +7,15 @@ class MenuCubit extends Cubit<MenuState> {
       : super(
           MenuState(
             index: 0,
-            menuStatus: 'home',
+            menuStatus: MenuStatus.home,
           ),
         );
 
   void changeIndex(int index) {
     if (index == 2) {
-      emit(state.copyWith(index: index, menuStatus: 'timeline'));
+      emit(state.copyWith(index: index, menuStatus: MenuStatus.timeline));
     } else {
-      emit(state.copyWith(index: index, menuStatus: 'home'));
+      emit(state.copyWith(index: index, menuStatus: MenuStatus.home));
     }
   }
 }
