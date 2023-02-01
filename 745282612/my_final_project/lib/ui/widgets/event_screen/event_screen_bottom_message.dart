@@ -26,18 +26,40 @@ class EventScreenBottomMessage extends StatefulWidget {
   State<EventScreenBottomMessage> createState() => _EventScreenBottomMessageState();
 }
 
-class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
+class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
+    with TickerProviderStateMixin {
   late final TextEditingController editController;
+  late final AnimationController animationController;
+  late final Animation<double> animation;
 
   @override
   void initState() {
     editController = TextEditingController();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    animation = Tween<double>(begin: 1.0, end: 0.5).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.bounceInOut,
+      ),
+    );
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.reverse();
+        context.read<EventCubit>().changeSwitchSectionTag();
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.stop();
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     editController.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -139,11 +161,14 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                             context.read<EventCubit>().changeSection();
                           }
                         },
-                        onLongPress: context.read<EventCubit>().changeSwitchSectionTag,
-                        child: Icon(
-                          state.switchSectionTag ? Icons.tag : state.sectionIcon,
-                          size: 30,
-                          color: isLight ? AppColors.colorTurquoise : Colors.white,
+                        onLongPress: animationController.forward,
+                        child: ScaleTransition(
+                          scale: animation,
+                          child: Icon(
+                            state.switchSectionTag ? Icons.tag : state.sectionIcon,
+                            size: 30,
+                            color: isLight ? AppColors.colorTurquoise : Colors.white,
+                          ),
                         ),
                       ),
                       Expanded(

@@ -199,7 +199,13 @@ class EventCubit extends Cubit<EventState> {
   }
 
   void changeSwitchSectionTag() {
-    emit(state.copyWith(switchSectionTag: !state.switchSectionTag));
+    emit(
+      state.copyWith(
+        switchSectionTag: !state.switchSectionTag,
+        isTag: false,
+        isSection: false,
+      ),
+    );
   }
 
   void _changeCountSelected() {

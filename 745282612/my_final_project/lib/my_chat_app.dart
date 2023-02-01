@@ -11,6 +11,7 @@ import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_state.dart';
+import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 
 class MainApp extends StatefulWidget {
   final User? user;
@@ -57,6 +58,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (_) => EventCubit(user: widget.user),
+        ),
+        BlocProvider(
+          create: (_) => TimelineCubit(user: widget.user),
         ),
       ],
       child: BlocBuilder<SettingCubit, SettingState>(
