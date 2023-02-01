@@ -9,38 +9,38 @@ import '../models/ui/message.dart';
 import '../models/ui/tag.dart';
 import 'typedefs.dart';
 
-part 'filter.freezed.dart';
+part 'message_filter.freezed.dart';
 
 @freezed
-class Filter with _$Filter {
-  const Filter._();
+class MessageFilter with _$MessageFilter {
+  const MessageFilter._();
 
-  const factory Filter({
+  const factory MessageFilter({
     @Default('') String query,
     @Default(IListConst([])) TagList tags,
     @Default(IListConst([])) TextTagList textTags,
     @Default(IListConst([])) ChatList chats,
     @Default(false) bool onlyFavorites,
-  }) = _Filter;
+  }) = _MessageFilter;
 
-  MessageList apply(MessageList messages) {
+  MessageList applyTo(MessageList messages) {
     return messages
         .where(
           (message) =>
-              isFitsByChat(message) &&
-              isFitsByFavorite(message) &&
-              isFitsByQuery(message) &&
-              isFitsByTags(message) &&
-              isFitsByTextTags(message),
+              _isFitByChat(message) &&
+              _isFitByFavorite(message) &&
+              _isFitByQuery(message) &&
+              _isFitByTags(message) &&
+              _isFitByTextTags(message),
         )
         .toIList();
   }
 
-  bool isFitsByQuery(Message message) {
+  bool _isFitByQuery(Message message) {
     return query.isEmpty ? true : message.text.containsIgnoreCase(query);
   }
 
-  bool isFitsByTags(Message message) {
+  bool _isFitByTags(Message message) {
     if (tags.isEmpty) {
       return true;
     }
@@ -48,7 +48,7 @@ class Filter with _$Filter {
     return message.tags.containsAll(tags);
   }
 
-  bool isFitsByTextTags(Message message) {
+  bool _isFitByTextTags(Message message) {
     final tagTexts = textTags.map((e) => e.text);
     for (var text in tagTexts) {
       if (!message.text.contains(text)) {
@@ -58,11 +58,11 @@ class Filter with _$Filter {
     return true;
   }
 
-  bool isFitsByFavorite(Message message) {
+  bool _isFitByFavorite(Message message) {
     return onlyFavorites ? message.isFavorite : true;
   }
 
-  bool isFitsByChat(Message message) {
+  bool _isFitByChat(Message message) {
     if (chats.isEmpty) {
       return true;
     }

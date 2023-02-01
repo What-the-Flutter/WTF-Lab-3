@@ -3,8 +3,9 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../common/api/repository/message_overview_repository_api.dart';
+import '../../../common/extensions/date_time_extensions.dart';
 import '../../../common/models/ui/message.dart';
-import '../../../common/utils/filter.dart';
+import '../../../common/utils/message_filter.dart';
 import '../../../common/utils/typedefs.dart';
 
 part 'message_overview_state.dart';
@@ -14,13 +15,13 @@ part 'message_overview_cubit.freezed.dart';
 class MessageOverviewCubit extends Cubit<MessageOverviewState> {
   MessageOverviewCubit({
     required MessageOverviewRepositoryApi messageOverviewRepository,
-  })  : _messageOverviewRepository = messageOverviewRepository,
+  })  : _repository = messageOverviewRepository,
         super(
           MessageOverviewState(
             messages: messageOverviewRepository.messages.value,
           ),
         ) {
-    _messageOverviewRepository.messages.listen(
+    _repository.messages.listen(
       (event) {
         emit(
           state.copyWith(
@@ -31,28 +32,24 @@ class MessageOverviewCubit extends Cubit<MessageOverviewState> {
     );
   }
 
-  final MessageOverviewRepositoryApi _messageOverviewRepository;
+  final MessageOverviewRepositoryApi _repository;
 
-  Filter _filter = const Filter();
+  MessageFilter _filter = const MessageFilter();
 
-  Filter get filter => _filter;
+  MessageFilter get filter => _filter;
 
-  void setFilter(Filter filter) {
+  void applyFilter(MessageFilter filter) {
     _filter = filter;
-    _messageOverviewRepository.filter(filter);
+    _repository.filter(filter);
   }
 
-  void setSearchQuery(String text) {
+  void applySearchQuery(String text) {
     _filter = _filter.copyWith(query: text);
-    _messageOverviewRepository.filter(_filter);
+    _repository.filter(_filter);
   }
 
-  void setIsFavorite(bool isFavorite) {
-    _filter = _filter.copyWith(onlyFavorites: isFavorite);
-    _messageOverviewRepository.filter(_filter);
-  }
-
-  void reset() {
-    _messageOverviewRepository.filter(const Filter());
+  void showOnlyFavorites(bool isOnlyFavorites) {
+    _filter = _filter.copyWith(onlyFavorites: isOnlyFavorites);
+    _repository.filter(_filter);
   }
 }

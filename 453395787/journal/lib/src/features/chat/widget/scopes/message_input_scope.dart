@@ -21,7 +21,7 @@ class MessageInputScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageInputCubit(
-        messageRepository: repository ?? context.read<ChatMessagesRepository>(),
+        chatMessagesRepository: repository ?? context.read<ChatMessagesRepository>(),
         storageProvider: context.read<StorageFirebaseProvider>(),
         textTagRepository: context.read<TextTagRepository>(),
       ),

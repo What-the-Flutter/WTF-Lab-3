@@ -26,7 +26,7 @@ class MoveMessagesScope extends StatelessWidget {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
         chatRepository: context.read<ChatRepository>(),
-        messageRepository: ChatMessagesRepository(
+        chatMessagesRepository: ChatMessagesRepository(
           messageProvider: context.read<MessageFirebaseProvider>(),
           tagProvider: context.read<TagFirebaseProvider>(),
           storageProvider: context.read<StorageFirebaseProvider>(),

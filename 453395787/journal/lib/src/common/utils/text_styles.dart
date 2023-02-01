@@ -42,6 +42,14 @@ abstract class TextStyles {
         );
   }
 
+  static TextStyle messageChatName(BuildContext context) {
+    return DefaultTextStyle.of(context).style.copyWith(
+      fontSize: 12,
+      color: Theme.of(context).colorScheme.primary,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
   static TextStyle bodyRed(BuildContext context) {
     return Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: Colors.red,

@@ -17,26 +17,26 @@ part 'message_manage_state.dart';
 
 class MessageManageCubit extends Cubit<MessageManageState> {
   MessageManageCubit({
-    required ChatMessagesRepositoryApi messageRepository,
+    required ChatMessagesRepositoryApi chatMessagesRepository,
     required this.chatId,
     required this.name,
-  })  : _repository = messageRepository,
+  })  : _repository = chatMessagesRepository,
         super(
           MessageManageState.defaultModeState(
             id: chatId,
             name: name,
-            messages: messageRepository.messages.value,
-            tags: messageRepository.tags.value,
+            messages: chatMessagesRepository.messages.value,
+            tags: chatMessagesRepository.tags.value,
           ),
         ) {
-    _messageStreamSub = messageRepository.messages.listen(
+    _messageStreamSub = chatMessagesRepository.messages.listen(
       (messages) {
         emit(
           MessageManageState.defaultModeState(
             id: chatId,
             name: name,
             messages: messages,
-            tags: messageRepository.tags.value,
+            tags: chatMessagesRepository.tags.value,
           ),
         );
       },

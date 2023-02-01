@@ -1,7 +1,7 @@
-part of '../view/message_filter.dart';
+part of '../view/message_filter_view.dart';
 
-class _ChatsSelectors extends StatefulWidget {
-  const _ChatsSelectors({
+class _ChatsSelector extends StatefulWidget {
+  const _ChatsSelector({
     super.key,
     required this.chats,
     this.selectedChats,
@@ -13,10 +13,10 @@ class _ChatsSelectors extends StatefulWidget {
   final void Function(IList<Chat> chats) onSelectedChatsChanged;
 
   @override
-  State<_ChatsSelectors> createState() => _ChatsSelectorsState();
+  State<_ChatsSelector> createState() => _ChatsSelectorState();
 }
 
-class _ChatsSelectorsState extends State<_ChatsSelectors> {
+class _ChatsSelectorState extends State<_ChatsSelector> {
   late IList<Chat> _selectedChats;
 
   @override
@@ -35,23 +35,28 @@ class _ChatsSelectorsState extends State<_ChatsSelectors> {
           'Chats',
           style: TextStyles.defaultMedium(context),
         ),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.chats.length,
-            itemBuilder: (context, index) {
-              final chat = widget.chats[index];
-              return ChatItemSmall(
-                text: chat.name,
-                icon: chat.icon,
-                isSelected: _isSelected(chat),
-                onTap: () {
-                  _toggleSelection(chat);
-                  widget.onSelectedChatsChanged(_selectedChats);
-                },
-              );
-            },
+        Padding(
+          padding: const EdgeInsets.only(
+            top: Insets.medium,
+          ),
+          child: SizedBox(
+            height: 60,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.chats.length,
+              itemBuilder: (context, index) {
+                final chat = widget.chats[index];
+                return ChatItemSmall(
+                  text: chat.name,
+                  icon: chat.icon,
+                  isSelected: _isSelected(chat),
+                  onTap: () {
+                    _toggleSelection(chat);
+                    widget.onSelectedChatsChanged(_selectedChats);
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],

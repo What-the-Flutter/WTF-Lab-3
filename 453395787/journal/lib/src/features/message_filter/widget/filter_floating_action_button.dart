@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/message_filter_cubit.dart';
-import '../view/message_filter.dart';
+import '../view/message_filter_view.dart';
 
 class FilterFloatingActionButton extends StatelessWidget {
   const FilterFloatingActionButton({
@@ -26,7 +26,7 @@ class FilterFloatingActionButton extends StatelessWidget {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (_) => MessageFilter(
+                builder: (_) => MessageFilterView(
                   cubit: context.read<MessageFilterCubit>(),
                 ),
                 isScrollControlled: true,

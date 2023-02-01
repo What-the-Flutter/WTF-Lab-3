@@ -19,7 +19,7 @@ class MessageManageScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageManageCubit(
-        messageRepository: context.read<ChatMessagesRepository>(),
+        chatMessagesRepository: context.read<ChatMessagesRepository>(),
         chatId: chat.id,
         name: chat.name,
       ),

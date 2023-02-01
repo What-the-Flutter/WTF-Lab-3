@@ -53,9 +53,6 @@ class _TimelineAppBarState extends State<TimelineAppBar> {
               controller: _controller,
               autofocus: true,
               onChanged: widget.onTextChanged,
-              decoration: const InputDecoration.collapsed(
-                hintText: 'search',
-              ),
             )
           : Text(locale.Pages.timeline.i18n()),
       actions: [

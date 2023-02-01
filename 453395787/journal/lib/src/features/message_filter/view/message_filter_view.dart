@@ -1,6 +1,7 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
 import '../../../common/data/repository/chat_repository.dart';
@@ -17,12 +18,14 @@ import '../../text_tags/widget/text_tag_multi_selector.dart';
 import '../../text_tags/widget/text_tag_multi_selector_scope.dart';
 import '../cubit/message_filter_cubit.dart';
 
-part '../widget/tag_selectors.dart';
+part '../widget/tag_selector.dart';
+
+part '../widget/text_tag_selector.dart';
 
 part '../widget/chats_selector.dart';
 
-class MessageFilter extends StatelessWidget {
-  const MessageFilter({
+class MessageFilterView extends StatelessWidget {
+  const MessageFilterView({
     super.key,
     required this.cubit,
   });
@@ -42,29 +45,35 @@ class MessageFilter extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _TagSelectors(
+              Text(
+                locale.SettingsPage.tagItem.i18n(),
+                style: TextStyles.defaultMedium(context),
+              ),
+              _TagSelector(
                 selectedTags: state.selectedTags,
-                selectedTextTags: state.selectedTextTags,
                 onTagsChanged: cubit.setSelectedTags,
+              ),
+              _TextTagSelector(
+                selectedTextTags: state.selectedTextTags,
                 onTextTagsChanged: cubit.setSelectedTextTags,
               ),
-              _ChatsSelectors(
+              _ChatsSelector(
                 selectedChats: state.selectedChats,
-                chats: context.watch<ChatRepository>().chats.value,
+                chats: context.read<ChatRepository>().chats.value,
                 onSelectedChatsChanged: cubit.setSelectedChats,
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: cubit.reset,
                     child: Text(
                       locale.Actions.reset.i18n(),
                     ),
                   ),
                   const Spacer(),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: context.pop,
                     child: Text(
                       locale.Actions.apply.i18n(),
                     ),

@@ -15,8 +15,8 @@ part 'message_search_state.dart';
 
 class MessageSearchCubit extends Cubit<MessageSearchState> {
   MessageSearchCubit({
-    required ChatMessagesRepositoryApi messageRepository,
-  })  : _repository = messageRepository,
+    required ChatMessagesRepositoryApi chatMessagesRepository,
+  })  : _repository = chatMessagesRepository,
         super(const MessageSearchState.initial()) {
     _messageStreamSub = _repository.messages.listen(
           (messages) {

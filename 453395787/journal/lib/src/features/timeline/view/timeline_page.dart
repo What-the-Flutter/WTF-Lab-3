@@ -9,36 +9,41 @@ import '../widget/message_overview_scope.dart';
 import '../widget/timeline_app_bar.dart';
 
 class TimelinePage extends StatelessWidget {
-  const TimelinePage({super.key});
+  const TimelinePage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MessageOverviewScope(
       child: MessageFilterScope(
-        child: Builder(builder: (context) {
-          return Scaffold(
-            appBar: TimelineAppBar(
-              onTextChanged:
-                  context.read<MessageOverviewCubit>().setSearchQuery,
-              onIsFavoriteChanged:
-                  context.read<MessageOverviewCubit>().setIsFavorite,
-            ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: BlocListener<MessageFilterCubit, MessageFilterState>(
-                    listener: (context, state) {
-                      final filter = context.read<MessageFilterCubit>().filter;
-                      context.read<MessageOverviewCubit>().setFilter(filter);
-                    },
-                    child: const MessageOverview(),
+        child: Builder(
+          builder: (context) {
+            return Scaffold(
+              appBar: TimelineAppBar(
+                onTextChanged:
+                    context.read<MessageOverviewCubit>().applySearchQuery,
+                onIsFavoriteChanged:
+                    context.read<MessageOverviewCubit>().showOnlyFavorites,
+              ),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: BlocListener<MessageFilterCubit, MessageFilterState>(
+                      listener: (context, state) {
+                        context.read<MessageOverviewCubit>().applyFilter(
+                              context.read<MessageFilterCubit>().filter,
+                            );
+                      },
+                      child: const MessageOverview(),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            floatingActionButton: const FilterFloatingActionButton(),
-          );
-        }),
+                ],
+              ),
+              floatingActionButton: const FilterFloatingActionButton(),
+            );
+          },
+        ),
       ),
     );
   }

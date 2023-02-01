@@ -8,7 +8,7 @@ import '../../api/provider/tag_provider_api.dart';
 import '../../api/repository/message_overview_repository_api.dart';
 import '../../models/ui/tag.dart';
 import '../../utils/app_logger.dart';
-import '../../utils/filter.dart';
+import '../../utils/message_filter.dart';
 import '../../utils/transformers.dart';
 import '../../utils/typedefs.dart';
 
@@ -29,16 +29,7 @@ class MessageOverviewRepository
     );
 
     _providerMessageStreamSubscription = _providerMessageStream.listen(
-      (event) {
-        log.i('New Event: $event');
-        _messageStreamController.add(event);
-      },
-    );
-
-    _messageStreamController.listen(
-      (value) {
-        log.i('Message stream controller: $value');
-      },
+      _messageStreamController.add,
     );
   }
 
@@ -54,44 +45,42 @@ class MessageOverviewRepository
   late final StreamSubscription<DbMessageList>
       _providerMessageStreamSubscription;
 
-  static Filter _filter = const Filter();
+  static MessageFilter _filter = const MessageFilter();
 
   @override
   ValueStream<MessageList> get messages => _messageFilter(
-        _transform(
+        _transformModelsToMessages(
           _messageStreamController.stream.shareValueSeeded(
             _messageStreamController.value,
           ),
         ),
       );
 
-  ValueStream<MessageList> _transform(
+  ValueStream<MessageList> _transformModelsToMessages(
     ValueStream<DbMessageList> messageStream,
   ) {
-    log.i('_transform ${messageStream.value}');
     final transformer = Transformers.modelsToMessagesStreamTransformer(
       _storageProvider.load,
-      getTag,
+      _tagById,
     );
 
     return messageStream.transform(transformer).shareValueSeeded(
           Transformers.modelsToMessages(
             messageStream.value,
             _storageProvider.load,
-            getTag,
+            _tagById,
           ),
         );
   }
 
   ValueStream<MessageList> _messageFilter(
       ValueStream<MessageList> messageStream) {
-    log.i('_messageFilter ${messageStream.value}');
     return messageStream
         .transform(
           _filterTransformer,
         )
         .shareValueSeeded(
-          _filter.apply(
+          _filter.applyTo(
             messageStream.value,
           ),
         );
@@ -101,12 +90,12 @@ class MessageOverviewRepository
       StreamTransformer.fromHandlers(
     handleData: (models, sink) {
       sink.add(
-        _filter.apply(models),
+        _filter.applyTo(models),
       );
     },
   );
 
-  Tag getTag(String id) {
+  Tag _tagById(String id) {
     final tagModel = _tagProvider.tags.value.firstWhere(
       (tag) => tag.id == id,
     );
@@ -114,7 +103,7 @@ class MessageOverviewRepository
   }
 
   @override
-  void filter(Filter filter) {
+  void filter(MessageFilter filter) {
     _filter = filter;
     _messageStreamController.add(
       _providerMessageStream.value,

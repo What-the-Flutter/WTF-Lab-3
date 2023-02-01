@@ -8,9 +8,9 @@ class MessageFilterState with _$MessageFilterState {
     required IList<Tag> tags,
     required IList<TextTag> textTags,
     required IList<Chat> chats,
-    required IList<Tag> selectedTags,
-    required IList<TextTag> selectedTextTags,
-    required IList<Chat> selectedChats,
+    @Default(IListConst([])) IList<Tag> selectedTags,
+    @Default(IListConst([])) IList<TextTag> selectedTextTags,
+    @Default(IListConst([]))  IList<Chat> selectedChats,
   }) = _MessageFilterState;
 
   int get amountOfSelected =>

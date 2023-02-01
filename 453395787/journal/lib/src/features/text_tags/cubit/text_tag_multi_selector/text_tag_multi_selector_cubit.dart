@@ -30,13 +30,13 @@ class TextTagMultiSelectorCubit extends Cubit<TextTagMultiSelectorState> {
 
   void toggleSelection(TextTag tag) {
     if (state.isSelected(tag)) {
-      unselect(tag);
+      _unselect(tag);
     } else {
-      select(tag);
+      _select(tag);
     }
   }
 
-  void select(TextTag tag) {
+  void _select(TextTag tag) {
     emit(
       state.copyWith(
         selectedIds: state.selectedIds.add(tag.id),
@@ -44,18 +44,10 @@ class TextTagMultiSelectorCubit extends Cubit<TextTagMultiSelectorState> {
     );
   }
 
-  void unselect(TextTag tag) {
+  void _unselect(TextTag tag) {
     emit(
       state.copyWith(
         selectedIds: state.selectedIds.remove(tag.id),
-      ),
-    );
-  }
-
-  void reset() {
-    emit(
-      state.copyWith(
-        selectedIds: IList([]),
       ),
     );
   }

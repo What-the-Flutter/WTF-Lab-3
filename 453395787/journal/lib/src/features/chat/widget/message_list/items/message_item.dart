@@ -4,6 +4,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../common/data/repository/chat_repository.dart';
 import '../../../../../common/features/settings/cubit/settings_cubit.dart';
 import '../../../../../common/features/settings/data/settings_repository_api.dart';
 import '../../../../../common/models/ui/message.dart';
@@ -17,6 +18,8 @@ part 'message_images.dart';
 
 part 'message_text.dart';
 
+part 'message_chat_name.dart';
+
 typedef SelectedMessageCallback = void Function(
   Message message,
   bool isSelected,
@@ -29,12 +32,14 @@ class MessageItem extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.isSelected = false,
+    this.isChatNameShown = false,
   });
 
   final Message message;
   final SelectedMessageCallback? onTap;
   final SelectedMessageCallback? onLongPress;
   final bool isSelected;
+  final bool isChatNameShown;
 
   double get _widthScaleFactor => isSelected ? 0.75 : 0.8;
 
@@ -91,6 +96,17 @@ class MessageItem extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        if (isChatNameShown)
+                          _MessageChatName(
+                            chatName: context
+                                .read<ChatRepository>()
+                                .chats
+                                .value
+                                .firstWhere(
+                                  (chat) => chat.id == message.parentId,
+                                )
+                                .name,
+                          ),
                         if (message.images.isNotEmpty)
                           _MessageImages(
                             message: message,

@@ -17,7 +17,9 @@ class ChatItemSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 2,
+      ),
       child: FilterChip(
         showCheckmark: false,
         onSelected: (_) => onTap(),
