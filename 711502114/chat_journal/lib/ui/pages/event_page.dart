@@ -13,6 +13,7 @@ import '../widgets/event_page/attach_dialog.dart';
 import '../widgets/event_page/event_box.dart';
 import '../widgets/event_page/event_keyboard.dart';
 import '../widgets/event_page/info_box.dart';
+import '../widgets/event_page/migration_events_dialog.dart';
 import '../widgets/event_page/tool_menu_icon.dart';
 import 'search_page.dart';
 
@@ -82,12 +83,8 @@ class _MessengerPageState extends State<MessengerPage> {
           ? ToolMenuIcon(
               icon: Icons.close,
               onPressed: () {
-                setState(
-                  () {
-                    cubit.disableSelect();
-                    BlocProvider.of<HomeCubit>(context, listen: false).update();
-                  },
-                );
+                cubit.disableSelect();
+                updateChatLastEvent();
               },
             )
           : null,
@@ -118,9 +115,7 @@ class _MessengerPageState extends State<MessengerPage> {
         icon: cubit.favorite ? Icons.bookmark : _bookMark,
         color: cubit.favorite ? Colors.yellow : null,
         onPressed: () {
-          setState(() {
-            cubit.showFavorites();
-          });
+          cubit.showFavorites();
         },
       ),
     ];
@@ -130,7 +125,7 @@ class _MessengerPageState extends State<MessengerPage> {
     return [
       Expanded(
         child: Align(
-          alignment: const Alignment(0, 0.15),
+          alignment: const Alignment(.1, .15),
           child: Text(
             '${cubit.selectedItemIndexes.length}',
             style: const TextStyle(
@@ -139,49 +134,53 @@ class _MessengerPageState extends State<MessengerPage> {
           ),
         ),
       ),
-      _createEditIcon(cubit),
+      if (cubit.selectedItemIndexes.length == 1 && !cubit.editMode) ...[
+        _initMigrationIcon(cubit),
+        ToolMenuIcon(
+          icon: Icons.edit,
+          onPressed: () {
+            cubit.turnOnEditMode(_fieldText);
+          },
+        ),
+      ] else ...[
+        const ToolMenuIcon(),
+        _initMigrationIcon(cubit),
+      ],
       ToolMenuIcon(
         icon: Icons.copy,
         onPressed: () {
-          setState(() {
-            cubit.copyText();
-          });
+          cubit.copyText();
         },
       ),
       ToolMenuIcon(
         icon: _bookMark,
         onPressed: () {
-          setState(() {
-            cubit.changeFavoriteStatus();
-          });
+          cubit.changeFavoriteStatus();
         },
       ),
       ToolMenuIcon(
         icon: Icons.delete,
         onPressed: () {
-          setState(() {
-            Provider.of<HomeCubit>(context, listen: false).update();
-            cubit.deleteMessage();
-          });
+          Provider.of<HomeCubit>(context, listen: false).update();
+          cubit.deleteMessage();
         },
       ),
     ];
   }
 
-  Widget _createEditIcon(EventCubit cubit) {
-    final icon = Icons.edit;
-    if (cubit.selectedItemIndexes.length == 1 && !cubit.editMode) {
-      return ToolMenuIcon(
-        icon: icon,
-        onPressed: () {
-          setState(() {
-            cubit.turnOnEditMode(_fieldText);
-          });
-        },
-      );
-    } else {
-      return ToolMenuIcon(icon: icon, color: Colors.transparent);
-    }
+  ToolMenuIcon _initMigrationIcon(EventCubit cubit) {
+    return ToolMenuIcon(
+      icon: Icons.transit_enterexit,
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (_) {
+            final function = cubit.migrateEvents;
+            return MigrationEventsDialog(handleClicking: function);
+          },
+        );
+      },
+    );
   }
 
   Widget _buildMessageList(Size size, EventCubit cubit) {
@@ -199,16 +198,12 @@ class _MessengerPageState extends State<MessengerPage> {
             ),
             onTap: () {
               if (!cubit.editMode && cubit.selectedMode) {
-                setState(() {
-                  cubit.handleSelecting(index);
-                });
+                cubit.handleSelecting(index);
               }
             },
             onLongPress: () {
               if (!cubit.editMode) {
-                setState(() {
-                  cubit.handleSelecting(index);
-                });
+                cubit.handleSelecting(index);
               }
             },
           );
@@ -224,30 +219,29 @@ class _MessengerPageState extends State<MessengerPage> {
   void _sendEvent([String? path]) {
     if (_fieldText.text.isEmpty && path == null) return;
 
-    setState(() {
-      BlocProvider.of<EventCubit>(context).addEvent(_fieldText.text, path);
-      BlocProvider.of<HomeCubit>(context, listen: false).update();
-      _fieldText.clear();
-    });
+    BlocProvider.of<EventCubit>(context).addEvent(_fieldText.text, path);
+    updateChatLastEvent();
+    _fieldText.clear();
   }
 
   void _turnOffEditMode() {
-    setState(() {
-      BlocProvider.of<EventCubit>(context).turnOffEditMode(_fieldText);
+    BlocProvider.of<EventCubit>(context).turnOffEditMode(_fieldText);
 
-      BlocProvider.of<HomeCubit>(context, listen: false).update();
-    });
+    updateChatLastEvent();
   }
 
   Future<bool> _handleBackButton() async {
     if (!BlocProvider.of<EventCubit>(context).selectedMode) {
       return true;
     } else {
-      setState(() {
-        BlocProvider.of<EventCubit>(context).disableSelect();
-      });
+      BlocProvider.of<EventCubit>(context).disableSelect();
+      updateChatLastEvent();
       return false;
     }
+  }
+
+  void updateChatLastEvent() {
+    BlocProvider.of<HomeCubit>(context, listen: false).update();
   }
 
   @override

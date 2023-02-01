@@ -39,5 +39,6 @@
   "latestEvent": "Latest Event",
   "ok": "OK",
   "archivedPage": "Archived Pages",
-  "countArchived": "Pages Archived"
+  "countArchived": "Pages Archived",
+  "eventMigration": "Select the page you want to migrate the selected events to!"
 }

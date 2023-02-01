@@ -42,6 +42,8 @@ class EventCubit extends Cubit<EventState> {
     } else {
       _events = state.events;
     }
+
+    update();
   }
 
   void disableSelect([TextEditingController? fieldText]) {
@@ -58,6 +60,8 @@ class EventCubit extends Cubit<EventState> {
   void turnOnEditMode(TextEditingController fieldText) {
     _isEditMode = true;
     fieldText.text = events[selectedItemIndexes.last].message;
+
+    update();
   }
 
   void turnOffEditMode(TextEditingController fieldText) {
@@ -73,6 +77,8 @@ class EventCubit extends Cubit<EventState> {
       dateTime: DateTime.now(),
       photoPath: path,
     ));
+
+    update();
   }
 
   void copyText() {
@@ -115,6 +121,8 @@ class EventCubit extends Cubit<EventState> {
   void finishEditMode() {
     _isSelectedMode = false;
     selectedItemIndexes.clear();
+
+    update();
   }
 
   void handleSelecting(int index) {
@@ -137,5 +145,25 @@ class EventCubit extends Cubit<EventState> {
 
       selectedItemIndexes.remove(index);
     }
+
+    update();
+  }
+
+  void migrateEvents(Chat chat) {
+    selectedItemIndexes.sort();
+
+    final migrationEvents = <Event>[];
+    for (int i in selectedItemIndexes) {
+      migrationEvents.add(_events[i]);
+    }
+
+    deleteMessage();
+
+    for (Event event in migrationEvents) {
+      final unselectedEvent = event.copyWith(isSelected: false);
+      chat.events.add(unselectedEvent);
+    }
+
+    update();
   }
 }

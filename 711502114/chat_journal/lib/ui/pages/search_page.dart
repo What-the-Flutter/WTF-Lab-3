@@ -3,67 +3,62 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../cubit/search/search_cubit.dart';
+import '../../cubit/search/search_state.dart';
 import '../../theme/colors.dart';
 import '../widgets/event_page/event_box.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  final _controller = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          width: double.infinity,
-          height: 40,
-          decoration: BoxDecoration(
-            color: messageBlocColor,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Center(
-            child: TextField(
-              controller: _controller,
-              onChanged: (search) {
-                setState(() {
-                  BlocProvider.of<SearchCubit>(context).lookForWords(search);
-                });
-              },
-              style: const TextStyle(fontSize: 18, color: Colors.white),
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _controller.clear();
-                      BlocProvider.of<SearchCubit>(context).lookForWords();
-                    });
-                  },
+    final controller = TextEditingController();
+    final local = AppLocalizations.of(context);
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+        final cubit = context.read<SearchCubit>();
+        return Scaffold(
+          appBar: AppBar(
+            title: Container(
+              width: double.infinity,
+              height: 40,
+              decoration: BoxDecoration(
+                color: messageBlocColor,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Center(
+                child: TextField(
+                  controller: controller,
+                  onChanged: cubit.lookForWords,
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search, color: Colors.white),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.white),
+                      onPressed: () {
+                        controller.clear();
+                        cubit.lookForWords();
+                      },
+                    ),
+                    hintText: local?.searchFieldHint ?? '',
+                    hintStyle: TextStyle(
+                      fontSize: 18,
+                      color: secondaryMessageTextColor,
+                    ),
+                    border: InputBorder.none,
+                  ),
                 ),
-                hintText: AppLocalizations.of(context)?.searchFieldHint ?? '',
-                hintStyle: TextStyle(
-                  fontSize: 18,
-                  color: secondaryMessageTextColor,
-                ),
-                border: InputBorder.none,
               ),
             ),
           ),
-        ),
-      ),
-      body: _buildListView(context),
+          body: _buildListView(state, MediaQuery.of(context).size),
+        );
+      },
     );
   }
 
-  ListView _buildListView(BuildContext context) {
-    final events = BlocProvider.of<SearchCubit>(context).state.events;
+  ListView _buildListView(SearchState state, Size size) {
+    final events = state.events;
     return ListView.builder(
       reverse: true,
       itemCount: events.length,
@@ -71,16 +66,10 @@ class _SearchPageState extends State<SearchPage> {
         final index = events.length - 1 - i;
         return EventBox(
           event: events[index],
-          size: MediaQuery.of(context).size,
+          size: size,
           isSelected: events[index].isSelected,
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
   }
 }
