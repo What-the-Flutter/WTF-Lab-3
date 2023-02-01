@@ -1,18 +1,21 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/chat.dart';
 import 'create_chat_state.dart';
 
 class CreateChatCubit extends Cubit<CreateChatState> {
-  CreateChatCubit({this.selectedIcon = 0})
+  final int selectedIcon;
+  final bool isCreatingMode;
+
+  CreateChatCubit({required this.isCreatingMode, this.selectedIcon = 0})
       : super(
           CreateChatState(
             selectedIconIndex: selectedIcon,
             isNotEmpty: false,
-            isCreatingMode: true,
+            isCreatingMode: isCreatingMode,
             isChanged: false,
           ),
         );
-  final int selectedIcon;
 
   void changeSelectedIconIndex(int index) {
     emit(state.copyWith(selectedIconIndex: index));
@@ -24,5 +27,28 @@ class CreateChatCubit extends Cubit<CreateChatState> {
 
   void isChangedToTrue() {
     emit(state.copyWith(isChanged: true));
+  }
+
+  void setToEdit(Chat chat) {
+    emit(
+      state.copyWith(
+        isCreatingMode: false,
+        selectedIconIndex: chat.iconIndex,
+      ),
+    );
+  }
+
+  void reset() {
+    emit(
+      state.copyWith(
+        selectedIconIndex: 0,
+        isCreatingMode: true,
+        isChanged: false,
+      ),
+    );
+  }
+
+  void incrementCounterId() {
+    emit(state.copyWith(counterId: state.counterId + 1));
   }
 }

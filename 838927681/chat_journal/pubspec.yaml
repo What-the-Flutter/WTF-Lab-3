@@ -27,6 +27,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_bloc: ^8.1.1
+  equatable: ^2.0.5
+  flutter_slidable: ^2.0.0
 
 provider:
   intl: ^0.17.0

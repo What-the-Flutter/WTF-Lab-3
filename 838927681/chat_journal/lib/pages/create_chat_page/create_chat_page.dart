@@ -5,76 +5,64 @@ import '../../../models/icon_map.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/fonts.dart';
 import '../../../theme/theme_cubit.dart';
+import '../home_page/home_page_cubit.dart';
 import 'create_chat_cubit.dart';
 import 'create_chat_state.dart';
 
-class CreateChatPage extends StatefulWidget {
+class CreateChatPage extends StatelessWidget {
+  final _controller = TextEditingController();
+  final bool isCreatingMode;
+  final String initialText;
+  final int iconIndex;
+
   CreateChatPage({
     required this.isCreatingMode,
-    this.chat,
+    this.initialText = '',
+    this.iconIndex = 0,
     super.key,
   });
 
-  final _controller = TextEditingController();
-  final bool isCreatingMode;
-  final createChatCubit = CreateChatCubit();
-  final Chat? chat;
-
-  @override
-  State<CreateChatPage> createState() => _CreateChatPageState();
-}
-
-class _CreateChatPageState extends State<CreateChatPage> {
   @override
   Widget build(BuildContext context) {
-    if (widget.chat != null) {
-      widget._controller.text = widget.chat!.name;
-    }
-    return BlocProvider<CreateChatCubit>(
-      create: (context) => widget.createChatCubit,
-      child: BlocBuilder<CreateChatCubit, CreateChatState>(
-        builder: (context, state) {
-          if (!widget.isCreatingMode &&
-              !widget.createChatCubit.state.isChanged) {
-            widget.createChatCubit
-                .changeSelectedIconIndex(widget.chat!.iconIndex);
-          }
-          return Scaffold(
-            body: Container(
-              decoration: BoxDecoration(
-                color: BlocProvider.of<ThemeCubit>(context).isLight()
-                    ? ChatJournalColors.white
-                    : ChatJournalColors.black,
-              ),
-              padding: const EdgeInsets.symmetric(
-                vertical: 40.0,
-                horizontal: 30.0,
-              ),
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        widget.isCreatingMode
-                            ? 'Create a new Page'
-                            : 'Edit Page',
-                        style: Fonts.createChatTitle,
-                      ),
-                      _inputPanel(),
-                      _iconGrid(),
-                    ],
-                  ),
-                  _floatingActionButton(),
-                ],
-              ),
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    return BlocBuilder<CreateChatCubit, CreateChatState>(
+      builder: (context, state) {
+        if (!isCreatingMode && !state.isChanged) {
+          createChatCubit.changeSelectedIconIndex(iconIndex);
+        }
+        return Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              color: BlocProvider.of<ThemeCubit>(context).isLight()
+                  ? ChatJournalColors.white
+                  : ChatJournalColors.black,
             ),
-          );
-        },
-      ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 40.0,
+              horizontal: 30.0,
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      isCreatingMode ? 'Create a new Page' : 'Edit Page',
+                      style: Fonts.createChatTitle,
+                    ),
+                    _inputPanel(context),
+                    _iconGrid(context),
+                  ],
+                ),
+                _floatingActionButton(context),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _inputPanel() {
+  Widget _inputPanel(context) {
     return Container(
       margin: const EdgeInsets.symmetric(
         vertical: 5,
@@ -85,8 +73,8 @@ class _CreateChatPageState extends State<CreateChatPage> {
       ),
       decoration: BoxDecoration(
         color: BlocProvider.of<ThemeCubit>(context).isLight()
-            ? ChatJournalColors.iconGray
-            : ChatJournalColors.darkGray,
+            ? ChatJournalColors.iconGrey
+            : ChatJournalColors.darkGrey,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
@@ -97,29 +85,35 @@ class _CreateChatPageState extends State<CreateChatPage> {
             style: Fonts.createChatInputTitle,
             textAlign: TextAlign.left,
           ),
-          _textField(),
+          _textField(context),
         ],
       ),
     );
   }
 
-  Widget _textField() {
+  Widget _textField(BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    if (!createChatCubit.state.isChanged &&
+        !createChatCubit.state.isCreatingMode) {
+      _controller.text = initialText;
+    }
     return Container(
       constraints: const BoxConstraints(maxHeight: 30),
       child: TextField(
-        controller: widget._controller,
+        controller: _controller,
         onChanged: (text) {
-          if (!widget.createChatCubit.state.isChanged) {
-            widget.createChatCubit.isChangedToTrue();
+          if (!createChatCubit.state.isChanged) {
+            createChatCubit.isChangedToTrue();
           }
-          widget.createChatCubit.changeIsNotEmpty(text.isNotEmpty);
+          createChatCubit.changeIsNotEmpty(text.isNotEmpty);
         },
       ),
     );
   }
 
-  Widget _iconGrid() {
-    final selectedIndex = widget.createChatCubit.state.selectedIconIndex;
+  Widget _iconGrid(BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    final selectedIndex = createChatCubit.state.selectedIconIndex;
     return Flexible(
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -127,7 +121,7 @@ class _CreateChatPageState extends State<CreateChatPage> {
           crossAxisSpacing: 15,
           mainAxisSpacing: 30,
         ),
-        itemCount: ChatJournalIcons.icons.length,
+        itemCount: ChatJournalIcons.chatIcons.length,
         itemBuilder: (context, index) {
           return Stack(
             alignment: AlignmentDirectional.center,
@@ -138,19 +132,17 @@ class _CreateChatPageState extends State<CreateChatPage> {
                   borderRadius: BorderRadius.circular(50),
                   color: BlocProvider.of<ThemeCubit>(context).isLight()
                       ? Colors.blueGrey
-                      : ChatJournalColors.iconGray,
+                      : ChatJournalColors.iconGrey,
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    setState(() {
-                      widget.createChatCubit.changeSelectedIconIndex(index);
-                      if (!widget.createChatCubit.state.isChanged) {
-                        widget.createChatCubit.isChangedToTrue();
-                      }
-                    });
+                    createChatCubit.changeSelectedIconIndex(index);
+                    if (!createChatCubit.state.isChanged) {
+                      createChatCubit.isChangedToTrue();
+                    }
                   },
                   child: Icon(
-                    ChatJournalIcons.icons[index],
+                    ChatJournalIcons.chatIcons[index],
                     color: Theme.of(context).backgroundColor,
                     size: 30,
                   ),
@@ -183,36 +175,61 @@ class _CreateChatPageState extends State<CreateChatPage> {
     );
   }
 
-  Widget _floatingActionButton() {
-    final isDone = widget._controller.text.isNotEmpty &&
-        widget.createChatCubit.state.isChanged;
+  Widget _floatingActionButton(BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    final isDone =
+        _controller.text.isNotEmpty && createChatCubit.state.isChanged;
     return AnimatedPositioned(
       child: FloatingActionButton(
-        //backgroundColor: Theme.of(context).floatingActionButtonTheme.backgroundColor,
         child: Icon(
           isDone ? Icons.done : Icons.cancel_outlined,
           size: 40,
         ),
         onPressed: () {
           final Chat? chat;
-          final isChanged = widget._controller.text.isNotEmpty &&
-              widget.createChatCubit.state.isChanged;
+          final isChanged =
+              _controller.text.isNotEmpty && createChatCubit.state.isChanged;
           if (isChanged) {
+            final date =DateTime.now();
             chat = Chat(
-              name: widget._controller.text,
-              iconIndex: widget.createChatCubit.state.selectedIconIndex,
-              creationDate: DateTime.now(),
+              id: _generateId(context),
+              name: _controller.text,
+              iconIndex: createChatCubit.state.selectedIconIndex,
+              creationDate: date,
             );
           } else {
             chat = null;
           }
           Navigator.of(context).pop(chat);
+          createChatCubit.reset();
         },
       ),
       duration: const Duration(milliseconds: 300),
       right: 0,
       bottom: 0,
-      //curve: Curves.easeInOut,
     );
+  }
+
+  int _generateId(BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    final homeState = BlocProvider.of<HomePageCubit>(context).state;
+
+    var generated = false;
+    while (!generated) {
+      var exist = false;
+      var i = 0;
+      while (i < homeState.chats.length && !exist) {
+        if (homeState.chats[i].id == createChatCubit.state.counterId) {
+          exist = true;
+        } else {
+          i++;
+        }
+      }
+      if (!exist) {
+        generated = true;
+      }
+      createChatCubit.incrementCounterId();
+    }
+    return createChatCubit.state.counterId;
   }
 }

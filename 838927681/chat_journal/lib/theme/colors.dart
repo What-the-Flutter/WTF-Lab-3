@@ -15,9 +15,9 @@ class ChatJournalColors {
 
   static const black = Color.fromARGB(255, 0, 0, 0);
 
-  static const darkGray = Color.fromARGB(255, 12, 12, 12);
+  static const darkGrey = Color.fromARGB(255, 12, 12, 12);
 
-  static const lightGray = Color.fromARGB(255, 29, 29, 29);
+  static const lightGrey = Color.fromARGB(255, 29, 29, 29);
 
-  static const iconGray = Color.fromARGB(255, 179, 179, 179);
+  static const iconGrey = Color.fromARGB(255, 179, 179, 179);
 }

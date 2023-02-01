@@ -18,7 +18,7 @@ class QuestionnaireBotButton extends StatelessWidget {
         style: TextButton.styleFrom(
           backgroundColor: BlocProvider.of<ThemeCubit>(context).isLight()
               ? ChatJournalColors.lightGreen
-              : ChatJournalColors.darkGray,
+              : ChatJournalColors.darkGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),

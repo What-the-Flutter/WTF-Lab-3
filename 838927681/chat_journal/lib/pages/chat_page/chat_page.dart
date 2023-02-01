@@ -8,116 +8,245 @@ import 'package:intl/intl.dart';
 
 import '../../models/chat.dart';
 import '../../models/event.dart';
+import '../../models/icon_map.dart';
 import '../../theme/colors.dart';
 import '../../theme/fonts.dart';
 import '../../theme/theme_cubit.dart';
+import '../../widgets/search_delegate.dart';
 import '../chat_page/chat_page_cubit.dart';
 import '../chat_page/chat_page_state.dart';
+import '../home_page/home_page_cubit.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatPage extends StatelessWidget {
   final Chat chat;
-  final chatCubit = ChatCubit();
   final _controller = TextEditingController();
 
   ChatPage({required this.chat, super.key});
 
   @override
-  State<ChatPage> createState() => ChatPageState();
-}
-
-class ChatPageState extends State<ChatPage> {
-  @override
   Widget build(BuildContext context) {
-    return BlocProvider<ChatCubit>(
-      create: (context) => widget.chatCubit,
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: BlocBuilder<ChatCubit, ChatState>(
-            bloc: widget.chatCubit,
-            builder: (context, state) {
-              widget.chatCubit.loadEvents(widget.chat.events);
-              return Scaffold(
-                appBar: AppBar(
-                  centerTitle: state.isSelecting ? false : true,
-                  title: Text(
-                    state.isSelecting
-                        ? state.selectedCount.toString()
-                        : widget.chat.name,
-                    style: Fonts.chatPageTitle,
-                  ),
-                  leading: !state.isSelecting
-                      ? IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(widget.chat);
-                          },
-                          icon: const Icon(Icons.arrow_back))
-                      : IconButton(
-                          onPressed: () {
-                            setState(() {
-                              widget.chatCubit.selectionToFalse();
-                            });
-                          },
-                          icon: const Icon(Icons.close),
-                        ),
-                  actions: state.isSelecting
-                      ? _eventActions(state)
-                      : _appBarActions(state),
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        return WillPopScope(
+          onWillPop: () async {
+            Navigator.of(context).pop(chat.copyWith(events: state.events));
+            return false;
+          },
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: state.isSelecting ? false : true,
+                title: Text(
+                  _appBarTitle(context),
+                  style: Fonts.chatPageTitle,
                 ),
-                body: _chatBody(),
-              );
-            }),
-      ),
+                leading: !state.isSelecting
+                    ? IconButton(
+                        onPressed: () {
+                          chatCubit.changeIsEditingToValue(false);
+                          Navigator.of(context).pop(
+                              chat.copyWith(events: chatCubit.state.events));
+                        },
+                        icon: const Icon(Icons.arrow_back))
+                    : IconButton(
+                        onPressed: chatCubit.selectionToFalse,
+                        icon: const Icon(Icons.close),
+                      ),
+                actions: _appBarActions(context),
+              ),
+              body: _chatBody(context),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  List<Widget> _eventActions(ChatState state) {
+  List<Widget> _appBarActions(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    if (chatCubit.state.isSelecting) {
+      return _eventActions(context);
+    }
+    if (chatCubit.state.isEditing) {
+      return [
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            chatCubit.changeIsEditingToValue(false);
+          },
+        ),
+      ];
+    }
+    return _chatActions(context);
+  }
+
+  String _appBarTitle(BuildContext context) {
+    final state = BlocProvider.of<ChatCubit>(context).state;
+    if (state.isSelecting) {
+      return state.selectedCount.toString();
+    }
+    if (state.isEditing) {
+      return 'Edit mode';
+    }
+    return chat.name;
+  }
+
+  List<Widget> _eventActions(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return [
       IconButton(
         icon: const Icon(Icons.reply),
-        onPressed: () {},
+        onPressed: () {
+          _transferEvent(context);
+        },
       ),
-      !widget.chatCubit.state.isSelectedImage &&
-              widget.chatCubit.state.selectedCount == 1
+      !chatCubit.state.isSelectedImage && chatCubit.state.selectedCount == 1
           ? IconButton(
-              onPressed: _editEvent,
+              onPressed: () {
+                chatCubit.selectionToFalse();
+                _editEvent(context);
+              },
               icon: const Icon(Icons.edit),
             )
           : Container(),
-      !widget.chatCubit.state.isSelectedImage
+      !chatCubit.state.isSelectedImage
           ? IconButton(
-              onPressed: _copyEvent,
+              onPressed: () {
+                _copyEvent(context);
+              },
               icon: const Icon(Icons.copy),
             )
           : Container(),
       IconButton(
-        onPressed: _bookmarkEvent,
-        icon: Icon(widget.chatCubit.state.events[state.selectedIndex].isFavorite
-            ? Icons.bookmark
-            : Icons.bookmark_border_outlined),
+        onPressed: () {
+          _bookmarkEvent(context);
+        },
+        icon: Icon(
+            chatCubit.state.events[chatCubit.state.selectedIndex].isFavorite
+                ? Icons.bookmark
+                : Icons.bookmark_border_outlined),
       ),
       IconButton(
-        onPressed: _deleteEvent,
+        onPressed: () {
+          _deleteEvent(context);
+        },
         icon: const Icon(Icons.delete),
       ),
     ];
   }
 
-  void _editEvent() {
-    setState(() {
-      widget.chatCubit.changeSelection();
-      widget.chatCubit.editingToValue(true);
-      widget._controller.text = widget
-          .chatCubit.state.events[widget.chatCubit.state.selectedIndex].text;
-    });
+  void _transferEvent(BuildContext context) async {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final homeCubit = BlocProvider.of<HomePageCubit>(context);
+
+    final result = await showDialog(
+      context: context,
+      builder: (context) {
+        return BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, state) {
+            return _showChats(context);
+          },
+        );
+      },
+    );
+    if (result != null && homeCubit.state.chats[result].id != chat.id) {
+      if (chatCubit.state.selectedCount == 0) {
+        final event = chatCubit.state.events[chatCubit.state.selectedIndex]
+            .copyWith(isSelected: false);
+        homeCubit.addEventToChat(result, event);
+        chatCubit.deleteEvents();
+      } else {
+        var i = 0;
+        while (i < chatCubit.state.events.length) {
+          if (chatCubit.state.events[i].isSelected) {
+            final event = chatCubit.state.events[i].copyWith(isSelected: false);
+            homeCubit.addEventToChat(result, event);
+            homeCubit.sortEvents(result);
+          }
+          i++;
+        }
+        chatCubit.deleteEvents();
+      }
+    }
+    chatCubit.selectionToFalse();
+    chatCubit.changeRadioIndex(0);
   }
 
-  void _copyEvent() {
+  Widget _showChats(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    return AlertDialog(
+      title: Text(
+        'Select the page you want to migrate the selected event(s) to!',
+        style: Fonts.chatWithNoEventsFont,
+      ),
+      content: Container(
+          padding: const EdgeInsets.all(10), child: _radioChat(context)),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, null);
+          },
+          child: const Text('Cancel'),
+        ),
+        chatCubit.state.selectedRadioIndex != null
+            ? TextButton(
+                onPressed: () {
+                  Navigator.pop(context, chatCubit.state.selectedRadioIndex);
+                },
+                child: const Text('OK'),
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  Widget _radioChat(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final homeCubit = BlocProvider.of<HomePageCubit>(context);
+    final chats = homeCubit.state.chats;
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: ListView.builder(
+        itemCount: homeCubit.state.chats.length,
+        itemBuilder: (context, i) {
+          return ListTile(
+            title: Text(
+              chats[i].name,
+              style: Fonts.eventFont,
+            ),
+            leading: Radio<int>(
+              groupValue: chatCubit.state.selectedRadioIndex,
+              value: i,
+              onChanged: chatCubit.changeRadioIndex,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _editEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    if (chatCubit.state.events[chatCubit.state.selectedIndex].imagePath == '') {
+      chatCubit.changeSelection();
+      chatCubit.editingToValue(true);
+      _controller.text =
+          chatCubit.state.events[chatCubit.state.selectedIndex].text;
+      chatCubit.selectionToFalse();
+    }
+  }
+
+  void _copyEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     var clipboardText = '';
-    if (widget.chatCubit.state.selectedCount == 1) {
-      clipboardText = widget
-          .chatCubit.state.events[widget.chatCubit.state.selectedIndex].text;
+    if (chatCubit.state.selectedCount == 1) {
+      clipboardText =
+          chatCubit.state.events[chatCubit.state.selectedIndex].text;
     } else {
-      for (final event in widget.chatCubit.state.events) {
+      for (final event in chatCubit.state.events) {
         if (event.isSelected) {
           clipboardText += '${event.text} ';
         }
@@ -128,83 +257,144 @@ class ChatPageState extends State<ChatPage> {
         text: clipboardText,
       ),
     );
-    setState(() {
-      widget.chatCubit.changeSelection();
-    });
+    chatCubit.changeSelection();
   }
 
-  void _bookmarkEvent() {
-    setState(() {
-      widget.chatCubit.changeIsFavoriteEvent();
-      widget.chatCubit.selectionToFalse();
-    });
+  void _bookmarkEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    chatCubit.changeIsFavoriteEvent();
+    chatCubit.selectionToFalse();
   }
 
-  void _deleteEvent() {
-    setState(() {
-      final isFavorite = widget.chatCubit.state
-          .events[widget.chatCubit.state.selectedIndex].isFavorite;
-      if (isFavorite) {
-        widget.chatCubit.decrementFavoritesCount();
-      }
-      widget.chatCubit.deleteEvents();
-    });
+  void _deleteEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final isFavorite =
+        chatCubit.state.events[chatCubit.state.selectedIndex].isFavorite;
+    if (isFavorite) {
+      chatCubit.decrementFavoritesCount(
+        chatCubit.state.events[chatCubit.state.selectedIndex],
+      );
+    }
+    chatCubit.deleteEvents();
   }
 
-  List<Widget> _appBarActions(ChatState state) {
+  List<Widget> _chatActions(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return [
       IconButton(
         icon: const Icon(Icons.search),
-        onPressed: () {},
+        onPressed: () {
+          showSearch(
+            context: context,
+            delegate: ChatJournalSearch(
+              chatCubit: chatCubit,
+              themeCubit: BlocProvider.of<ThemeCubit>(context),
+            ),
+          );
+        },
       ),
       IconButton(
         onPressed: () {
-          setState(() {
-            widget.chatCubit.changeIsSendingImageToValue(false);
-            widget.chatCubit.changeFavoritesMode();
-          });
+          chatCubit.changeIsSendingImageToValue(false);
+          chatCubit.changeFavoritesMode();
         },
-        icon: state.isFavoritesMode
+        icon: chatCubit.state.isFavoritesMode
             ? const Icon(Icons.bookmark)
             : const Icon(Icons.bookmark_border_outlined),
       ),
     ];
   }
 
-  Widget _chatBody() {
-    final eventCount = widget.chatCubit.state.events.length;
+  Widget _chatBody(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final eventCount = chatCubit.state.events.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        (eventCount != 0 && !widget.chatCubit.state.isFavoritesMode) ||
-                (widget.chatCubit.state.isFavoritesMode &&
-                    widget.chatCubit.state.favoritesCount != 0)
-            ? Flexible(child: _chatWithEvents())
-            : _chatWithNoEvents(),
+        (eventCount != 0 && !chatCubit.state.isFavoritesMode) ||
+                (chatCubit.state.isFavoritesMode &&
+                    chatCubit.state.favoritesCount != 0)
+            ? Flexible(child: _chatWithEvents(context))
+            : _chatWithNoEvents(context),
         eventCount != 0 ? Container() : Expanded(child: Container()),
-        widget.chatCubit.state.isSendingImage
-            ? _sendImageOptions()
-            : Container(),
-        _inputPanel(),
+        _conditionPanels(context),
+        _inputPanel(context),
       ],
     );
   }
 
-  Widget _sendImageOptions() {
+  Widget _conditionPanels(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    if (chatCubit.state.isSendingImage) {
+      return _sendImageOptions(context);
+    }
+    if (chatCubit.state.isSelectingCategory) {
+      return _selectCategory();
+    }
+    return Container();
+  }
+
+  Widget _selectCategory() {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 90),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(5),
+        scrollDirection: Axis.horizontal,
+        itemCount: ChatJournalIcons.eventIcons.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.all(5),
+            child: _categoryItem(index, context),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _categoryItem(int index, BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            borderRadius: BorderRadius.circular(50),
+          ),
+          alignment: Alignment.center,
+          child: IconButton(
+            onPressed: () {
+              chatCubit.changeSelectedIcon(index);
+              chatCubit.changeIsSelectingCategory(false);
+            },
+            icon: Icon(
+              ChatJournalIcons.eventIcons[index],
+            ),
+          ),
+        ),
+        Text(
+          ChatJournalIcons.eventIconsName[index] ?? '',
+          style: Fonts.eventFont,
+        )
+      ],
+    );
+  }
+
+  Widget _sendImageOptions(BuildContext context) {
     return Row(
       children: [
         Expanded(
-          child: _sendImageFromSource(false),
+          child: _sendImageFromSource(false, context),
         ),
         Expanded(
-          child: _sendImageFromSource(true),
+          child: _sendImageFromSource(true, context),
         ),
       ],
     );
   }
 
-  Widget _sendImageFromSource(bool isGallery) {
+  Widget _sendImageFromSource(bool isGallery, BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return GestureDetector(
       onTap: () async {
         final media = await ImagePicker().pickImage(
@@ -212,10 +402,8 @@ class ChatPageState extends State<ChatPage> {
         );
         if (media != null) {
           final imagePath = media.path;
-          setState(() {
-            widget.chatCubit.addEvent(Event(
-                text: '', dateTime: DateTime.now(), imagePath: imagePath));
-          });
+          chatCubit.addEvent(
+              Event(text: '', dateTime: DateTime.now(), imagePath: imagePath));
         }
       },
       child: Padding(
@@ -252,28 +440,32 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _favoriteEvents() {
-    final eventCount = widget.chatCubit.state.events.length;
+  Widget _favoriteEvents(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final eventCount = chatCubit.state.events.length;
     return ListView.builder(
       itemCount: eventCount,
       padding: EdgeInsets.zero,
       reverse: true,
       itemBuilder: (context, index) {
-        return widget.chatCubit.state.events[eventCount - 1 - index].isFavorite
-            ? _event(eventCount - 1 - index)
+        return chatCubit.state.events[eventCount - 1 - index].isFavorite
+            ? _event(eventCount - 1 - index, chatCubit.state.events, context)
             : Container();
       },
     );
   }
 
-  Widget _chatWithEvents() {
-    return widget.chatCubit.state.isFavoritesMode
-        ? _favoriteEvents()
-        : _allEvents();
+  Widget _chatWithEvents(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    return _allEvents(
+        context,
+        chatCubit.state.isFavoritesMode
+            ? chatCubit.state.favorites
+            : chatCubit.state.events);
   }
 
-  Widget _allEvents() {
-    final eventCount = widget.chatCubit.state.events.length;
+  Widget _allEvents(BuildContext context, List<Event> events) {
+    final eventCount = events.length;
     return Column(
       children: [
         Flexible(
@@ -282,7 +474,7 @@ class ChatPageState extends State<ChatPage> {
             padding: EdgeInsets.zero,
             reverse: true,
             itemBuilder: (context, index) {
-              return _event(eventCount - 1 - index);
+              return _event(eventCount - 1 - index, events, context);
             },
           ),
         ),
@@ -290,88 +482,153 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _event(int index) {
+  Widget _event(int index, List<Event> events, BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     final eventColor = BlocProvider.of<ThemeCubit>(context).isLight()
         ? ChatJournalColors.lightGreen
-        : ChatJournalColors.darkGray;
+        : ChatJournalColors.darkGrey;
     final selectedEventColor = BlocProvider.of<ThemeCubit>(context).isLight()
         ? ChatJournalColors.accentLightGreen
-        : ChatJournalColors.lightGray;
+        : ChatJournalColors.lightGrey;
     return Align(
       alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onLongPress: () {
-          setState(() {
-            widget.chatCubit.changeSelectedIndex(index);
-            widget.chatCubit.changeSelection();
-          });
+      child: Dismissible(
+        confirmDismiss: (direction) async {
+          final isEditingImage = direction == DismissDirection.startToEnd &&
+              chatCubit.state.events[index].imagePath != '';
+          if (isEditingImage) {
+            return false;
+          }
+          return true;
         },
-        onTap: () {
-          widget.chatCubit.changeSelectedIndex(index);
-          if (!widget.chatCubit.state.isSelecting) {
-            setState(() {
-              widget.chatCubit.changeIsFavoriteEvent();
-            });
-          } else {
-            setState(() {
-              widget.chatCubit.changeSelectedItem(index);
-            });
+        onDismissed: (direction) {
+          if (direction == DismissDirection.startToEnd) {
+            if (chatCubit.state.events[index].imagePath != '') {
+              chatCubit.selectionToFalse();
+            }
+            chatCubit.changeSelectedIndex(index);
+            _editEvent(context);
+          } else if (direction == DismissDirection.endToStart) {
+            chatCubit.changeSelectedIndex(index);
+            _deleteEvent(context);
           }
         },
-        child: Column(
+        key: ValueKey<Event>(chatCubit.state.events[index]),
+        background: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _dateSeparator(index),
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 10,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 10,
-                  ),
-                  constraints: const BoxConstraints(maxWidth: 300),
-                  decoration: BoxDecoration(
-                    color: widget.chatCubit.state.events[index].isSelected
-                        ? selectedEventColor
-                        : eventColor,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      widget.chatCubit.state.events[index].imagePath == ''
-                          ? _messageEvent(index)
-                          : Image.file(File(
-                              widget.chatCubit.state.events[index].imagePath)),
-                      _eventDate(index),
-                    ],
-                  ),
-                ),
-                widget.chatCubit.state.events[index].isFavorite
-                    ? const Icon(Icons.bookmark)
-                    : Container(),
-              ],
-            ),
+            const Icon(Icons.edit),
+            const Icon(Icons.delete),
           ],
+        ),
+        child: GestureDetector(
+          onLongPress: () {
+            chatCubit.changeSelectedIndex(index);
+            chatCubit.changeSelection();
+          },
+          onTap: () {
+            chatCubit.changeSelectedIndex(index);
+            if (!chatCubit.state.isSelecting) {
+              chatCubit.changeIsFavoriteEvent();
+            } else {
+              chatCubit.changeSelectedItem(index);
+            }
+          },
+          child: Column(
+            children: [
+              _dateSeparator(index, events, context),
+              Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    decoration: BoxDecoration(
+                      color: chatCubit.state.events[index].isSelected
+                          ? selectedEventColor
+                          : eventColor,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _typeEvent(index, events, context),
+                        _eventDate(index, events, context),
+                      ],
+                    ),
+                  ),
+                  events[index].isFavorite
+                      ? const Icon(Icons.bookmark)
+                      : Container(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _dateSeparator(int index) {
+  Widget _typeEvent(int index, List<Event> events, BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    if (events[index].imagePath != '') {
+      return Image.file(File(chatCubit.state.events[index].imagePath));
+    }
+    if (events[index].iconIndex != 0) {
+      return _categoryEvent(events[index], context);
+    }
+    return _messageEvent(events[index], context);
+  }
+
+  Widget _categoryEvent(Event event, BuildContext context) {
+    final iconIndex = event.iconIndex;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                ChatJournalIcons.eventIcons[iconIndex],
+                size: 30,
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Text(
+                ChatJournalIcons.eventIconsName[iconIndex] ?? '',
+                style: Fonts.eventFont,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        _messageEvent(event, context),
+      ],
+    );
+  }
+
+  Widget _dateSeparator(int index, List<Event> events, BuildContext context) {
     final bool isOneDay;
     if (index != 0) {
-      isOneDay = _isOneDay(widget.chatCubit.state.events[index].dateTime,
-          widget.chatCubit.state.events[index - 1].dateTime);
+      isOneDay = _isOneDay(events[index].dateTime, events[index - 1].dateTime);
     } else {
       isOneDay = false;
     }
     if (!isOneDay) {
-      final textDate =
-          _getTextDate(widget.chatCubit.state.events[index].dateTime);
+      final textDate = _getTextDate(events[index].dateTime);
       return Align(
         alignment: Alignment.centerLeft,
         child: Container(
@@ -384,7 +641,7 @@ class ChatPageState extends State<ChatPage> {
             ),
             color: BlocProvider.of<ThemeCubit>(context).isLight()
                 ? ChatJournalColors.lightRed
-                : ChatJournalColors.lightGray,
+                : ChatJournalColors.lightGrey,
           ),
           padding: const EdgeInsets.symmetric(
             vertical: 5,
@@ -434,24 +691,24 @@ class ChatPageState extends State<ChatPage> {
     return DateFormat('MMM d, y').format(date);
   }
 
-  Widget _messageEvent(int index) {
+  Widget _messageEvent(Event event, BuildContext context) {
     return Text(
-      widget.chatCubit.state.events[index].text,
+      event.text,
       style: Fonts.eventFont,
       textAlign: TextAlign.left,
     );
   }
 
-  Widget _eventDate(int index) {
+  Widget _eventDate(int index, List<Event> events, BuildContext context) {
     return Text(
-      DateFormat('h:mm a')
-          .format(widget.chatCubit.state.events[index].dateTime),
+      DateFormat('h:mm a').format(events[index].dateTime),
       style: Fonts.eventDateFont,
       textAlign: TextAlign.left,
     );
   }
 
-  Widget _chatWithNoEvents() {
+  Widget _chatWithNoEvents(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Center(
@@ -460,21 +717,21 @@ class ChatPageState extends State<ChatPage> {
           decoration: BoxDecoration(
             color: BlocProvider.of<ThemeCubit>(context).isLight()
                 ? ChatJournalColors.lightGreen
-                : ChatJournalColors.lightGray,
+                : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Column(
             children: [
               Text(
-                _chatWithNoEventsTitle(widget.chat.name),
+                _chatWithNoEventsTitle(chat.name),
                 style: Fonts.chatWithNoEventsFont,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               Text(
-                widget.chatCubit.state.isFavoritesMode
+                chatCubit.state.isFavoritesMode
                     ? _chatWithNoFavoritesText()
-                    : _chatWithNoEventsText(widget.chat.name),
+                    : _chatWithNoEventsText(chat.name),
                 style: Fonts.chatWithNoEventsFont,
                 textAlign: TextAlign.center,
               ),
@@ -498,52 +755,56 @@ class ChatPageState extends State<ChatPage> {
       'You don\'t seem to have any bookmarked events yet. '
       'You can bookmark an event by single tapping the event';
 
-  Widget _inputPanel() {
+  Widget _inputPanel(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final selectedIcon = chatCubit.state.selectedIcon;
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.pending,
-              color: Colors.grey,
+            onPressed: () {
+              chatCubit.changeIsSelectingCategory(
+                  !chatCubit.state.isSelectingCategory);
+            },
+            icon: Icon(
+              selectedIcon != 0
+                  ? ChatJournalIcons.eventIcons[selectedIcon]
+                  : Icons.category,
+              color: Theme.of(context).primaryColor,
+              size: 30,
             ),
           ),
-          Expanded(child: _textField()),
-          widget.chatCubit.state.isTyping || widget._controller.text.isNotEmpty
-              ? _sendButton()
-              : _sendImage(),
+          Expanded(child: _textField(context)),
+          chatCubit.state.isTyping || _controller.text.isNotEmpty
+              ? _sendButton(context)
+              : _sendImage(context),
         ],
       ),
     );
   }
 
-  Widget _textField() {
+  Widget _textField(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return Focus(
-      onFocusChange: (value) {
-        setState(
-          () {
-            widget.chatCubit.changeIsTypingToValue(value);
-          },
-        );
-      },
+      onFocusChange: chatCubit.changeIsTypingToValue,
       child: TextField(
-        controller: widget._controller,
+        controller: _controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
           fillColor: BlocProvider.of<ThemeCubit>(context).isLight()
               ? Colors.grey[200]
-              : ChatJournalColors.lightGray,
+              : ChatJournalColors.lightGrey,
           filled: true,
         ),
       ),
     );
   }
 
-  Widget _sendButton() {
+  Widget _sendButton(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return IconButton(
-      icon: widget.chatCubit.state.isEditing
+      icon: chatCubit.state.isEditing
           ? const Icon(
               Icons.done,
               color: Colors.grey,
@@ -553,44 +814,48 @@ class ChatPageState extends State<ChatPage> {
               color: Colors.grey,
             ),
       onPressed: () {
-        widget.chatCubit.state.isEditing ? _finishEditingEvent() : _addEvent();
+        chatCubit.state.isEditing
+            ? _finishEditingEvent(context)
+            : _addEvent(context);
       },
     );
   }
 
-  void _addEvent() {
-    if (widget._controller.text.isNotEmpty) {
-      setState(() {
-        widget.chatCubit.addEvent(
-            Event(text: widget._controller.text, dateTime: DateTime.now()));
-        widget.chatCubit.favoritesModeToFalse();
-        widget._controller.clear();
-      });
+  void _addEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    final selectedIcon = chatCubit.state.selectedIcon;
+    if (_controller.text.isNotEmpty) {
+      chatCubit.addEvent(
+        Event(
+          text: _controller.text,
+          dateTime: DateTime.now(),
+          iconIndex: selectedIcon != 0 ? selectedIcon : 0,
+        ),
+      );
+      chatCubit.favoritesModeToFalse();
+      chatCubit.changeSelectedIcon(0);
+      _controller.clear();
     }
   }
 
-  void _finishEditingEvent() {
-    if (widget._controller.text.isNotEmpty) {
-      setState(() {
-        widget.chatCubit.editingToValue(false);
-        widget.chatCubit.state.events[widget.chatCubit.state.selectedIndex]
-            .text = widget._controller.text;
-        widget._controller.clear();
-      });
+  void _finishEditingEvent(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
+    if (_controller.text.isNotEmpty) {
+      chatCubit.editingToValue(false);
+      chatCubit.changeText(_controller.text);
+      _controller.clear();
     }
   }
 
-  Widget _sendImage() {
+  Widget _sendImage(BuildContext context) {
     return IconButton(
       icon: const Icon(
         Icons.photo_camera,
         color: Colors.grey,
       ),
       onPressed: () {
-        setState(() {
-          widget.chatCubit.changeIsSendingImageToValue(
-              !widget.chatCubit.state.isSendingImage);
-        });
+        final chatCubit = BlocProvider.of<ChatCubit>(context);
+        chatCubit.changeIsSendingImageToValue(!chatCubit.state.isSendingImage);
       },
     );
   }
