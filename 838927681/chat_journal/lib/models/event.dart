@@ -1,16 +1,16 @@
 class Event {
-  String text;
+  final String text;
   final String imagePath;
-  final int? iconIndex;
+  final int iconIndex;
   final DateTime dateTime;
   final bool isFavorite;
   final bool isSelected;
 
-  Event({
+  const Event({
     required this.text,
     required this.dateTime,
     this.imagePath = '',
-    this.iconIndex,
+    this.iconIndex = 0,
     this.isFavorite = false,
     this.isSelected = false,
   });

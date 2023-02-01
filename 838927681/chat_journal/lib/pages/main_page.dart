@@ -2,37 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../models/chat.dart';
+import '../models/event.dart';
 import '../theme/colors.dart';
 import '../theme/fonts.dart';
 import '../theme/theme_cubit.dart';
 import '../theme/theme_state.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/theme_button.dart';
+import 'chat_page/chat_page_cubit.dart';
+import 'create_chat_page/create_chat_cubit.dart';
 import 'home_page/home.dart';
+import 'home_page/home_page_cubit.dart';
 
-class ChatJournal extends StatefulWidget {
+final _chats = <Chat>[
+  Chat(
+      id: 0,
+      name: 'Travel',
+      iconIndex: 0,
+      creationDate: DateTime.now().subtract(const Duration(days: 1)),
+      events: []),
+  Chat(
+    id: 1,
+    name: 'Family',
+    iconIndex: 1,
+    creationDate: DateTime.now().subtract(const Duration(days: 2)),
+    events: [
+      Event(
+          text: 'My Family',
+          dateTime: DateTime.now().subtract(const Duration(hours: 24))),
+      Event(text: 'My big big family', dateTime: DateTime.now()),
+    ],
+  ),
+  Chat(
+    id: 2,
+    name: 'Sport',
+    iconIndex: 2,
+    events: [],
+    creationDate: DateTime.now().subtract(const Duration(days: 3)),
+  ),
+];
+
+class ChatJournal extends StatelessWidget {
   const ChatJournal({super.key});
 
   final title = 'Home';
 
   @override
-  State<ChatJournal> createState() => _ChatJournalState();
-}
-
-class _ChatJournalState extends State<ChatJournal> {
-  @override
   Widget build(BuildContext context) {
-    final themeCubit = ThemeCubit();
-    return BlocProvider<ThemeCubit>(
-      create: (context) => themeCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(
+          create: (context) => ThemeCubit(),
+          lazy: false,
+        ),
+        BlocProvider<ChatCubit>(
+          create: (context) => ChatCubit(),
+        ),
+        BlocProvider<CreateChatCubit>(
+          create: (context) => CreateChatCubit(isCreatingMode: true),
+        ),
+        BlocProvider<HomePageCubit>(
+          create: (context) => HomePageCubit(_chats),
+        ),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
-          {
-            return MaterialApp(
-              theme: state.theme,
-              home: _mainPage(context),
-            );
-          }
+          return MaterialApp(
+            theme: state.theme,
+            home: _mainPage(context),
+          );
         },
       ),
     );
@@ -42,7 +81,7 @@ class _ChatJournalState extends State<ChatJournal> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.title,
+          title,
         ),
         centerTitle: true,
         actions: const [
@@ -50,7 +89,7 @@ class _ChatJournalState extends State<ChatJournal> {
         ],
       ),
       drawer: _drawer(context),
-      body: HomePage(),
+      body: const HomePage(),
       bottomNavigationBar: const BottomNavigation(),
     );
   }
