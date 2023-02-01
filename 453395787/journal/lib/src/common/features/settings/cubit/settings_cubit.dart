@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../utils/default_values.dart';
-import '../data/settings_repository_api.dart';
+import '../settings.dart';
 
 part 'settings_state.dart';
 
@@ -14,7 +14,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   })  : _settingsRepository = settingsRepository,
         super(
           SettingsState(
-            fontSize: settingsRepository.fontSize,
+            fontScaleFactor: settingsRepository.fontScaleFactor,
             messageAlignment: settingsRepository.messageAlignment,
             isCenterDateBubbleShown: settingsRepository.isCenterDateBubbleShown,
             imagePath: settingsRepository.backgroundImagePath,
@@ -23,11 +23,13 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsRepositoryApi _settingsRepository;
 
-  Future<void> changeFontSize(FontSize fontSize) async {
-    emit(state.copyWith(
-      fontSize: fontSize,
-    ));
-    await _settingsRepository.setFontSize(fontSize);
+  Future<void> changeFontSize(FontScaleFactor fontScaleFactor) async {
+    emit(
+      state.copyWith(
+        fontScaleFactor: fontScaleFactor,
+      ),
+    );
+    await _settingsRepository.setFontScaleFactor(fontScaleFactor);
   }
 
   Future<void> changeMessageAlignment(MessageAlignment messageAlignment) async {
@@ -60,7 +62,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> resetToDefault() async {
     emit(
       SettingsState(
-        fontSize: DefaultValues.fontSize,
+        fontScaleFactor: DefaultValues.fontScaleFactor,
         messageAlignment: DefaultValues.messageAlignment,
         isCenterDateBubbleShown: DefaultValues.isCenterDateBubbleShown,
       ),

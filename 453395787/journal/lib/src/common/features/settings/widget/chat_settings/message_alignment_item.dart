@@ -1,4 +1,4 @@
-part of '../view/chat_settings_page.dart';
+part of '../../view/chat_settings_page.dart';
 
 class _MessageAlignmentItem extends StatelessWidget {
   const _MessageAlignmentItem({

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:localization/localization.dart';
 
-import '../../../utils/insets.dart';
-import '../../../utils/locale.dart' as locale;
-import '../cubit/settings_cubit.dart';
-import '../data/settings_repository_api.dart';
+import '../../../../utils/insets.dart';
+import '../../../../utils/locale.dart' as locale;
+import '../../settings.dart';
 
 class FontSizeSelector extends StatelessWidget {
   const FontSizeSelector({
@@ -28,27 +27,33 @@ class FontSizeSelector extends StatelessWidget {
                 title: Text(
                   locale.SettingsPage.fontSizeSmall.i18n(),
                 ),
-                value: state.fontSize == FontSize.small,
+                value: state.fontScaleFactor == FontScaleFactor.small,
                 onChanged: (isChecked) async {
-                  context.read<SettingsCubit>().changeFontSize(FontSize.small);
+                  context
+                      .read<SettingsCubit>()
+                      .changeFontSize(FontScaleFactor.small);
                 },
               ),
               CheckboxListTile(
                 title: Text(
                   locale.SettingsPage.fontSizeMedium.i18n(),
                 ),
-                value: state.fontSize == FontSize.medium,
+                value: state.fontScaleFactor == FontScaleFactor.medium,
                 onChanged: (isChecked) async {
-                  context.read<SettingsCubit>().changeFontSize(FontSize.medium);
+                  context
+                      .read<SettingsCubit>()
+                      .changeFontSize(FontScaleFactor.medium);
                 },
               ),
               CheckboxListTile(
                 title: Text(
                   locale.SettingsPage.fontSizeLarge.i18n(),
                 ),
-                value: state.fontSize == FontSize.large,
+                value: state.fontScaleFactor == FontScaleFactor.large,
                 onChanged: (isChecked) async {
-                  context.read<SettingsCubit>().changeFontSize(FontSize.large);
+                  context
+                      .read<SettingsCubit>()
+                      .changeFontSize(FontScaleFactor.large);
                 },
               ),
             ],

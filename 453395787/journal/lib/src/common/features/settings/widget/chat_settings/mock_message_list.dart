@@ -1,13 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+part of '../../view/chat_settings_page.dart';
 
-import '../../../../features/chat/chat.dart';
-import '../../../models/ui/message.dart';
-import '../../../utils/insets.dart';
-import '../cubit/settings_cubit.dart';
-
-class MockMessageList extends StatelessWidget {
-  const MockMessageList({super.key});
+class _MockMessageList extends StatelessWidget {
+  const _MockMessageList({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

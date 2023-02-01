@@ -5,16 +5,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/default_values.dart';
-import 'settings_repository_api.dart';
+import '../settings.dart';
 
 class SettingsRepository extends SettingsRepositoryApi {
-  static final String _fontSizeKey = 'fontSizeKey';
+  static final String _fontScaleFactorKey = 'fontScaleFactorKey';
   static final String _isCenterDateBubbleShownKey =
       'isCenterDateBubbleShownKey';
   static final String _messageAlignmentKey = 'messageAlignmentKey';
   static final String _imagePathKey = 'imagePathKey';
 
-  static FontSize _fontSize = FontSize.medium;
+  static FontScaleFactor _fontScaleFactor = FontScaleFactor.medium;
   static bool _isCenterDateBubbleShown = true;
   static MessageAlignment _messageAlignment = MessageAlignment.right;
   static String? _imagePath;
@@ -28,9 +28,9 @@ class SettingsRepository extends SettingsRepositoryApi {
 
   static Future<void> _initFontSizeProperty() async {
     final prefs = await SharedPreferences.getInstance();
-    final fontSizeName = prefs.getString(_fontSizeKey);
+    final fontSizeName = prefs.getString(_fontScaleFactorKey);
     if (fontSizeName != null) {
-      _fontSize = FontSize.values.byName(fontSizeName);
+      _fontScaleFactor = FontScaleFactor.values.byName(fontSizeName);
     }
   }
 
@@ -56,13 +56,13 @@ class SettingsRepository extends SettingsRepositoryApi {
   }
 
   @override
-  FontSize get fontSize => _fontSize;
+  FontScaleFactor get fontScaleFactor => _fontScaleFactor;
 
   @override
-  Future<void> setFontSize(FontSize fontSize) async {
+  Future<void> setFontScaleFactor(FontScaleFactor fontScaleFactor) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_fontSizeKey, fontSize.name);
-    _fontSize = fontSize;
+    await prefs.setString(_fontScaleFactorKey, fontScaleFactor.name);
+    _fontScaleFactor = fontScaleFactor;
   }
 
   @override
@@ -115,7 +115,7 @@ class SettingsRepository extends SettingsRepositoryApi {
 
   @override
   Future<void> resetToDefault() async {
-    await setFontSize(DefaultValues.fontSize);
+    await setFontScaleFactor(DefaultValues.fontScaleFactor);
     await setMessageAlignment(DefaultValues.messageAlignment);
     await setCenterDateBubbleShown(DefaultValues.isCenterDateBubbleShown);
   }

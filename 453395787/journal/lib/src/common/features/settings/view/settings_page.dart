@@ -11,7 +11,22 @@ import '../../../utils/locale.dart' as locale;
 import '../../../widget/confirmation_dialog.dart';
 import '../../theme/theme.dart';
 import '../cubit/settings_cubit.dart';
-import '../widget/font_size_selector.dart';
+import '../widget/settings/font_size_selector.dart';
+
+part '../widget/settings/chat_settings_item.dart';
+
+part '../widget/settings/manage_tags_item.dart';
+
+part '../widget/settings/manage_languages_item.dart';
+
+part '../widget/settings/manage_security_item.dart';
+
+part '../widget/settings/manage_font_size_item.dart';
+
+part '../widget/settings/share_item.dart';
+
+part '../widget/settings/reset_all_item.dart';
+
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -27,96 +42,14 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
       body: Column(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.chat_outlined),
-            title: Text(
-              locale.SettingsPage.chatItem.i18n(),
-            ),
-            onTap: () async {
-              context.go(Navigation.chatSettingsPagePath);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.tag_outlined),
-            title: Text(
-              locale.SettingsPage.tagItem.i18n(),
-            ),
-            onTap: () {
-              context.go(
-                Navigation.manageTagsPagePath,
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.language_outlined),
-            title: Text(
-              locale.SettingsPage.languageItem.i18n(),
-            ),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => const LanguageSelector(),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.security_outlined),
-            title: Text(
-              locale.SettingsPage.securityItem.i18n(),
-            ),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => SecuritySettings(
-                  securityRepository: SecurityRepository(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.text_fields_outlined),
-            title: Text(
-              locale.SettingsPage.fontSizeItem.i18n(),
-            ),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => const FontSizeSelector(),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.share_outlined),
-            title: Text(
-              locale.SettingsPage.shareItem.i18n(),
-            ),
-            onTap: () async {
-              await Share.share(
-                locale.SettingsPage.shareAppText.i18n(),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.refresh_outlined),
-            title: Text(
-              locale.SettingsPage.resetItem.i18n(),
-            ),
-            onTap: () async {
-              final isConfirmed = await showConfirmationDialog(
-                title: locale.SettingsPage.resetConfirmationTitle.i18n(),
-                content: locale.SettingsPage.resetConfirmationSubtitle.i18n(),
-                context: context,
-              );
-
-              if (isConfirmed != null && isConfirmed) {
-                context.read<SettingsCubit>().resetToDefault();
-                context.read<SecurityCubit>().resetToDefault();
-                context.read<ThemeCubit>().resetToDefault();
-                context.read<LocaleCubit>().resetToDefault();
-              }
-            },
-          ),
+        children: const [
+          _ChatSettingsItem(),
+          _ManageTagsItem(),
+          _ManageLanguagesItem(),
+          _ManageSecurityItem(),
+          _ManageFontSizeItem(),
+          _ShareItem(),
+          _ResetAllItem(),
         ],
       ),
     );

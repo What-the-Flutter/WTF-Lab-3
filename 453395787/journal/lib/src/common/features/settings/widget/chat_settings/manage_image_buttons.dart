@@ -1,14 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:localization/localization.dart';
+part of '../../view/chat_settings_page.dart';
 
-import '../../../utils/locale.dart' as locale;
-import '../../../utils/text_styles.dart';
-import '../cubit/settings_cubit.dart';
-
-class ManageImageButtons extends StatelessWidget {
-  const ManageImageButtons({super.key});
+class _ManageImageButton extends StatelessWidget {
+  const _ManageImageButton({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +30,7 @@ class ManageImageButtons extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () async {
-                  context
-                      .read<SettingsCubit>()
-                      .changeBackgroundImagePath(null);
+                  context.read<SettingsCubit>().changeBackgroundImagePath(null);
                 },
                 child: Text(
                   locale.SettingsPage.removeBackgroundImage.i18n(),

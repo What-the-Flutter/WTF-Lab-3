@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../common/data/repository/chat_repository.dart';
-import '../../../../../common/features/settings/cubit/settings_cubit.dart';
-import '../../../../../common/features/settings/data/settings_repository_api.dart';
+import '../../../../../common/features/settings/settings.dart';
 import '../../../../../common/models/ui/message.dart';
 import '../../../../../common/utils/insets.dart';
 import '../../../../../common/utils/radius.dart';

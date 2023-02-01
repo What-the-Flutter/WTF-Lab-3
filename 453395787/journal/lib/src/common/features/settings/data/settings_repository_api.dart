@@ -1,21 +1,9 @@
-enum FontSize {
-  small(scaleFactor: 0.8),
-  medium(scaleFactor: 1),
-  large(scaleFactor: 1.2);
-
-  const FontSize({
-    required this.scaleFactor,
-  });
-
-  final double scaleFactor;
-}
-
-enum MessageAlignment { left, right }
+import '../settings.dart';
 
 abstract class SettingsRepositoryApi {
-  FontSize get fontSize;
+  FontScaleFactor get fontScaleFactor;
 
-  Future<void> setFontSize(FontSize fontSize);
+  Future<void> setFontScaleFactor(FontScaleFactor fontScaleFactor);
 
   MessageAlignment get messageAlignment;
 

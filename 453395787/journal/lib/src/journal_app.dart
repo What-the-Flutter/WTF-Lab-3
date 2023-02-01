@@ -42,7 +42,7 @@ class JournalApp extends StatelessWidget {
                     fontSizeFactor: context
                         .watch<SettingsCubit>()
                         .state
-                        .fontSize
+                        .fontScaleFactor
                         .scaleFactor,
                   ),
               useMaterial3: true,
