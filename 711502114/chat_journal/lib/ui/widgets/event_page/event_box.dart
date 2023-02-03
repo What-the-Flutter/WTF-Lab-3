@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../../models/category.dart';
 import '../../../models/event.dart';
 import '../../../theme/colors.dart';
 import '../../../utils/utils.dart';
@@ -26,41 +27,50 @@ class EventBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final category = event.category;
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
         children: [
-          if (!_isValidPath(event.photoPath))
-            _messageContainer()
-          else if (event.message.isEmpty)
-            _attachContainer()
-          else
-            Column(
-              children: [
-                _messageContainer(size.width * .75, false),
-                _attachContainer(false),
-              ],
-            ),
-          const SizedBox(width: 10),
+          if (category != null) ...[
+            _pinCategoryLabel(category),
+            const SizedBox(height: 5),
+          ],
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Icon(
-                Icons.bookmark,
-                color: event.isFavorite
-                    ? _iconFavoriteColor
-                    : _iconNonFavoriteColor,
-                size: 10,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              if (!_isValidPath(event.photoPath))
+                _messageContainer()
+              else if (event.message.isEmpty)
+                _attachContainer()
+              else
+                Column(
+                  children: [
+                    _messageContainer(size.width * .75, false),
+                    _attachContainer(false),
+                  ],
+                ),
+              const SizedBox(width: 10),
+              Row(
                 children: [
-                  Text(formatDate(context, event.dateTime)),
-                  Text(formatTime(event.dateTime)),
+                  Icon(
+                    Icons.bookmark,
+                    color: event.isFavorite
+                        ? _iconFavoriteColor
+                        : _iconNonFavoriteColor,
+                    size: 10,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(formatDate(context, event.dateTime)),
+                      Text(formatTime(event.dateTime)),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -122,5 +132,15 @@ class EventBox extends StatelessWidget {
     } catch (e) {
       return false;
     }
+  }
+
+  Widget _pinCategoryLabel(Category category) {
+    return Row(
+      children: [
+        Text(category.title, style: const TextStyle(fontSize: 18)),
+        SizedBox(width: size.width * .05),
+        Icon(category.icon),
+      ],
+    );
   }
 }

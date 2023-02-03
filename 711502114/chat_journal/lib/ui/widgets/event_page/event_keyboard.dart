@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../cubit/event/event_cubit.dart';
 import '../../../cubit/home/home_cubit.dart';
+import '../../../models/category.dart';
 import '../../../theme/colors.dart';
 import 'attach_dialog.dart';
 import 'keyboard_icon.dart';
@@ -12,6 +13,7 @@ class EventKeyboard extends StatelessWidget {
   final double width;
   final TextEditingController fieldText;
   final bool editMode;
+  final Category? category;
 
   late final BuildContext widgetContext;
 
@@ -20,6 +22,7 @@ class EventKeyboard extends StatelessWidget {
     required this.width,
     required this.fieldText,
     required this.editMode,
+    this.category,
   }) : super(key: key);
 
   @override
@@ -33,8 +36,8 @@ class EventKeyboard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           KeyBoardIcon(
-            icon: Icons.attach_file,
-            onPressed: () => _openDialog(local),
+            icon: category?.icon ?? Icons.category,
+            onPressed: _openCloseCategoryList,
           ),
           Expanded(
             child: TextField(
@@ -56,12 +59,26 @@ class EventKeyboard extends StatelessWidget {
             ),
           ),
           KeyBoardIcon(
+            icon: Icons.image,
+            onPressed: () => _openDialog(local),
+          ),
+          KeyBoardIcon(
             icon: !editMode ? Icons.send : Icons.edit,
             onPressed: !editMode ? _sendEvent : _turnOffEditMode,
           ),
         ],
       ),
     );
+  }
+
+  void _openCloseCategoryList() {
+    final cubit = BlocProvider.of<EventCubit>(widgetContext);
+
+    if (!cubit.categoryMode) {
+      cubit.openCategory();
+    } else {
+      cubit.closeCategory();
+    }
   }
 
   void _openDialog(AppLocalizations? local) {

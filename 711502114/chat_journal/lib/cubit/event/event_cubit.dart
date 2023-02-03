@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../models/category.dart';
 import '../../models/chat.dart';
 import '../../models/event.dart';
 import 'event_state.dart';
@@ -12,6 +13,9 @@ class EventCubit extends Cubit<EventState> {
   bool _isFavoriteMode = false;
   bool _isSelectedMode = false;
   bool _isEditMode = false;
+  bool _isCategoryMode = false;
+
+  Category? _category;
 
   late List<Event> _events;
   final List<int> selectedItemIndexes = [];
@@ -21,6 +25,10 @@ class EventCubit extends Cubit<EventState> {
   bool get selectedMode => _isSelectedMode;
 
   bool get editMode => _isEditMode;
+
+  bool get categoryMode => _isCategoryMode;
+
+  Category? get category => _category;
 
   List<Event> get events => _events;
 
@@ -112,8 +120,11 @@ class EventCubit extends Cubit<EventState> {
         message: message,
         dateTime: DateTime.now(),
         photoPath: path,
+        category: _category,
       ),
     );
+
+    _category = null;
 
     update();
   }
@@ -149,7 +160,7 @@ class EventCubit extends Cubit<EventState> {
   }) {
     if (!deleteMode) {
       for (int i in selectedItemIndexes) {
-        events[i] = events[i].copyWith(isSelected: false);
+        events[i] = events[i].copyWith(isSelected: false, category: _category);
       }
     }
 
@@ -158,12 +169,32 @@ class EventCubit extends Cubit<EventState> {
       events[index] = events[index].copyWith(message: fieldText.text);
     }
 
-    fieldText?.clear();
     _isEditMode = false;
-
     _isSelectedMode = false;
+
+    _category = null;
+
     selectedItemIndexes.clear();
+    fieldText?.clear();
 
     update();
+  }
+
+  void openCategory() {
+    _isCategoryMode = true;
+
+    update();
+  }
+
+  void closeCategory() {
+    _isCategoryMode = false;
+
+    update();
+  }
+
+  void setCategory(Category? category) {
+    _category = category;
+
+    closeCategory();
   }
 }

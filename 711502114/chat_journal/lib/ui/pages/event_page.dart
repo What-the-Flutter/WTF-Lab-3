@@ -9,6 +9,7 @@ import '../../cubit/search/search_cubit.dart';
 import '../../models/chat.dart';
 import '../../theme/colors.dart';
 import '../../utils/utils.dart';
+import '../widgets/event_page/category_box.dart';
 import '../widgets/event_page/dismiss_item.dart';
 import '../widgets/event_page/event_box.dart';
 import '../widgets/event_page/event_keyboard.dart';
@@ -57,10 +58,13 @@ class _MessengerPageState extends State<MessengerPage> {
                   widget.chat.events.isNotEmpty
                       ? _buildMessageList(size, cubit)
                       : InfoBox(size: size, mainTitle: widget.chat.title),
+                  if (cubit.categoryMode)
+                    CategoryBox(setCategory: cubit.setCategory),
                   EventKeyboard(
                     width: size.width,
                     fieldText: _fieldText,
                     editMode: cubit.editMode,
+                    category: cubit.category,
                   ),
                 ],
               ),
