@@ -9,20 +9,23 @@ import '../../models/event.dart';
 import 'event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  bool _isFavorite = false;
+  bool _isFavoriteMode = false;
   bool _isSelectedMode = false;
   bool _isEditMode = false;
 
   late List<Event> _events;
   final List<int> selectedItemIndexes = [];
 
-  bool get favorite => _isFavorite;
+  bool get favoriteMode => _isFavoriteMode;
 
   bool get selectedMode => _isSelectedMode;
 
   bool get editMode => _isEditMode;
 
   List<Event> get events => _events;
+
+  List<Event> get filterEvents =>
+      _isFavoriteMode ? events.where((e) => e.isFavorite).toList() : events;
 
   EventCubit() : super(EventState(events: []));
 
@@ -35,48 +38,33 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(events: state.events));
   }
 
-  void showFavorites() {
-    _isFavorite = !_isFavorite;
-    if (_isFavorite) {
-      _events = state.events.where((element) => element.isFavorite).toList();
-    } else {
-      _events = state.events;
+  void changeFavorite() {
+    _isFavoriteMode = !_isFavoriteMode;
+
+    update();
+  }
+
+  void migrateEvents(Chat chat) {
+    selectedItemIndexes.sort();
+
+    final migrationEvents = <Event>[];
+    for (int i in selectedItemIndexes) {
+      migrationEvents.add(_events[i]);
+    }
+
+    deleteMessage();
+
+    for (Event event in migrationEvents) {
+      final unselectedEvent = event.copyWith(isSelected: false);
+      chat.events.add(unselectedEvent);
     }
 
     update();
   }
 
-  void disableSelect([TextEditingController? fieldText]) {
-    for (int i in selectedItemIndexes) {
-      events[i] = events[i].copyWith(isSelected: false);
-    }
-
-    fieldText?.clear();
-    _isEditMode = false;
-
-    finishEditMode();
-  }
-
-  void turnOnEditMode(TextEditingController fieldText) {
+  void startEditMode(TextEditingController fieldText) {
     _isEditMode = true;
     fieldText.text = events[selectedItemIndexes.last].message;
-
-    update();
-  }
-
-  void turnOffEditMode(TextEditingController fieldText) {
-    _isEditMode = false;
-    events[selectedItemIndexes.last] =
-        events[selectedItemIndexes.last].copyWith(message: fieldText.text);
-    disableSelect(fieldText);
-  }
-
-  void addEvent(String message, [String? path]) {
-    events.add(Event(
-      message: message,
-      dateTime: DateTime.now(),
-      photoPath: path,
-    ));
 
     update();
   }
@@ -96,7 +84,7 @@ class EventCubit extends Cubit<EventState> {
 
     Clipboard.setData(ClipboardData(text: text));
 
-    disableSelect();
+    finishEditMode();
   }
 
   void changeFavoriteStatus() {
@@ -104,7 +92,7 @@ class EventCubit extends Cubit<EventState> {
       events[i] = events[i].copyWith(isFavorite: !events[i].isFavorite);
     }
 
-    disableSelect();
+    finishEditMode();
   }
 
   void deleteMessage() {
@@ -115,12 +103,17 @@ class EventCubit extends Cubit<EventState> {
       events.removeAt(i + shift--);
     }
 
-    finishEditMode();
+    finishEditMode(deleteMode: true);
   }
 
-  void finishEditMode() {
-    _isSelectedMode = false;
-    selectedItemIndexes.clear();
+  void addEvent(String message, [String? path]) {
+    events.add(
+      Event(
+        message: message,
+        dateTime: DateTime.now(),
+        photoPath: path,
+      ),
+    );
 
     update();
   }
@@ -149,20 +142,27 @@ class EventCubit extends Cubit<EventState> {
     update();
   }
 
-  void migrateEvents(Chat chat) {
-    selectedItemIndexes.sort();
-
-    final migrationEvents = <Event>[];
-    for (int i in selectedItemIndexes) {
-      migrationEvents.add(_events[i]);
+  void finishEditMode({
+    TextEditingController? fieldText,
+    bool deleteMode = false,
+    bool editSuccess = false,
+  }) {
+    if (!deleteMode) {
+      for (int i in selectedItemIndexes) {
+        events[i] = events[i].copyWith(isSelected: false);
+      }
     }
 
-    deleteMessage();
-
-    for (Event event in migrationEvents) {
-      final unselectedEvent = event.copyWith(isSelected: false);
-      chat.events.add(unselectedEvent);
+    if (fieldText != null && editSuccess) {
+      final index = selectedItemIndexes.last;
+      events[index] = events[index].copyWith(message: fieldText.text);
     }
+
+    fieldText?.clear();
+    _isEditMode = false;
+
+    _isSelectedMode = false;
+    selectedItemIndexes.clear();
 
     update();
   }

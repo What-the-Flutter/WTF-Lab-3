@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 import '../../cubit/event/event_cubit.dart';
 import '../../cubit/event/event_state.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/search/search_cubit.dart';
 import '../../models/chat.dart';
+import '../../theme/colors.dart';
 import '../../utils/utils.dart';
-import '../widgets/event_page/attach_dialog.dart';
+import '../widgets/event_page/dismiss_item.dart';
 import '../widgets/event_page/event_box.dart';
 import '../widgets/event_page/event_keyboard.dart';
 import '../widgets/event_page/info_box.dart';
@@ -43,12 +43,12 @@ class _MessengerPageState extends State<MessengerPage> {
     _local = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
 
-    return WillPopScope(
-      onWillPop: _handleBackButton,
-      child: BlocBuilder<EventCubit, EventState>(
-        builder: (context, state) {
-          final cubit = context.read<EventCubit>();
-          return Scaffold(
+    return BlocBuilder<EventCubit, EventState>(
+      builder: (context, state) {
+        final cubit = context.read<EventCubit>();
+        return WillPopScope(
+          onWillPop: () => _handleBackButton(cubit),
+          child: Scaffold(
             appBar: _buildAppBar(cubit),
             body: Center(
               child: Column(
@@ -60,17 +60,14 @@ class _MessengerPageState extends State<MessengerPage> {
                   EventKeyboard(
                     width: size.width,
                     fieldText: _fieldText,
-                    fieldHint: _local?.enterFieldHint ?? '',
-                    rightIcon: !cubit.editMode ? Icons.send : Icons.edit,
-                    openDialog: _openDialog,
-                    action: !cubit.editMode ? _sendEvent : _turnOffEditMode,
+                    editMode: cubit.editMode,
                   ),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -83,7 +80,7 @@ class _MessengerPageState extends State<MessengerPage> {
           ? ToolMenuIcon(
               icon: Icons.close,
               onPressed: () {
-                cubit.disableSelect();
+                cubit.finishEditMode(fieldText: _fieldText);
                 updateChatLastEvent();
               },
             )
@@ -112,16 +109,17 @@ class _MessengerPageState extends State<MessengerPage> {
         },
       ),
       ToolMenuIcon(
-        icon: cubit.favorite ? Icons.bookmark : _bookMark,
-        color: cubit.favorite ? Colors.yellow : null,
+        icon: cubit.favoriteMode ? Icons.bookmark : _bookMark,
+        color: cubit.favoriteMode ? Colors.yellow : null,
         onPressed: () {
-          cubit.showFavorites();
+          cubit.changeFavorite();
         },
       ),
     ];
   }
 
   List<Widget> _initEditAppBarTools(EventCubit cubit) {
+    final pencil = cubit.selectedItemIndexes.length == 1 && !cubit.editMode;
     return [
       Expanded(
         child: Align(
@@ -134,17 +132,27 @@ class _MessengerPageState extends State<MessengerPage> {
           ),
         ),
       ),
-      if (cubit.selectedItemIndexes.length == 1 && !cubit.editMode) ...[
-        _initMigrationIcon(cubit),
+      ...[
+        if (!pencil) const ToolMenuIcon(),
         ToolMenuIcon(
-          icon: Icons.edit,
+          icon: Icons.transit_enterexit,
           onPressed: () {
-            cubit.turnOnEditMode(_fieldText);
+            showDialog(
+              context: context,
+              builder: (_) {
+                final function = cubit.migrateEvents;
+                return MigrationEventsDialog(handleClicking: function);
+              },
+            );
           },
         ),
-      ] else ...[
-        const ToolMenuIcon(),
-        _initMigrationIcon(cubit),
+        if (pencil)
+          ToolMenuIcon(
+            icon: Icons.edit,
+            onPressed: () {
+              cubit.startEditMode(_fieldText);
+            },
+          ),
       ],
       ToolMenuIcon(
         icon: Icons.copy,
@@ -161,80 +169,80 @@ class _MessengerPageState extends State<MessengerPage> {
       ToolMenuIcon(
         icon: Icons.delete,
         onPressed: () {
-          Provider.of<HomeCubit>(context, listen: false).update();
+          updateChatLastEvent();
           cubit.deleteMessage();
         },
       ),
     ];
   }
 
-  ToolMenuIcon _initMigrationIcon(EventCubit cubit) {
-    return ToolMenuIcon(
-      icon: Icons.transit_enterexit,
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) {
-            final function = cubit.migrateEvents;
-            return MigrationEventsDialog(handleClicking: function);
-          },
-        );
-      },
-    );
-  }
-
   Widget _buildMessageList(Size size, EventCubit cubit) {
     return Expanded(
       child: ListView.builder(
         reverse: true,
-        itemCount: cubit.events.length,
+        itemCount: cubit.filterEvents.length,
         itemBuilder: (_, i) {
-          final index = cubit.events.length - 1 - i;
-          return InkWell(
-            child: EventBox(
-              event: cubit.events[index],
-              size: size,
-              isSelected: cubit.events[index].isSelected,
-            ),
-            onTap: () {
-              if (!cubit.editMode && cubit.selectedMode) {
-                cubit.handleSelecting(index);
-              }
-            },
-            onLongPress: () {
-              if (!cubit.editMode) {
-                cubit.handleSelecting(index);
-              }
-            },
-          );
+          final index = cubit.filterEvents.length - 1 - i;
+          return _initEventItem(cubit, index, size);
         },
       ),
     );
   }
 
-  void _openDialog() {
-    AttachDialog(context, _local, _sendEvent).open();
+  Widget _initEventItem(EventCubit cubit, int index, Size size) {
+    return Dismissible(
+      key: UniqueKey(),
+      background: DismissItem(
+        color: editColor,
+        icon: Icons.edit,
+        xDirection: -0.8,
+      ),
+      secondaryBackground: DismissItem(
+        color: deleteColor,
+        icon: Icons.delete,
+        xDirection: 0.85,
+      ),
+      onDismissed: (direction) {
+        cubit.handleSelecting(index);
+
+        if (direction == DismissDirection.startToEnd) {
+          cubit.startEditMode(_fieldText);
+        } else if (direction == DismissDirection.endToStart) {
+          cubit.deleteMessage();
+        }
+
+        updateChatLastEvent();
+      },
+      child: InkWell(
+        child: EventBox(
+          event: cubit.filterEvents[index],
+          size: size,
+          isSelected: cubit.filterEvents[index].isSelected,
+        ),
+        onTap: () {
+          if (!cubit.editMode && cubit.selectedMode) {
+            cubit.handleSelecting(index);
+          }
+        },
+        onLongPress: () {
+          if (cubit.favoriteMode) {
+            cubit.changeFavorite();
+            return;
+          }
+
+          if (!cubit.editMode) {
+            cubit.handleSelecting(index);
+          }
+        },
+      ),
+    );
   }
 
-  void _sendEvent([String? path]) {
-    if (_fieldText.text.isEmpty && path == null) return;
-
-    BlocProvider.of<EventCubit>(context).addEvent(_fieldText.text, path);
-    updateChatLastEvent();
-    _fieldText.clear();
-  }
-
-  void _turnOffEditMode() {
-    BlocProvider.of<EventCubit>(context).turnOffEditMode(_fieldText);
-
-    updateChatLastEvent();
-  }
-
-  Future<bool> _handleBackButton() async {
-    if (!BlocProvider.of<EventCubit>(context).selectedMode) {
+  Future<bool> _handleBackButton(EventCubit cubit) async {
+    if (!cubit.selectedMode) {
       return true;
     } else {
-      BlocProvider.of<EventCubit>(context).disableSelect();
+      cubit.finishEditMode(fieldText: _fieldText);
       updateChatLastEvent();
       return false;
     }
