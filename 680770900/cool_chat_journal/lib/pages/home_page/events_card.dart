@@ -14,13 +14,11 @@ class EventsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Card(
       child: InkWell(
-        onTap:() {
-          print('Click to EventsCard');
-        },
+        onTap:() => print('Click to EventsCard'),
         child: ListTile(
           leading: Container(
             padding: const EdgeInsets.all(10.0),

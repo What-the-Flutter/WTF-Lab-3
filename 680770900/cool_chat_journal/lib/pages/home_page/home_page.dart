@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'events_card.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.appName});
-
+  
   final String appName;
+  
+  const HomePage({super.key, required this.appName});  
   
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,8 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () => print('Click to menu'),),
+          onPressed: () => print('Click to menu'),
+        ),
         title: Text(appName),
       ),
       body: ListView(
@@ -56,7 +58,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
 
-    var labelSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 12.0;
+    final labelSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 12.0;
 
     return BottomNavigationBar(
       currentIndex: _currentIndex,
