@@ -1,12 +1,24 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/event.dart';
 
 class EventView extends StatefulWidget {
+  
   final Event event;
+  final bool isSelected;
 
-  const EventView({required this.event});
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+
+  const EventView({
+    required this.event,
+    this.isSelected = false,
+    this.onTap,
+    this.onLongPress,  
+  });
 
   @override
   State<EventView> createState() => _EventViewState();
@@ -20,6 +32,12 @@ class _EventViewState extends State<EventView> {
     return UnconstrainedBox(
       child: Row(
         children: [
+          if (widget.isSelected)
+            const Icon(
+              Icons.check_circle,
+              size: 15.0,
+            ),
+
           Text(
             dateFormat.format(widget.event.changeTime),
             style: TextStyle(
@@ -31,6 +49,7 @@ class _EventViewState extends State<EventView> {
             const Icon(
               Icons.bookmark,
               color: Colors.deepOrange,
+              size: 15.0,
             ),
         ],
       ),
@@ -39,11 +58,8 @@ class _EventViewState extends State<EventView> {
 
   Widget buildEventContent() {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          widget.event.isFavorite = !widget.event.isFavorite;
-        });
-      },
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
