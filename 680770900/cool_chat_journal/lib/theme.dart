@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BaseThemeData extends Theme {
-  
+class AppTheme {
+
   final colorScheme = ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(255, 212, 243, 234),
     primary: const Color.fromARGB(255, 159, 207, 199),
@@ -9,8 +9,7 @@ class BaseThemeData extends Theme {
     onBackground: const Color.fromARGB(255, 255, 234, 222),
   );   
 
-  @override
-  Widget build(BuildContext context) {
+  ThemeData createThemeData(BuildContext context) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
