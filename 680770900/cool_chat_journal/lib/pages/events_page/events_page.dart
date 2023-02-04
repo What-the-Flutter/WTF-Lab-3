@@ -1,10 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../../model/event.dart';
 import '../../model/events_group.dart';
+import 'app_bar_builder.dart';
 import 'bottom_panel.dart';
+import 'delete_dialog.dart';
 import 'event_view.dart';
 
 class EventsPage extends StatefulWidget {  
@@ -19,10 +19,13 @@ class EventsPage extends StatefulWidget {
 
 class _EventsPageState extends State<EventsPage> {
 
-  bool _isSelectedMode = false;
   final Map<int, bool> _selectedFlag = {};
+  
+  AppBarBuilder? _appBarBuilder;
 
   bool _showFavorites = false;
+
+  bool isSelectionMode() => countSelectedEvents() != 0;
 
   void addEvent(String eventText) {
     setState(() {
@@ -31,7 +34,7 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   void handleTap(bool isSelected, int index) {
-    if (_isSelectedMode) {
+    if (isSelectionMode()) {
        handleLongPress(isSelected, index);
     } else {
       setState(() {
@@ -44,174 +47,55 @@ class _EventsPageState extends State<EventsPage> {
   void handleLongPress(bool isSelected, int index) {
     setState(() {
       _selectedFlag[index] = !isSelected;
-      _isSelectedMode = _selectedFlag.containsValue(true);
     });
   }
 
-  void resetSelection() {
+  void handleResetSelection() {
     setState(() {
       for (final i in _selectedFlag.keys) {
         _selectedFlag[i] = false;
       }
-      _isSelectedMode = false;
     });
+  }
+
+  void handleRemoval() {
+    showModalBottomSheet<bool>(
+      context: context,
+      builder: (context) => DeleteDialog(countSelectedEvents()),  
+    ).then((value) {
+      if (value == true) {
+        var events = widget.eventsGroup.events;
+        for (var i = 0; i < widget.eventsGroup.count; i++) {
+          if (_selectedFlag[i] == true) {
+            events.remove(events[i]);
+          }
+        }
+      }
+    }).then(
+      (value) => handleResetSelection()
+    );
+  }
+
+  void handleBackButton() {
+    Navigator.pop(context);
+  }
+
+  void handleShowFavorite() {
+    setState(() => _showFavorites = !_showFavorites);
+  }
+
+  void handleMarkFavorites() {
+    var events = widget.eventsGroup.events;
+    for (var i = 0; i < widget.eventsGroup.count; i++) {
+      if (_selectedFlag[i] == true) {
+        events[i].isFavorite = !events[i].isFavorite;
+      }
+    }
+    handleResetSelection();
   }
 
   int countSelectedEvents() {
     return _selectedFlag.values.where((value) => value).length;
-  }
-
-  Widget buildAppBarLeading() {
-    if (!_isSelectedMode) {
-      return IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context),
-      );
-    } else {
-      return IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: resetSelection,
-      );
-    }
-  }
-
-  Widget buildAppBarTitle() {
-    if (!_isSelectedMode) {
-      return Text(widget.eventsGroup.groupName);
-    } else {
-      var count = countSelectedEvents();
-      return Text(count.toString());
-    }
-  }
-
-  List<Widget> buildActions() {
-    var actions = <Widget>[];
-
-    if (!_isSelectedMode) {
-      actions.add(buildSearchAction());
-      actions.add(buildFavoriteAction());
-    } else {
-      if (countSelectedEvents() == 1) {
-        actions.add(buildEditAction());
-      }
-      actions.add(buildCopyAction());
-      actions.add(buildMarkFavoriteAction());
-      actions.add(buildDeleteAction());
-    }
-
-    return actions;
-  }
-
-  Widget buildFavoriteAction() {
-    Icon bookmarkIcon;
-    if (_showFavorites) {
-      bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
-    } else {
-      bookmarkIcon = const Icon(Icons.bookmark_border);
-    }
-
-    return IconButton(
-      icon: bookmarkIcon,
-      onPressed: () {
-        setState(() => _showFavorites = !_showFavorites);
-      },
-    );
-  }
-
-  Widget buildSearchAction() {
-    return IconButton(
-      icon: const Icon(Icons.search),
-      onPressed: () => {},
-    );
-  }
-
-  Widget buildDeleteAction() {
-    return IconButton(
-      icon: const Icon(Icons.delete),
-      onPressed: () {
-        showModalBottomSheet<bool>(
-          context: context,
-          builder: (context) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Delete Entry(s)?',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 15.0),
-                  Text(
-                    'Are you sure you want delete the '
-                    '${countSelectedEvents()} selected events?',
-                  ),
-                  
-                  TextButton.icon(
-                    onPressed: () => Navigator.pop(context, true),
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    ),
-                    label: const Text('Delete'),
-                  ),
-
-                  TextButton.icon(
-                    onPressed: () => Navigator.pop(context, false),
-                    icon: const Icon(
-                      Icons.cancel,
-                      color: Colors.blue,
-                    ),
-                    label: const Text('Cancel'),
-                  ),
-                ],
-              ),
-            );
-          },  
-        ).then((value) {
-          if (value == true) {
-            var events = widget.eventsGroup.events;
-            for (var i = 0; i < widget.eventsGroup.count; i++) {
-              if (_selectedFlag[i] == true) {
-                events.remove(events[i]);
-              }
-            }
-            resetSelection();
-          }
-        });
-      },
-    );
-  }
-
-  Widget buildCopyAction() {
-    return IconButton(
-      icon: const Icon(Icons.copy),
-      onPressed: resetSelection,
-    );
-  }
-
-  Widget buildMarkFavoriteAction() {
-    return IconButton(
-      icon: const Icon(Icons.bookmark_border),
-      onPressed: () {
-        for (var i = 0; i < widget.eventsGroup.count; i++) {
-          if (_selectedFlag[i] == true) {
-            var event = widget.eventsGroup.events[i];
-            event.isFavorite = !event.isFavorite;
-          }
-        }
-
-        resetSelection();
-      },
-    );
-  }
-
-  Widget buildEditAction() {
-    return IconButton(
-      icon: const Icon(Icons.edit),
-      onPressed: resetSelection,
-    );
   }
 
   Widget buildEventsView() {
@@ -245,7 +129,7 @@ class _EventsPageState extends State<EventsPage> {
           child: buildEventsView(),
         ),
 
-        if (!_isSelectedMode)
+        if (!isSelectionMode())
           BottomPanel(
             onSendText: addEvent,
           ),
@@ -255,12 +139,18 @@ class _EventsPageState extends State<EventsPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    _appBarBuilder ??= AppBarBuilder(
+      title: widget.eventsGroup.groupName,
+      handleBackButton: handleBackButton,
+      handleResetSelection: handleResetSelection,
+      handleShowFavorite: handleShowFavorite,
+      handleRemoval: handleRemoval,
+      handleMarkFavorites: handleMarkFavorites,
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        leading: buildAppBarLeading(),
-        title: buildAppBarTitle(),
-        actions: buildActions(),
-      ),
+      appBar: _appBarBuilder!.build(countSelectedEvents(), _showFavorites),
       body: buildScaffoldBody(),
     );
   }
