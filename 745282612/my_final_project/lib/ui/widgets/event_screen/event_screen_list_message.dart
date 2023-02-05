@@ -131,7 +131,7 @@ Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
             child: Text(
               DateFormat.yMMMEd().format(eventList[index].messageTime),
               style: TextStyle(
-                fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
           ),

@@ -24,7 +24,7 @@ class MainScreenDrawer extends StatelessWidget {
               child: Text(
                 S.of(context).account,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.displayMedium!.fontSize,
                 ),
               ),
             ),
@@ -45,7 +45,7 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).setting_title,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                 ),
               ),
             ),
@@ -60,7 +60,7 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).exit_the_app,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                 ),
               ),
             ),

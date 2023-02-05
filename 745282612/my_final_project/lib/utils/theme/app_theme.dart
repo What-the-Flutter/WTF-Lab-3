@@ -8,19 +8,19 @@ enum FontSizeKey { small, medium, large }
 
 class AppFontSize {
   static final smallFontSize = const TextTheme(
-    headline2: TextStyle(fontSize: 20),
-    bodyText1: TextStyle(fontSize: 14),
-    bodyText2: TextStyle(fontSize: 12),
+    displayMedium: TextStyle(fontSize: 20),
+    bodyLarge: TextStyle(fontSize: 14),
+    bodyMedium: TextStyle(fontSize: 12),
   );
   static final mediumFontSize = const TextTheme(
-    headline2: TextStyle(fontSize: 22),
-    bodyText1: TextStyle(fontSize: 16),
-    bodyText2: TextStyle(fontSize: 14),
+    displayMedium: TextStyle(fontSize: 22),
+    bodyLarge: TextStyle(fontSize: 16),
+    bodyMedium: TextStyle(fontSize: 14),
   );
   static final largeFontSize = const TextTheme(
-    headline2: TextStyle(fontSize: 24),
-    bodyText1: TextStyle(fontSize: 18),
-    bodyText2: TextStyle(fontSize: 16),
+    displayMedium: TextStyle(fontSize: 24),
+    bodyLarge: TextStyle(fontSize: 18),
+    bodyMedium: TextStyle(fontSize: 16),
   );
 }
 

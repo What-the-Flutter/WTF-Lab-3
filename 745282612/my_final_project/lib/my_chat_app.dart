@@ -76,11 +76,7 @@ class _MainAppState extends State<MainApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: S.delegate.supportedLocales,
-            home: status
-                ? const Menu()
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+            home: status ? const Menu() : Container(),
           );
         },
       ),

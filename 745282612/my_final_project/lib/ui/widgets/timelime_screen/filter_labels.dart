@@ -63,7 +63,7 @@ class FilterByLabels extends StatelessWidget {
                                         .read<SettingCubit>()
                                         .state
                                         .textTheme
-                                        .bodyText1!
+                                        .bodyLarge!
                                         .fontSize,
                                   ),
                                 ),

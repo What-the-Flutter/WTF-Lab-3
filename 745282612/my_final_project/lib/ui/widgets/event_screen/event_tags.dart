@@ -25,7 +25,7 @@ class EventTag extends StatelessWidget {
                   color: context.read<EventCubit>().state.tagTitle == items
                       ? Colors.green
                       : Colors.grey,
-                  fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                  fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                 ),
               ),
               onPressed: () => context.read<EventCubit>().changeTagTitle(items),

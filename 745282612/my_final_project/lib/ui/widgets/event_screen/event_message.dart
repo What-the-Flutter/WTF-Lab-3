@@ -62,7 +62,7 @@ class _EventMessageState extends State<EventMessage> {
                         widget.event.sectionTitle!,
                         style: TextStyle(
                           fontSize:
-                              context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                              context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                         ),
                       ),
                     ],
@@ -83,7 +83,7 @@ class _EventMessageState extends State<EventMessage> {
                   : Text(
                       widget.event.messageContent,
                       style: TextStyle(
-                        fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                        fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                       ),
                     ),
             ),
@@ -95,7 +95,7 @@ class _EventMessageState extends State<EventMessage> {
                       widget.event.tag!,
                       style: TextStyle(
                         color: AppColors.colorNormalGrey,
-                        fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                        fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                       ),
                     ),
                   )
@@ -108,7 +108,7 @@ class _EventMessageState extends State<EventMessage> {
                     DateFormat('hh:mm a').format(widget.event.messageTime),
                     style: TextStyle(
                       color: AppColors.colorNormalGrey,
-                      fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                      fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                     ),
                   ),
                 ),

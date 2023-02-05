@@ -70,7 +70,7 @@ class EventScreenInstruction extends StatelessWidget {
                       ? S.of(context).no_search_title
                       : S.of(context).title_instruction(title),
                   style: TextStyle(
-                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                   ),
                 ),
                 const SizedBox(
@@ -79,7 +79,7 @@ class EventScreenInstruction extends StatelessWidget {
                 Text(
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                     color: AppColors.colorNormalGrey,
                   ),
                   state.isSearch

@@ -46,7 +46,7 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
       title: Text(
         title(widget.index),
         style: TextStyle(
-          fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+          fontSize: context.watch<SettingCubit>().state.textTheme.displayMedium!.fontSize,
         ),
       ),
       actions: [

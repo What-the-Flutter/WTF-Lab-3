@@ -38,7 +38,7 @@ class _AddPageAppBarState extends State<AddPageAppBar> {
       title: Text(
         titleText(),
         style: TextStyle(
-          fontSize: context.read<SettingCubit>().state.textTheme.headline2!.fontSize,
+          fontSize: context.read<SettingCubit>().state.textTheme.displayMedium!.fontSize,
         ),
       ),
       automaticallyImplyLeading: false,

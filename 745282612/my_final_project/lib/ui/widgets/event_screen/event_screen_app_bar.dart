@@ -47,7 +47,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               eventState.countSelected.toString(),
               style: TextStyle(
-                fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
           ],
@@ -134,7 +134,7 @@ class EventScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: Text(
           title,
           style: TextStyle(
-            fontSize: context.read<SettingCubit>().state.textTheme.headline2!.fontSize,
+            fontSize: context.read<SettingCubit>().state.textTheme.displayMedium!.fontSize,
           ),
         ),
         centerTitle: true,

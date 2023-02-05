@@ -45,7 +45,7 @@ class EventSection extends StatelessWidget {
                 Text(
                   items.titleSection,
                   style: TextStyle(
-                    fontSize: context.read<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                    fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                   ),
                 ),
               ],

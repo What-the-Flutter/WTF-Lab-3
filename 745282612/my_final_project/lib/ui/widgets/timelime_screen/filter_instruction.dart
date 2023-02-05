@@ -27,7 +27,7 @@ class FilterInstruction extends StatelessWidget {
           textAlign: TextAlign.center,
           S.of(context).filter_info(instructionText),
           style: TextStyle(
-            fontSize: context.read<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+            fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
           ),
         ),
       ),

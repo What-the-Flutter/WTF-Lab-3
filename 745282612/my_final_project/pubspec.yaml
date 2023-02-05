@@ -38,6 +38,8 @@ dependencies:
   persian_datetime_picker: ^2.5.0
   animations: ^2.0.7
   cached_network_image: ^3.2.3
+  bloc_test: ^9.1.0
+  firebase_auth_mocks: ^0.9.3
 
 dev_dependencies:
   flutter_test:

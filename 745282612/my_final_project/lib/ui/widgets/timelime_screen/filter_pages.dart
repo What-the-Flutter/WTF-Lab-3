@@ -62,7 +62,7 @@ class _FilterByPagesState extends State<FilterByPages> {
                                       .read<SettingCubit>()
                                       .state
                                       .textTheme
-                                      .bodyText1!
+                                      .bodyLarge!
                                       .fontSize,
                                 ),
                               ),

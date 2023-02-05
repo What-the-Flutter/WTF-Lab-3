@@ -54,7 +54,7 @@ class FilterByTags extends StatelessWidget {
                                     .read<SettingCubit>()
                                     .state
                                     .textTheme
-                                    .bodyText1!
+                                    .bodyLarge!
                                     .fontSize,
                               ),
                             ),
