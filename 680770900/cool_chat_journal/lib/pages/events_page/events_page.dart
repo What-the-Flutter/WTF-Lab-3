@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../model/event.dart';
 import '../../model/events_group.dart';
@@ -119,7 +120,27 @@ class _EventsPageState extends State<EventsPage> {
     });
 
     handleResetSelection();
+  }
 
+  void handleCopyAction() {
+
+    var copyText = '';
+    for (var key in _selectedFlag.keys) {
+      if (_selectedFlag[key] == true) {
+        if (copyText != '') {
+          copyText += '\n';
+        }
+        copyText += '${widget.eventsGroup.events[key].text}'; 
+      }
+    }
+
+    Clipboard.setData(
+      ClipboardData(
+        text: copyText,
+      ),
+    );
+
+    handleResetSelection();
   }
 
   int countSelectedEvents() {
@@ -186,6 +207,7 @@ class _EventsPageState extends State<EventsPage> {
       handleMarkFavorites: handleMarkFavorites,
       handleEditAction: handleEditAction,
       handleCloseEditMode: handleCloseEditMode,
+      handleCopyAction: handleCopyAction,
     );
 
     return Scaffold(

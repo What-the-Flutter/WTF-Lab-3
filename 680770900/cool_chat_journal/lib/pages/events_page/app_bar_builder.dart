@@ -11,6 +11,7 @@ class AppBarBuilder {
   final VoidCallback handleMarkFavorites;
   final VoidCallback handleEditAction;
   final VoidCallback handleCloseEditMode;
+  final VoidCallback handleCopyAction;
 
   const AppBarBuilder({
     required this.title,
@@ -21,6 +22,7 @@ class AppBarBuilder {
     required this.handleMarkFavorites,
     required this.handleEditAction,
     required this.handleCloseEditMode,
+    required this.handleCopyAction,
   });
 
   Widget buildFavoriteAction(bool showFavorites) {
@@ -61,7 +63,7 @@ class AppBarBuilder {
   Widget buildCopyAction() {
     return IconButton(
       icon: const Icon(Icons.copy),
-      onPressed: handleResetSelection,
+      onPressed: handleCopyAction,
     );
   }
 

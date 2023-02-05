@@ -120,6 +120,7 @@ class _EventField extends StatelessWidget {
     return TextField(
       focusNode: focusNode,
       controller: controller,
+      maxLines: null,
 
       decoration: const InputDecoration(
         hintText: 'Enter event',
