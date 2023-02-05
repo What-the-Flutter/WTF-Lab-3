@@ -114,7 +114,8 @@ class AppBarBuilder {
   List<Widget> buildActions(
     int countSelected,
     bool showFavorites,
-    bool isEditMode
+    bool isEditMode,
+    bool isHasImage,
   ) {
     var actions = <Widget>[];
 
@@ -124,10 +125,14 @@ class AppBarBuilder {
     } else if (isEditMode) {
       actions.add(buildCloseEditModeAction());
     } else {
-      if (countSelected == 1) {
-        actions.add(buildEditAction());
+      if (!isHasImage) {
+        if (countSelected == 1) {
+          actions.add(buildEditAction());
+        }
+
+        actions.add(buildCopyAction());
       }
-      actions.add(buildCopyAction());
+      
       actions.add(buildMarkFavoriteAction());
       actions.add(buildDeleteAction());
     }
@@ -139,11 +144,17 @@ class AppBarBuilder {
     int countSelected = 0,
     bool showFavorites = false,
     bool isEditMode = false,
+    bool isHasImage = false,
   }) {
     return AppBar(
       leading: buildAppBarLeading(countSelected, isEditMode),
       title: buildAppBarTitle(countSelected, isEditMode),
-      actions: buildActions(countSelected, showFavorites, isEditMode),
+      actions: buildActions(
+        countSelected,
+        showFavorites,
+        isEditMode,
+        isHasImage,
+      ),
     );
   }
 }

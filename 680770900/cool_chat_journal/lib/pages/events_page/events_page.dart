@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../model/event.dart';
 import '../../model/events_group.dart';
@@ -28,10 +31,53 @@ class _EventsPageState extends State<EventsPage> {
   bool _isEditMode = false;
 
   bool isSelectionMode() => countSelectedEvents() != 0;
+  bool isHasImage() => _selectedFlag.keys.
+    where((key) => _selectedFlag[key] == true).
+    where((key) => widget.eventsGroup.events[key].isImage).isNotEmpty;
 
-  void addEvent(String eventText) {
+  void addTextEvent(String eventText) {
     setState(() {
       widget.eventsGroup.events.add(Event(eventText));
+    });
+  }
+
+  Future<ImageSource?> showImageDialog() {
+    return showDialog<ImageSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: const Text('Choose image source'),
+        actions: [
+          ElevatedButton(
+            child: const Text('Camera'), 
+            onPressed: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          ElevatedButton(
+            child: const Text('Gallery'), 
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
+          ),
+        ]
+      ),
+    );
+  }
+
+  Future<void> uploadImage(ImageSource source) async {
+    final image = await ImagePicker().pickImage(source: source);
+            
+    if (image != null) {
+      widget.eventsGroup.events.add(Event(
+        File(image.path),
+        isImage: true,
+      ));
+    }
+  }
+
+  void addImage() {
+    showImageDialog().then((source) async {
+      if (source != null) {
+        await uploadImage(source);
+      }
+      
+      setState(() {});
     });
   }
 
@@ -40,7 +86,7 @@ class _EventsPageState extends State<EventsPage> {
       firstWhere((i) => _selectedFlag[i] == true);
 
     setState(() {
-      widget.eventsGroup.events[index].text = eventText;
+      widget.eventsGroup.events[index].content = eventText;
     });
 
     _isEditMode = false;
@@ -126,11 +172,12 @@ class _EventsPageState extends State<EventsPage> {
 
     var copyText = '';
     for (var key in _selectedFlag.keys) {
-      if (_selectedFlag[key] == true) {
+      var event = widget.eventsGroup.events[key];
+      if (_selectedFlag[key] == true && !event.isImage) {
         if (copyText != '') {
           copyText += '\n';
         }
-        copyText += '${widget.eventsGroup.events[key].text}'; 
+        copyText += '${event.content}'; 
       }
     }
 
@@ -149,14 +196,27 @@ class _EventsPageState extends State<EventsPage> {
 
   Widget buildEventsView() {
     if (widget.eventsGroup.isNotEmpty) {
+      
+      List<Event> events;
+      if (_showFavorites) {
+        events = widget.eventsGroup.events.
+          where((event) => event.isFavorite).toList();
+      } else {
+        events = widget.eventsGroup.events;
+      }
+
+      if (events.isEmpty) {
+        events = widget.eventsGroup.events;
+      }
+     
       return ListView.builder(
-        itemCount: widget.eventsGroup.count,
+        itemCount: events.length,
         itemBuilder: (_, index) {
           _selectedFlag[index] = _selectedFlag[index] ?? false;  
           var isSelected = _selectedFlag[index]!;
 
           return EventView(
-            event: widget.eventsGroup.events[index],
+            event: events[index],
             isSelected: isSelected,
             onTap: () => handleTap(isSelected, index),
             onLongPress: () => handleLongPress(isSelected, index),
@@ -183,12 +243,17 @@ class _EventsPageState extends State<EventsPage> {
 
         if (!isSelectionMode())
           BottomPanel(
-            onSendText: addEvent,
+            onSendImage: addImage,
+            onSendText: addTextEvent,
           ),
 
-        if (_isEditMode && index != -1)
+        if (
+          _isEditMode &&
+          index != -1 &&
+          !widget.eventsGroup.events[index].isImage
+        )
           BottomPanel(
-            textFieldValue: widget.eventsGroup.events[index].text,
+            textFieldValue: widget.eventsGroup.events[index].content,
             onSendText: editEvent,
           ),
       ],
@@ -214,7 +279,8 @@ class _EventsPageState extends State<EventsPage> {
       appBar: _appBarBuilder!.build(
         countSelected: countSelectedEvents(),
         showFavorites: _showFavorites,
-        isEditMode: _isEditMode
+        isEditMode: _isEditMode,
+        isHasImage: isHasImage(),
       ),
 
       body: buildScaffoldBody(),

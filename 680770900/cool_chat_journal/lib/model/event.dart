@@ -1,10 +1,10 @@
-/// Contains information about event.
+/// Contains information about event.   
 class Event { 
-  String text;
+  dynamic content;
 
+  bool isImage;
   bool isFavorite;
   DateTime changeTime = DateTime.now();
 
-  Event(this.text, {this.isFavorite = false});
-
+  Event(this.content, {this.isFavorite = false, this.isImage = false});
 }

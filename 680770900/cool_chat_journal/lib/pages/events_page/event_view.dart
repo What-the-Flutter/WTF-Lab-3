@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -70,7 +68,19 @@ class _EventViewState extends State<EventView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.event.text),
+            if (!widget.event.isImage)
+              Text(widget.event.content),
+
+            if (widget.event.isImage)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Image.file(
+                  widget.event.content,
+                  width: 200.0,
+                  height: 200.0,
+                ),
+              ),
+
             const SizedBox(height: 10.0),
             buildEventSubtitle(), 
           ],
