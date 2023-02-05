@@ -9,6 +9,8 @@ class AppBarBuilder {
   final VoidCallback handleShowFavorite;
   final VoidCallback handleRemoval;
   final VoidCallback handleMarkFavorites;
+  final VoidCallback handleEditAction;
+  final VoidCallback handleCloseEditMode;
 
   const AppBarBuilder({
     required this.title,
@@ -17,6 +19,8 @@ class AppBarBuilder {
     required this.handleShowFavorite,
     required this.handleRemoval,
     required this.handleMarkFavorites,
+    required this.handleEditAction,
+    required this.handleCloseEditMode,
   });
 
   Widget buildFavoriteAction(bool showFavorites) {
@@ -37,6 +41,13 @@ class AppBarBuilder {
     return IconButton(
       icon: const Icon(Icons.search),
       onPressed: () => {},
+    );
+  }
+
+  Widget buildCloseEditModeAction() {
+    return IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: handleCloseEditMode,
     );
   }
 
@@ -64,15 +75,20 @@ class AppBarBuilder {
   Widget buildEditAction() {
     return IconButton(
       icon: const Icon(Icons.edit),
-      onPressed: handleResetSelection,
+      onPressed: handleEditAction,
     );
   }
 
-  Widget buildAppBarLeading(int countSelected) {
+  Widget buildAppBarLeading(int countSelected, bool isEditMode) {
     if (countSelected == 0) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: handleBackButton,
+      );
+    } else if (isEditMode) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: handleCloseEditMode,
       );
     } else {
       return IconButton(
@@ -82,21 +98,29 @@ class AppBarBuilder {
     }
   }
 
-  Widget buildAppBarTitle(int countSelected) {
+  Widget buildAppBarTitle(int countSelected, bool isEditMode) {
     if (countSelected == 0) {
       return Text(title);
+    } else if (isEditMode) {
+      return const Text('Edit mode');
     } else {
       var count = countSelected;
       return Text(count.toString());
     }
   }
 
-  List<Widget> buildActions(int countSelected, bool showFavorites) {
+  List<Widget> buildActions(
+    int countSelected,
+    bool showFavorites,
+    bool isEditMode
+  ) {
     var actions = <Widget>[];
 
     if (countSelected == 0) {
       actions.add(buildSearchAction());
       actions.add(buildFavoriteAction(showFavorites));
+    } else if (isEditMode) {
+      actions.add(buildCloseEditModeAction());
     } else {
       if (countSelected == 1) {
         actions.add(buildEditAction());
@@ -109,12 +133,15 @@ class AppBarBuilder {
     return actions;
   }
 
-  AppBar build(int countSelected, bool showFavorites,) {
+  AppBar build({
+    int countSelected = 0,
+    bool showFavorites = false,
+    bool isEditMode = false,
+  }) {
     return AppBar(
-      leading: buildAppBarLeading(countSelected),
-      title: buildAppBarTitle(countSelected),
-      actions: buildActions(countSelected, showFavorites),
+      leading: buildAppBarLeading(countSelected, isEditMode),
+      title: buildAppBarTitle(countSelected, isEditMode),
+      actions: buildActions(countSelected, showFavorites, isEditMode),
     );
-}
-
+  }
 }

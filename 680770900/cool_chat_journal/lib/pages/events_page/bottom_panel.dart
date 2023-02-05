@@ -4,8 +4,13 @@ class BottomPanel extends StatefulWidget {
   
   final void Function(String)? onSendText;
   final VoidCallback? onSendImage;
+  final String? textFieldValue;
 
-  const BottomPanel({this.onSendText, this.onSendImage});
+  const BottomPanel({
+    this.onSendText,
+    this.onSendImage,
+    this.textFieldValue
+  });
 
   @override
   State<BottomPanel> createState() => _BottomPanelState();
@@ -40,9 +45,11 @@ class _BottomPanelState extends State<BottomPanel> {
 
   Widget buildTextField() {
     return Expanded(
-      child: EventField(
+      child: _EventField(
+        textFieldValue: widget.textFieldValue,
         focusNode: _textFocusNode,
         controller: _textController,
+        onSubmitted: (_) => handleEnterText(),
       ),
     );
   }
@@ -69,6 +76,10 @@ class _BottomPanelState extends State<BottomPanel> {
   void initState() {
     super.initState();
 
+    if (widget.textFieldValue != null) {
+      _textController.text = widget.textFieldValue!;
+    }
+    
     _textController.addListener(handleChangeText);
   }
 
@@ -90,12 +101,19 @@ class _BottomPanelState extends State<BottomPanel> {
   }
 }
 
-class EventField extends StatelessWidget {
+class _EventField extends StatelessWidget {
 
+  final String? textFieldValue;
   final FocusNode? focusNode;
-  final TextEditingController? controller;
+  final TextEditingController controller;
+  final void Function(String)? onSubmitted;
 
-  const EventField({this.focusNode, this.controller});
+  const _EventField({
+    this.textFieldValue,
+    this.focusNode,
+    required this.controller,
+    this.onSubmitted
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +124,10 @@ class EventField extends StatelessWidget {
       decoration: const InputDecoration(
         hintText: 'Enter event',
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.white, 
       ),
+
+      onSubmitted: onSubmitted,
     );
   }
 

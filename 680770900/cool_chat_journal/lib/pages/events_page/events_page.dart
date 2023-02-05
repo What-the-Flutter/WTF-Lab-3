@@ -24,6 +24,7 @@ class _EventsPageState extends State<EventsPage> {
   AppBarBuilder? _appBarBuilder;
 
   bool _showFavorites = false;
+  bool _isEditMode = false;
 
   bool isSelectionMode() => countSelectedEvents() != 0;
 
@@ -31,6 +32,18 @@ class _EventsPageState extends State<EventsPage> {
     setState(() {
       widget.eventsGroup.events.add(Event(eventText));
     });
+  }
+
+  void editEvent(String eventText) {
+    var index = _selectedFlag.keys.
+      firstWhere((i) => _selectedFlag[i] == true);
+
+    setState(() {
+      widget.eventsGroup.events[index].text = eventText;
+    });
+
+    _isEditMode = false;
+    handleResetSelection();
   }
 
   void handleTap(bool isSelected, int index) {
@@ -94,6 +107,21 @@ class _EventsPageState extends State<EventsPage> {
     handleResetSelection();
   }
 
+  void handleEditAction() {
+    setState(() {
+      _isEditMode = true;
+    });
+  }
+
+  void handleCloseEditMode() {
+    setState(() {
+      _isEditMode = false;
+    });
+
+    handleResetSelection();
+
+  }
+
   int countSelectedEvents() {
     return _selectedFlag.values.where((value) => value).length;
   }
@@ -123,6 +151,9 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget buildScaffoldBody() {
+    var index = _selectedFlag.keys.
+      firstWhere((i) => _selectedFlag[i] == true, orElse: () => -1);
+
     return Column(
       children: [
         Expanded(
@@ -132,6 +163,12 @@ class _EventsPageState extends State<EventsPage> {
         if (!isSelectionMode())
           BottomPanel(
             onSendText: addEvent,
+          ),
+
+        if (_isEditMode && index != -1)
+          BottomPanel(
+            textFieldValue: widget.eventsGroup.events[index].text,
+            onSendText: editEvent,
           ),
       ],
     );
@@ -147,10 +184,17 @@ class _EventsPageState extends State<EventsPage> {
       handleShowFavorite: handleShowFavorite,
       handleRemoval: handleRemoval,
       handleMarkFavorites: handleMarkFavorites,
+      handleEditAction: handleEditAction,
+      handleCloseEditMode: handleCloseEditMode,
     );
 
     return Scaffold(
-      appBar: _appBarBuilder!.build(countSelectedEvents(), _showFavorites),
+      appBar: _appBarBuilder!.build(
+        countSelected: countSelectedEvents(),
+        showFavorites: _showFavorites,
+        isEditMode: _isEditMode
+      ),
+
       body: buildScaffoldBody(),
     );
   }
