@@ -50,12 +50,16 @@ class _AddChatPageState extends State<AddChatPage> {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
+    final orientation = MediaQuery.of(context).orientation;
+    final itemRowCount = orientation == Orientation.portrait ? 4 : 8;
+
     return Scaffold(
+      resizeToAvoidBottomInset: checkOrientation(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(height: 70),
+            SizedBox(height: orientation == Orientation.portrait ? 70 : 30),
             Text(
               !_isEditMode ? local?.addNewChat ?? '' : local?.editChat ?? '',
               style: const TextStyle(fontSize: 26),
@@ -65,7 +69,7 @@ class _AddChatPageState extends State<AddChatPage> {
               fieldText: _fieldText,
               pageLabel: local?.addPageLabel ?? '',
             ),
-            _buildIconsTable(),
+            _buildIconsTable(itemRowCount),
           ],
         ),
       ),
@@ -74,9 +78,7 @@ class _AddChatPageState extends State<AddChatPage> {
           return Align(
             alignment: const Alignment(1, 0.87),
             child: FloatingActionButton(
-              onPressed: () {
-                _addOrEditChat(context);
-              },
+              onPressed: () => _addOrEditChat(context),
               child: Icon(_fabIcon),
             ),
           );
@@ -85,7 +87,7 @@ class _AddChatPageState extends State<AddChatPage> {
     );
   }
 
-  Widget _buildIconsTable() {
+  Widget _buildIconsTable(int itemRowCount) {
     return Expanded(
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(
@@ -93,8 +95,8 @@ class _AddChatPageState extends State<AddChatPage> {
           vertical: 20,
         ),
         shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: itemRowCount,
           mainAxisSpacing: 40,
           crossAxisSpacing: 40,
         ),
@@ -108,9 +110,7 @@ class _AddChatPageState extends State<AddChatPage> {
               index: index,
               pageIndex: _iconIndex,
             ),
-            onTap: () {
-              setState(() => _iconIndex = index);
-            },
+            onTap: () => setState(() => _iconIndex = index),
           );
         },
       ),

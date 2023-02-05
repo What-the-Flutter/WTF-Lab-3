@@ -42,7 +42,8 @@ class _MessengerPageState extends State<MessengerPage> {
   Widget build(BuildContext context) {
     BlocProvider.of<EventCubit>(context).init(widget.chat);
     _local = AppLocalizations.of(context);
-    final size = MediaQuery.of(context).size;
+    final query = MediaQuery.of(context);
+    final size = query.size;
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -51,23 +52,29 @@ class _MessengerPageState extends State<MessengerPage> {
           onWillPop: () => _handleBackButton(cubit),
           child: Scaffold(
             appBar: _buildAppBar(cubit),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  widget.chat.events.isNotEmpty
-                      ? _buildMessageList(size, cubit)
-                      : InfoBox(size: size, mainTitle: widget.chat.title),
-                  if (cubit.categoryMode)
-                    CategoryBox(setCategory: cubit.setCategory),
-                  EventKeyboard(
-                    width: size.width,
-                    fieldText: _fieldText,
-                    editMode: cubit.editMode,
-                    category: cubit.category,
-                  ),
-                ],
-              ),
+            body: Stack(
+              children: [
+                if (widget.chat.events.isEmpty)
+                  InfoBox(mainTitle: widget.chat.title),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMessageList(size, cubit),
+                    Column(
+                      children: [
+                        if (cubit.categoryMode && checkOrientation(context))
+                          CategoryBox(setCategory: cubit.setCategory),
+                        EventKeyboard(
+                          width: size.width,
+                          fieldText: _fieldText,
+                          editMode: cubit.editMode,
+                          category: cubit.category,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );

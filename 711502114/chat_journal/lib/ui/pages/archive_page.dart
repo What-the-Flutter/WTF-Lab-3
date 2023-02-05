@@ -37,7 +37,7 @@ class _ArchivePageState extends State<ArchivePage> {
           itemBuilder: (_, i) {
             return ChatCard(
               chat: chats[i],
-              extraWidget: _initArchiveButton(cubitContext, chats[i].id),
+              widget: _initArchiveButton(cubitContext, chats[i].id),
             );
           },
           separatorBuilder: (context, index) {

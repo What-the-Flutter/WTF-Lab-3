@@ -61,3 +61,26 @@ void openNewPage(BuildContext context, Widget page) {
 void closePage(BuildContext context) {
   Navigator.pop(context);
 }
+
+bool checkOrientation(BuildContext context) {
+  return MediaQuery.of(context).orientation == Orientation.portrait ||
+      WidgetsBinding.instance.window.viewInsets.bottom <= 0.0;
+}
+
+String fitText(String text, int maxSymbols) {
+  if (text.length <= maxSymbols) {
+    return text;
+  }
+
+  return '${text.substring(0, maxSymbols - 1)}...';
+}
+
+int countOrientationCoefficient(BuildContext context) {
+  final media = MediaQuery.of(context);
+
+  if (media.orientation == Orientation.portrait) {
+    return 1;
+  } else {
+    return media.size.width ~/ media.size.height;
+  }
+}

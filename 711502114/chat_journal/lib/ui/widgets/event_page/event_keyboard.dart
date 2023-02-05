@@ -6,6 +6,7 @@ import '../../../cubit/event/event_cubit.dart';
 import '../../../cubit/home/home_cubit.dart';
 import '../../../models/category.dart';
 import '../../../theme/colors.dart';
+import '../../../utils/utils.dart';
 import 'attach_dialog.dart';
 import 'keyboard_icon.dart';
 
@@ -58,10 +59,11 @@ class EventKeyboard extends StatelessWidget {
               style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
-          KeyBoardIcon(
-            icon: Icons.image,
-            onPressed: () => _openDialog(local),
-          ),
+          if (checkOrientation(widgetContext))
+            KeyBoardIcon(
+              icon: Icons.image,
+              onPressed: () => _openDialog(local),
+            ),
           KeyBoardIcon(
             icon: !editMode ? Icons.send : Icons.edit,
             onPressed: !editMode ? _sendEvent : _turnOffEditMode,

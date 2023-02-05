@@ -40,5 +40,11 @@
   "ok": "OK",
   "archivedPage": "Archived Pages",
   "countArchived": "Pages Archived",
-  "eventMigration": "Select the page you want to migrate the selected events to!"
+  "eventMigration": "Select the page you want to migrate the selected events to!",
+  "fastFood": "FastFood",
+  "running": "Running",
+  "laundry": "Laundry",
+  "movie": "Movie",
+  "workout": "Workout",
+  "sports": "Sports"
 }

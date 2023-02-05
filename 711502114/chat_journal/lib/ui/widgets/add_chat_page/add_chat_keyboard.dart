@@ -20,7 +20,7 @@ class AddChatKeyboard extends StatelessWidget {
         controller: fieldText,
         keyboardType: TextInputType.multiline,
         maxLines: 1,
-        textInputAction: TextInputAction.newline,
+        textInputAction: TextInputAction.done,
         textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
           fillColor: botBackgroundColor,
