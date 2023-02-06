@@ -34,8 +34,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "add_new_event": MessageLookupByLibrary.simpleMessage("Add new event"),
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
+        "answers": MessageLookupByLibrary.simpleMessage("Answers"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "bookmark": MessageLookupByLibrary.simpleMessage("Bookmarks"),
         "bubble_alignment": MessageLookupByLibrary.simpleMessage("Left/Right"),
         "change_bubble_alignment":
             MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
@@ -87,6 +89,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "pages": MessageLookupByLibrary.simpleMessage("Pages"),
         "picture": MessageLookupByLibrary.simpleMessage("Only picture"),
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
+        "popular": MessageLookupByLibrary.simpleMessage("Popular"),
+        "popular_instruction": MessageLookupByLibrary.simpleMessage(
+            "This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
         "reset": MessageLookupByLibrary.simpleMessage("Reset"),
@@ -94,6 +99,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "search": MessageLookupByLibrary.simpleMessage("Search"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "share_app": MessageLookupByLibrary.simpleMessage("Share app"),
+        "statistics": MessageLookupByLibrary.simpleMessage("Statistics"),
+        "summary": MessageLookupByLibrary.simpleMessage("Summary"),
         "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "timeline_empty":
             MessageLookupByLibrary.simpleMessage("Your timeline is empty!"),
@@ -102,6 +109,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "timeline_title": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
-        "title_instruction": m2
+        "title_instruction": m2,
+        "total": MessageLookupByLibrary.simpleMessage("Totals")
       };
 }

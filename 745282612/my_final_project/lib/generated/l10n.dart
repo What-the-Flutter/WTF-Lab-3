@@ -619,6 +619,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Statistics`
+  String get statistics {
+    return Intl.message(
+      'Statistics',
+      name: 'statistics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Totals`
+  String get total {
+    return Intl.message(
+      'Totals',
+      name: 'total',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bookmarks`
+  String get bookmark {
+    return Intl.message(
+      'Bookmarks',
+      name: 'bookmark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Answers`
+  String get answers {
+    return Intl.message(
+      'Answers',
+      name: 'answers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summary`
+  String get summary {
+    return Intl.message(
+      'Summary',
+      name: 'summary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular`
+  String get popular {
+    return Intl.message(
+      'Popular',
+      name: 'popular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections`
+  String get popular_instruction {
+    return Intl.message(
+      'This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections',
+      name: 'popular_instruction',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

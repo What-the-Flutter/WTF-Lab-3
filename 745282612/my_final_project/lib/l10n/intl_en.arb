@@ -76,5 +76,12 @@
   "pages" : "Pages",
   "tags" : "Tags",
   "labels" : "Labels",
-  "others" : "Others"
+  "others" : "Others",
+  "statistics": "Statistics",
+  "total": "Totals",
+  "bookmark" : "Bookmarks",
+  "answers": "Answers",
+  "summary" : "Summary",
+  "popular" : "Popular",
+  "popular_instruction" : "This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections"
 }
