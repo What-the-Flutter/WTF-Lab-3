@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'presentation/screens/main.dart';
+import 'presentation/widgets/app_theme/app_theme.dart';
 
 void main() {
   runApp(const ChatJournal());
@@ -10,17 +11,18 @@ void main() {
 class ChatJournal extends StatelessWidget {
   const ChatJournal({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return AppTheme(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.grey,
+        ),
+        home: const MainScreen(),
       ),
-      home: const MainScreen(),
     );
   }
 }

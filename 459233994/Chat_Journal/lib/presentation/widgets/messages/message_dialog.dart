@@ -82,7 +82,7 @@ class _MessageDialogState extends State<MessageDialog> {
                       hintText: 'Edit event',
                     ),
                     onSubmitted: (text) {
-                      _packedMessage.textMessage?.data = text;
+                      _packedMessage.updateTextData(_packedMessage, text);
                       _refresh();
                       Navigator.of(context, rootNavigator: true).pop(true);
                     },
@@ -117,9 +117,9 @@ class _MessageDialogState extends State<MessageDialog> {
                   ),
                 ),
                 onTap: () async {
-                  if (_packedMessage.textMessage != null) {
+                  if (_packedMessage.textData != null) {
                     await Clipboard.setData(
-                        ClipboardData(text: _packedMessage.textMessage?.data));
+                        ClipboardData(text: _packedMessage.textData));
                   }
                   Navigator.of(context, rootNavigator: true).pop(true);
                 },

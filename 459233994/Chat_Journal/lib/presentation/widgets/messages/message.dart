@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/packed_message.dart';
-import 'inherited_list.dart';
+import '../app_theme/inherited_app_theme.dart';
 import 'message_dialog.dart';
 
 class Message extends StatefulWidget {
@@ -14,7 +14,7 @@ class Message extends StatefulWidget {
 }
 
 class _MessageState extends State<Message> {
-  final PackedMessage _packedMessage;
+  PackedMessage _packedMessage;
   double _leftPositionValue = 10;
   final GlobalKey _widgetKey = GlobalKey();
 
@@ -27,7 +27,64 @@ class _MessageState extends State<Message> {
     return size.width;
   }
 
-  Widget conditionString() {
+  Widget _messageContent() {
+    if (_packedMessage.textData != null) {
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 300),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: InheritedAppTheme.of(context)?.getTheme.auxiliaryColor,
+        ),
+        padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _packedMessage.textData!,
+              softWrap: true,
+              style: TextStyle(
+                color: InheritedAppTheme.of(context)?.getTheme.textColor,
+                fontSize: 16,
+              ),
+            ),
+            _conditionString(),
+          ],
+        ),
+      );
+    } else if (_packedMessage.imageData != null) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color:  InheritedAppTheme.of(context)?.getTheme.auxiliaryColor,
+        ),
+        padding: const EdgeInsets.fromLTRB(5, 5, 5, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  _packedMessage.imageData!,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              width: 100,
+              height: 225,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            _conditionString(),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _conditionString() {
     return SizedBox(
       width: 75,
       height: 20,
@@ -39,8 +96,8 @@ class _MessageState extends State<Message> {
           children: <Widget>[
             Text(
               _packedMessage.createTime,
-              style: const TextStyle(
-                color: Color(0xff829399),
+              style: TextStyle(
+                color: InheritedAppTheme.of(context)?.getTheme.textColor,
                 fontSize: 12,
               ),
             ),
@@ -48,9 +105,9 @@ class _MessageState extends State<Message> {
                 padding: const EdgeInsets.only(left: 5),
                 child: (() {
                   if (_packedMessage.isDone) {
-                    return const Icon(
+                    return Icon(
                       Icons.check,
-                      color: Color(0xff545F66),
+                      color: InheritedAppTheme.of(context)?.getTheme.iconColor,
                       size: 14,
                     );
                   }
@@ -59,9 +116,9 @@ class _MessageState extends State<Message> {
               padding: const EdgeInsets.only(left: 5),
               child: (() {
                 if (_packedMessage.isFavorite) {
-                  return const Icon(
+                  return Icon(
                     Icons.bookmark,
-                    color: Color(0xff545F66),
+                    color: InheritedAppTheme.of(context)?.getTheme.iconColor,
                     size: 14,
                   );
                 }
@@ -71,6 +128,62 @@ class _MessageState extends State<Message> {
         ),
       ),
     );
+  }
+
+  void _horizontalDragUpdateHandler(DragUpdateDetails details) {
+    setState(
+      () {
+        if (_leftPositionValue + details.delta.dx + _getMessageWidth() <
+                MediaQuery.of(context).size.width &&
+            _leftPositionValue + details.delta.dx > 10) {
+          _leftPositionValue += details.delta.dx;
+        }
+      },
+    );
+  }
+
+  void _horizontalDragEndHandler(DragEndDetails details) {
+    setState(
+      () {
+        if (_leftPositionValue >
+            MediaQuery.of(context).size.width - _getMessageWidth() - 10) {
+          if (_packedMessage.isDone) {
+            _packedMessage.updateDoneState(_packedMessage, false);
+          } else {
+            _packedMessage.updateDoneState(_packedMessage, true);
+          }
+        }
+        _leftPositionValue = 10;
+      },
+    );
+  }
+
+  void _tapHandler() {
+    setState(
+      () {
+        if (_packedMessage.isFavorite) {
+          _packedMessage.updateFavoriteState(_packedMessage, false);
+        } else {
+          _packedMessage.updateFavoriteState(_packedMessage, true);
+        }
+      },
+    );
+  }
+
+  void _longPressHandler() {
+    // var events = InheritedList.of(context)?.events;
+    // var refresh = InheritedList.of(context)?.notifyParent;
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     if (_packedMessage.textData != null) {
+    //       return MessageDialog(
+    //           packedMessage: _packedMessage, events: events, refresh: refresh);
+    //     } else {
+    //       return Container();
+    //     }
+    //   },
+    // );
   }
 
   @override
@@ -91,116 +204,11 @@ class _MessageState extends State<Message> {
               key: _widgetKey,
               padding: EdgeInsets.only(left: _leftPositionValue),
               child: GestureDetector(
-                onHorizontalDragUpdate: (details) {
-                  setState(
-                    () {
-                      if (_leftPositionValue +
-                                  details.delta.dx +
-                                  _getMessageWidth() <
-                              MediaQuery.of(context).size.width &&
-                          _leftPositionValue + details.delta.dx > 10) {
-                        _leftPositionValue += details.delta.dx;
-                      }
-                    },
-                  );
-                },
-                onHorizontalDragEnd: (details) {
-                  setState(
-                    () {
-                      if (_leftPositionValue >
-                          MediaQuery.of(context).size.width -
-                              _getMessageWidth() -
-                              10) {
-                        if (_packedMessage.isDone) {
-                          _packedMessage.isDone = false;
-                        } else {
-                          _packedMessage.isDone = true;
-                        }
-                      }
-                      _leftPositionValue = 10;
-                    },
-                  );
-                },
-                onTap: () {
-                  setState(() {
-                    if (_packedMessage.isFavorite) {
-                      _packedMessage.isFavorite = false;
-                    } else {
-                      _packedMessage.isFavorite = true;
-                    }
-                  });
-                },
-                onLongPress: () {
-                  var events = InheritedList.of(context)?.events;
-                  var refresh = InheritedList.of(context)?.notifyParent;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      if (_packedMessage.textMessage != null) {
-                        return MessageDialog(
-                            packedMessage: _packedMessage,
-                            events: events,
-                            refresh: refresh);
-                      } else {
-                        return Container();
-                      }
-                    },
-                  );
-                },
-                child: (() {
-                  if (_packedMessage.textMessage != null) {
-                    return Container(
-                      constraints: const BoxConstraints(maxWidth: 300),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: const Color(0xffE8FCC2),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _packedMessage.textMessage!.data,
-                            softWrap: true,
-                            style: const TextStyle(
-                              color: Color(0xff545F66),
-                              fontSize: 16,
-                            ),
-                          ),
-                          conditionString(),
-                        ],
-                      ),
-                    );
-                  } else if (_packedMessage.imageMessage != null) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: const Color(0xffE8FCC2),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
-                                _packedMessage.imageMessage!.file,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            width: 100,
-                            height: 225,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          conditionString(),
-                        ],
-                      ),
-                    );
-                  }
-                }()),
+                onHorizontalDragUpdate: _horizontalDragUpdateHandler,
+                onHorizontalDragEnd: _horizontalDragEndHandler,
+                onTap: _tapHandler,
+                onLongPress: _longPressHandler,
+                child: _messageContent(),
               ),
             ),
           ],
