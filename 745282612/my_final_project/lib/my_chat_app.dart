@@ -11,6 +11,7 @@ import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_state.dart';
+import 'package:my_final_project/ui/widgets/statistics_screen/cubit/statistics_cubit.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 
 class MainApp extends StatefulWidget {
@@ -62,6 +63,9 @@ class _MainAppState extends State<MainApp> {
         BlocProvider(
           create: (_) => TimelineCubit(user: widget.user),
         ),
+        BlocProvider(
+          create: (_) => StatisticsCubit(user: widget.user),
+        )
       ],
       child: BlocBuilder<SettingCubit, SettingState>(
         builder: (context, state) {
@@ -76,7 +80,11 @@ class _MainAppState extends State<MainApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: S.delegate.supportedLocales,
-            home: status ? const Menu() : Container(),
+            home: status
+                ? const Menu()
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
           );
         },
       ),

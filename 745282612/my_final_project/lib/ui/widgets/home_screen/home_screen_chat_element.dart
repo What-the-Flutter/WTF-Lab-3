@@ -44,7 +44,6 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
         final chat = Chat.fromJson(map);
         final listEvent =
             stateEvent.listEvent.where((element) => element.chatId == chat.id).toList();
-
         return GestureDetector(
           onLongPress: () {
             showModalBottomSheet(

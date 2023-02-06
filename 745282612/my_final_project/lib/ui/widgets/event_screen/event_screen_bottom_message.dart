@@ -155,6 +155,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
                   Row(
                     children: [
                       TextButton(
+                        key: const Key('Btn switch'),
                         onPressed: () {
                           if (state.switchSectionTag) {
                             context.read<EventCubit>().changeStatusTag();
