@@ -14,13 +14,17 @@ class EventState extends Equatable {
   final bool isSearch;
   final int countSelected;
   final bool isSection;
+  final bool switchSectionTag;
   final IconData sectionIcon;
   final String sectionTitle;
   final String searchText;
   final bool isWrite;
+  final bool isTag;
+  final String tagTitle;
 
   EventState({
     required this.listEvent,
+    this.switchSectionTag = false,
     this.isFavorite = false,
     this.isSelected = false,
     this.isEdit = false,
@@ -33,7 +37,9 @@ class EventState extends Equatable {
     this.isWrite = false,
     this.sectionIcon = Icons.bubble_chart,
     this.sectionTitle = 'Cancel',
+    this.tagTitle = 'Cancel',
     this.searchText = '',
+    this.isTag = false,
   });
 
   EventState copyWith({
@@ -51,6 +57,9 @@ class EventState extends Equatable {
     String? sectionTitle,
     bool? isRepet,
     bool? isWrite,
+    bool? switchSectionTag,
+    bool? isTag,
+    String? tagTitle,
   }) {
     return EventState(
       isSelected: isSelected ?? this.isSelected,
@@ -67,6 +76,9 @@ class EventState extends Equatable {
       searchText: searchText ?? this.searchText,
       isRepet: isRepet ?? this.isRepet,
       isWrite: isWrite ?? this.isWrite,
+      switchSectionTag: switchSectionTag ?? this.switchSectionTag,
+      isTag: isTag ?? this.isTag,
+      tagTitle: tagTitle ?? this.tagTitle,
     );
   }
 
@@ -86,5 +98,8 @@ class EventState extends Equatable {
         sectionTitle,
         searchText,
         isWrite,
+        switchSectionTag,
+        isTag,
+        tagTitle,
       ];
 }

@@ -1,11 +1,12 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
-import '../../../common/models/message.dart';
 import '../../../common/utils/insets.dart';
+import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/text_styles.dart';
+import '../../../common/utils/typedefs.dart';
 import '../../chat_overview/chats_overview.dart';
 import '../cubit/move_message/move_messages_cubit.dart';
 import '../widget/scopes/move_message_scope.dart';
@@ -17,8 +18,8 @@ class MoveMessagePage extends StatefulWidget {
     required this.messages,
   });
 
-  final int fromChatId;
-  final IList<Message> messages;
+  final String fromChatId;
+  final MessageList messages;
 
   @override
   State<MoveMessagePage> createState() => _MoveMessagePageState();
@@ -43,8 +44,11 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Move ${widget.messages.length} '
-                  'message${widget.messages.length == 1 ? '' : 's'} to',
+                  widget.messages.length == 1
+                      ? locale.Info.move
+                          .i18n([widget.messages.length.toString()])
+                      : locale.Info.movePlural
+                          .i18n([widget.messages.length.toString()]),
                   style: TextStyles.defaultMedium(context),
                 ),
                 ...MoveMessagesScope.of(context).state.chats.map(
@@ -58,14 +62,15 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
                           },
                         );
                       },
-                      withSelected: (withSelected) {
+                      hasSelectedState: (hasSelectedState) {
                         return ChatItem(
                           chat: chat,
                           onTap: () {
-                            MoveMessagesScope.of(context)
-                                .toggleSelection(chat.id);
+                            MoveMessagesScope.of(context).toggleSelection(
+                              chat.id,
+                            );
                           },
-                          isSelected: withSelected.selectedChatId == chat.id,
+                          isSelected: hasSelectedState.selectedChatId == chat.id,
                         );
                       },
                     );
@@ -81,18 +86,20 @@ class _MoveMessagePageState extends State<MoveMessagePage> {
                             return TextButton(
                               onPressed: null,
                               child: Text(
-                                'Move',
+                                locale.Actions.move.i18n(),
                                 style: TextStyles.defaultGrey(context),
                               ),
                             );
                           },
-                          withSelected: (withSelected) {
+                          hasSelectedState: (hasSelectedState) {
                             return TextButton(
                               onPressed: () {
                                 MoveMessagesScope.of(context).move();
                                 context.pop();
                               },
-                              child: const Text('Move'),
+                              child: Text(
+                                locale.Actions.move.i18n(),
+                              ),
                             );
                           },
                         );

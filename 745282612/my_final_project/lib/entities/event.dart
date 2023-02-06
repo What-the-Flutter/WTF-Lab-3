@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class EventField {
@@ -14,22 +11,25 @@ class EventField {
   static final String sectionIcon = 'sectionIcon';
   static final String messageImage = 'image';
   static final String chatId = 'chatId';
+  static final String isSelected = 'isSelected';
+  static final String tag = 'tag';
 }
 
-class Event {
-  final int? id;
+class Event extends Equatable {
+  final int id;
   final bool isFavorit;
   final bool isSelected;
   final String messageContent;
   final String messageType;
   final DateTime messageTime;
-  final File? messageImage;
+  final String? messageImage;
   final IconData? sectionIcon;
   final String? sectionTitle;
   final int chatId;
+  final String? tag;
 
   Event({
-    this.id,
+    required this.id,
     required this.messageContent,
     required this.messageType,
     required this.messageTime,
@@ -39,6 +39,7 @@ class Event {
     this.messageImage,
     this.sectionIcon,
     this.sectionTitle,
+    this.tag,
   });
 
   Event copyWith({
@@ -48,10 +49,11 @@ class Event {
     String? messageContent,
     String? messageType,
     DateTime? messageTime,
-    File? messageImage,
+    String? messageImage,
     IconData? sectionIcon,
     String? sectionTitle,
     int? chatId,
+    String? tag,
   }) {
     return Event(
       id: id ?? this.id,
@@ -64,11 +66,8 @@ class Event {
       sectionIcon: sectionIcon ?? this.sectionIcon,
       sectionTitle: sectionTitle ?? this.sectionTitle,
       chatId: chatId ?? this.chatId,
+      tag: tag ?? this.tag,
     );
-  }
-
-  String _base64String(Uint8List data) {
-    return base64Encode(data);
   }
 
   Map<String, dynamic> toMap() {
@@ -76,12 +75,47 @@ class Event {
       '${EventField.id}': id,
       '${EventField.messageContent}': messageContent,
       '${EventField.messageType}': messageType,
-      '${EventField.messageTime}': messageTime.toString(),
+      '${EventField.messageTime}': messageTime.toIso8601String(),
       '${EventField.favorite}': isFavorit.toString(),
       '${EventField.sectionTitle}': sectionTitle,
       '${EventField.sectionIcon}': sectionIcon != null ? sectionIcon!.codePoint : null,
       '${EventField.chatId}': chatId,
-      '${EventField.messageImage}': messageImage != null ? messageImage!.path : null,
+      '${EventField.messageImage}': messageImage != null ? messageImage! : null,
+      '${EventField.isSelected}': isSelected == false ? 1 : 0,
+      '${EventField.tag}': tag,
     };
   }
+
+  static Event fromJson(Map<dynamic, dynamic> map) {
+    return Event(
+      id: map['${EventField.id}'],
+      messageContent: map['${EventField.messageContent}'],
+      messageType: map['${EventField.messageType}'],
+      messageTime: DateTime.parse(map['${EventField.messageTime}']),
+      isFavorit: map['${EventField.favorite}'] == 'true',
+      chatId: map['${EventField.chatId}'],
+      messageImage: map['${EventField.messageImage}'],
+      sectionIcon: map['${EventField.sectionIcon}'] != null
+          ? IconData(map['${EventField.sectionIcon}'], fontFamily: 'MaterialIcons')
+          : null,
+      sectionTitle: map['${EventField.sectionTitle}'],
+      isSelected: map['${EventField.isSelected}'] == 1 ? false : true,
+      tag: map['${EventField.tag}'],
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        isFavorit,
+        isSelected,
+        messageContent,
+        messageType,
+        messageTime,
+        messageImage,
+        sectionIcon,
+        sectionTitle,
+        chatId,
+        tag,
+      ];
 }

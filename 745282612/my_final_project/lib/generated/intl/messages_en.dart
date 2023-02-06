@@ -24,14 +24,27 @@ class MessageLookup extends MessageLookupByLibrary {
       "Add your first event to \"${rate}\" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.";
 
   static String m1(rate) =>
+      "Tap to select a ${rate} you want to include to the filter. All ${rate} are included by default.";
+
+  static String m2(rate) =>
       "This is the page where you can track everything about \"${rate}\"!";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "account": MessageLookupByLibrary.simpleMessage("Account"),
         "add_new_event": MessageLookupByLibrary.simpleMessage("Add new event"),
         "add_section": MessageLookupByLibrary.simpleMessage("Add new section"),
         "archive_page": MessageLookupByLibrary.simpleMessage("Archive Page"),
         "body_instruction": m0,
+        "change_bubble_alignment":
+            MessageLookupByLibrary.simpleMessage("Change bubble alignment"),
+        "change_date_bubble": MessageLookupByLibrary.simpleMessage(
+            "Change data bubble alignment"),
+        "change_theme": MessageLookupByLibrary.simpleMessage("Change theme"),
+        "choose_image":
+            MessageLookupByLibrary.simpleMessage("Choose background image"),
+        "cnange_font_size":
+            MessageLookupByLibrary.simpleMessage("Change font size"),
         "content_add_image": MessageLookupByLibrary.simpleMessage(
             "If you click on the  camera icon, you can add an image from the camera, if you click on the photo icon, you can add an image from the phone."),
         "create_page":
@@ -45,8 +58,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "exit_the_app": MessageLookupByLibrary.simpleMessage("Exit the app"),
         "explore_label": MessageLookupByLibrary.simpleMessage("Explore"),
+        "filter": MessageLookupByLibrary.simpleMessage("Filters"),
+        "filter_info": m1,
         "home_label": MessageLookupByLibrary.simpleMessage("Home"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
+        "jump_to_date": MessageLookupByLibrary.simpleMessage("Jump to date"),
         "last_event": MessageLookupByLibrary.simpleMessage("Last Event"),
         "name_of_the_page":
             MessageLookupByLibrary.simpleMessage("Name of the page"),
@@ -57,12 +73,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "no_search_title":
             MessageLookupByLibrary.simpleMessage("No search result available"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "picture": MessageLookupByLibrary.simpleMessage("Only picture"),
         "pin_unpin": MessageLookupByLibrary.simpleMessage("Pin/Unpin Page"),
         "questionnaire":
             MessageLookupByLibrary.simpleMessage("Questionnaire bot"),
-        "setting": MessageLookupByLibrary.simpleMessage("Settings"),
+        "reset": MessageLookupByLibrary.simpleMessage("Reset"),
+        "reset_setting": MessageLookupByLibrary.simpleMessage("Reset setting"),
+        "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
+        "share_app": MessageLookupByLibrary.simpleMessage("Share app"),
+        "timeline_empty":
+            MessageLookupByLibrary.simpleMessage("Your timeline is empty!"),
+        "timeline_empty_info": MessageLookupByLibrary.simpleMessage(
+            "There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu."),
         "timeline_label": MessageLookupByLibrary.simpleMessage("Timeline"),
         "title_add_image": MessageLookupByLibrary.simpleMessage("Add image"),
-        "title_instruction": m1
+        "title_instruction": m2
       };
 }

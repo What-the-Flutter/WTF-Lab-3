@@ -1,16 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:my_final_project/data/db/db_provider.dart';
+import 'package:my_final_project/data/db/firebase_provider.dart';
 import 'package:my_final_project/entities/chat.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState(listChat: []));
+  final User? user;
+  late final firebase = FirebaseProvider(user: user);
 
-  void initializer() async {
-    final list = await DBProvider.dbProvider.getAllChat();
-    emit(state.copyWith(listChat: _listChatSort(list)));
+  HomeCubit({this.user}) : super(HomeState(listChat: [])) {
+    initializer();
+  }
+
+  Future<void> initializer() async {
+    final listChat = await firebase.getAllChat();
+    emit(state.copyWith(listChat: listChat));
   }
 
   void updateInfo() {
@@ -30,20 +37,25 @@ class HomeCubit extends Cubit<HomeState> {
     return listChat;
   }
 
-  void addChat({
+  void changeIconSelected() {
+    emit(state.copyWith(iconSeleted: null));
+  }
+
+  Future<void> addChat({
     required Icon icon,
     required String title,
   }) async {
     final newChat = Chat(
+      id: UniqueKey().hashCode,
       icon: icon,
       title: title,
       isPin: false,
       dateCreate: DateTime.now(),
     );
-    final chat = await DBProvider.dbProvider.addChat(newChat);
+    await firebase.addChat(newChat);
     final newListChat = state.listChat;
-    newListChat.add(chat);
-    emit(state.copyWith(listChat: newListChat));
+    newListChat.insert(0, newChat);
+    emit(state.copyWith(listChat: _listChatSort(newListChat)));
   }
 
   void changeSelectedIcon(Icon? icon) {
@@ -54,20 +66,22 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void deleteChat(int index) async {
+  Future<void> deleteChat(Chat chat) async {
     final newListChat = state.listChat;
-    final element = newListChat[index];
-    await DBProvider.dbProvider.deleteChat(element);
+    final updateChat = newListChat.firstWhere((element) => element.id == chat.id);
+    final index = newListChat.indexOf(updateChat);
+    await firebase.deleteChat(updateChat);
     newListChat.removeAt(index);
     emit(state.copyWith(listChat: newListChat));
   }
 
-  void changePinChat(int index) async {
+  Future<void> changePinChat(Chat chat) async {
     final newList = state.listChat;
-    final newChat = state.listChat[index];
-    newList[index] = newChat.copyWith(isPin: !newChat.isPin);
+    final updateChat = newList.firstWhere((element) => element.id == chat.id);
+    final index = newList.indexOf(updateChat);
+    newList[index] = updateChat.copyWith(isPin: !updateChat.isPin);
     _listChatSort(newList);
-    await DBProvider.dbProvider.updateChat(newChat.copyWith(isPin: !newChat.isPin));
+    await firebase.updateChat(updateChat.copyWith(isPin: !updateChat.isPin));
     emit(state.copyWith(listChat: newList));
   }
 
@@ -75,16 +89,21 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(isEdit: !state.isEdit));
   }
 
-  void editChat({
+  Future<void> editChat({
     required Icon icon,
     required String title,
-    required int index,
+    required Chat chat,
   }) async {
+    await firebase.updateChat(chat.copyWith(icon: icon, title: title));
     final newList = state.listChat;
-    final newChat = state.listChat[index];
-    newList[index] = newChat.copyWith(icon: icon, title: title);
-    await DBProvider.dbProvider.updateChat(newChat.copyWith(icon: icon, title: title));
+    final updateChat = newList.firstWhere((element) => element.id == chat.id);
+    final index = newList.indexOf(updateChat);
+    newList[index] = updateChat.copyWith(icon: icon, title: title);
+    await firebase.updateChat(updateChat.copyWith(icon: icon, title: title));
     emit(state.copyWith(listChat: newList));
     changeEditMode();
   }
+
+  Query getQuery(User? user) =>
+      FirebaseDatabase.instance.ref().child(user!.uid).child('chat').orderByChild('pin');
 }

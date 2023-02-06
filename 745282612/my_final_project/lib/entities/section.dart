@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class SectionField {
@@ -6,13 +7,13 @@ class SectionField {
   static final String titleSection = 'title';
 }
 
-class Section {
-  final int? id;
+class Section extends Equatable {
+  final int id;
   final IconData iconSection;
   final String titleSection;
 
   Section({
-    this.id,
+    required this.id,
     required this.iconSection,
     required this.titleSection,
   });
@@ -23,6 +24,14 @@ class Section {
       '${SectionField.iconSection}': iconSection.codePoint,
       '${SectionField.titleSection}': titleSection.toString(),
     };
+  }
+
+  static Section fromJson(Map<dynamic, dynamic> map) {
+    return Section(
+      id: map['${SectionField.id}'],
+      iconSection: IconData(map['${SectionField.iconSection}'], fontFamily: 'MaterialIcons'),
+      titleSection: map['${SectionField.titleSection}'],
+    );
   }
 
   Section copyWith({
@@ -36,4 +45,11 @@ class Section {
       titleSection: titleSection ?? this.titleSection,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        iconSection,
+        titleSection,
+      ];
 }

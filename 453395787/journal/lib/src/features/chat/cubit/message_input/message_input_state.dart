@@ -4,18 +4,17 @@ part of 'message_input_cubit.dart';
 class MessageInputState with _$MessageInputState {
   const MessageInputState._();
 
-  const factory MessageInputState.defaultMode({
+  const factory MessageInputState.defaultModeState({
     required Message message,
     @Default(false) bool isTagMenuOpened,
-  }) = _DefaultMode;
+  }) = _DefaultModeState;
 
-  const factory MessageInputState.editMode({
+  const factory MessageInputState.editModeState({
     required Message message,
-  }) = _EditMode;
+  }) = _EditModeState;
 
   bool get canBeSent {
     return message.text.isNotEmpty ||
-        message.images.isNotEmpty ||
-        message.tags.isNotEmpty;
+        message.images.isNotEmpty;
   }
 }

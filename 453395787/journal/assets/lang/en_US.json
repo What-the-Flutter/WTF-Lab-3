@@ -1,0 +1,71 @@
+{
+  "pages_home": "Home",
+  "pages_daily": "Daily",
+  "pages_timeline": "Timeline",
+  "pages_settings": "Settings",
+  "pages_add_chat": "Add Chat",
+  "pages_edit_chat": "Edit Chat",
+
+  "settings_item_tags": "Tags",
+  "settings_item_languages": "Languages",
+  "settings_item_theme": "Theme",
+  "settings_page_tags_title": "Manage Tags",
+  "settings_item_security": "Security",
+  "settings_item_font_size": "Font Size",
+  "settings_item_font_size_small": "Small",
+  "settings_item_font_size_medium": "Medium",
+  "settings_item_font_size_large": "Large",
+  "settings_page_security_title": "Enable Fingerprint or FaceId unlock?",
+  "settings_item_bubble_alignment_title": "Message Alignment",
+  "settings_item_bubble_alignment_subtitle": "Force left-to-right bubble alignment",
+  "settings_item_date_bubble_visibility": "Center Date Bubble",
+  "settings_item_reset": "Reset All",
+  "settings_item_reset_confirmation_title": "Reset all preferences",
+  "settings_item_reset_confirmation_subtitle": "Are you sure you want to reset all preferences?",
+  "settings_item_share": "Share App",
+  "settings_share_app_text": "Keep track of your life with Journal, a simple and elegant chat-based journal. https://github.com/AlexanderSimakov/WTF-Lab-3/tree/main/453395787/journal",
+  "settings_item_chat": "Chat",
+  "settings_change_background_image": "Change background image",
+  "settings_remove_background_image": "Remove background image",
+
+  "action_ok": "Ok",
+  "action_yes": "Yes",
+  "action_no": "No",
+  "action_cancel": "Cancel",
+  "action_remove": "Remove",
+  "action_add": "Add",
+  "action_edit": "Edit",
+  "action_delete": "Delete",
+  "action_apply": "Apply",
+  "action_move": "Move",
+  "action_pin": "Pin",
+  "action_unpin": "Unpin",
+  "action_reset": "Reset",
+  "action_switch_to_day_mode": "Switch to Day Mode",
+  "action_switch_to_night_mode": "Switch to Night Mode",
+
+  "result_text_copied": "Text copied to clipboard",
+
+  "message_example_text_1": "You can choose app color here",
+  "message_example_text_2": "Favorite and selected message :)",
+
+  "input_hint_chat_name": "Name",
+  "input_hint_message": "Message",
+
+  "item_hint_created": "Created: ",
+  "item_hint_active": "Active: ",
+  "item_hint_messages": "Messages: ",
+
+  "confirmation_chat_delete_title": "Delete '%s' chat",
+  "confirmation_chat_delete_content": "Are you sure you want to delete this chat?",
+
+  "confirmation_messages_delete_title": "Delete '%s' messages",
+  "confirmation_messages_delete_content": "Are you sure you want to delete this messages?",
+
+  "info_last_message_recently": "recently",
+  "info_last_message_days": "%s days ago",
+  "info_last_message_days_and_hours": "%s0 days and %s1 hours ago",
+
+  "info_move": "Move %s message to",
+  "info_move_plural": "Move %s messages to"
+}

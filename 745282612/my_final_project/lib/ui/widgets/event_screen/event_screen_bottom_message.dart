@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_section.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_tags.dart';
 import 'package:my_final_project/ui/widgets/event_screen/modal_add_image.dart';
-import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_state.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenBottomMessage extends StatefulWidget {
   final TextEditingController controller;
@@ -24,18 +26,40 @@ class EventScreenBottomMessage extends StatefulWidget {
   State<EventScreenBottomMessage> createState() => _EventScreenBottomMessageState();
 }
 
-class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
+class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
+    with TickerProviderStateMixin {
   late final TextEditingController editController;
+  late final AnimationController animationController;
+  late final Animation<double> animation;
 
   @override
   void initState() {
     editController = TextEditingController();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    animation = Tween<double>(begin: 1.0, end: 0.5).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.bounceInOut,
+      ),
+    );
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.reverse();
+        context.read<EventCubit>().changeSwitchSectionTag();
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.stop();
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     editController.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -90,13 +114,25 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
     );
   }
 
+  Widget sectionOrTag(EventState eventState, SettingState settingState) {
+    if (eventState.switchSectionTag) {
+      return eventState.isTag ? const EventTag() : Container();
+    } else {
+      return eventState.isSection
+          ? EventSection(
+              stateSetting: settingState,
+            )
+          : Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
-        final stateMenu = context.watch<MenuCubit>().state;
+        final stateSetting = context.watch<SettingCubit>().state;
         editController.text = state.editText;
         return Container(
           alignment: Alignment.bottomLeft,
@@ -105,58 +141,34 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
             constraints: BoxConstraints(
               minWidth: MediaQuery.of(context).size.width,
               maxWidth: MediaQuery.of(context).size.width,
-              maxHeight: state.isSection
-                  ? MediaQuery.of(context).size.height * 0.2
+              maxHeight: state.isSection || state.isTag
+                  ? MediaQuery.of(context).size.height * 0.22
                   : MediaQuery.of(context).size.height * 0.1,
             ),
             child: ColoredBox(
-              color: theme ? Colors.white : Colors.black,
+              color: isLight ? Colors.white : Colors.black,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  state.isSection
-                      ? Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: stateMenu.listSection.length,
-                            itemBuilder: (context, index) {
-                              final items = stateMenu.listSection[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        context.read<EventCubit>().changeSectionIcon(
-                                              icon: items.iconSection,
-                                              sectionTitle: items.titleSection,
-                                            );
-                                      },
-                                      child: CircleAvatar(
-                                        backgroundColor: theme
-                                            ? AppColors.colorLightBlue
-                                            : AppColors.colorLightGrey,
-                                        foregroundColor: Colors.white,
-                                        radius: 25,
-                                        child: Icon(items.iconSection),
-                                      ),
-                                    ),
-                                    Text(items.titleSection),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Container(),
+                  sectionOrTag(state, stateSetting),
                   Row(
                     children: [
                       TextButton(
-                        onPressed: context.read<EventCubit>().changeSection,
-                        child: Icon(
-                          state.sectionIcon,
-                          size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                        onPressed: () {
+                          if (state.switchSectionTag) {
+                            context.read<EventCubit>().changeStatusTag();
+                          } else {
+                            context.read<EventCubit>().changeSection();
+                          }
+                        },
+                        onLongPress: animationController.forward,
+                        child: ScaleTransition(
+                          scale: animation,
+                          child: Icon(
+                            state.switchSectionTag ? Icons.tag : state.sectionIcon,
+                            size: 30,
+                            color: isLight ? AppColors.colorTurquoise : Colors.white,
+                          ),
                         ),
                       ),
                       Expanded(
@@ -185,7 +197,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                                   ? Icons.camera_enhance
                                   : Icons.send,
                           size: 30,
-                          color: theme ? AppColors.colorTurquoise : Colors.white,
+                          color: isLight ? AppColors.colorTurquoise : Colors.white,
                         ),
                       ),
                     ],

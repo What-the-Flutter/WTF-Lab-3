@@ -1,12 +1,15 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../common/data/chat_repository.dart';
+import '../../../common/data/provider/message_firebase_provider.dart';
+import '../../../common/data/provider/storage_firebase_provider.dart';
+import '../../../common/data/provider/tag_firebase_provider.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/message_manage/message_manage_cubit.dart';
 import '../cubit/tag_selector/tags_cubit.dart';
-import '../cubit/tag_selector/tags_state.dart';
-import '../data/message_repository.dart';
+import '../data/chat_messages_repository.dart';
 import '../widget/chat_input/chat_input.dart';
 import '../widget/message_list/chat_message_list.dart';
 import '../widget/scopes/message_manage_scope.dart';
@@ -22,7 +25,7 @@ class MessageSearchPage extends StatefulWidget {
     required this.chatId,
   });
 
-  final int chatId;
+  final String chatId;
 
   @override
   State<MessageSearchPage> createState() => _MessageSearchPageState();
@@ -33,17 +36,23 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final chat = context.read<ChatRepository>().chats.value.firstWhere(
+          (chat) => chat.id == widget.chatId,
+        );
     return RepositoryProvider(
-      create: (context) => MessageRepository(
-        chatId: widget.chatId,
-        repository: context.read<ChatRepository>(),
+      create: (context) => ChatMessagesRepository(
+        messageProvider: context.read<MessageFirebaseProvider>(),
+        tagProvider: context.read<TagFirebaseProvider>(),
+        storageProvider: context.read<StorageFirebaseProvider>(),
+        chat: chat,
       ),
       child: MessageSearchScope(
         child: MessageManageScope(
+          chat: chat,
           child: Builder(
             builder: (context) {
               _isInputFieldShown = context.watch<MessageManageCubit>().state
-                  is MessageManageEditMode;
+                  is MessageManageEditModeState;
 
               return TagSelectorScope(
                 child: BlocListener<TagsCubit, TagsState>(
@@ -51,7 +60,13 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     MessageSearchScope.of(context).onSearchTagsChanged(
                       state.map(
                         initial: (_) => null,
-                        hasSelected: (hasSelected) => hasSelected.selected,
+                        hasSelectedState: (hasSelectedState) =>
+                            hasSelectedState.tags
+                                .where(
+                                  (tag) =>
+                                      hasSelectedState.selected.contains(tag),
+                                )
+                                .toIList(),
                       ),
                     );
                   },
@@ -60,7 +75,7 @@ class _MessageSearchPageState extends State<MessageSearchPage> {
                     body: Column(
                       children: [
                         const TagSelector(),
-                        Expanded(
+                        const Expanded(
                           child: ChatMessageList(),
                         ),
                         Visibility(

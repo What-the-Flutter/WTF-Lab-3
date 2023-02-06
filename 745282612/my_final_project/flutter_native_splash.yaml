@@ -1,0 +1,13 @@
+flutter_native_splash:
+  color: "#038b87" 
+  image: assets/logos/cj_logo.png 
+  android_12: 
+    image: assets/logos/cj_logo.png 
+    color: "#038b87" 
+  android: true
+  ios: true
+  web: true
+  android_gravity: center
+  ios_content_mode: center
+  web_image_mode: center
+  android_screen_orientation: sensorPortrait

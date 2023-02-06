@@ -6,8 +6,8 @@ import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_cubit.dart';
 import 'package:my_final_project/ui/widgets/home_screen/cubit/home_state.dart';
+import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
-import 'package:my_final_project/utils/theme/theme_inherited.dart';
 
 class EventScreenModal extends StatefulWidget {
   final List<Event> listEvent;
@@ -34,7 +34,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomThemeInherited.of(context).isBrightnessLight();
+    final isLight = context.watch<SettingCubit>().isLight();
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -59,7 +59,8 @@ class _EventScreenModalState extends State<EventScreenModal> {
           actions: [
             TextButton(
                 style: TextButton.styleFrom(
-                  backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+                  backgroundColor:
+                      isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -67,7 +68,8 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 child: Text(
                   S.of(context).exit,
                   style: TextStyle(
-                    color: theme ? Colors.black : Colors.white,
+                    fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                    color: isLight ? Colors.black : Colors.white,
                   ),
                 ),
                 onPressed: () {
@@ -76,7 +78,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
                 }),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: theme ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
+                backgroundColor: isLight ? AppColors.colorLisgtTurquoise : AppColors.colorLightGrey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -84,7 +86,7 @@ class _EventScreenModalState extends State<EventScreenModal> {
               child: Text(
                 S.of(context).ok,
                 style: TextStyle(
-                  color: theme ? Colors.black : Colors.white,
+                  color: isLight ? Colors.black : Colors.white,
                 ),
               ),
               onPressed: () {
@@ -92,9 +94,8 @@ class _EventScreenModalState extends State<EventScreenModal> {
                       listEvent: widget.listEvent,
                       chatId: selectedRadioTile,
                     );
-                Navigator.of(context).pop();
-                context.read<EventCubit>().deleteEvent();
                 context.read<EventCubit>().changeRepetStatus();
+                Navigator.of(context).pop();
               },
             ),
           ],

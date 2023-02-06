@@ -1,6 +1,10 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
+
+import '../../routes.dart';
+import '../utils/locale.dart' as locale;
 
 class HomePageNavigationBar extends StatefulWidget {
   const HomePageNavigationBar({
@@ -15,33 +19,14 @@ class HomePageNavigationBar extends StatefulWidget {
 }
 
 class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
-  int _selectedPage = 0;
+  static int _selectedPage = 0;
 
   final IList<String> _pageRoutes = [
-    '/home',
-    '/daily',
-    '/timeline',
-    '/explore',
+    Navigation.homePagePath,
+    Navigation.dailyPagePath,
+    Navigation.timelinePagePath,
+    Navigation.settingsPagePath,
   ].lock;
-
-  final List<Widget> _destinations = const [
-    NavigationDestination(
-      icon: Icon(Icons.home),
-      label: 'Home',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.view_day_outlined),
-      label: 'Daily',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.timeline),
-      label: 'Timeline',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.explore),
-      label: 'Explore',
-    ),
-  ];
 
   void _onBottomNavigationTap(BuildContext context, int index) {
     setState(() {
@@ -52,15 +37,36 @@ class _HomePageNavigationBarState extends State<HomePageNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget.child,
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (index) {
-          _onBottomNavigationTap(context, index);
-        },
-        selectedIndex: _selectedPage,
-        destinations: _destinations,
-      ),
+    return Builder(
+      builder: (context) {
+        return Scaffold(
+          body: widget.child,
+          bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (index) {
+              _onBottomNavigationTap(context, index);
+            },
+            selectedIndex: _selectedPage,
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.home),
+                label: locale.Pages.home.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.view_day_outlined),
+                label: locale.Pages.daily.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.timeline),
+                label: locale.Pages.timeline.i18n(),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.settings_outlined),
+                label: locale.Pages.settings.i18n(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

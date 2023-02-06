@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/data/chat_repository.dart';
+import '../../../common/data/repository/chat_repository.dart';
 import '../cubit/manage_chat_cubit.dart';
 
 class ManageChatScope extends StatelessWidget {
@@ -18,7 +18,7 @@ class ManageChatScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ManageChatCubit(
-        repository: context.read<ChatRepository>(),
+        chatRepository: context.read<ChatRepository>(),
         manageChatState: manageChatState,
       ),
       child: child,

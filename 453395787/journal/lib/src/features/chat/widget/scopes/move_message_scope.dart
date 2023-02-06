@@ -1,10 +1,13 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common/data/chat_repository.dart';
-import '../../../../common/models/message.dart';
+import '../../../../common/data/provider/message_firebase_provider.dart';
+import '../../../../common/data/provider/storage_firebase_provider.dart';
+import '../../../../common/data/provider/tag_firebase_provider.dart';
+import '../../../../common/data/repository/chat_repository.dart';
+import '../../../../common/utils/typedefs.dart';
 import '../../cubit/move_message/move_messages_cubit.dart';
+import '../../data/chat_messages_repository.dart';
 
 class MoveMessagesScope extends StatelessWidget {
   const MoveMessagesScope({
@@ -15,14 +18,22 @@ class MoveMessagesScope extends StatelessWidget {
   });
 
   final Widget child;
-  final int fromChatId;
-  final IList<Message> messages;
+  final String fromChatId;
+  final MessageList messages;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MoveMessagesCubit(
-        repository: context.read<ChatRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        chatMessagesRepository: ChatMessagesRepository(
+          messageProvider: context.read<MessageFirebaseProvider>(),
+          tagProvider: context.read<TagFirebaseProvider>(),
+          storageProvider: context.read<StorageFirebaseProvider>(),
+          chat: context.read<ChatRepository>().chats.value.firstWhere(
+                (e) => e.id == fromChatId,
+              ),
+        ),
         fromChatId: fromChatId,
         messages: messages,
       ),

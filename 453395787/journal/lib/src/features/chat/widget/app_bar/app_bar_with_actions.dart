@@ -6,7 +6,7 @@ class _AppBarWithActions extends StatelessWidget {
     super.key,
   });
 
-  final MessageManageSelectionMode state;
+  final MessageManageSelectionModeState state;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _AppBarWithActions extends StatelessWidget {
           onPressed: () {
             context.read<MessageManageCubit>().copyToClipboard();
             Fluttertoast.showToast(
-              msg: 'Text copied to clipboard',
+              msg: locale.Results.textCopied.i18n(),
             );
           },
         ),
@@ -58,8 +58,8 @@ class _AppBarWithActions extends StatelessWidget {
             Icons.reply_outlined,
           ),
           onPressed: () {
-            var id = MessageManageScope.of(context).id;
-            showFloatingModalBottomSheet(
+            final id = MessageManageScope.of(context).state.id;
+            showModalBottomSheet(
               context: context,
               builder: (context) => MoveMessagePage(
                 fromChatId: id,
@@ -79,10 +79,12 @@ class _AppBarWithActions extends StatelessWidget {
             Icons.delete_outline_outlined,
           ),
           onPressed: () async {
-            var isConfirmed = await showConfirmationDialog(
+            final isConfirmed = await showConfirmationDialog(
               context: context,
-              title: 'Delete ${state.selected.length} messages',
-              content: 'Are you sure you want to delete these messages?',
+              title: locale.Info.messageDeleteConfirmationTitle.i18n([
+                state.selected.length.toString(),
+              ]),
+              content: locale.Info.messageDeleteConfirmationContent.i18n(),
             );
             if (isConfirmed != null && isConfirmed) {
               MessageManageScope.of(context).remove();

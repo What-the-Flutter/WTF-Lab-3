@@ -1,25 +1,27 @@
-import 'package:my_final_project/entities/section.dart';
+import 'package:equatable/equatable.dart';
 
-class MenuState {
+class MenuState extends Equatable {
   final int index;
-  final List<Section> listSection;
-  final bool isAdd;
+  final String menuStatus;
 
   MenuState({
-    this.isAdd = false,
     required this.index,
-    required this.listSection,
+    required this.menuStatus,
   });
 
   MenuState copyWith({
     int? index,
-    List<Section>? listSection,
-    bool? isAdd,
+    String? menuStatus,
   }) {
     return MenuState(
-      isAdd: isAdd ?? this.isAdd,
       index: index ?? this.index,
-      listSection: listSection ?? this.listSection,
+      menuStatus: menuStatus ?? this.menuStatus,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        index,
+        menuStatus,
+      ];
 }

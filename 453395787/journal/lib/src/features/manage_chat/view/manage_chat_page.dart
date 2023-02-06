@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
-import '../../../common/data/chat_repository.dart';
-import '../../../common/models/chat.dart';
+import '../../../common/data/repository/chat_repository.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/icons.dart';
 import '../../../common/utils/insets.dart';
+import '../../../common/utils/locale.dart' as locale;
 import '../cubit/manage_chat_cubit.dart';
 import '../widgets/manage_chat_scope.dart';
 
@@ -19,7 +21,7 @@ class ManageChatPage extends StatefulWidget {
     this.chatId,
   });
 
-  final int? chatId;
+  final String? chatId;
 
   @override
   State<ManageChatPage> createState() => _ManageChatPageState();
@@ -31,8 +33,8 @@ class _ManageChatPageState extends State<ManageChatPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,8 +47,8 @@ class _ManageChatPageState extends State<ManageChatPage> {
     }
     return ManageChatScope(
       manageChatState: chatForEdit == null
-          ? const ManageChatState.adding()
-          : ManageChatState.editing(
+          ? const ManageChatState.addModeState()
+          : ManageChatState.editModeState(
               name: chatForEdit!.name,
               chat: chatForEdit!,
               selectedIcon: JournalIcons.icons.indexOf(
@@ -58,7 +60,9 @@ class _ManageChatPageState extends State<ManageChatPage> {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                state.isAddMode ? 'Add Chat' : 'Edit Chat',
+                state.isAddMode
+                    ? locale.Pages.addChat.i18n()
+                    : locale.Pages.editChat.i18n(),
               ),
             ),
             body: Column(
@@ -73,7 +77,7 @@ class _ManageChatPageState extends State<ManageChatPage> {
                     maxLength: 30,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: 'Name',
+                      labelText: locale.Hints.inputChatName.i18n(),
                       counterText: '${_textEditingController.text.length}/30',
                     ),
                     onChanged: (value) {

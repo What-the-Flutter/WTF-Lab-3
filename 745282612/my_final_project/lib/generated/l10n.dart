@@ -300,16 +300,6 @@ class S {
     );
   }
 
-  /// `Settings`
-  String get setting {
-    return Intl.message(
-      'Settings',
-      name: 'setting',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Exit the app`
   String get exit_the_app {
     return Intl.message(
@@ -325,6 +315,166 @@ class S {
     return Intl.message(
       'Add new section',
       name: 'add_section',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get setting_title {
+    return Intl.message(
+      'Settings',
+      name: 'setting_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account`
+  String get account {
+    return Intl.message(
+      'Account',
+      name: 'account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change theme`
+  String get change_theme {
+    return Intl.message(
+      'Change theme',
+      name: 'change_theme',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change font size`
+  String get cnange_font_size {
+    return Intl.message(
+      'Change font size',
+      name: 'cnange_font_size',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset setting`
+  String get reset_setting {
+    return Intl.message(
+      'Reset setting',
+      name: 'reset_setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose background image`
+  String get choose_image {
+    return Intl.message(
+      'Choose background image',
+      name: 'choose_image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share app`
+  String get share_app {
+    return Intl.message(
+      'Share app',
+      name: 'share_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change bubble alignment`
+  String get change_bubble_alignment {
+    return Intl.message(
+      'Change bubble alignment',
+      name: 'change_bubble_alignment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change data bubble alignment`
+  String get change_date_bubble {
+    return Intl.message(
+      'Change data bubble alignment',
+      name: 'change_date_bubble',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your timeline is empty!`
+  String get timeline_empty {
+    return Intl.message(
+      'Your timeline is empty!',
+      name: 'timeline_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.`
+  String get timeline_empty_info {
+    return Intl.message(
+      'There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.',
+      name: 'timeline_empty_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filters`
+  String get filter {
+    return Intl.message(
+      'Filters',
+      name: 'filter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to select a {rate} you want to include to the filter. All {rate} are included by default.`
+  String filter_info(String rate) {
+    return Intl.message(
+      'Tap to select a $rate you want to include to the filter. All $rate are included by default.',
+      name: 'filter_info',
+      desc: '',
+      args: [rate],
+    );
+  }
+
+  /// `Jump to date`
+  String get jump_to_date {
+    return Intl.message(
+      'Jump to date',
+      name: 'jump_to_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get reset {
+    return Intl.message(
+      'Reset',
+      name: 'reset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only picture`
+  String get picture {
+    return Intl.message(
+      'Only picture',
+      name: 'picture',
       desc: '',
       args: [],
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/utils/extensions.dart';
+import '../../../../common/extensions/color_extensions.dart';
 import '../../../../common/utils/insets.dart';
 
 class TagItem extends StatelessWidget {

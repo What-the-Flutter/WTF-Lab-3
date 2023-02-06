@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 
-import '../../../common/data/chat_repository.dart';
-import '../../../common/models/chat.dart';
-import '../../../common/utils/extensions.dart';
+import '../../../common/data/repository/chat_repository.dart';
+import '../../../common/extensions/date_time_extensions.dart';
+import '../../../common/extensions/string_extensions.dart';
+import '../../../common/features/theme/theme.dart';
+import '../../../common/models/ui/chat.dart';
 import '../../../common/utils/insets.dart';
+import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/radius.dart';
 import '../../../common/utils/text_styles.dart';
 import '../../../common/widget/confirmation_dialog.dart';
-import '../../../common/widget/floating_bottom_sheet.dart';
-import '../../theme/theme.dart';
+import '../../../routes.dart';
 import '../cubit/chat_overview_cubit.dart';
 import '../widget/chat_item.dart';
 import '../widget/chat_overview_scope.dart';
 
-part '../widget/chat_list.dart';
-
 part '../widget/bottom_action_sheet.dart';
+
+part '../widget/chat_list.dart';
 
 class ChatOverviewPage extends StatelessWidget {
   const ChatOverviewPage({
@@ -28,7 +31,9 @@ class ChatOverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(
+          locale.Pages.home.i18n(),
+        ),
         actions: [
           InkWell(
             borderRadius: BorderRadius.circular(
@@ -38,28 +43,26 @@ class ChatOverviewPage extends StatelessWidget {
               ThemeScope.of(context).toggleDarkMode();
             },
             onLongPress: () {
-              showFloatingModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
-                builder: (context) => ChoiceColorSheet(),
+                builder: (context) => const ChoiceColorSheet(),
               );
             },
-            child: Padding(
-              padding: const EdgeInsets.all(
+            child: const Padding(
+              padding: EdgeInsets.all(
                 Insets.medium,
               ),
-              child: Icon(
-                context.watch<ThemeCubit>().state.isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-              ),
+              child: AnimatedThemeIcon(),
             ),
           ),
         ],
       ),
-      body: ChatList(),
+      body: const ChatList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.go('/home/add');
+          context.go(
+            Navigation.addChatPagePath,
+          );
         },
         child: const Icon(Icons.add),
       ),

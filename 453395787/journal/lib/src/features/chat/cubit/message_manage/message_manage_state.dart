@@ -4,22 +4,28 @@ part of 'message_manage_cubit.dart';
 class MessageManageState with _$MessageManageState {
   const MessageManageState._();
 
-  const factory MessageManageState.defaultMode({
+  const factory MessageManageState.defaultModeState({
+    required String id,
     required String name,
-    required IList<Message> messages,
-  }) = MessageManageDefaultMode;
+    required MessageList messages,
+    required TagList tags,
+  }) = MessageManageDefaultModeState;
 
-  const factory MessageManageState.selectionMode({
+  const factory MessageManageState.selectionModeState({
+    required String id,
     required String name,
-    required IList<Message> messages,
-    required ISet<int> selected,
-  }) = MessageManageSelectionMode;
+    required MessageList messages,
+    required TagList tags,
+    required ISet<String> selected,
+  }) = MessageManageSelectionModeState;
 
-  const factory MessageManageState.editMode({
+  const factory MessageManageState.editModeState({
+    required String id,
     required String name,
-    required IList<Message> messages,
+    required MessageList messages,
     required Message message,
-  }) = MessageManageEditMode;
+    required TagList tags,
+  }) = MessageManageEditModeState;
 
   IList<Object> get messagesWithDates {
     if (messages.isEmpty) {
@@ -27,7 +33,7 @@ class MessageManageState with _$MessageManageState {
     }
 
     var bufferDateTime = messages.first.dateTime;
-    var list = <Object>[bufferDateTime];
+    final list = <Object>[bufferDateTime];
 
     for (var message in messages) {
       if (!message.dateTime.isSameDay(bufferDateTime)) {
@@ -42,12 +48,12 @@ class MessageManageState with _$MessageManageState {
 
   bool? get hasMoreFavoritesInSelected {
     return mapOrNull(
-      selectionMode: (selectionMode) {
+      selectionModeState: (selectionModeState) {
         var amountOfFavorites = 0;
         var amountOfOther = 0;
 
-        var selectedMessages = selectionMode.messages.where(
-          (message) => selectionMode.selected.contains(
+        final selectedMessages = selectionModeState.messages.where(
+          (message) => selectionModeState.selected.contains(
             message.id,
           ),
         );

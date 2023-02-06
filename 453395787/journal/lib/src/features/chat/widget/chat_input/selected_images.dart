@@ -35,10 +35,21 @@ class _SelectedImagesList extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                           Radius.medium,
                         ),
-                        child: Image.file(
-                          File(
-                            state.message.images[index],
-                          ),
+                        child: FutureBuilder<File>(
+                          future: state.message.images[index],
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                return const CircularProgressIndicator();
+                              } else {
+                                return Image.file(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                );
+                              }
+                            }
+                            return const CircularProgressIndicator();
+                          },
                         ),
                       ),
                     ),
@@ -51,7 +62,7 @@ class _SelectedImagesList extends StatelessWidget {
                   onPressed: () async {
                     final images = await ImagePicker().pickMultiImage();
                     MessageInputScope.of(context).addImages(
-                      images.map((e) => e.path).toList(),
+                      images.map((e) => File(e.path)).toIList(),
                     );
                   },
                   icon: const Icon(

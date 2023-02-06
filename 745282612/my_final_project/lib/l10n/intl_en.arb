@@ -38,8 +38,29 @@
   "no_search_body" : "No entries match the given search query. Please try again",
   "no_search_title" : "No search result available",
   "event_modal_title" : "Select the page you want to migrate the selected event to!",
-  "setting" : "Settings",
   "exit_the_app" : "Exit the app",
-  "add_section": "Add new section"
-  
+  "add_section": "Add new section",
+  "setting_title" : "Settings",
+  "account" : "Account",
+  "change_theme": "Change theme",
+  "cnange_font_size": "Change font size",
+  "reset_setting": "Reset setting",
+  "choose_image": "Choose background image",
+  "share_app": "Share app",
+  "change_bubble_alignment": "Change bubble alignment",
+  "change_date_bubble": "Change data bubble alignment",
+  "timeline_empty" : "Your timeline is empty!",
+  "timeline_empty_info": "There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.",
+  "filter": "Filters",
+  "filter_info": "Tap to select a {rate} you want to include to the filter. All {rate} are included by default.",
+  "@filter_info":{
+    "placeholders": {
+    "rate": {
+            "type":"String"
+            }
+    }
+  },
+  "jump_to_date": "Jump to date",
+  "reset" : "Reset",
+  "picture": "Only picture"
 }

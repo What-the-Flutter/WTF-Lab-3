@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../api/message_repository_api.dart';
+import '../../../../common/data/provider/storage_firebase_provider.dart';
+import '../../../text_tags/text_tags.dart';
+import '../../api/chat_messages_repository_api.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
-import '../../data/message_repository.dart';
+import '../../data/chat_messages_repository.dart';
 
 class MessageInputScope extends StatelessWidget {
   const MessageInputScope({
@@ -13,13 +15,15 @@ class MessageInputScope extends StatelessWidget {
   });
 
   final Widget child;
-  final MessageRepositoryApi? repository;
+  final ChatMessagesRepositoryApi? repository;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MessageInputCubit(
-        repository: repository ?? context.read<MessageRepository>(),
+        chatMessagesRepository: repository ?? context.read<ChatMessagesRepository>(),
+        storageProvider: context.read<StorageFirebaseProvider>(),
+        textTagRepository: context.read<TextTagRepository>(),
       ),
       child: child,
     );

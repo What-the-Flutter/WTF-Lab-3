@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../common/models/message.dart';
-import '../../../../common/models/tag.dart';
-import '../../api/message_repository_api.dart';
+import '../../../../common/api/provider/storage_provider_api.dart';
+import '../../../../common/models/ui/message.dart';
+import '../../../../common/models/ui/tag.dart';
+import '../../../../common/utils/typedefs.dart';
+import '../../../text_tags/text_tags.dart';
+import '../../api/chat_messages_repository_api.dart';
 
 part 'message_input_cubit.freezed.dart';
 
@@ -12,15 +17,24 @@ part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
-    required MessageRepositoryApi repository,
-  })  : _repository = repository,
+    required ChatMessagesRepositoryApi chatMessagesRepository,
+    required StorageProviderApi storageProvider,
+    required TextTagRepositoryApi textTagRepository,
+  })  : _chatMessagesRepository = chatMessagesRepository,
+        _storage = storageProvider,
+        _textTagRepository = textTagRepository,
         super(
-          MessageInputState.defaultMode(
-            message: Message(),
+          MessageInputState.defaultModeState(
+            message: Message(
+              parentId: '',
+              dateTime: DateTime.now(),
+            ),
           ),
         );
 
-  final MessageRepositoryApi _repository;
+  final ChatMessagesRepositoryApi _chatMessagesRepository;
+  final StorageProviderApi _storage;
+  final TextTagRepositoryApi _textTagRepository;
 
   void onTextChanged(String text) {
     emit(
@@ -30,21 +44,27 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
   }
 
-  void addImages(List<String> images) {
+  Future<void> addImages(IList<File> images) async {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.addAll(images.lock),
+          images: state.message.images.addAll(
+            images.map(
+              Future.value,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void removeImage(String image) {
+  void removeImage(Future<File> image) {
     emit(
       state.copyWith(
         message: state.message.copyWith(
-          images: state.message.images.remove(image),
+          images: state.message.images.removeWhere(
+            (e) => e == image,
+          ),
         ),
       ),
     );
@@ -70,7 +90,7 @@ class MessageInputCubit extends Cubit<MessageInputState> {
     );
   }
 
-  void setTags(IList<Tag> tags) {
+  void setTags(TagList tags) {
     emit(
       state.copyWith(
         message: state.message.copyWith(
@@ -81,17 +101,33 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   }
 
   void send() {
-    _repository.add(state.message);
+    for (var image in state.message.images) {
+      image.then(_storage.save);
+    }
+
+    state.map(
+      defaultModeState: (defaultModeState) {
+        _chatMessagesRepository.add(state.message);
+        _textTagRepository.addFromText(state.message.text);
+      },
+      editModeState: (editModeState) {
+        _chatMessagesRepository.update(state.message);
+        _textTagRepository.addFromText(state.message.text);
+      },
+    );
     emit(
-      MessageInputState.defaultMode(
-        message: Message(),
+      MessageInputState.defaultModeState(
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }
 
   void startEditMode(Message message) {
     emit(
-      MessageInputState.editMode(
+      MessageInputState.editModeState(
         message: message,
       ),
     );
@@ -99,8 +135,11 @@ class MessageInputCubit extends Cubit<MessageInputState> {
 
   void endEditMode() {
     emit(
-      MessageInputState.defaultMode(
-        message: Message(),
+      MessageInputState.defaultModeState(
+        message: Message(
+          parentId: '',
+          dateTime: DateTime.now(),
+        ),
       ),
     );
   }
