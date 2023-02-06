@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-class EventsCard extends StatelessWidget {
+import '../../model/events_group.dart';
+import '../events_page/events_page.dart';
+
+class EventsCard extends StatefulWidget {
+
+  final Icon icon;
+  final String title;
+  final String subtitle;
+
   const EventsCard({
     super.key,
     required this.icon,
@@ -8,18 +16,33 @@ class EventsCard extends StatelessWidget {
     required this.subtitle,
   });
 
-  final Icon icon;
-  final String title;
-  final String subtitle;
+  @override
+  State<EventsCard> createState() => _EventsCardState();
+}
+
+class _EventsCardState extends State<EventsCard> {
+  
+ late EventsGroup _eventsGroup;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventsGroup = EventsGroup.empty(widget.title);
+  }
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Card(
       child: InkWell(
         onTap:() {
-          print('Click to EventsCard');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventsPage(_eventsGroup)
+            ),
+          );
         },
         child: ListTile(
           leading: Container(
@@ -28,13 +51,12 @@ class EventsCard extends StatelessWidget {
               shape: BoxShape.circle,
               color: theme.colorScheme.background,
             ),
-            child: icon,
+            child: widget.icon,
           ),
-          title: Text(title),
-          subtitle: Text(subtitle),
+          title: Text(widget.title),
+          subtitle: Text(widget.subtitle),
         ),
       ),
     );
   }
-
 }
