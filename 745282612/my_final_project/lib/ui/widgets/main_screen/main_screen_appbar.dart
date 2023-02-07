@@ -42,6 +42,8 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = context.watch<SettingCubit>().isLight();
+
     return AppBar(
       title: Text(
         title(widget.index),
@@ -50,16 +52,21 @@ class _MainScreenAppBarState extends State<MainScreenAppBar> {
         ),
       ),
       actions: [
-        IconButton(
-          onPressed: widget.index == 2
-              ? context.read<TimelineCubit>().changeFavoriteStatus
-              : context.read<SettingCubit>().changeTheme,
-          icon: Icon(
-            widget.index == 2
-                ? context.watch<TimelineCubit>().state.isFavorite
-                    ? Icons.turned_in
-                    : Icons.turned_in_not
-                : Icons.invert_colors,
+        Tooltip(
+          message: widget.index == 2 ? 'Button favorit' : 'Button theme',
+          child: IconButton(
+            onPressed: widget.index == 2
+                ? context.read<TimelineCubit>().changeFavoriteStatus
+                : context.read<SettingCubit>().changeTheme,
+            icon: Icon(
+              widget.index == 2
+                  ? context.watch<TimelineCubit>().state.isFavorite
+                      ? Icons.turned_in
+                      : Icons.turned_in_not
+                  : isLight
+                      ? Icons.invert_colors_off
+                      : Icons.invert_colors,
+            ),
           ),
         ),
       ],
