@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
 
+enum MenuStatus { home, timeline }
+
 class MenuState extends Equatable {
   final int index;
-  final String menuStatus;
+  final MenuStatus menuStatus;
 
   MenuState({
     required this.index,
@@ -11,7 +13,7 @@ class MenuState extends Equatable {
 
   MenuState copyWith({
     int? index,
-    String? menuStatus,
+    MenuStatus? menuStatus,
   }) {
     return MenuState(
       index: index ?? this.index,

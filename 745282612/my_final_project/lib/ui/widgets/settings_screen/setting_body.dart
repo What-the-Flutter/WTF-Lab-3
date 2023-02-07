@@ -23,7 +23,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
       vsync: this,
     );
     _resetAnimationController.addStatusListener(
-      (status) async {
+      (status) {
         if (status == AnimationStatus.completed) {
           Navigator.pop(context);
           _resetAnimationController.reset();
@@ -43,7 +43,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
         context: context,
         barrierDismissible: false,
         barrierLabel: 'Dialog',
-        transitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 200),
         pageBuilder: (_, __, ___) {
           return Column(
             children: <Widget>[
@@ -74,7 +74,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).add_section,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             onTap: () {
@@ -94,17 +94,16 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).change_theme,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             subtitle: Text(
               'Light/Dark',
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeTheme();
             },
           ),
@@ -114,17 +113,16 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).cnange_font_size,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Small/Medium/Large',
+              S.of(context).font_size,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeFontSize();
             },
           ),
@@ -134,7 +132,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).choose_image,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             onTap: context.read<SettingCubit>().changeBackgroundImage,
@@ -145,17 +143,16 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).change_bubble_alignment,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Left/Right',
+              S.of(context).bubble_alignment,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeBubbleAligment();
             },
           ),
@@ -165,17 +162,16 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).change_date_bubble,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Left/Center',
+              S.of(context).date_bubble,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: () async {
-              await showResetDialog(context);
+            onTap: () {
               context.read<SettingCubit>().changeDateBubble();
             },
           ),
@@ -185,7 +181,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).share_app,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             onTap: () {
@@ -198,7 +194,7 @@ class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStat
             title: Text(
               S.of(context).reset_setting,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             onTap: () async {

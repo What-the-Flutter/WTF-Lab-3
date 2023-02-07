@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/entities/event.dart';
+import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_message.dart';
 
@@ -20,6 +21,21 @@ class EventAction extends StatefulWidget {
 }
 
 class _EventActionState extends State<EventAction> {
+  void isDismissibleAction(DismissDirection direction) {
+    if (direction == DismissDirection.endToStart) {
+      context.read<EventCubit>().deleteEvent(widget.event);
+      final snackBar = SnackBar(
+        content: Text(S.of(context).delete_element),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    if (direction == DismissDirection.startToEnd) {
+      context.read<EventCubit>().changeSelectedItem(widget.event.id);
+      context.read<EventCubit>().changeSelected();
+      context.read<EventCubit>().changeEditText();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dismissible(
@@ -34,20 +50,7 @@ class _EventActionState extends State<EventAction> {
         child: const Icon(Icons.delete),
       ),
       key: UniqueKey(),
-      onDismissed: (direction) {
-        if (direction == DismissDirection.endToStart) {
-          context.read<EventCubit>().deleteEvent(widget.event);
-          final snackBar = const SnackBar(
-            content: Text('Delete element!'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-        if (direction == DismissDirection.startToEnd) {
-          context.read<EventCubit>().changeSelectedItem(widget.event.id);
-          context.read<EventCubit>().changeSelected();
-          context.read<EventCubit>().changeEditText();
-        }
-      },
+      onDismissed: isDismissibleAction,
       child: GestureDetector(
         onLongPress: () {
           if (!widget.isSelected) {

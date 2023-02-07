@@ -79,7 +79,7 @@ class TimelineCubit extends Cubit<TimelineState> {
         filterList: [],
         filterDateTime: null,
         searchText: '',
-        onlyPicture: 'No',
+        onlyPicture: false,
       ),
     );
   }
@@ -96,7 +96,7 @@ class TimelineCubit extends Cubit<TimelineState> {
         state.filterTags.isEmpty &&
         state.filterDateTime == null &&
         state.searchText == '' &&
-        state.onlyPicture == 'No') {
+        state.onlyPicture == false) {
       emit(state.copyWith(filterList: []));
     } else {
       if (state.filterChat.isNotEmpty) {
@@ -118,7 +118,7 @@ class TimelineCubit extends Cubit<TimelineState> {
         filterEventList.removeWhere((element) =>
             !element.messageContent.toLowerCase().contains(state.searchText.toLowerCase()));
       }
-      if (state.onlyPicture != 'No') {
+      if (state.onlyPicture != false) {
         filterEventList.removeWhere((element) => element.messageImage == null);
       }
       emit(state.copyWith(filterList: filterEventList));
@@ -130,10 +130,10 @@ class TimelineCubit extends Cubit<TimelineState> {
   }
 
   void changeStatusImage() {
-    if (state.onlyPicture == 'No') {
-      emit(state.copyWith(onlyPicture: 'Yes'));
+    if (state.onlyPicture == false) {
+      emit(state.copyWith(onlyPicture: true));
     } else {
-      emit(state.copyWith(onlyPicture: 'No'));
+      emit(state.copyWith(onlyPicture: false));
     }
   }
 

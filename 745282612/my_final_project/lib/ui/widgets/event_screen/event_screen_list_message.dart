@@ -34,7 +34,7 @@ class _EventScreenListMessageState extends State<EventScreenListMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<EventCubit>().state;
+    final state = context.read<EventCubit>().state;
     if (state.isFavorite) {
       return listFavorite(context, widget.listMessageFavorite, state);
     } else if (state.isSearch) {
@@ -110,7 +110,7 @@ Widget listFavorite(BuildContext context, List<Event> listMessageFavorite, Event
 }
 
 Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
-  final isLight = context.watch<SettingCubit>().isLight();
+  final isLight = context.read<SettingCubit>().isLight();
 
   return index == eventList.length - 1 ||
           DateFormat.yMMMMd().format(eventList[index].messageTime) !=
@@ -131,7 +131,7 @@ Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
             child: Text(
               DateFormat.yMMMEd().format(eventList[index].messageTime),
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
           ),

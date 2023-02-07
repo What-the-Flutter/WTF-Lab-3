@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/cubit/timeline_cubit.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_labels.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_other.dart';
@@ -8,13 +9,6 @@ import 'package:my_final_project/ui/widgets/timelime_screen/filter_pages.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/filter_tags.dart';
 
 class FilterBody extends StatefulWidget {
-  static const List<Tab> myTabs = <Tab>[
-    Tab(text: 'Pages'),
-    Tab(text: 'Tags'),
-    Tab(text: 'Labels'),
-    Tab(text: 'Others'),
-  ];
-
   const FilterBody({super.key});
 
   @override
@@ -23,6 +17,15 @@ class FilterBody extends StatefulWidget {
 
 class _FilterBodyState extends State<FilterBody> {
   late final TextEditingController searchController;
+
+  List<Tab> myTabs() {
+    return <Tab>[
+      Tab(text: S.of(context).pages),
+      Tab(text: S.of(context).tags),
+      Tab(text: S.of(context).labels),
+      Tab(text: S.of(context).others),
+    ];
+  }
 
   @override
   void initState() {
@@ -43,11 +46,11 @@ class _FilterBodyState extends State<FilterBody> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               filled: true,
               border: InputBorder.none,
-              prefixIcon: Icon(Icons.search),
-              labelText: 'Search',
+              prefixIcon: const Icon(Icons.search),
+              labelText: S.of(context).search,
             ),
             controller: searchController,
             onChanged: (value) => context.read<TimelineCubit>().searchText(value),
@@ -55,13 +58,13 @@ class _FilterBodyState extends State<FilterBody> {
         ),
         Expanded(
           child: DefaultTabController(
-            length: FilterBody.myTabs.length,
+            length: myTabs().length,
             child: Scaffold(
               appBar: AppBar(
                 toolbarHeight: 0,
                 automaticallyImplyLeading: false,
-                bottom: const TabBar(
-                  tabs: FilterBody.myTabs,
+                bottom: TabBar(
+                  tabs: myTabs(),
                 ),
               ),
               body: const TabBarView(

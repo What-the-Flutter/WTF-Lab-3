@@ -2,11 +2,12 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:my_final_project/ui/screens/add_page_screen.dart';
+import 'package:my_final_project/ui/widgets/main_screen/cubit/menu_state.dart';
 import 'package:my_final_project/ui/widgets/timelime_screen/timeline_filter.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 
 class MainScreenFloatingButton extends StatefulWidget {
-  final String menuStatus;
+  final MenuStatus menuStatus;
 
   const MainScreenFloatingButton({
     super.key,
@@ -21,7 +22,7 @@ class _MainScreenFloatingButtonState extends State<MainScreenFloatingButton> {
   final _containerTransitionType = ContainerTransitionType.fade;
 
   Widget floatingIcon() {
-    if (widget.menuStatus == 'timeline') {
+    if (widget.menuStatus == MenuStatus.timeline) {
       return const Icon(
         Icons.filter_list_sharp,
         color: Colors.black,
@@ -39,7 +40,7 @@ class _MainScreenFloatingButtonState extends State<MainScreenFloatingButton> {
     return OpenContainer(
       transitionType: _containerTransitionType,
       transitionDuration: const Duration(seconds: 1),
-      openBuilder: (context, _) => widget.menuStatus == 'timeline'
+      openBuilder: (context, _) => widget.menuStatus == MenuStatus.timeline
           ? const TimelineFilter()
           : const AddNewScreen(textController: ''),
       closedElevation: 0,

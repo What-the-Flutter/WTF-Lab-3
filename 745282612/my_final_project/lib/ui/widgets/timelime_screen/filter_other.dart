@@ -20,7 +20,7 @@ class FilterOther extends StatelessWidget {
             title: Text(
               S.of(context).jump_to_date,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             trailing: Text(
@@ -28,7 +28,7 @@ class FilterOther extends StatelessWidget {
                   ? DateFormat.yMMMEd().format(context.read<TimelineCubit>().state.filterDateTime!)
                   : 'None',
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             onTap: () {
@@ -52,13 +52,13 @@ class FilterOther extends StatelessWidget {
             title: Text(
               S.of(context).picture,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             trailing: Text(
-              context.watch<TimelineCubit>().state.onlyPicture,
+              context.read<TimelineCubit>().state.onlyPicture.toString(),
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             onTap: context.read<TimelineCubit>().changeStatusImage,
@@ -69,7 +69,7 @@ class FilterOther extends StatelessWidget {
             title: Text(
               S.of(context).reset,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             onTap: context.read<TimelineCubit>().resetFilter,

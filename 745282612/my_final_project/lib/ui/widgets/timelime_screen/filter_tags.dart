@@ -12,7 +12,7 @@ class FilterByTags extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listTags = AppTags.tagsList;
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,10 +51,10 @@ class FilterByTags extends StatelessWidget {
                               listTags[i],
                               style: TextStyle(
                                 fontSize: context
-                                    .watch<SettingCubit>()
+                                    .read<SettingCubit>()
                                     .state
                                     .textTheme
-                                    .bodyText1!
+                                    .bodyLarge!
                                     .fontSize,
                               ),
                             ),

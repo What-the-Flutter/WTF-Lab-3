@@ -10,7 +10,7 @@ class TimelineState extends Equatable {
   final DateTime? filterDateTime;
   final bool isFavorite;
   final String searchText;
-  final String onlyPicture;
+  final bool onlyPicture;
 
   TimelineState({
     required this.filterList,
@@ -18,7 +18,7 @@ class TimelineState extends Equatable {
     required this.filterTags,
     required this.filterSection,
     required this.filterDateTime,
-    this.onlyPicture = 'No',
+    this.onlyPicture = false,
     this.isFavorite = false,
     this.searchText = '',
   });
@@ -31,7 +31,7 @@ class TimelineState extends Equatable {
     DateTime? filterDateTime,
     bool? isFavorite,
     String? searchText,
-    String? onlyPicture,
+    bool? onlyPicture,
   }) {
     return TimelineState(
       filterTags: filterTags ?? this.filterTags,

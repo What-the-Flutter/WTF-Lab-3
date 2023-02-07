@@ -15,7 +15,7 @@ class FilterInstruction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
@@ -27,7 +27,7 @@ class FilterInstruction extends StatelessWidget {
           textAlign: TextAlign.center,
           S.of(context).filter_info(instructionText),
           style: TextStyle(
-            fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+            fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
           ),
         ),
       ),

@@ -479,6 +479,216 @@ class S {
       args: [],
     );
   }
+
+  /// `Delete element!`
+  String get delete_element {
+    return Intl.message(
+      'Delete element!',
+      name: 'delete_element',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search`
+  String get search {
+    return Intl.message(
+      'Search',
+      name: 'search',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Event`
+  String get enter_event {
+    return Intl.message(
+      'Enter Event',
+      name: 'enter_event',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Home`
+  String get home_title {
+    return Intl.message(
+      'Home',
+      name: 'home_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily`
+  String get daily_title {
+    return Intl.message(
+      'Daily',
+      name: 'daily_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Timeline`
+  String get timeline_title {
+    return Intl.message(
+      'Timeline',
+      name: 'timeline_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore`
+  String get explore_title {
+    return Intl.message(
+      'Explore',
+      name: 'explore_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Small/Medium/Large`
+  String get font_size {
+    return Intl.message(
+      'Small/Medium/Large',
+      name: 'font_size',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Left/Right`
+  String get bubble_alignment {
+    return Intl.message(
+      'Left/Right',
+      name: 'bubble_alignment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Left/Center`
+  String get date_bubble {
+    return Intl.message(
+      'Left/Center',
+      name: 'date_bubble',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pages`
+  String get pages {
+    return Intl.message(
+      'Pages',
+      name: 'pages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags`
+  String get tags {
+    return Intl.message(
+      'Tags',
+      name: 'tags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Labels`
+  String get labels {
+    return Intl.message(
+      'Labels',
+      name: 'labels',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Others`
+  String get others {
+    return Intl.message(
+      'Others',
+      name: 'others',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Statistics`
+  String get statistics {
+    return Intl.message(
+      'Statistics',
+      name: 'statistics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Totals`
+  String get total {
+    return Intl.message(
+      'Totals',
+      name: 'total',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bookmarks`
+  String get bookmark {
+    return Intl.message(
+      'Bookmarks',
+      name: 'bookmark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Answers`
+  String get answers {
+    return Intl.message(
+      'Answers',
+      name: 'answers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summary`
+  String get summary {
+    return Intl.message(
+      'Summary',
+      name: 'summary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular`
+  String get popular {
+    return Intl.message(
+      'Popular',
+      name: 'popular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections`
+  String get popular_instruction {
+    return Intl.message(
+      'This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections',
+      name: 'popular_instruction',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
