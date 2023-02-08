@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/chat.dart';
-import '../../../models/icon_map.dart';
+
+import '../../../domain/entities/chat.dart';
+import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/fonts.dart';
 import '../../../theme/theme_cubit.dart';
-import '../home_page/home_page_cubit.dart';
 import 'create_chat_cubit.dart';
 import 'create_chat_state.dart';
 
@@ -14,6 +14,7 @@ class CreateChatPage extends StatelessWidget {
   final bool isCreatingMode;
   final String initialText;
   final int iconIndex;
+  late final CreateChatCubit createChatCubit;
 
   CreateChatPage({
     required this.isCreatingMode,
@@ -24,7 +25,7 @@ class CreateChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    createChatCubit = context.read<CreateChatCubit>();
     return BlocBuilder<CreateChatCubit, CreateChatState>(
       builder: (context, state) {
         if (!isCreatingMode && !state.isChanged) {
@@ -49,11 +50,11 @@ class CreateChatPage extends StatelessWidget {
                       isCreatingMode ? 'Create a new Page' : 'Edit Page',
                       style: Fonts.createChatTitle,
                     ),
-                    _inputPanel(context),
-                    _iconGrid(context),
+                    _inputPanel(state, context),
+                    _iconGrid(state, context),
                   ],
                 ),
-                _floatingActionButton(context),
+                _floatingActionButton(state, context),
               ],
             ),
           ),
@@ -62,7 +63,7 @@ class CreateChatPage extends StatelessWidget {
     );
   }
 
-  Widget _inputPanel(context) {
+  Widget _inputPanel(CreateChatState state, BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(
         vertical: 5,
@@ -85,16 +86,14 @@ class CreateChatPage extends StatelessWidget {
             style: Fonts.createChatInputTitle,
             textAlign: TextAlign.left,
           ),
-          _textField(context),
+          _textField(state, context),
         ],
       ),
     );
   }
 
-  Widget _textField(BuildContext context) {
-    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
-    if (!createChatCubit.state.isChanged &&
-        !createChatCubit.state.isCreatingMode) {
+  Widget _textField(CreateChatState state, BuildContext context) {
+    if (!state.isChanged && !state.isCreatingMode) {
       _controller.text = initialText;
     }
     return Container(
@@ -102,7 +101,7 @@ class CreateChatPage extends StatelessWidget {
       child: TextField(
         controller: _controller,
         onChanged: (text) {
-          if (!createChatCubit.state.isChanged) {
+          if (!state.isChanged) {
             createChatCubit.isChangedToTrue();
           }
           createChatCubit.changeIsNotEmpty(text.isNotEmpty);
@@ -111,9 +110,8 @@ class CreateChatPage extends StatelessWidget {
     );
   }
 
-  Widget _iconGrid(BuildContext context) {
-    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
-    final selectedIndex = createChatCubit.state.selectedIconIndex;
+  Widget _iconGrid(CreateChatState state, BuildContext context) {
+    final selectedIndex = state.selectedIconIndex;
     return Flexible(
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -137,7 +135,7 @@ class CreateChatPage extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     createChatCubit.changeSelectedIconIndex(index);
-                    if (!createChatCubit.state.isChanged) {
+                    if (!state.isChanged) {
                       createChatCubit.isChangedToTrue();
                     }
                   },
@@ -175,10 +173,8 @@ class CreateChatPage extends StatelessWidget {
     );
   }
 
-  Widget _floatingActionButton(BuildContext context) {
-    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
-    final isDone =
-        _controller.text.isNotEmpty && createChatCubit.state.isChanged;
+  Widget _floatingActionButton(CreateChatState state, BuildContext context) {
+    final isDone = _controller.text.isNotEmpty && state.isChanged;
     return AnimatedPositioned(
       child: FloatingActionButton(
         child: Icon(
@@ -186,50 +182,25 @@ class CreateChatPage extends StatelessWidget {
           size: 40,
         ),
         onPressed: () {
-          final Chat? chat;
-          final isChanged =
-              _controller.text.isNotEmpty && createChatCubit.state.isChanged;
+          final isChanged = _controller.text.isNotEmpty && state.isChanged;
           if (isChanged) {
-            final date =DateTime.now();
-            chat = Chat(
-              id: _generateId(context),
+            final date = DateTime.now();
+            final chat = Chat(
+              id: 0,
               name: _controller.text,
-              iconIndex: createChatCubit.state.selectedIconIndex,
+              iconIndex: state.selectedIconIndex,
               creationDate: date,
+              events: [],
             );
-          } else {
-            chat = null;
+            createChatCubit.addChat(chat);
+            Navigator.of(context).pop();
+            createChatCubit.reset();
           }
-          Navigator.of(context).pop(chat);
-          createChatCubit.reset();
         },
       ),
       duration: const Duration(milliseconds: 300),
       right: 0,
       bottom: 0,
     );
-  }
-
-  int _generateId(BuildContext context) {
-    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
-    final homeState = BlocProvider.of<HomePageCubit>(context).state;
-
-    var generated = false;
-    while (!generated) {
-      var exist = false;
-      var i = 0;
-      while (i < homeState.chats.length && !exist) {
-        if (homeState.chats[i].id == createChatCubit.state.counterId) {
-          exist = true;
-        } else {
-          i++;
-        }
-      }
-      if (!exist) {
-        generated = true;
-      }
-      createChatCubit.incrementCounterId();
-    }
-    return createChatCubit.state.counterId;
   }
 }
