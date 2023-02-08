@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 
-import '../../models/event.dart';
+import '../../../domain/entities/event.dart';
 
 class ChatState extends Equatable {
   final List<Event> events;
   final List<Event> favorites;
-  final int favoritesCount;
   final bool isSelecting;
   final int selectedCount;
   final bool isEditing;
@@ -17,11 +16,11 @@ class ChatState extends Equatable {
   final bool isSelectingCategory;
   final int selectedIcon;
   final int? selectedRadioIndex;
+  final int counterId;
 
   ChatState({
     this.events = const [],
     this.favorites = const [],
-    this.favoritesCount = 0,
     this.isSelecting = false,
     this.selectedCount = 0,
     this.isEditing = false,
@@ -33,12 +32,12 @@ class ChatState extends Equatable {
     this.isSelectingCategory = false,
     this.selectedIcon = 0,
     this.selectedRadioIndex = 0,
+    this.counterId = 0,
   });
 
   ChatState copyWith({
     List<Event>? events,
     List<Event>? favorites,
-    int? favoritesCount,
     bool? isSelecting,
     int? selectedCount,
     bool? isEditing,
@@ -50,11 +49,11 @@ class ChatState extends Equatable {
     bool? isSelectingCategory,
     int? selectedIcon,
     int? selectedRadioIndex,
+    int? counterId,
   }) {
     return ChatState(
       events: events ?? this.events,
       favorites: favorites ?? this.favorites,
-      favoritesCount: favoritesCount ?? this.favoritesCount,
       isSelecting: isSelecting ?? this.isSelecting,
       selectedCount: selectedCount ?? this.selectedCount,
       isEditing: isEditing ?? this.isEditing,
@@ -66,6 +65,7 @@ class ChatState extends Equatable {
       isSelectingCategory: isSelectingCategory ?? this.isSelectingCategory,
       selectedIcon: selectedIcon ?? this.selectedIcon,
       selectedRadioIndex: selectedRadioIndex ?? this.selectedRadioIndex,
+      counterId: counterId ?? this.counterId,
     );
   }
 
@@ -73,7 +73,6 @@ class ChatState extends Equatable {
   List<Object?> get props => [
         events,
         favorites,
-        favoritesCount,
         isSelecting,
         selectedCount,
         isEditing,

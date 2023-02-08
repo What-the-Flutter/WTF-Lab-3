@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../models/chat.dart';
-import '../models/event.dart';
-import '../theme/colors.dart';
-import '../theme/fonts.dart';
-import '../theme/theme_cubit.dart';
-import '../theme/theme_state.dart';
+import '../../data/provider/theme_provider.dart';
+import '../../data/repository/chat_repository.dart';
+import '../../data/repository/event_repository.dart';
+import '../../theme/colors.dart';
+import '../../theme/fonts.dart';
+import '../../theme/theme_cubit.dart';
+import '../../theme/theme_state.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/theme_button.dart';
 import 'chat_page/chat_page_cubit.dart';
@@ -15,69 +16,60 @@ import 'create_chat_page/create_chat_cubit.dart';
 import 'home_page/home.dart';
 import 'home_page/home_page_cubit.dart';
 
-final _chats = <Chat>[
-  Chat(
-      id: 0,
-      name: 'Travel',
-      iconIndex: 0,
-      creationDate: DateTime.now().subtract(const Duration(days: 1)),
-      events: []),
-  Chat(
-    id: 1,
-    name: 'Family',
-    iconIndex: 1,
-    creationDate: DateTime.now().subtract(const Duration(days: 2)),
-    events: [
-      Event(
-          text: 'My Family',
-          dateTime: DateTime.now().subtract(const Duration(hours: 24))),
-      Event(text: 'My big big family', dateTime: DateTime.now()),
-    ],
-  ),
-  Chat(
-    id: 2,
-    name: 'Sport',
-    iconIndex: 2,
-    events: [],
-    creationDate: DateTime.now().subtract(const Duration(days: 3)),
-  ),
-];
-
 class ChatJournal extends StatelessWidget {
-  const ChatJournal({super.key});
-
   final title = 'Home';
+
+  const ChatJournal({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider<ThemeCubit>(
-          create: (context) => ThemeCubit(),
-          lazy: false,
+        RepositoryProvider<ChatRepository>(
+          create: (context) => ChatRepository(),
         ),
-        BlocProvider<ChatCubit>(
-          create: (context) => ChatCubit(),
-        ),
-        BlocProvider<CreateChatCubit>(
-          create: (context) => CreateChatCubit(isCreatingMode: true),
-        ),
-        BlocProvider<HomePageCubit>(
-          create: (context) => HomePageCubit(_chats),
+        RepositoryProvider<EventRepository>(
+          create: (context) => EventRepository(),
         ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, state) {
-          return MaterialApp(
-            theme: state.theme,
-            home: _mainPage(context),
-          );
-        },
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<ThemeCubit>(
+            create: (context) => ThemeCubit(themeProvider: ThemeProvider()),
+            lazy: false,
+          ),
+          BlocProvider<ChatCubit>(
+            create: (context) => ChatCubit(
+              eventRepository: context.read<EventRepository>(),
+              chatRepository: context.read<ChatRepository>(),
+            ),
+          ),
+          BlocProvider<CreateChatCubit>(
+            create: (context) => CreateChatCubit(
+              chatRepository: context.read<ChatRepository>(),
+              isCreatingMode: true,
+            ),
+          ),
+          BlocProvider<HomePageCubit>(
+            create: (context) => HomePageCubit(
+              chatRepository: context.read<ChatRepository>(),
+              eventRepository: context.read<EventRepository>(),
+            ),
+          ),
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, state) {
+            return MaterialApp(
+              theme: state.theme,
+              home: _mainPage(state, context),
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _mainPage(BuildContext context) {
+  Widget _mainPage(ThemeState state, BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -88,13 +80,13 @@ class ChatJournal extends StatelessWidget {
           ThemeButton(),
         ],
       ),
-      drawer: _drawer(context),
-      body: const HomePage(),
+      drawer: _drawer(state, context),
+      body: HomePage(themeState: state),
       bottomNavigationBar: const BottomNavigation(),
     );
   }
 
-  Widget _drawer(BuildContext context) {
+  Widget _drawer(ThemeState state, BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

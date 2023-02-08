@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../theme/colors.dart';
-import '../theme/fonts.dart';
-import '../theme/theme_cubit.dart';
+import '../../theme/colors.dart';
+import '../../theme/fonts.dart';
+import '../../theme/theme_cubit.dart';
 
 class QuestionnaireBotButton extends StatelessWidget {
   QuestionnaireBotButton({super.key});

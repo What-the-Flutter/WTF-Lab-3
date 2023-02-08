@@ -2,85 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/chat.dart';
-import '../../models/event.dart';
-import '../../models/icon_map.dart';
-import '../../theme/colors.dart';
-import '../../theme/fonts.dart';
-import '../../theme/theme_cubit.dart';
-import '../../theme/theme_state.dart';
+import '../../../domain/entities/chat.dart';
+import '../../../domain/entities/icon_map.dart';
+import '../../../theme/colors.dart';
+import '../../../theme/fonts.dart';
+import '../../../theme/theme_cubit.dart';
+import '../../../theme/theme_state.dart';
 import '../../widgets/questionnaire_bot.dart';
 import '../chat_page/chat_page.dart';
-import '../chat_page/chat_page_cubit.dart';
 import '../create_chat_page/create_chat_cubit.dart';
 import '../create_chat_page/create_chat_page.dart';
 import 'home_page_cubit.dart';
 import 'home_page_state.dart';
 
-final _chats = <Chat>[
-  Chat(
-      id: 0,
-      name: 'Travel',
-      iconIndex: 0,
-      creationDate: DateTime.now().subtract(const Duration(days: 1)),
-      events: []),
-  Chat(
-    id: 1,
-    name: 'Family',
-    iconIndex: 1,
-    creationDate: DateTime.now().subtract(const Duration(days: 2)),
-    events: [
-      Event(
-          text: 'My Family',
-          dateTime: DateTime.now().subtract(const Duration(hours: 24))),
-      Event(text: 'My big big family', dateTime: DateTime.now()),
-    ],
-  ),
-  Chat(
-      id: 2,
-      name: 'Sport',
-      iconIndex: 2,
-      events: [],
-      creationDate: DateTime.now().subtract(const Duration(days: 3))),
-];
-
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final ThemeState themeState;
+
+  const HomePage({required this.themeState, super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomePageCubit, HomePageState>(
       builder: (context, state) {
-        return BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, state) {
-            return Stack(
+        return Stack(
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    QuestionnaireBotButton(),
-                    Expanded(child: _journalList(context)),
-                  ],
-                ),
-                _floatingActionButton(context),
+                QuestionnaireBotButton(),
+                Expanded(
+                    child: _journalList(
+                        context.watch<HomePageCubit>().state, context)),
               ],
-            );
-          },
+            ),
+            _floatingActionButton(context),
+          ],
         );
       },
     );
   }
 
-  Widget _journalList(BuildContext context) {
-    final homePageCubit = BlocProvider.of<HomePageCubit>(context);
+  Widget _journalList(HomePageState state, BuildContext context) {
     return Column(
       children: [
         _divider(),
         Flexible(
           child: ListView.builder(
-            itemCount: homePageCubit.state.chats.length,
+            itemCount: state.chats.length,
             padding: const EdgeInsets.all(0.0),
             itemBuilder: (context, i) {
-              return _chatElement(i, context);
+              return _chatElement(i, state, context);
             },
           ),
         ),
@@ -88,26 +58,24 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _chatElement(int i, context) {
-    final homePageCubit = BlocProvider.of<HomePageCubit>(context);
+  Widget _chatElement(int i, HomePageState state, BuildContext context) {
+    final homePageCubit = context.read<HomePageCubit>();
+    final chat = state.chats[i];
     return GestureDetector(
       onTap: () async {
-        BlocProvider.of<ChatCubit>(context)
-            .loadEvents(homePageCubit.state.chats[i].events);
-        final Chat newChat = await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatPage(chat: homePageCubit.state.chats[i]),
+            builder: (context) => ChatPage(chat: chat),
           ),
         );
-        homePageCubit.updateChats(newChat, i);
-        homePageCubit.sortChats();
+        homePageCubit.updateChats();
       },
       onLongPress: () {
         showModalBottomSheet(
           context: context,
           builder: (context) {
-            return _chatMenu(i, context);
+            return _chatMenu(i, state, context);
           },
         );
       },
@@ -115,15 +83,15 @@ class HomePage extends StatelessWidget {
         children: [
           ListTile(
             title: Text(
-              homePageCubit.state.chats[i].name,
+              state.chats[i].name,
               style: Fonts.mainPageChatTitle,
             ),
             subtitle: Text(
-              homePageCubit.state.chats[i].events.isNotEmpty
-                  ? homePageCubit.state.chats[i].events.last.text
-                  : 'No events, Click to create one',
+              chat.events.isNotEmpty
+                  ? chat.events.last.text
+                  : 'No events. Click to create one',
             ),
-            leading: _chatIcon(homePageCubit.state.chats[i], context),
+            leading: _chatIcon(state.chats[i], context),
           ),
           _divider(),
         ],
@@ -158,9 +126,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _chatMenu(int i, context) {
-    final homePageCubit = BlocProvider.of<HomePageCubit>(context);
-    final chat = homePageCubit.state.chats[i];
+  Widget _chatMenu(int i, HomePageState state, BuildContext context) {
+    final chat = state.chats[i];
     return Container(
       height: 250,
       child: Column(
@@ -178,7 +145,7 @@ class HomePage extends StatelessWidget {
             Icons.archive,
             ChatJournalColors.accentYellow,
           ),
-          _editMenuElement(i, context),
+          _editMenuElement(i, state, context),
           _deleteMenuElement(chat, context),
         ],
       ),
@@ -254,28 +221,25 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _editMenuElement(i, context) {
-    final homePageCubit = BlocProvider.of<HomePageCubit>(context);
-    BlocProvider.of<CreateChatCubit>(context)
-        .setToEdit(homePageCubit.state.chats[i]);
+  Widget _editMenuElement(i, HomePageState state, BuildContext context) {
+    final homePageCubit = context.read<HomePageCubit>();
+    BlocProvider.of<CreateChatCubit>(context).setToEdit(state.chats[i]);
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => CreateChatPage(
               isCreatingMode: false,
-              initialText: homePageCubit.state.chats[i].name,
-              iconIndex: homePageCubit.state.chats[i].iconIndex,
+              initialText: state.chats[i].name,
+              iconIndex: state.chats[i].iconIndex,
             ),
           ),
         );
-        if (result != null) {
-          homePageCubit.updateChats(result, i);
-        }
+        homePageCubit.updateChats();
         Navigator.pop(context);
       },
       child: _chatMenuElement(
-        homePageCubit.state.chats[i],
+        state.chats[i],
         'Edit Page',
         Icons.edit,
         Colors.blue,
@@ -284,7 +248,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _deleteMenuElement(Chat chat, context) {
-    final homePageCubit = BlocProvider.of<HomePageCubit>(context);
+    final homePageCubit = context.read<HomePageCubit>();
     return GestureDetector(
       onTap: () {
         homePageCubit.deleteChat(chat);
@@ -333,10 +297,11 @@ class HomePage extends StatelessWidget {
         ),
         onPressed: () async {
           final newChat = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CreateChatPage(isCreatingMode: true),
-              ));
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateChatPage(isCreatingMode: true),
+            ),
+          );
           if (newChat != null) {
             homePageCubit.addChat(newChat);
             homePageCubit.sortChats();

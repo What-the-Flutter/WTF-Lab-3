@@ -1,4 +1,6 @@
 class Event {
+  final int id;
+  final int parentId;
   final String text;
   final String imagePath;
   final int iconIndex;
@@ -7,6 +9,8 @@ class Event {
   final bool isSelected;
 
   const Event({
+    required this.id,
+    required this.parentId,
     required this.text,
     required this.dateTime,
     this.imagePath = '',
@@ -16,6 +20,8 @@ class Event {
   });
 
   Event copyWith({
+    int? id,
+    int? parentId,
     String? text,
     DateTime? dateTime,
     String? imagePath,
@@ -24,6 +30,8 @@ class Event {
     bool? isSelected,
   }) {
     return Event(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
       text: text ?? this.text,
       dateTime: dateTime ?? this.dateTime,
       imagePath: imagePath ?? this.imagePath,

@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../models/event.dart';
-import '../models/icon_map.dart';
+import '../../domain/entities/event.dart';
+import '../../domain/entities/icon_map.dart';
+import '../../theme/colors.dart';
+import '../../theme/fonts.dart';
+import '../../theme/theme_cubit.dart';
 import '../pages/chat_page/chat_page_cubit.dart';
-import '../theme/colors.dart';
-import '../theme/fonts.dart';
-import '../theme/theme_cubit.dart';
 
 class ChatJournalSearch extends SearchDelegate {
   final ChatCubit chatCubit;
