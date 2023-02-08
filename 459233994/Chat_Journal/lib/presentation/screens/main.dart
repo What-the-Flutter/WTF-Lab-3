@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/app_theme/app_theme.dart';
+import '../widgets/app_theme/inherited_app_theme.dart';
 import '../widgets/daily.dart';
 import '../widgets/explore.dart';
 import '../widgets/home/home.dart';
 import '../widgets/time_line.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen();
@@ -22,63 +25,87 @@ class _MainScreenState extends State<MainScreen> {
     Explore(),
   ];
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xffB1CC74),
-        leading: const Icon(Icons.list),
-        title: Center(
-          child: Text(_screens[_index].title),
-        ),
-        actions: <Widget>[
-          Container(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: const Icon(Icons.contrast),
-          )
-        ],
-      ),
-      body: _screens[_index],
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xffD0F4EA),
-        onPressed: () => {},
-        child: const Icon(
-          Icons.add,
-          color: Color(0xff829399),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _index,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Color(0xff829399),
+    return AppTheme(
+      child: Scaffold(
+        backgroundColor: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: InheritedAppTheme.of(context)?.getTheme.themeColor,
+          leading: InkWell(
+            child: Icon(
+              Icons.list,
+              color: InheritedAppTheme.of(context)?.getTheme.keyColor,
             ),
-            label: 'Home',
           ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.assignment,
-                color: Color(0xff829399),
+          title: Center(
+            child: Text(
+              _screens[_index].title,
+              style: TextStyle(
+                color: InheritedAppTheme.of(context)?.getTheme.keyColor,
               ),
-              label: 'Daily'),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.timeline,
-                color: Color(0xff829399),
+            ),
+          ),
+          actions: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: InkWell(
+                child: Icon(
+                  Icons.contrast,
+                  color: InheritedAppTheme.of(context)?.getTheme.keyColor,
+                ),
+                onTap: () {
+                  setState(() {
+                    InheritedAppTheme.of(context)?.changeTheme();
+                  });
+                  setState(() {});
+                },
               ),
-              label: 'TimeLine'),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.explore,
-                color: Color(0xff829399),
+            )
+          ],
+        ),
+        body: SizedBox.expand(
+          child: Container(
+            child: _screens[_index],
+            color: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _index,
+          selectedItemColor: InheritedAppTheme.of(context)?.getTheme.iconColor,
+          unselectedItemColor: InheritedAppTheme.of(context)?.getTheme.iconColor,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: const Icon(
+                Icons.home,
               ),
-              label: 'Explore'),
-        ],
-        onTap: (index) {
-          setState(() => _index = index);
-        },
+              backgroundColor: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.assignment,
+                ),
+                backgroundColor: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+                label: 'Daily'),
+            BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.timeline,
+                ),
+                backgroundColor: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+                label: 'TimeLine',),
+            BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.explore,
+                ),
+                backgroundColor: InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+                label: 'Explore'),
+          ],
+          onTap: (index) {
+            setState(() => _index = index);
+          },
+        ),
       ),
     );
   }
