@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../common/values/dimensions.dart';
 import '../../../../../common/widget/custom_dialog.dart';
-import '../../../../../utils/strings.dart';
+import '../../../../../common/utils/strings.dart';
 import '../../cubit/message_control/message_control_cubit.dart';
 
 class ChatAppBarTitle extends StatelessWidget {
@@ -47,7 +47,7 @@ class ChatAppBarTitle extends StatelessWidget {
                     const Icon(Icons.delete),
                     const SizedBox(width: Insets.small),
                     Text(
-                      '${context.read<MessageControlCubit>().selectedCount}',
+                      '${context.read<MessageControlCubit>().state.selectedCount}',
                     ),
                   ],
                 ),

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../../../../common/values/dimensions.dart';
 import '../../../../../../../common/widget/custom_dialog.dart';
-import '../../../../../../../utils/strings.dart';
+import '../../../../../../../common/utils/strings.dart';
 import '../../../../../domain/chat_model.dart';
 import 'information_dialog.dart';
 

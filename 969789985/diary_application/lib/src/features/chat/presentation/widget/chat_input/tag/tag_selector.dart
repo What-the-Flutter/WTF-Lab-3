@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../common/database/chat_database.dart';
 import '../../../../../../common/values/dimensions.dart';
-import '../../../../../../common/values/icons.dart';
-import '../../../../../../utils/strings.dart';
 import '../../../cubit/message_input/message_input_cubit.dart';
 import 'tag_card.dart';
 
@@ -17,6 +16,8 @@ class TagSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tags = RepositoryProvider.of<ChatDatabase>(context).tags.value;
+
     return AnimatedContainer(
       height: state.isTagOpened ? 50.0 : 0.0,
       curve: state.isTagOpened ? Curves.decelerate : Curves.fastOutSlowIn,
@@ -40,16 +41,14 @@ class TagSelector extends StatelessWidget {
                       context.read<MessageInputCubit>().updateTagVisible(),
                   icon: const Icon(Icons.close),
                 ),
-                for (var index = 0; index < tagIcons.length; index++)
+                for (final tag in tags)
                   Padding(
                     padding: const EdgeInsets.only(
                       left: Insets.medium,
                       right: Insets.medium,
                     ),
                     child: TagCard(
-                      tagIcon: tagIcons[index],
-                      tagTitle: tagStrings[index]!,
-                      tagIndex: index,
+                      tag: tag,
                       state: state,
                     ),
                   ),

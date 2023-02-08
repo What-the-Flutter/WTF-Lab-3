@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-
-import '../themes/themes.dart';
-
 abstract class ThemeRepositoryInterface {
-
   bool get isDarkMode;
+
+  double get messageFontSize;
+
+  int get primaryColor;
+
+  int get primaryItemColor;
+
+  Future<void> setColors(int primaryColor, int primaryItemColor);
 
   Future<void> setDarkMode(bool isDarkMode);
 
-  Future<ThemeData> themeByKey(ThemeKeys key);
-
+  Future<void> setMessageFontSize(double fontSize);
 }

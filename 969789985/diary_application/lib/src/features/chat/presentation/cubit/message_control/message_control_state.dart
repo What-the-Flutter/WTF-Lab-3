@@ -8,6 +8,7 @@ class MessageControlState with _$MessageControlState {
     required IList<MessageModel> messages,
     required IMap<int, bool> selected,
     required MessageModel message,
+    required int selectedCount,
     required bool isSelectMode,
     required bool isEditMode,
   }) = _DefaultMode;

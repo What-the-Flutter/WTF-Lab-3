@@ -20,7 +20,7 @@ mixin _$MessageModel {
   String get messageText => throw _privateConstructorUsedError;
   DateTime get sendDate => throw _privateConstructorUsedError;
   IList<String> get images => throw _privateConstructorUsedError;
-  IList<String> get tags => throw _privateConstructorUsedError;
+  IList<TagModel> get tags => throw _privateConstructorUsedError;
   bool get isFavorite => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -39,7 +39,7 @@ abstract class $MessageModelCopyWith<$Res> {
       String messageText,
       DateTime sendDate,
       IList<String> images,
-      IList<String> tags,
+      IList<TagModel> tags,
       bool isFavorite});
 }
 
@@ -83,7 +83,7 @@ class _$MessageModelCopyWithImpl<$Res, $Val extends MessageModel>
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
-              as IList<String>,
+              as IList<TagModel>,
       isFavorite: null == isFavorite
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
@@ -105,7 +105,7 @@ abstract class _$$_MessageModelCopyWith<$Res>
       String messageText,
       DateTime sendDate,
       IList<String> images,
-      IList<String> tags,
+      IList<TagModel> tags,
       bool isFavorite});
 }
 
@@ -147,7 +147,7 @@ class __$$_MessageModelCopyWithImpl<$Res>
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
-              as IList<String>,
+              as IList<TagModel>,
       isFavorite: null == isFavorite
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
@@ -177,7 +177,7 @@ class _$_MessageModel extends _MessageModel {
   @override
   final IList<String> images;
   @override
-  final IList<String> tags;
+  final IList<TagModel> tags;
   @override
   final bool isFavorite;
 
@@ -225,7 +225,7 @@ abstract class _MessageModel extends MessageModel {
       required final String messageText,
       required final DateTime sendDate,
       required final IList<String> images,
-      required final IList<String> tags,
+      required final IList<TagModel> tags,
       required final bool isFavorite}) = _$_MessageModel;
   _MessageModel._() : super._();
 
@@ -238,7 +238,7 @@ abstract class _MessageModel extends MessageModel {
   @override
   IList<String> get images;
   @override
-  IList<String> get tags;
+  IList<TagModel> get tags;
   @override
   bool get isFavorite;
   @override

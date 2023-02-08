@@ -30,7 +30,6 @@ class ChatterCubit extends Cubit<ChatterState> {
         );
       },
     );
-    repository.upload();
   }
 
   final ChatRepositoryInterface _repository;

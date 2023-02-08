@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../common/values/dimensions.dart';
+import '../../../../../common/values/icons.dart';
 import '../../../domain/message_model.dart';
 
 class TagsBox extends StatelessWidget {
@@ -22,14 +23,20 @@ class TagsBox extends StatelessWidget {
             ),
             child: Container(
               decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(Radii.circle),
-                border: Border.all(
-                  color: Theme.of(context).indicatorColor,
-                ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(Insets.medium),
-                child: Text(tag),
+                padding: const EdgeInsets.all(Insets.small),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      IconData(tag.tagIcon, fontFamily: AppIcons.material),
+                    ),
+                    Text('${tag.tagTitle}  '),
+                  ],
+                ),
               ),
             ),
           ),

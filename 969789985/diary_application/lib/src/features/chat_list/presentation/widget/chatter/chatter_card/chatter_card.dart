@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../common/themes/widget/theme_scope.dart';
 import '../../../../../../common/values/dimensions.dart';
 import '../../../../../chat/presentation/pages/chat_page.dart';
 import '../../../../domain/chat_model.dart';
@@ -31,6 +32,7 @@ class ChatterCard extends StatelessWidget {
               bottom: Insets.small,
             ),
             child: Card(
+              color: Color(ThemeScope.of(context).state.primaryItemColor),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(Radii.appConstant),
               ),

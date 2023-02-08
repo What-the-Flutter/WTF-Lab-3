@@ -37,6 +37,7 @@ class ThemeSwitcher extends StatelessWidget {
           ? Icons.sunny
           : Icons.dark_mode,
       size: IconsSize.standard,
+      color: Theme.of(context).indicatorColor,
     );
   }
 

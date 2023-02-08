@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../common/models/tag_model.dart';
+
 part 'message_model.freezed.dart';
 
 @freezed
@@ -14,7 +16,7 @@ class MessageModel with _$MessageModel {
     required String messageText,
     required DateTime sendDate,
     required IList<String> images,
-    required IList<String> tags,
+    required IList<TagModel> tags,
     required bool isFavorite,
   }) = _MessageModel;
 
@@ -23,8 +25,8 @@ class MessageModel with _$MessageModel {
     String messageText = '',
     DateTime? sendDate,
     IList<String>? images,
-    IList<String>? tags,
-    bool isFavorite = false,
+    IList<TagModel>? tags,
+    bool? isFavorite,
   }) =>
       MessageModel._internal(
         id: id ?? Random().nextInt(10000),
@@ -32,6 +34,6 @@ class MessageModel with _$MessageModel {
         sendDate: sendDate ?? DateTime.now(),
         images: images ?? const IListConst([]),
         tags: tags ?? const IListConst([]),
-        isFavorite: isFavorite,
+        isFavorite: isFavorite ?? false,
       );
 }

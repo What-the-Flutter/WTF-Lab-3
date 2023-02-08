@@ -1,44 +1,56 @@
 import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../utils/strings.dart';
+import '../../../../../common/models/tag_model.dart';
 import '../../../data/interfaces/message_repository_interface.dart';
 import '../../../domain/message_model.dart';
 
-part 'message_input_state.dart';
-
 part 'message_input_cubit.freezed.dart';
+part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
   MessageInputCubit({
-    required MessageRepositoryInterface repository,
-  })  : _repository = repository,
+    required MessageRepositoryInterface provider,
+  })  : _provider = provider,
         super(
           MessageInputState.defaultMode(
             message: MessageModel(),
-            sendIcon: Icons.mic.codePoint,
+            canSend: false,
             isTagOpened: false,
             tagSelected: IMap(),
+            tagRemoving: false,
           ),
         );
 
-  final MessageRepositoryInterface _repository;
+  final MessageRepositoryInterface _provider;
 
-  int sendIcon = Icons.mic.codePoint;
-
-  IList<MessageModel> get messages =>
-      _repository.rxChatStreams.value.value.messages;
+  IList<TagModel> get _tags => _provider.tags.value;
 
   void onChanged(String messageText) {
-    messageText.isEmpty
-        ? sendIcon = Icons.mic.codePoint
-        : sendIcon = Icons.send.codePoint;
-
     emit(
       state.copyWith(
-        message: state.message.copyWith(messageText: messageText),
+        message: state.message.copyWith(
+          messageText: messageText,
+          tags: state.tagSelected.isNotEmpty
+              ? _tags
+                  .where(
+                    (tag) =>
+                        state.tagSelected.containsKey(tag.id) &&
+                        state.tagSelected[tag.id] == true,
+                  )
+                  .toIList()
+              : IList(),
+        ),
+        canSend: messageText.isEmpty ? false : true,
+      ),
+    );
+  }
+
+  void updateSendPossibility() {
+    emit(
+      state.copyWith(
+        canSend: !state.canSend,
       ),
     );
   }
@@ -48,6 +60,15 @@ class MessageInputCubit extends Cubit<MessageInputState> {
       state.copyWith(
         isTagOpened: !state.isTagOpened,
         tagSelected: IMap(),
+        tagRemoving: false,
+      ),
+    );
+  }
+
+  void updateTagRemoving() {
+    emit(
+      state.copyWith(
+        tagRemoving: !state.tagRemoving,
       ),
     );
   }
@@ -77,29 +98,17 @@ class MessageInputCubit extends Cubit<MessageInputState> {
   void sendMessage(String messageText) {
     if (state.message.messageText.isNotEmpty ||
         state.message.images.isNotEmpty) {
-      final tags = List<String>.empty(growable: true);
-
-      if (state.tagSelected.isNotEmpty) {
-        for (var key = 0; key < tagStrings.length; key++) {
-          if (state.tagSelected.containsKey(key) && state.tagSelected[key]!) {
-            tags.add(tagStrings[key]!);
-          }
-        }
-      }
-
-      _repository.add(
+      _provider.addMessage(
         MessageModel(
-          id: messages.isEmpty ? 0 : messages.last.id + 1,
-          messageText: messageText,
-          images: state.message.images.isEmpty ? IList() : state.message.images,
-          tags: tags.isEmpty ? IList([]) : tags.toIList(),
+          messageText: state.message.messageText,
+          images: state.message.images,
+          tags: state.message.tags,
         ),
       );
-      sendIcon = Icons.mic.codePoint;
       emit(
         state.copyWith(
           message: MessageModel(),
-          sendIcon: sendIcon,
+          canSend: false,
           tagSelected: IMap(),
           isTagOpened: false,
         ),

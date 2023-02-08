@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../common/themes/widget/theme_scope.dart';
 import '../../../../../common/values/dimensions.dart';
 import '../../cubit/message_input/message_input_cubit.dart';
-import '../../cubit/search_control/message_search_cubit.dart';
 import 'chat_icon_prefix_icon.dart';
-import 'photo_placer/chat_input_photo_placer.dart';
 import 'chat_input_send_button.dart';
+import 'photo_placer/chat_input_photo_placer.dart';
 import 'tag/tag_selector.dart';
 
 class ChatInputField extends StatefulWidget {
@@ -51,7 +51,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   topRight: Radius.circular(Radii.appConstant),
                   topLeft: Radius.circular(Radii.appConstant),
                 ),
-                color: Theme.of(context).primaryColorLight,
+                color: Color(ThemeScope.of(context).state.primaryColor)
               ),
               duration: const Duration(milliseconds: 200),
               child: TextField(

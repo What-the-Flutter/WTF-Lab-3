@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../../../../../common/values/dimensions.dart';
-
 class ImageLarge extends StatelessWidget {
   final String imagePath;
   final String heroTag;
@@ -35,15 +33,12 @@ class ImageLarge extends StatelessWidget {
                 Navigator.pop(context);
               }
             },
-            child: Hero(
-              tag: heroTag,
-              child: Padding(
-                padding: const EdgeInsets.all(Insets.small),
+            child: Center(
+              child: Hero(
+                tag: heroTag,
                 child: ClipRRect(
                   child: Image.file(
                     File(imagePath),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.85,
                   ),
                 ),
               ),

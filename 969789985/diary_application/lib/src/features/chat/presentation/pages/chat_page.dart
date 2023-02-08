@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../common/database/chat_database.dart';
 import '../../../chat_list/data/repo/chat_repository.dart';
 import '../../../chat_list/domain/chat_model.dart';
 import '../../data/repo/message_repository.dart';
@@ -22,8 +23,8 @@ class ChatPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => MessageControlCubit(
-            repository: MessageRepository(
-              repository: context.read<ChatRepository>(),
+            provider: MessageRepository(
+              provider: context.read<ChatDatabase>(),
               chatId: chat.id,
             ),
           ),
@@ -31,15 +32,15 @@ class ChatPage extends StatelessWidget {
         BlocProvider(
           create: (context) => MessageSearchCubit(
             repository: MessageRepository(
-              repository: context.read<ChatRepository>(),
+              provider: context.read<ChatDatabase>(),
               chatId: chat.id,
             ),
           ),
         ),
         BlocProvider(
           create: (context) => MessageInputCubit(
-            repository: MessageRepository(
-              repository: context.read<ChatRepository>(),
+            provider: MessageRepository(
+              provider: context.read<ChatDatabase>(),
               chatId: chat.id,
             ),
           ),
