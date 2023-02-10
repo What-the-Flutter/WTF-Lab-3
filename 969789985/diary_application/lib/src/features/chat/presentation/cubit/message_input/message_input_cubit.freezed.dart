@@ -17,27 +17,28 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MessageInputState {
   MessageModel get message => throw _privateConstructorUsedError;
-  int get sendIcon => throw _privateConstructorUsedError;
+  bool get canSend => throw _privateConstructorUsedError;
   bool get isTagOpened => throw _privateConstructorUsedError;
   IMap<int, bool> get tagSelected => throw _privateConstructorUsedError;
+  bool get tagRemoving => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MessageModel message, int sendIcon,
-            bool isTagOpened, IMap<int, bool> tagSelected)
+    required TResult Function(MessageModel message, bool canSend,
+            bool isTagOpened, IMap<int, bool> tagSelected, bool tagRemoving)
         defaultMode,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MessageModel message, int sendIcon, bool isTagOpened,
-            IMap<int, bool> tagSelected)?
+    TResult? Function(MessageModel message, bool canSend, bool isTagOpened,
+            IMap<int, bool> tagSelected, bool tagRemoving)?
         defaultMode,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MessageModel message, int sendIcon, bool isTagOpened,
-            IMap<int, bool> tagSelected)?
+    TResult Function(MessageModel message, bool canSend, bool isTagOpened,
+            IMap<int, bool> tagSelected, bool tagRemoving)?
         defaultMode,
     required TResult orElse(),
   }) =>
@@ -72,9 +73,10 @@ abstract class $MessageInputStateCopyWith<$Res> {
   @useResult
   $Res call(
       {MessageModel message,
-      int sendIcon,
+      bool canSend,
       bool isTagOpened,
-      IMap<int, bool> tagSelected});
+      IMap<int, bool> tagSelected,
+      bool tagRemoving});
 
   $MessageModelCopyWith<$Res> get message;
 }
@@ -93,19 +95,20 @@ class _$MessageInputStateCopyWithImpl<$Res, $Val extends MessageInputState>
   @override
   $Res call({
     Object? message = null,
-    Object? sendIcon = null,
+    Object? canSend = null,
     Object? isTagOpened = null,
     Object? tagSelected = null,
+    Object? tagRemoving = null,
   }) {
     return _then(_value.copyWith(
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as MessageModel,
-      sendIcon: null == sendIcon
-          ? _value.sendIcon
-          : sendIcon // ignore: cast_nullable_to_non_nullable
-              as int,
+      canSend: null == canSend
+          ? _value.canSend
+          : canSend // ignore: cast_nullable_to_non_nullable
+              as bool,
       isTagOpened: null == isTagOpened
           ? _value.isTagOpened
           : isTagOpened // ignore: cast_nullable_to_non_nullable
@@ -114,6 +117,10 @@ class _$MessageInputStateCopyWithImpl<$Res, $Val extends MessageInputState>
           ? _value.tagSelected
           : tagSelected // ignore: cast_nullable_to_non_nullable
               as IMap<int, bool>,
+      tagRemoving: null == tagRemoving
+          ? _value.tagRemoving
+          : tagRemoving // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -136,9 +143,10 @@ abstract class _$$_DefaultModeCopyWith<$Res>
   @useResult
   $Res call(
       {MessageModel message,
-      int sendIcon,
+      bool canSend,
       bool isTagOpened,
-      IMap<int, bool> tagSelected});
+      IMap<int, bool> tagSelected,
+      bool tagRemoving});
 
   @override
   $MessageModelCopyWith<$Res> get message;
@@ -156,19 +164,20 @@ class __$$_DefaultModeCopyWithImpl<$Res>
   @override
   $Res call({
     Object? message = null,
-    Object? sendIcon = null,
+    Object? canSend = null,
     Object? isTagOpened = null,
     Object? tagSelected = null,
+    Object? tagRemoving = null,
   }) {
     return _then(_$_DefaultMode(
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as MessageModel,
-      sendIcon: null == sendIcon
-          ? _value.sendIcon
-          : sendIcon // ignore: cast_nullable_to_non_nullable
-              as int,
+      canSend: null == canSend
+          ? _value.canSend
+          : canSend // ignore: cast_nullable_to_non_nullable
+              as bool,
       isTagOpened: null == isTagOpened
           ? _value.isTagOpened
           : isTagOpened // ignore: cast_nullable_to_non_nullable
@@ -177,6 +186,10 @@ class __$$_DefaultModeCopyWithImpl<$Res>
           ? _value.tagSelected
           : tagSelected // ignore: cast_nullable_to_non_nullable
               as IMap<int, bool>,
+      tagRemoving: null == tagRemoving
+          ? _value.tagRemoving
+          : tagRemoving // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -186,23 +199,26 @@ class __$$_DefaultModeCopyWithImpl<$Res>
 class _$_DefaultMode extends _DefaultMode {
   const _$_DefaultMode(
       {required this.message,
-      required this.sendIcon,
+      required this.canSend,
       required this.isTagOpened,
-      required this.tagSelected})
+      required this.tagSelected,
+      required this.tagRemoving})
       : super._();
 
   @override
   final MessageModel message;
   @override
-  final int sendIcon;
+  final bool canSend;
   @override
   final bool isTagOpened;
   @override
   final IMap<int, bool> tagSelected;
+  @override
+  final bool tagRemoving;
 
   @override
   String toString() {
-    return 'MessageInputState.defaultMode(message: $message, sendIcon: $sendIcon, isTagOpened: $isTagOpened, tagSelected: $tagSelected)';
+    return 'MessageInputState.defaultMode(message: $message, canSend: $canSend, isTagOpened: $isTagOpened, tagSelected: $tagSelected, tagRemoving: $tagRemoving)';
   }
 
   @override
@@ -211,17 +227,18 @@ class _$_DefaultMode extends _DefaultMode {
         (other.runtimeType == runtimeType &&
             other is _$_DefaultMode &&
             (identical(other.message, message) || other.message == message) &&
-            (identical(other.sendIcon, sendIcon) ||
-                other.sendIcon == sendIcon) &&
+            (identical(other.canSend, canSend) || other.canSend == canSend) &&
             (identical(other.isTagOpened, isTagOpened) ||
                 other.isTagOpened == isTagOpened) &&
             (identical(other.tagSelected, tagSelected) ||
-                other.tagSelected == tagSelected));
+                other.tagSelected == tagSelected) &&
+            (identical(other.tagRemoving, tagRemoving) ||
+                other.tagRemoving == tagRemoving));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, message, sendIcon, isTagOpened, tagSelected);
+  int get hashCode => Object.hash(
+      runtimeType, message, canSend, isTagOpened, tagSelected, tagRemoving);
 
   @JsonKey(ignore: true)
   @override
@@ -232,33 +249,35 @@ class _$_DefaultMode extends _DefaultMode {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MessageModel message, int sendIcon,
-            bool isTagOpened, IMap<int, bool> tagSelected)
+    required TResult Function(MessageModel message, bool canSend,
+            bool isTagOpened, IMap<int, bool> tagSelected, bool tagRemoving)
         defaultMode,
   }) {
-    return defaultMode(message, sendIcon, isTagOpened, tagSelected);
+    return defaultMode(message, canSend, isTagOpened, tagSelected, tagRemoving);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MessageModel message, int sendIcon, bool isTagOpened,
-            IMap<int, bool> tagSelected)?
+    TResult? Function(MessageModel message, bool canSend, bool isTagOpened,
+            IMap<int, bool> tagSelected, bool tagRemoving)?
         defaultMode,
   }) {
-    return defaultMode?.call(message, sendIcon, isTagOpened, tagSelected);
+    return defaultMode?.call(
+        message, canSend, isTagOpened, tagSelected, tagRemoving);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MessageModel message, int sendIcon, bool isTagOpened,
-            IMap<int, bool> tagSelected)?
+    TResult Function(MessageModel message, bool canSend, bool isTagOpened,
+            IMap<int, bool> tagSelected, bool tagRemoving)?
         defaultMode,
     required TResult orElse(),
   }) {
     if (defaultMode != null) {
-      return defaultMode(message, sendIcon, isTagOpened, tagSelected);
+      return defaultMode(
+          message, canSend, isTagOpened, tagSelected, tagRemoving);
     }
     return orElse();
   }
@@ -295,19 +314,22 @@ class _$_DefaultMode extends _DefaultMode {
 abstract class _DefaultMode extends MessageInputState {
   const factory _DefaultMode(
       {required final MessageModel message,
-      required final int sendIcon,
+      required final bool canSend,
       required final bool isTagOpened,
-      required final IMap<int, bool> tagSelected}) = _$_DefaultMode;
+      required final IMap<int, bool> tagSelected,
+      required final bool tagRemoving}) = _$_DefaultMode;
   const _DefaultMode._() : super._();
 
   @override
   MessageModel get message;
   @override
-  int get sendIcon;
+  bool get canSend;
   @override
   bool get isTagOpened;
   @override
   IMap<int, bool> get tagSelected;
+  @override
+  bool get tagRemoving;
   @override
   @JsonKey(ignore: true)
   _$$_DefaultModeCopyWith<_$_DefaultMode> get copyWith =>

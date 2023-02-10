@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../common/values/dimensions.dart';
-import '../../../../../../utils/strings.dart';
+import '../../../../../../common/utils/strings.dart';
 
 class BottomSheetInformation extends StatelessWidget {
   const BottomSheetInformation({super.key});

@@ -19,11 +19,16 @@ abstract class Insets {
   static const double medium = 8.0;
   static const double large = 16.0;
   static const double extraLarge = 32.0;
+  static const double superMegaLarge = 48.0;
+  static const double superMegaExtraLarge = 64.0;
+  static const double superDuperUltraMegaExtraLarge = 256.0;
 
   static const double appConstantSmall = 10.0;
   static const double appConstantMedium = 15.0;
   static const double appConstantLarge = 20.0;
   static const double appConstantExtraLarge = 30.0;
+
+  static const double dividerConstant = 86.0;
 }
 
 abstract class FontsSize {

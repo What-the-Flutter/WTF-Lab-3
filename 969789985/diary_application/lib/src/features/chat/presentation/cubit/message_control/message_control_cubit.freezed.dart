@@ -19,6 +19,7 @@ mixin _$MessageControlState {
   IList<MessageModel> get messages => throw _privateConstructorUsedError;
   IMap<int, bool> get selected => throw _privateConstructorUsedError;
   MessageModel get message => throw _privateConstructorUsedError;
+  int get selectedCount => throw _privateConstructorUsedError;
   bool get isSelectMode => throw _privateConstructorUsedError;
   bool get isEditMode => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -27,6 +28,7 @@ mixin _$MessageControlState {
             IList<MessageModel> messages,
             IMap<int, bool> selected,
             MessageModel message,
+            int selectedCount,
             bool isSelectMode,
             bool isEditMode)
         defaultMode,
@@ -42,8 +44,13 @@ mixin _$MessageControlState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -57,8 +64,13 @@ mixin _$MessageControlState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -106,6 +118,7 @@ abstract class $MessageControlStateCopyWith<$Res> {
       {IList<MessageModel> messages,
       IMap<int, bool> selected,
       MessageModel message,
+      int selectedCount,
       bool isSelectMode,
       bool isEditMode});
 
@@ -128,6 +141,7 @@ class _$MessageControlStateCopyWithImpl<$Res, $Val extends MessageControlState>
     Object? messages = null,
     Object? selected = null,
     Object? message = null,
+    Object? selectedCount = null,
     Object? isSelectMode = null,
     Object? isEditMode = null,
   }) {
@@ -144,6 +158,10 @@ class _$MessageControlStateCopyWithImpl<$Res, $Val extends MessageControlState>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as MessageModel,
+      selectedCount: null == selectedCount
+          ? _value.selectedCount
+          : selectedCount // ignore: cast_nullable_to_non_nullable
+              as int,
       isSelectMode: null == isSelectMode
           ? _value.isSelectMode
           : isSelectMode // ignore: cast_nullable_to_non_nullable
@@ -176,6 +194,7 @@ abstract class _$$_DefaultModeCopyWith<$Res>
       {IList<MessageModel> messages,
       IMap<int, bool> selected,
       MessageModel message,
+      int selectedCount,
       bool isSelectMode,
       bool isEditMode});
 
@@ -197,6 +216,7 @@ class __$$_DefaultModeCopyWithImpl<$Res>
     Object? messages = null,
     Object? selected = null,
     Object? message = null,
+    Object? selectedCount = null,
     Object? isSelectMode = null,
     Object? isEditMode = null,
   }) {
@@ -213,6 +233,10 @@ class __$$_DefaultModeCopyWithImpl<$Res>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as MessageModel,
+      selectedCount: null == selectedCount
+          ? _value.selectedCount
+          : selectedCount // ignore: cast_nullable_to_non_nullable
+              as int,
       isSelectMode: null == isSelectMode
           ? _value.isSelectMode
           : isSelectMode // ignore: cast_nullable_to_non_nullable
@@ -232,6 +256,7 @@ class _$_DefaultMode extends _DefaultMode {
       {required this.messages,
       required this.selected,
       required this.message,
+      required this.selectedCount,
       required this.isSelectMode,
       required this.isEditMode})
       : super._();
@@ -243,13 +268,15 @@ class _$_DefaultMode extends _DefaultMode {
   @override
   final MessageModel message;
   @override
+  final int selectedCount;
+  @override
   final bool isSelectMode;
   @override
   final bool isEditMode;
 
   @override
   String toString() {
-    return 'MessageControlState.defaultMode(messages: $messages, selected: $selected, message: $message, isSelectMode: $isSelectMode, isEditMode: $isEditMode)';
+    return 'MessageControlState.defaultMode(messages: $messages, selected: $selected, message: $message, selectedCount: $selectedCount, isSelectMode: $isSelectMode, isEditMode: $isEditMode)';
   }
 
   @override
@@ -261,6 +288,8 @@ class _$_DefaultMode extends _DefaultMode {
             (identical(other.selected, selected) ||
                 other.selected == selected) &&
             (identical(other.message, message) || other.message == message) &&
+            (identical(other.selectedCount, selectedCount) ||
+                other.selectedCount == selectedCount) &&
             (identical(other.isSelectMode, isSelectMode) ||
                 other.isSelectMode == isSelectMode) &&
             (identical(other.isEditMode, isEditMode) ||
@@ -273,6 +302,7 @@ class _$_DefaultMode extends _DefaultMode {
       const DeepCollectionEquality().hash(messages),
       selected,
       message,
+      selectedCount,
       isSelectMode,
       isEditMode);
 
@@ -289,6 +319,7 @@ class _$_DefaultMode extends _DefaultMode {
             IList<MessageModel> messages,
             IMap<int, bool> selected,
             MessageModel message,
+            int selectedCount,
             bool isSelectMode,
             bool isEditMode)
         defaultMode,
@@ -301,14 +332,20 @@ class _$_DefaultMode extends _DefaultMode {
             bool isEditMode)
         manageMode,
   }) {
-    return defaultMode(messages, selected, message, isSelectMode, isEditMode);
+    return defaultMode(
+        messages, selected, message, selectedCount, isSelectMode, isEditMode);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -320,14 +357,19 @@ class _$_DefaultMode extends _DefaultMode {
         manageMode,
   }) {
     return defaultMode?.call(
-        messages, selected, message, isSelectMode, isEditMode);
+        messages, selected, message, selectedCount, isSelectMode, isEditMode);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -340,7 +382,8 @@ class _$_DefaultMode extends _DefaultMode {
     required TResult orElse(),
   }) {
     if (defaultMode != null) {
-      return defaultMode(messages, selected, message, isSelectMode, isEditMode);
+      return defaultMode(
+          messages, selected, message, selectedCount, isSelectMode, isEditMode);
     }
     return orElse();
   }
@@ -382,6 +425,7 @@ abstract class _DefaultMode extends MessageControlState {
       {required final IList<MessageModel> messages,
       required final IMap<int, bool> selected,
       required final MessageModel message,
+      required final int selectedCount,
       required final bool isSelectMode,
       required final bool isEditMode}) = _$_DefaultMode;
   const _DefaultMode._() : super._();
@@ -392,6 +436,8 @@ abstract class _DefaultMode extends MessageControlState {
   IMap<int, bool> get selected;
   @override
   MessageModel get message;
+  @override
+  int get selectedCount;
   @override
   bool get isSelectMode;
   @override
@@ -539,6 +585,7 @@ class _$_ManageMode extends _ManageMode {
             IList<MessageModel> messages,
             IMap<int, bool> selected,
             MessageModel message,
+            int selectedCount,
             bool isSelectMode,
             bool isEditMode)
         defaultMode,
@@ -558,8 +605,13 @@ class _$_ManageMode extends _ManageMode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -577,8 +629,13 @@ class _$_ManageMode extends _ManageMode {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IMap<int, bool> selected,
-            MessageModel message, bool isSelectMode, bool isEditMode)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IMap<int, bool> selected,
+            MessageModel message,
+            int selectedCount,
+            bool isSelectMode,
+            bool isEditMode)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -645,6 +702,7 @@ abstract class _ManageMode extends MessageControlState {
   IMap<int, bool> get selected;
   @override
   MessageModel get message;
+  @override
   int get selectedCount;
   @override
   bool get isSelectMode;

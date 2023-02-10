@@ -6,8 +6,9 @@ class MessageInputState with _$MessageInputState {
 
   const factory MessageInputState.defaultMode({
     required MessageModel message,
-    required int sendIcon,
+    required bool canSend,
     required bool isTagOpened,
     required IMap<int, bool> tagSelected,
+    required bool tagRemoving,
   }) = _DefaultMode;
 }

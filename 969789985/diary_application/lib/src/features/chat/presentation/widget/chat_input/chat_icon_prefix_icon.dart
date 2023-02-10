@@ -20,7 +20,7 @@ class ChatInputPrefixIcon extends StatelessWidget {
             IconButton(
               onPressed: () =>
                   context.read<MessageInputCubit>().updateTagVisible(),
-              icon: const Icon(Icons.new_label_outlined),
+              icon: const Icon(Icons.tag_rounded),
             ),
           ],
         ),

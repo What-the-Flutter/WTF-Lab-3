@@ -2,7 +2,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../common/values/icons.dart';
-import '../../application/chatter_variation.dart';
+import '../widget/chatter/chatter_variation.dart';
 import '../../domain/chat_model.dart';
 
 class NewChatScreen extends StatelessWidget {

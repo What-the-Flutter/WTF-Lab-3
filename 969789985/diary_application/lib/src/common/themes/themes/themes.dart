@@ -1,16 +1,26 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+
+IList<IList<int>> possibleColors = [
+  [0xFFffdebe, 0xFFfbf3ec].lock,
+  [0xFFccffb4, 0xFFedf1e5].lock,
+  [0xFFf0a98a, 0xFFf9e4bd].lock,
+  [0xFFffc7b8, 0xFFfff4f2].lock,
+  [0xFFb2c5ff, 0xFFdae2ff].lock,
+  [0xFFe8def8, 0xFFf6edff].lock,
+  [0xFFbbbac0, 0xFFe8e8e8].lock,
+].lock;
 
 abstract class AppColors {
   //Light colors
-  static const int primaryLight = 0xFFbbdcff;
+  static const int primaryLight = 0xFFffdebe;
   static const int primaryBackgroundLight = 0xFFfdfdfd;
-  static const int primaryItemLight = 0xFFe5f8ff;
+  static const int primaryItemLight = 0xFFfbf3ec;
 
   //Dark colors
   static const int primaryDark = 0xFF141414;
   static const int primaryBackgroundDark = 0xFF232325;
   static const int primaryItemDark = 0xFF202020;
-
 }
 
 enum ThemeKeys { light, dark }
@@ -39,13 +49,15 @@ class Themes {
       foregroundColor: Colors.black,
     ),
     cardTheme: const CardTheme(
-      color: Color(AppColors.primaryItemLight),
       elevation: 0,
     ),
     bottomSheetTheme: const BottomSheetThemeData(
-      elevation: 0,
-      backgroundColor: Color(0x00FFFFFF),
-      surfaceTintColor: Color(0x00FFFFFF)
+        elevation: 0,
+        backgroundColor: Color(0x00FFFFFF),
+        surfaceTintColor: Color(0x00FFFFFF)),
+    sliderTheme: SliderThemeData(
+      trackHeight: 2.0,
+      overlayShape: SliderComponentShape.noThumb,
     ),
   );
 
@@ -78,6 +90,12 @@ class Themes {
       elevation: 0,
       backgroundColor: Colors.transparent,
     ),
+    sliderTheme: SliderThemeData(
+      trackHeight: 2.0,
+      thumbColor: const Color(AppColors.primaryDark),
+      activeTrackColor: const Color(AppColors.primaryDark),
+      overlayShape: SliderComponentShape.noThumb,
+    ),
   );
 
   static ThemeData getThemeFromKey(ThemeKeys themeKey) {
@@ -91,3 +109,5 @@ class Themes {
     }
   }
 }
+
+

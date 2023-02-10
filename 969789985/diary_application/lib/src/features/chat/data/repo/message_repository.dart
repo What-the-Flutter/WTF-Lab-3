@@ -1,138 +1,81 @@
+import 'dart:async';
+
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../chat_list/data/interfaces/chat_repository_interface.dart';
+import '../../../../common/models/tag_model.dart';
 import '../../../chat_list/domain/chat_model.dart';
 import '../../domain/message_model.dart';
+import '../interfaces/message_provider_interface.dart';
 import '../interfaces/message_repository_interface.dart';
 
 class MessageRepository extends MessageRepositoryInterface {
   MessageRepository({
-    required ChatRepositoryInterface repository,
+    required MessageProviderInterface provider,
     required this.chatId,
-  }) : _repository = repository {
-    _rxChatStream.add(_getSeededChatStream());
+  }) : _provider = provider {
+    _rxChatStream.add(
+      _provider.messages(chatId: chatId),
+    );
 
-    _repository.chats.listen(
+    _sub = _provider.messages(chatId: chatId).listen(
       (event) {
-        _rxChatStream.add(
-          _getSeededChatStream(),
-        );
+        _rxChatStream.add(_provider.messages(chatId: chatId));
       },
     );
   }
 
-  final ChatRepositoryInterface _repository;
+  final MessageProviderInterface _provider;
   final int chatId;
 
-  final BehaviorSubject<ValueStream<ChatModel>> _rxChatStream =
+  final BehaviorSubject<ValueStream<IList<MessageModel>>> _rxChatStream =
       BehaviorSubject();
+  late final StreamSubscription<IList<MessageModel>> _sub;
 
   @override
-  ValueStream<ValueStream<ChatModel>> get rxChatStreams =>
+  ValueStream<ValueStream<IList<MessageModel>>> get rxChatStreams =>
       _rxChatStream.stream;
 
   @override
-  Future<void> upload() async => await _repository.upload();
+  ValueStream<IList<TagModel>> get tags => _provider.tags;
 
   @override
-  Future<void> add(MessageModel message) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
-
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.add(message),
-      ),
-    );
-  }
+  Future<void> addMessage(MessageModel message) async =>
+      _provider.addMessage(message, chatId);
 
   @override
-  Future<void> update(MessageModel message) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
-
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.updateById(
-          [message],
-          (item) => item.id == message.id,
-        ),
-      ),
-    );
-  }
+  Future<int> updateMessage(MessageModel message) async =>
+      await _provider.updateMessage(message);
 
   @override
-  Future<void> remove(MessageModel message) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
-
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.remove(message),
-      ),
-    );
-  }
+  Future<void> deleteMessage(MessageModel message) async =>
+      _provider.deleteMessage(message.id);
 
   @override
-  Future<void> removeSelected(
+  Future<void> deleteSelected(
     IList<MessageModel> messages,
     IMap<int, bool> selected,
   ) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
-
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.removeWhere(
-          (mes) => selected.containsKey(mes.id),
-        ),
-      ),
-    );
+    _provider.deleteSelected(messages, selected);
   }
 
   @override
-  Future<void> addToFavorites(MessageModel message) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
-
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.updateById(
-          [
-            message.copyWith(isFavorite: true),
-          ],
-          (item) => item.id == message.id,
-        ),
-      ),
-    );
-  }
+  Future<void> addTag(TagModel tag) async => _provider.addTag(tag);
 
   @override
-  Future<void> removeFromFavorites(MessageModel message) async {
-    final chat = await _repository.chatById(chatId);
-    if (chat == null) return;
+  Future<void> removeTag(TagModel tag) async => _provider.removeTag(tag);
 
-    await _repository.update(
-      chat.copyWith(
-        messages: chat.messages.updateById(
-          [
-            message.copyWith(isFavorite: false),
-          ],
-          (item) => item.id == message.id,
-        ),
-      ),
-    );
-  }
+  @override
+  Future<void> addToFavorites(MessageModel message) async =>
+      _provider.updateMessage(
+        message.copyWith(isFavorite: true),
+      );
 
-  ValueStream<ChatModel> _getSeededChatStream() {
-    return ValueConnectableStream.seeded(
-      _repository.chats.map(
-        (event) => _findByIndex(event, chatId),
-      ),
-      _findByIndex(_repository.chats.value, chatId),
-    );
-  }
+  @override
+  Future<void> removeFromFavorites(MessageModel message) async =>
+      _provider.updateMessage(
+        message.copyWith(isFavorite: false),
+      );
 
   ChatModel _findByIndex(IList<ChatModel> chats, int id) {
     return chats.firstWhere((chat) => chat.id == id);

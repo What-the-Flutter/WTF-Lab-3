@@ -62,7 +62,7 @@ class ChatInputFloatBottomSheet extends StatelessWidget {
 
       if (images.contains(null)) return;
 
-      blocContext.read<MessageInputCubit>().sendIcon = Icons.send.codePoint;
+      blocContext.read<MessageInputCubit>().updateSendPossibility();
       blocContext.read<MessageInputCubit>().putImages(
             images.map((e) => e!.path).toList(),
           );

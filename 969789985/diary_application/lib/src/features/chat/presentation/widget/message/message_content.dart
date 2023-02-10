@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../common/themes/widget/theme_scope.dart';
 import '../../../../../common/values/dimensions.dart';
 import '../../../../../extensions/datetime_extension.dart';
 import '../../../domain/message_model.dart';
@@ -27,13 +28,19 @@ class MessageContent extends StatelessWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(message.messageText),
+                              Text(
+                                message.messageText,
+                                style: TextStyle(
+                                  fontSize: ThemeScope.of(context)
+                                      .state
+                                      .messageFontSize,
+                                ),
+                              ),
                               const SizedBox(width: Insets.small),
                               Text(
                                 message.sendDate.timeJmFormat(),
-                                style: const TextStyle(
-                                  fontSize: FontsSize.small,
-                                ),
+                                style:
+                                    const TextStyle(fontSize: FontsSize.small),
                               )
                             ],
                           )
@@ -42,7 +49,14 @@ class MessageContent extends StatelessWidget {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(message.messageText),
+                          Text(
+                            message.messageText,
+                            style: TextStyle(
+                              fontSize: ThemeScope.of(context)
+                                  .state
+                                  .messageFontSize,
+                            ),
+                          ),
                           Text(
                             message.sendDate.timeJmFormat(),
                             style: const TextStyle(
@@ -54,7 +68,14 @@ class MessageContent extends StatelessWidget {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('${message.messageText} '),
+                      Text(
+                        '${message.messageText}  ',
+                        style: TextStyle(
+                          fontSize: ThemeScope.of(context)
+                              .state
+                              .messageFontSize,
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: Insets.small),
                         child: TagsBox(message: message),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../application/chatter_variation.dart';
+import '../widget/chatter/chatter_variation.dart';
 import '../../domain/chat_model.dart';
 
 class EditChatScreen extends StatelessWidget {

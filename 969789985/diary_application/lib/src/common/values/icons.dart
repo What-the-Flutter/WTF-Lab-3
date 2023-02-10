@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class IconsSize {
+  static const double small = 12.0;
   static const double standard = 24.0;
   static const double large = 36.0;
   static const double extraLarge = 48.0;
@@ -37,14 +38,14 @@ final possibleIcons = <int>[
   Icons.email.codePoint
 ];
 
-final tagIcons = <int>[
-  Icons.notification_important_outlined.codePoint,
-  Icons.fastfood.codePoint,
-  Icons.health_and_safety_outlined.codePoint,
-  Icons.music_note.codePoint,
-  Icons.calendar_month.codePoint,
-  Icons.sports_baseball_outlined.codePoint,
-];
+final tagIcons = <String, int>{
+  'Important': Icons.notification_important_outlined.codePoint,
+  'Food': Icons.fastfood.codePoint,
+  'Health': Icons.health_and_safety_outlined.codePoint,
+  'Music': Icons.music_note.codePoint,
+  'Event': Icons.calendar_month.codePoint,
+  'Sport': Icons.sports_baseball_outlined.codePoint,
+};
 
 abstract class AppIcons {
   static const String material = 'MaterialIcons';

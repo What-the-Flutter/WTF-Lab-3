@@ -6,8 +6,9 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../common/themes/cubit/theme_cubit.dart';
 import '../common/themes/themes/themes.dart';
+import '../common/themes/widget/theme_scope.dart';
 import '../common/values/dimensions.dart';
-import '../common/widget/navigation_drawer_menu.dart';
+import '../common/widget/navigation_drawer/navigation_drawer_menu.dart';
 import '../common/widget/theme_switcher.dart';
 import 'chat_list/presentation/cubit/chatter_cubit.dart';
 import 'chat_list/presentation/pages/chatter_new_page.dart';
@@ -33,8 +34,10 @@ class _StartScreenState extends State<StartScreen> {
             ),
           )
         : SystemChrome.setSystemUIOverlayStyle(
-            const SystemUiOverlayStyle(
-              systemNavigationBarColor: Color(AppColors.primaryLight),
+            SystemUiOverlayStyle(
+              systemNavigationBarColor: Color(
+                ThemeScope.of(context).state.primaryColor,
+              ),
             ),
           );
 
@@ -43,18 +46,18 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        actions: [
-          ThemeSwitcher(),
-        ],
-      ),
-      drawer: const NavigationDrawerMenu(),
-      floatingActionButton: _floatingActionButton(),
-      bottomNavigationBar: _bottomNavigationBar(),
-      body: _pagesContent(),
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return Scaffold(
+          extendBody: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(),
+          drawer: const NavigationDrawerMenu(),
+          floatingActionButton: _floatingActionButton(),
+          bottomNavigationBar: _bottomNavigationBar(),
+          body: _pagesContent(),
+        );
+      },
     );
   }
 
@@ -92,7 +95,7 @@ class _StartScreenState extends State<StartScreen> {
   Widget _bottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColorLight,
+        color: Color(ThemeScope.of(context).state.primaryColor),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(Radii.appConstant),
           topRight: Radius.circular(Radii.appConstant),
@@ -126,6 +129,7 @@ class _StartScreenState extends State<StartScreen> {
           duration: const Duration(milliseconds: 400),
           opacity: _isFabVisible ? 1 : 0,
           child: FloatingActionButton(
+            backgroundColor: Color(ThemeScope.of(context).state.primaryColor),
             onPressed: _toNewChatScreen,
             child: const Icon(Icons.add),
           ),

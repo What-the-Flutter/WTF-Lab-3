@@ -1,10 +1,10 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../common/themes/widget/theme_scope.dart';
+import '../../../../../../common/values/dimensions.dart';
 import '../../../../domain/chat_model.dart';
 import '../../../pages/chatter_archive_page.dart';
-import '../../../../../../common/values/dimensions.dart';
-import '../../../../../../common/values/icons.dart';
 import 'archive_card_content.dart';
 
 class ArchiveCard extends StatelessWidget {
@@ -24,6 +24,7 @@ class ArchiveCard extends StatelessWidget {
         bottom: Insets.small,
       ),
       child: Card(
+        color: Color(ThemeScope.of(context).state.primaryItemColor),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Radii.appConstant),
         ),

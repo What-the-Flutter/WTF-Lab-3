@@ -34,7 +34,7 @@ class ChatAppBarActions extends StatelessWidget {
                   AnimatedScale(
                     duration: const Duration(milliseconds: 100),
                     scale:
-                        context.read<MessageControlCubit>().selectedCount == 1
+                        context.read<MessageControlCubit>().state.selectedCount == 1
                             ? 1.0
                             : 0.0,
                     child: IconButton(

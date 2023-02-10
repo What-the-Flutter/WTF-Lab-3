@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../../../common/values/dimensions.dart';
 import '../../../../../../common/widget/custom_dialog.dart';
-import '../../../../../../utils/strings.dart';
+import '../../../../../../common/utils/strings.dart';
 import '../../../../data/repo/chat_repository.dart';
 import 'chatter_list_item.dart';
 

@@ -5,7 +5,6 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../../chat_list/domain/chat_model.dart';
 import '../../../data/interfaces/message_repository_interface.dart';
 import '../../../domain/message_model.dart';
 
@@ -15,27 +14,29 @@ part 'message_control_cubit.freezed.dart';
 
 class MessageControlCubit extends Cubit<MessageControlState> {
   MessageControlCubit({
-    required MessageRepositoryInterface repository,
-  })  : _repository = repository,
+    required MessageRepositoryInterface provider,
+  })  : _provider = provider,
         super(
           MessageControlState.defaultMode(
             messages: IList([]),
             selected: IMap(),
             message: MessageModel(),
+            selectedCount: 0,
             isSelectMode: false,
             isEditMode: false,
           ),
         ) {
-    _subscription = _repository.rxChatStreams.listen(
+    _subscription = _provider.rxChatStreams.listen(
       (event) {
         _interiorSubscription?.cancel();
         _interiorSubscription = event.listen(
-          (chat) {
+          (messages) {
             emit(
               MessageControlState.defaultMode(
-                messages: chat.messages,
+                messages: messages,
                 selected: IMap(),
                 message: MessageModel(),
+                selectedCount: 0,
                 isSelectMode: false,
                 isEditMode: false,
               ),
@@ -46,11 +47,10 @@ class MessageControlCubit extends Cubit<MessageControlState> {
     );
   }
 
-  final MessageRepositoryInterface _repository;
-  late StreamSubscription<ValueStream<ChatModel>> _subscription;
-  StreamSubscription<ChatModel>? _interiorSubscription;
+  final MessageRepositoryInterface _provider;
+  late final StreamSubscription<ValueStream<IList<MessageModel>>> _subscription;
+  StreamSubscription<IList<MessageModel>>? _interiorSubscription;
 
-  int selectedCount = 0;
   bool _fromDismissible = false;
 
   @override
@@ -64,13 +64,12 @@ class MessageControlCubit extends Cubit<MessageControlState> {
   void selectOne(MessageModel message) {
     state.mapOrNull(
       defaultMode: (defaultMode) {
-        selectedCount++;
         emit(
           MessageControlState.manageMode(
             messages: defaultMode.messages,
             selected: IMap({message.id: true}),
             message: MessageModel(),
-            selectedCount: selectedCount,
+            selectedCount: defaultMode.selectedCount + 1,
             isSelectMode: true,
             isEditMode: false,
           ),
@@ -81,13 +80,12 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             manageMode.selected[message.id]!) {
           unselectOne(message);
         } else {
-          selectedCount++;
           emit(
             manageMode.copyWith(
               selected: manageMode.selected.containsKey(message.id)
                   ? manageMode.selected.update(message.id, (value) => true)
                   : manageMode.selected.add(message.id, true),
-              selectedCount: selectedCount,
+              selectedCount: manageMode.selectedCount + 1,
             ),
           );
         }
@@ -99,23 +97,22 @@ class MessageControlCubit extends Cubit<MessageControlState> {
     state.mapOrNull(
       manageMode: (manageMode) {
         if (manageMode.selected.length == 1) {
-          selectedCount = 0;
           emit(
             MessageControlState.defaultMode(
               messages: manageMode.messages,
               selected: IMap(),
               message: MessageModel(),
+              selectedCount: 0,
               isSelectMode: false,
               isEditMode: false,
             ),
           );
         } else {
-          selectedCount--;
           emit(
             manageMode.copyWith(
               selected:
                   manageMode.selected.update(message.id, (value) => false),
-              selectedCount: selectedCount,
+              selectedCount: manageMode.selectedCount - 1,
             ),
           );
         }
@@ -126,12 +123,12 @@ class MessageControlCubit extends Cubit<MessageControlState> {
   void unselectAll() {
     state.mapOrNull(
       manageMode: (manageMode) {
-        selectedCount = 0;
         emit(
           MessageControlState.defaultMode(
             messages: manageMode.messages,
             selected: IMap(),
             message: MessageModel(),
+            selectedCount: 0,
             isSelectMode: false,
             isEditMode: false,
           ),
@@ -149,7 +146,7 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             messages: defaultMode.messages,
             selected: IMap(),
             message: message,
-            selectedCount: selectedCount,
+            selectedCount: 0,
             isSelectMode: true,
             isEditMode: true,
           ),
@@ -176,7 +173,7 @@ class MessageControlCubit extends Cubit<MessageControlState> {
   void editMessage(String messageText) {
     state.mapOrNull(
       manageMode: (manageMode) {
-        _repository.update(
+        _provider.updateMessage(
           _fromDismissible
               ? manageMode.message.copyWith(messageText: messageText)
               : manageMode.messages
@@ -194,27 +191,11 @@ class MessageControlCubit extends Cubit<MessageControlState> {
   }
 
   void removeOne(MessageModel message) {
-    _repository.remove(message);
+    _provider.deleteMessage(message);
   }
 
   void removeSelected() {
-    state.mapOrNull(
-      manageMode: (manageMode) {
-        _repository.removeSelected(
-          manageMode.messages,
-          manageMode.selected,
-        );
-        emit(
-          MessageControlState.defaultMode(
-            messages: manageMode.messages,
-            selected: IMap(),
-            message: MessageModel(),
-            isSelectMode: false,
-            isEditMode: false,
-          ),
-        );
-      },
-    );
+    _provider.deleteSelected(state.messages, state.selected);
     unselectAll();
   }
 }

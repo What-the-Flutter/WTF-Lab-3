@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
-import '../../../../data/repo/chat_repository.dart';
 import '../../../cubit/chatter_cubit.dart';
 import '../../chatter_archive/chatter_archive_card/chatter_archive_card.dart';
 import '../../scopes/chatter_scope.dart';

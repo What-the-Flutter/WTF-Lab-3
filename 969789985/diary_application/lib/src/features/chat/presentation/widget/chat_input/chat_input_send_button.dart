@@ -29,13 +29,12 @@ class ChatInputSendButton extends StatelessWidget {
         },
         child: IconButton(
           key: ValueKey<String>(
-            context.read<MessageInputCubit>().sendIcon.toString(),
+            context.read<MessageInputCubit>().state.canSend.toString(),
           ),
           icon: Icon(
-            IconData(
-              context.read<MessageInputCubit>().sendIcon,
-              fontFamily: AppIcons.material,
-            ),
+            context.read<MessageInputCubit>().state.canSend
+                ? Icons.send
+                : Icons.mic,
           ),
           onPressed: action.call,
         ),

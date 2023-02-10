@@ -7,14 +7,10 @@ import '../../domain/chat_model.dart';
 abstract class ChatRepositoryInterface {
   ValueStream<IList<ChatModel>> get chats;
 
-  Future<void> upload();
-
   Future<void> add(ChatModel chat);
 
   Future<void> update(ChatModel chat);
 
   Future<void> remove(ChatModel chat);
-
-  Future<ChatModel?> chatById(int id);
 
 }

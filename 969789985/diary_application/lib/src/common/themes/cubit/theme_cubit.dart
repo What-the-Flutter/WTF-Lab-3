@@ -1,10 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meta/meta.dart';
 
 import '../interfaces/theme_repository_interface.dart';
-import '../themes/themes.dart';
 
 part 'theme_state.dart';
 
@@ -17,6 +14,9 @@ class ThemeCubit extends Cubit<ThemeState> {
         super(
           ThemeState(
             isDarkMode: repository.isDarkMode,
+            messageFontSize: repository.messageFontSize,
+            primaryColor: repository.primaryColor,
+            primaryItemColor: repository.primaryItemColor,
           ),
         );
 
@@ -26,6 +26,23 @@ class ThemeCubit extends Cubit<ThemeState> {
     _repository.setDarkMode(value);
     emit(
       state.copyWith(isDarkMode: value),
+    );
+  }
+
+  set messageFontSize(double value) {
+    _repository.setMessageFontSize(value);
+    emit(
+      state.copyWith(messageFontSize: value),
+    );
+  }
+
+  void setColors(int primaryColor, int primaryItemColor) {
+    _repository.setColors(primaryColor, primaryItemColor);
+    emit(
+      state.copyWith(
+        primaryColor: primaryColor,
+        primaryItemColor: primaryItemColor,
+      ),
     );
   }
 

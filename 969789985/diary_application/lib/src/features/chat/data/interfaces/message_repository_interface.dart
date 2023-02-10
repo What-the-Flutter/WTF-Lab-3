@@ -1,21 +1,21 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../chat_list/domain/chat_model.dart';
+import '../../../../common/models/tag_model.dart';
 import '../../domain/message_model.dart';
 
 abstract class MessageRepositoryInterface {
-  ValueStream<ValueStream<ChatModel>> get rxChatStreams;
+  ValueStream<ValueStream<IList<MessageModel>>> get rxChatStreams;
 
-  Future<void> upload();
+  ValueStream<IList<TagModel>> get tags;
 
-  Future<void> add(MessageModel message);
+  Future<void> addMessage(MessageModel message);
 
-  Future<void> update(MessageModel message);
+  Future<int> updateMessage(MessageModel message);
 
-  Future<void> remove(MessageModel message);
+  Future<void> deleteMessage(MessageModel message);
 
-  Future<void> removeSelected(
+  Future<void> deleteSelected(
     IList<MessageModel> messages,
     IMap<int, bool> selected,
   );
@@ -23,4 +23,8 @@ abstract class MessageRepositoryInterface {
   Future<void> addToFavorites(MessageModel message);
 
   Future<void> removeFromFavorites(MessageModel message);
+
+  Future<void> addTag(TagModel tag);
+
+  Future<void> removeTag(TagModel tag);
 }

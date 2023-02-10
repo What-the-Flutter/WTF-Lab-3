@@ -5,7 +5,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../../../../../common/values/dimensions.dart';
 import '../../../../../common/widget/custom_dialog.dart';
-import '../../../../../utils/strings.dart';
+import '../../../../../common/utils/strings.dart';
 import '../../../domain/message_model.dart';
 import '../../cubit/message_control/message_control_cubit.dart';
 import '../message/message_card.dart';
@@ -79,6 +79,7 @@ class MessageListItem extends StatelessWidget {
                       ? context.read<MessageControlCubit>().selectOne(message)
                       : {};
                 },
+                isExample: false,
               ),
             ),
           ),
