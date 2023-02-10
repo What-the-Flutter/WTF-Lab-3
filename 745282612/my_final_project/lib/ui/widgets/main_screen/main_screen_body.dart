@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_final_project/ui/screens/home_screen.dart';
+import 'package:my_final_project/ui/screens/timeline_screen.dart';
 
 class MainScreenBody extends StatelessWidget {
   final int index;
   final List _widgetOptions = const <Widget>[
     HomeScreen(),
     Text('Daily'),
-    Text('Timeline'),
+    TimelineScreen(),
     Text('Explore'),
   ];
 

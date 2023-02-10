@@ -7,6 +7,11 @@ class TimeLine extends MainScreenSection {
   final String title = 'TimeLine';
 
   @override
+  State<TimeLine> createState() => _TimeLineState();
+}
+
+class _TimeLineState extends State<TimeLine> {
+  @override
   Widget build(BuildContext context) {
     // TODO: implement build
     throw UnimplementedError();

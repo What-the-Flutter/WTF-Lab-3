@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class ThemeState {
+class ThemeState extends Equatable {
   final ThemeData theme;
 
   const ThemeState({
@@ -8,6 +9,11 @@ class ThemeState {
   });
 
   ThemeState copyWith({ThemeData? theme}) {
-    return ThemeState(theme: theme ?? this.theme);
+    return ThemeState(
+      theme: theme ?? this.theme,
+    );
   }
+
+  @override
+  List<Object?> get props => [theme];
 }

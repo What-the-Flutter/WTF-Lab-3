@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
-import 'inherited_list.dart';
+import '../../../domain/entities/packed_message.dart';
 import 'message.dart';
 
-class MessagesList extends StatefulWidget {
-  @override
-  State<MessagesList> createState() => _MessagesListState();
-}
+class MessagesList extends StatelessWidget {
+  final List<PackedMessage> _messages;
+  final bool _isFavoritesMode;
 
-class _MessagesListState extends State<MessagesList> {
+  MessagesList({
+    required messages,
+    required isFavoritesMode,
+  })  : _messages = messages,
+        _isFavoritesMode = isFavoritesMode;
+
   @override
   Widget build(BuildContext context) {
-    var messages = InheritedList.of(context)?.events;
-    var favoritesMode = InheritedList.of(context)?.favoritesMode;
     return Expanded(
       child: ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: messages!.length,
+        itemCount: _messages.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: (() {
-              if (favoritesMode!) {
-                if (messages[index].isFavorite) {
+              if (_isFavoritesMode) {
+                if (_messages[index].isFavorite) {
                   return Message(
-                    packedMessage: messages[index],
+                    packedMessage: _messages[index],
                   );
                 }
               } else {
                 return Message(
-                  packedMessage: messages[index],
+                  packedMessage: _messages[index],
                 );
               }
             }()),

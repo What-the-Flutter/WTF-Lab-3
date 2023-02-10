@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/add_page_screen.dart';
@@ -13,7 +14,54 @@ class SettingBody extends StatefulWidget {
   State<SettingBody> createState() => _SettingBodyState();
 }
 
-class _SettingBodyState extends State<SettingBody> {
+class _SettingBodyState extends State<SettingBody> with SingleTickerProviderStateMixin {
+  late AnimationController _resetAnimationController;
+
+  @override
+  void initState() {
+    _resetAnimationController = AnimationController(
+      vsync: this,
+    );
+    _resetAnimationController.addStatusListener(
+      (status) {
+        if (status == AnimationStatus.completed) {
+          Navigator.pop(context);
+          _resetAnimationController.reset();
+        }
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _resetAnimationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> showResetDialog(BuildContext context) => showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierLabel: 'Dialog',
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (_, __, ___) {
+          return Column(
+            children: <Widget>[
+              Expanded(
+                child: Lottie.asset(
+                  'assets/update.json',
+                  controller: _resetAnimationController,
+                  onLoaded: (composition) {
+                    _resetAnimationController.duration = composition.duration;
+                    _resetAnimationController.forward();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +74,7 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).add_section,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             onTap: () {
@@ -46,16 +94,18 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).change_theme,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
             subtitle: Text(
               'Light/Dark',
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeTheme,
+            onTap: () {
+              context.read<SettingCubit>().changeTheme();
+            },
           ),
           const Divider(),
           ListTile(
@@ -63,16 +113,18 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).cnange_font_size,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Small/Medium/Large',
+              S.of(context).font_size,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeFontSize,
+            onTap: () {
+              context.read<SettingCubit>().changeFontSize();
+            },
           ),
           const Divider(),
           ListTile(
@@ -80,7 +132,7 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).choose_image,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             onTap: context.read<SettingCubit>().changeBackgroundImage,
@@ -91,16 +143,18 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).change_bubble_alignment,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Left/Right',
+              S.of(context).bubble_alignment,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeBubbleAligment,
+            onTap: () {
+              context.read<SettingCubit>().changeBubbleAligment();
+            },
           ),
           const Divider(),
           ListTile(
@@ -108,16 +162,18 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).change_date_bubble,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             subtitle: Text(
-              'Left/Center',
+              S.of(context).date_bubble,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().changeDateBubble,
+            onTap: () {
+              context.read<SettingCubit>().changeDateBubble();
+            },
           ),
           const Divider(),
           ListTile(
@@ -125,7 +181,7 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).share_app,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
             onTap: () {
@@ -138,10 +194,13 @@ class _SettingBodyState extends State<SettingBody> {
             title: Text(
               S.of(context).reset_setting,
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                fontSize: context.watch<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
               ),
             ),
-            onTap: context.read<SettingCubit>().resetSetting,
+            onTap: () async {
+              await showResetDialog(context);
+              context.read<SettingCubit>().resetSetting();
+            },
           ),
           const Divider(),
         ],

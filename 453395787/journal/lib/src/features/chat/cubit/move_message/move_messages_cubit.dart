@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../common/api/repository/chat_repository_api.dart';
 import '../../../../common/models/ui/chat.dart';
 import '../../../../common/utils/typedefs.dart';
-import '../../api/message_repository_api.dart';
+import '../../api/chat_messages_repository_api.dart';
 
 part 'move_messages_state.dart';
 
@@ -14,11 +14,11 @@ part 'move_messages_cubit.freezed.dart';
 class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   MoveMessagesCubit({
     required ChatRepositoryApi chatRepository,
-    required MessageRepositoryApi messageRepository,
+    required ChatMessagesRepositoryApi chatMessagesRepository,
     required this.fromChatId,
     required this.messages,
   })  : _chatRepository = chatRepository,
-        _messageRepository = messageRepository,
+        _chatMessagesRepository = chatMessagesRepository,
         super(
           MoveMessagesState.initial(
             chats: chatRepository.chats.value
@@ -29,7 +29,7 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
         );
 
   final ChatRepositoryApi _chatRepository;
-  final MessageRepositoryApi _messageRepository;
+  final ChatMessagesRepositoryApi _chatMessagesRepository;
   final String fromChatId;
   final MessageList messages;
 
@@ -85,9 +85,9 @@ class MoveMessagesCubit extends Cubit<MoveMessagesState> {
   Future<void> move() async {
     state.mapOrNull(
       hasSelectedState: (hasSelectedState) async {
-        await _messageRepository.removeAll(messages);
+        await _chatMessagesRepository.removeAll(messages);
         for (var message in messages) {
-          await _messageRepository.addToOtherChat(
+          await _chatMessagesRepository.addToOtherChat(
             hasSelectedState.selectedChatId,
             message,
           );

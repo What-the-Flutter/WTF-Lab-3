@@ -7,13 +7,9 @@ import '../../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
   final Chat chat;
-  final Widget? extraWidget;
+  final Widget? widget;
 
-  const ChatCard({
-    Key? key,
-    required this.chat,
-    this.extraWidget,
-  }) : super(key: key);
+  ChatCard({Key? key, required this.chat, this.widget}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +27,9 @@ class ChatCard extends StatelessWidget {
         children: [
           _buildIcon(),
           const SizedBox(width: 20),
-          Expanded(
-            child: _buildText(desc, attach),
-            flex: 1,
-          ),
-          extraWidget ?? _buildTimeText(context),
-          const SizedBox(
-            width: 25,
-          )
+          Expanded(child: _buildText(context, desc, attach), flex: 1),
+          widget ?? _buildTimeText(context),
+          const SizedBox(width: 25)
         ],
       ),
     );
@@ -62,18 +53,24 @@ class ChatCard extends StatelessWidget {
             right: -5,
             bottom: -1,
             child: Icon(Icons.push_pin, color: pinIconColor),
-          )
+          ),
       ],
     );
   }
 
-  Column _buildText(String defaultDescription, String attach) {
+  Column _buildText(
+    BuildContext context,
+    String defaultDescription,
+    String attach,
+  ) {
     String description;
     if (chat.events.isEmpty) {
       description = defaultDescription;
     } else {
+      final descLength = 18 * countOrientationCoefficient(context);
+
       final message = chat.events.last.message;
-      description = message.isNotEmpty ? _fitText(message, 30) : attach;
+      description = message.isNotEmpty ? fitText(message, descLength) : attach;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,19 +80,11 @@ class ChatCard extends StatelessWidget {
           style: const TextStyle(fontSize: 20),
         ),
         Text(
-          description,
+          description.replaceAll('\n', ' '),
           style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ],
     );
-  }
-
-  String _fitText(String message, int maxSymbols) {
-    if (message.length <= maxSymbols) {
-      return message;
-    }
-
-    return '${message.substring(0, maxSymbols - 1)}...';
   }
 
   Text _buildTimeText(BuildContext context) {

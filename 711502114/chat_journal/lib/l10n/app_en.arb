@@ -23,6 +23,7 @@
   "dec": "Dec",
   "today": "Today",
   "enterFieldHint": "Enter event",
+  "searchFieldHint": "Search...",
   "attachDialogInfo": "How would you like to upload an image?",
   "cancel": "Cancel",
   "gallery": "Gallery",
@@ -38,5 +39,12 @@
   "latestEvent": "Latest Event",
   "ok": "OK",
   "archivedPage": "Archived Pages",
-  "countArchived": "Pages Archived"
+  "countArchived": "Pages Archived",
+  "eventMigration": "Select the page you want to migrate the selected events to!",
+  "fastFood": "FastFood",
+  "running": "Running",
+  "laundry": "Laundry",
+  "movie": "Movie",
+  "workout": "Workout",
+  "sports": "Sports"
 }

@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../common/utils/default_values.dart';
 import 'locale_repository_api.dart';
 
 class LocaleRepository implements LocaleRepositoryApi {
@@ -46,6 +45,8 @@ class LocaleRepository implements LocaleRepositoryApi {
 
   @override
   Future<void> resetToDefault() async {
-    await setLocale(DefaultValues.locale);
+    await setLocale(
+      LocaleRepositoryApi.defaultLocale,
+    );
   }
 }

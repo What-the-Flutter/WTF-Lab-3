@@ -1,77 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
-import '../../../provider/chat_provider.dart';
+import '../../../cubit/home/home_cubit.dart';
+import '../../../models/chat.dart';
 import 'chat_functions.dart';
 
 class PopupBottomMenu extends StatelessWidget {
-  final int index;
+  final HomeCubit cubit;
+  final Chat chat;
 
-  const PopupBottomMenu({super.key, required this.index});
+  const PopupBottomMenu({
+    super.key,
+    required this.cubit,
+    required this.chat,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final list = _children(context);
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        return list[index];
+      },
+    );
+  }
+
+  List<Widget> _children(BuildContext context) {
     final local = AppLocalizations.of(context);
-    final provider = Provider.of<ChatProvider>(context, listen: false);
     final functions = ChatFunctions(
       context: context,
-      provider: provider,
-      index: index,
+      cubit: cubit,
+      chat: chat,
     );
-    return Wrap(
-      children: [
-        TextButton(
-          onPressed: functions.showChatInfo,
-          child: ListTile(
-            leading: const Icon(
-              Icons.info,
-              color: Colors.greenAccent,
-            ),
-            title: Text(local?.infoChat ?? ''),
+
+    return [
+      TextButton(
+        onPressed: functions.showChatInfo,
+        child: ListTile(
+          leading: const Icon(
+            Icons.info,
+            color: Colors.greenAccent,
           ),
+          title: Text(local?.infoChat ?? ''),
         ),
-        TextButton(
-          onPressed: functions.pinChat,
-          child: ListTile(
-            leading: const Icon(
-              Icons.attach_file,
-              color: Colors.green,
-            ),
-            title: Text(local?.pinChat ?? ''),
+      ),
+      TextButton(
+        onPressed: functions.pinChat,
+        child: ListTile(
+          leading: const Icon(
+            Icons.attach_file,
+            color: Colors.green,
           ),
+          title: Text(local?.pinChat ?? ''),
         ),
-        TextButton(
-          onPressed: functions.archiveChat,
-          child: ListTile(
-            leading: const Icon(
-              Icons.archive,
-              color: Colors.yellow,
-            ),
-            title: Text(local?.archiveChat ?? ''),
+      ),
+      TextButton(
+        onPressed: functions.archiveChat,
+        child: ListTile(
+          leading: const Icon(
+            Icons.archive,
+            color: Colors.yellow,
           ),
+          title: Text(local?.archiveChat ?? ''),
         ),
-        TextButton(
-          onPressed: functions.editChat,
-          child: ListTile(
-            leading: const Icon(
-              Icons.edit,
-              color: Colors.blue,
-            ),
-            title: Text(local?.editChat ?? ''),
+      ),
+      TextButton(
+        onPressed: functions.editChat,
+        child: ListTile(
+          leading: const Icon(
+            Icons.edit,
+            color: Colors.blue,
           ),
+          title: Text(local?.editChat ?? ''),
         ),
-        TextButton(
-          onPressed: functions.deleteChat,
-          child: ListTile(
-            leading: const Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-            title: Text(local?.deleteChat ?? ''),
+      ),
+      TextButton(
+        onPressed: functions.deleteChat,
+        child: ListTile(
+          leading: const Icon(
+            Icons.delete,
+            color: Colors.red,
           ),
+          title: Text(local?.deleteChat ?? ''),
         ),
-      ],
-    );
+      ),
+    ];
   }
 }

@@ -40,6 +40,7 @@
   "action_move": "Move",
   "action_pin": "Pin",
   "action_unpin": "Unpin",
+  "action_reset": "Reset",
   "action_switch_to_day_mode": "Switch to Day Mode",
   "action_switch_to_night_mode": "Switch to Night Mode",
 

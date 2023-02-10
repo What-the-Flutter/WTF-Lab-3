@@ -1,35 +1,37 @@
 // ignore_for_file: omit_local_variable_types
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
+import '../../cubit/home/home_cubit.dart';
+import '../../cubit/home/home_state.dart';
 import '../../models/chat.dart';
-import '../../provider/chat_provider.dart';
-import '../../theme/colors.dart';
 import '../../utils/icons.dart';
 import '../../utils/utils.dart';
+import '../widgets/add_chat_page/add_chat_keyboard.dart';
 import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
   final Chat? chat;
-  final int? chatIndex;
 
-  const AddChatPage({Key? key, this.chat, this.chatIndex}) : super(key: key);
+  const AddChatPage({Key? key, this.chat}) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
 }
 
 class _AddChatPageState extends State<AddChatPage> {
-  final _fieldText = TextEditingController();
   IconData _fabIcon = Icons.close;
   int _iconIndex = 0;
   final _icons = IconList.data;
+  late final TextEditingController _fieldText;
+  bool _isEditMode = false;
 
   @override
   void initState() {
     super.initState();
+    _fieldText = TextEditingController();
     _fieldText.addListener(_changeFABIcon);
 
     if (widget.chat != null) {
@@ -41,63 +43,51 @@ class _AddChatPageState extends State<AddChatPage> {
       }
 
       _fieldText.text = widget.chat?.title ?? '';
+      _isEditMode = true;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
+    final orientation = MediaQuery.of(context).orientation;
+    final itemRowCount = orientation == Orientation.portrait ? 4 : 8;
+
     return Scaffold(
+      resizeToAvoidBottomInset: checkOrientation(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(height: 70),
+            SizedBox(height: orientation == Orientation.portrait ? 70 : 30),
             Text(
-              local?.addNewChat ?? '',
+              !_isEditMode ? local?.addNewChat ?? '' : local?.editChat ?? '',
               style: const TextStyle(fontSize: 26),
             ),
             const SizedBox(height: 10),
-            _buildTextField(local),
-            _buildIconsTable(),
+            AddChatKeyboard(
+              fieldText: _fieldText,
+              pageLabel: local?.addPageLabel ?? '',
+            ),
+            _buildIconsTable(itemRowCount),
           ],
         ),
       ),
-      floatingActionButton: Align(
-        alignment: const Alignment(1, 0.87),
-        child: FloatingActionButton(
-          onPressed: widget.chat == null ? _addNewChat : _editChat,
-          child: Icon(_fabIcon),
-        ),
+      floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, _) {
+          return Align(
+            alignment: const Alignment(1, 0.87),
+            child: FloatingActionButton(
+              onPressed: () => _addOrEditChat(context),
+              child: Icon(_fabIcon),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildTextField(AppLocalizations? local) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: TextField(
-        controller: _fieldText,
-        keyboardType: TextInputType.multiline,
-        maxLines: 1,
-        textInputAction: TextInputAction.newline,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(
-          fillColor: botBackgroundColor,
-          filled: true,
-          border: InputBorder.none,
-          labelText: local?.addPageLabel ?? '',
-          hintStyle: TextStyle(
-            fontSize: 20,
-            color: secondaryMessageTextColor,
-          ),
-        ),
-        style: TextStyle(fontSize: 20, color: addTextColor),
-      ),
-    );
-  }
-
-  Widget _buildIconsTable() {
+  Widget _buildIconsTable(int itemRowCount) {
     return Expanded(
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(
@@ -105,8 +95,8 @@ class _AddChatPageState extends State<AddChatPage> {
           vertical: 20,
         ),
         shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: itemRowCount,
           mainAxisSpacing: 40,
           crossAxisSpacing: 40,
         ),
@@ -120,23 +110,12 @@ class _AddChatPageState extends State<AddChatPage> {
               index: index,
               pageIndex: _iconIndex,
             ),
-            onTap: () {
-              setState(() => _iconIndex = index);
-            },
+            onTap: () => setState(() => _iconIndex = index),
           );
         },
       ),
     );
   }
-
-  // Widget _firstIcon() {
-  //   return Center(
-  //     child: Text(
-  //       _fieldText.text.isNotEmpty ? _fieldText.text.characters.first : 'N',
-  //       style: const TextStyle(fontSize: 24),
-  //     ),
-  //   );
-  // }
 
   void _changeFABIcon() {
     if (_fabIcon == Icons.close && _fieldText.text.isNotEmpty ||
@@ -147,24 +126,21 @@ class _AddChatPageState extends State<AddChatPage> {
     }
   }
 
-  void _addNewChat() {
+  void _addOrEditChat(BuildContext context) {
     if (_fieldText.text.isNotEmpty) {
-      Provider.of<ChatProvider>(context, listen: false).add(
-        title: _fieldText.text,
-        iconData: _icons[_iconIndex],
-      );
-    }
-
-    closePage(context);
-  }
-
-  void _editChat() {
-    if (_fieldText.text.isNotEmpty) {
-      Provider.of<ChatProvider>(context, listen: false).edit(
-        widget.chatIndex ?? 0,
-        title: _fieldText.text,
-        iconData: _icons[_iconIndex],
-      );
+      final cubit = context.read<HomeCubit>();
+      if (widget.chat == null) {
+        cubit.add(
+          title: _fieldText.text,
+          iconData: _icons[_iconIndex],
+        );
+      } else {
+        cubit.edit(
+          widget.chat?.id ?? 0,
+          title: _fieldText.text,
+          iconData: _icons[_iconIndex],
+        );
+      }
     }
 
     closePage(context);

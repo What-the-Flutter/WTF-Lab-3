@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 
+import 'common/features/settings/settings.dart';
 import 'common/utils/locale.dart' as locale;
 import 'common/widget/empty_page.dart';
 import 'common/widget/home_page_navigation_bar.dart';
@@ -8,8 +9,7 @@ import 'features/chat/chat.dart';
 import 'features/chat_overview/chats_overview.dart';
 import 'features/manage_chat/manage_chat.dart';
 import 'features/manage_tags/manage_tags.dart';
-import 'features/settings/settings.dart';
-import 'features/settings/view/chat_settings_page.dart';
+import 'features/timeline/timeline.dart';
 
 abstract class Navigation {
   static final GoRouter router = GoRouter(
@@ -50,10 +50,8 @@ abstract class Navigation {
           ),
           GoRoute(
             path: _routerTimelinePagePath,
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: EmptyPage(
-                title: locale.Pages.timeline.i18n(),
-              ),
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: TimelinePage(),
             ),
           ),
           GoRoute(

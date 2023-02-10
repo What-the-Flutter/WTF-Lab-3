@@ -15,7 +15,7 @@ class SettingScreen extends StatelessWidget {
         title: Text(
           S.of(context).setting_title,
           style: TextStyle(
-            fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+            fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
           ),
         ),
       ),

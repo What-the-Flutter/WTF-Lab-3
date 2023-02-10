@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../common/features/theme/theme.dart';
 import '../../../common/utils/insets.dart';
-import '../../theme/cubit/theme_cubit.dart';
 import '../cubit/security_cubit.dart';
 import '../data/security_repository.dart';
 

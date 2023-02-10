@@ -24,7 +24,7 @@ class SettingCubit extends Cubit<SettingState> {
             dateBubble: 'left',
           ),
         ) {
-    initializer();
+    // initializer();
   }
 
   Future<void> initializer() async {

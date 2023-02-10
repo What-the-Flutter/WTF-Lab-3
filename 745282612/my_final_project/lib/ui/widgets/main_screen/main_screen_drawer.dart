@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/screens/setting_screen.dart';
+import 'package:my_final_project/ui/screens/statistics_screen.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 import 'package:my_final_project/utils/constants/app_colors.dart';
 
@@ -24,7 +25,7 @@ class MainScreenDrawer extends StatelessWidget {
               child: Text(
                 S.of(context).account,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.headline2!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.displayMedium!.fontSize,
                 ),
               ),
             ),
@@ -45,7 +46,28 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).setting_title,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
+                ),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const StatisticsScreen(),
+                ),
+              );
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.stacked_line_chart,
+                color: isLight ? AppColors.colorTurquoise : Colors.white,
+              ),
+              title: Text(
+                S.of(context).statistics,
+                style: TextStyle(
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                 ),
               ),
             ),
@@ -60,7 +82,7 @@ class MainScreenDrawer extends StatelessWidget {
               title: Text(
                 S.of(context).exit_the_app,
                 style: TextStyle(
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                 ),
               ),
             ),

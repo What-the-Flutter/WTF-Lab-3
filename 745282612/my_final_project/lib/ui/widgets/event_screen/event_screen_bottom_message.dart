@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:my_final_project/generated/l10n.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
 import 'package:my_final_project/ui/widgets/event_screen/event_section.dart';
@@ -26,18 +27,40 @@ class EventScreenBottomMessage extends StatefulWidget {
   State<EventScreenBottomMessage> createState() => _EventScreenBottomMessageState();
 }
 
-class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
+class _EventScreenBottomMessageState extends State<EventScreenBottomMessage>
+    with TickerProviderStateMixin {
   late final TextEditingController editController;
+  late final AnimationController animationController;
+  late final Animation<double> animation;
 
   @override
   void initState() {
     editController = TextEditingController();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    animation = Tween<double>(begin: 1.0, end: 0.5).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.bounceInOut,
+      ),
+    );
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.reverse();
+        context.read<EventCubit>().changeSwitchSectionTag();
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.stop();
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     editController.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -106,7 +129,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = context.watch<SettingCubit>().isLight();
+    final isLight = context.read<SettingCubit>().isLight();
 
     return BlocBuilder<EventCubit, EventState>(
       builder: (context, state) {
@@ -132,6 +155,7 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                   Row(
                     children: [
                       TextButton(
+                        key: const Key('Btn switch'),
                         onPressed: () {
                           if (state.switchSectionTag) {
                             context.read<EventCubit>().changeStatusTag();
@@ -139,20 +163,23 @@ class _EventScreenBottomMessageState extends State<EventScreenBottomMessage> {
                             context.read<EventCubit>().changeSection();
                           }
                         },
-                        onLongPress: context.read<EventCubit>().changeSwitchSectionTag,
-                        child: Icon(
-                          state.switchSectionTag ? Icons.tag : state.sectionIcon,
-                          size: 30,
-                          color: isLight ? AppColors.colorTurquoise : Colors.white,
+                        onLongPress: animationController.forward,
+                        child: ScaleTransition(
+                          scale: animation,
+                          child: Icon(
+                            state.switchSectionTag ? Icons.tag : state.sectionIcon,
+                            size: 30,
+                            color: isLight ? AppColors.colorTurquoise : Colors.white,
+                          ),
                         ),
                       ),
                       Expanded(
                         child: TextField(
                           controller: state.editText != '' ? editController : widget.controller,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             filled: true,
                             border: InputBorder.none,
-                            labelText: 'Enter Event',
+                            labelText: S.of(context).enter_event,
                           ),
                         ),
                       ),

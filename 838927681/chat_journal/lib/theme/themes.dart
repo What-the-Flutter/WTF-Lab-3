@@ -37,7 +37,7 @@ class Themes {
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       selectedItemColor: ChatJournalColors.accentYellow,
-      unselectedItemColor: ChatJournalColors.iconGray,
+      unselectedItemColor: ChatJournalColors.iconGrey,
       backgroundColor: ChatJournalColors.black,
     ),
     floatingActionButtonTheme: _floatingActionButtonTheme,

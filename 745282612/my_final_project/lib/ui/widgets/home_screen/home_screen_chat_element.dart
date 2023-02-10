@@ -36,12 +36,14 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
 
     return FirebaseAnimatedList(
       query: context.read<HomeCubit>().getQuery(_user),
+      defaultChild: const Center(
+        child: CircularProgressIndicator(),
+      ),
       itemBuilder: (context, snapshot, animation, index) {
         final map = Map.from(snapshot.value as Map);
         final chat = Chat.fromJson(map);
         final listEvent =
             stateEvent.listEvent.where((element) => element.chatId == chat.id).toList();
-
         return GestureDetector(
           onLongPress: () {
             showModalBottomSheet(
@@ -85,7 +87,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize:
-                                context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                                context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
                           ),
                         ),
                         chat.isPin
@@ -99,7 +101,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                     subtitle: Text(
                       listEvent.isEmpty ? S.of(context).no_event : listEvent.last.messageContent,
                       style: TextStyle(
-                        fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                        fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -110,7 +112,7 @@ class _HomeScreenChatElementState extends State<HomeScreenChatElement> {
                             DateFormat('hh:mm a').format(listEvent.last.messageTime),
                             style: TextStyle(
                               fontSize:
-                                  context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                                  context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                             ),
                           ),
                   ),

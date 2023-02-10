@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:my_final_project/entities/event.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_cubit.dart';
 import 'package:my_final_project/ui/widgets/event_screen/cubit/event_state.dart';
-import 'package:my_final_project/ui/widgets/event_screen/event_message.dart';
+import 'package:my_final_project/ui/widgets/event_screen/event_action.dart';
 import 'package:my_final_project/ui/widgets/settings_screen/cubit/settings_cubit.dart';
 
 class EventScreenListMessage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _EventScreenListMessageState extends State<EventScreenListMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<EventCubit>().state;
+    final state = context.read<EventCubit>().state;
     if (state.isFavorite) {
       return listFavorite(context, widget.listMessageFavorite, state);
     } else if (state.isSearch) {
@@ -46,7 +46,7 @@ class _EventScreenListMessageState extends State<EventScreenListMessage> {
 }
 
 double sizePaddingBottom(BuildContext context, EventState state) {
-  if (state.isSection) {
+  if (state.isSection || state.isTag) {
     return MediaQuery.of(context).size.height * 0.22;
   } else if (state.isSearch) {
     return MediaQuery.of(context).size.height * 0;
@@ -74,7 +74,7 @@ Widget listMessage(BuildContext context, EventState state, User? _user, int chat
             return Column(
               children: [
                 dateEvent(context, index, eventList),
-                EventMessage(
+                EventAction(
                   event: eventList[index],
                   isSelected: state.isSelected,
                 )
@@ -99,7 +99,7 @@ Widget listFavorite(BuildContext context, List<Event> listMessageFavorite, Event
       return Column(
         children: [
           dateEvent(context, index, listReversed),
-          EventMessage(
+          EventAction(
             event: event,
             isSelected: state.isSelected,
           ),
@@ -110,7 +110,7 @@ Widget listFavorite(BuildContext context, List<Event> listMessageFavorite, Event
 }
 
 Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
-  final isLight = context.watch<SettingCubit>().isLight();
+  final isLight = context.read<SettingCubit>().isLight();
 
   return index == eventList.length - 1 ||
           DateFormat.yMMMMd().format(eventList[index].messageTime) !=
@@ -131,7 +131,7 @@ Widget dateEvent(BuildContext context, int index, List<Event> eventList) {
             child: Text(
               DateFormat.yMMMEd().format(eventList[index].messageTime),
               style: TextStyle(
-                fontSize: context.watch<SettingCubit>().state.textTheme.bodyText1!.fontSize,
+                fontSize: context.read<SettingCubit>().state.textTheme.bodyLarge!.fontSize,
               ),
             ),
           ),

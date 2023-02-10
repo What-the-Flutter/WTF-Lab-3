@@ -22,10 +22,10 @@ class EventTag extends StatelessWidget {
               child: Text(
                 items,
                 style: TextStyle(
-                  color: context.watch<EventCubit>().state.tagTitle == items
+                  color: context.read<EventCubit>().state.tagTitle == items
                       ? Colors.green
                       : Colors.grey,
-                  fontSize: context.watch<SettingCubit>().state.textTheme.bodyText2!.fontSize,
+                  fontSize: context.read<SettingCubit>().state.textTheme.bodyMedium!.fontSize,
                 ),
               ),
               onPressed: () => context.read<EventCubit>().changeTagTitle(items),

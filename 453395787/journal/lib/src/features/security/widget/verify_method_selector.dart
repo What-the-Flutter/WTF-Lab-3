@@ -5,6 +5,7 @@ import '../../../common/utils/insets.dart';
 import '../../../common/utils/locale.dart' as locale;
 import '../../../common/utils/text_styles.dart';
 import '../data/security_repository_api.dart';
+import '../utils/verify_method_enum.dart';
 
 class SecuritySettings extends StatefulWidget {
   const SecuritySettings({

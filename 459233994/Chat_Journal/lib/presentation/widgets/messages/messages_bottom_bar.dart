@@ -3,17 +3,22 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../domain/entities/image_message.dart';
 import '../../../domain/entities/packed_message.dart';
-import '../../../domain/entities/text_message.dart';
-import 'inherited_list.dart';
+import '../app_theme/inherited_app_theme.dart';
 
 class MessagesBottomBar extends StatefulWidget {
+  final Function _addToMessages;
+  final Function _notifyParent;
 
-  MessagesBottomBar();
+  MessagesBottomBar({required addToMessages, required notifyParent})
+      : _addToMessages = addToMessages,
+        _notifyParent = notifyParent;
 
   @override
-  State<MessagesBottomBar> createState() => _MessagesBottomBarState();
+  State<MessagesBottomBar> createState() => _MessagesBottomBarState(
+        addToMessage: _addToMessages,
+        notifyParent: _notifyParent,
+      );
 }
 
 class _MessagesBottomBarState extends State<MessagesBottomBar> {
@@ -21,7 +26,13 @@ class _MessagesBottomBarState extends State<MessagesBottomBar> {
     Icons.add_a_photo,
     color: Color(0xff829399),
   );
-  final textController = TextEditingController();
+  final _textController = TextEditingController();
+  final Function _addToMessages;
+  final Function _notifyParent;
+
+  _MessagesBottomBarState({required addToMessage, required notifyParent})
+      : _addToMessages = addToMessage,
+        _notifyParent = notifyParent;
 
   void _getFromGallery() async {
     var pickedFile = await ImagePicker().pickImage(
@@ -31,18 +42,18 @@ class _MessagesBottomBarState extends State<MessagesBottomBar> {
     );
     if (pickedFile != null) {
       var imageFile = File(pickedFile.path);
-      InheritedList.of(context)?.events.add(
-            PackedMessage(
-              imageMessage: ImageMessage(file: imageFile),
-            ),
-          );
-      InheritedList.of(context)?.notifyParent();
+      _addToMessages(
+        PackedMessage(
+          imageData: imageFile,
+        ),
+      );
+      _notifyParent();
     }
   }
 
   @override
   void dispose() {
-    textController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -52,22 +63,22 @@ class _MessagesBottomBarState extends State<MessagesBottomBar> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        const Icon(
+        Icon(
           Icons.label,
-          color: Color(0xff829399),
+          color: InheritedAppTheme.of(context)!.getTheme.iconColor,
         ),
         Container(
           width: 300,
           padding: const EdgeInsets.all(10),
           child: TextField(
-            controller: textController,
-            decoration: const InputDecoration(
+            controller: _textController,
+            decoration:  InputDecoration(
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
+                borderRadius: const BorderRadius.all(
                   Radius.circular(15),
                 ),
                 borderSide: BorderSide(
-                  color: Color(0xff829399),
+                  color: InheritedAppTheme.of(context)!.getTheme.textColor,
                 ),
               ),
               hintText: 'Enter event',
@@ -75,15 +86,15 @@ class _MessagesBottomBarState extends State<MessagesBottomBar> {
             onChanged: (text) {
               setState(
                 () {
-                  if (textController.text.isNotEmpty) {
-                    _icon = const Icon(
+                  if (_textController.text.isNotEmpty) {
+                    _icon = Icon(
                       Icons.send,
-                      color: Color(0xff829399),
+                      color: InheritedAppTheme.of(context)?.getTheme.iconColor,
                     );
                   } else {
-                    _icon = const Icon(
+                    _icon = Icon(
                       Icons.add_a_photo,
-                      color: Color(0xff829399),
+                      color: InheritedAppTheme.of(context)?.getTheme.iconColor,
                     );
                   }
                 },
@@ -96,15 +107,13 @@ class _MessagesBottomBarState extends State<MessagesBottomBar> {
           onTap: () {
             setState(
               () {
-                if (textController.text.isNotEmpty) {
-                  InheritedList.of(context)?.events.add(
-                        PackedMessage(
-                          textMessage: TextMessage(data: textController.text),
-                        ),
-                      );
-                  textController.clear();
+                if (_textController.text.isNotEmpty) {
+                  _addToMessages(
+                    PackedMessage(textData: _textController.text),
+                  );
+                  _textController.clear();
                   FocusManager.instance.primaryFocus?.unfocus();
-                  InheritedList.of(context)?.notifyParent();
+                  _notifyParent();
                 } else {
                   _getFromGallery();
                 }

@@ -26,6 +26,9 @@ Color dialogOkButton = _mainColor;
 
 Color pinIconColor = Colors.black;
 
+Color editColor = const Color.fromRGBO(164, 157, 26, 0.5);
+Color deleteColor = const Color.fromRGBO(159, 25, 25, 0.5);
+
 class CustomTheme {
   static ThemeData get lightTheme {
     iconColor = Colors.black;

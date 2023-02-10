@@ -9,11 +9,11 @@ import 'common/data/provider/storage_firebase_provider.dart';
 import 'common/data/provider/tag_firebase_provider.dart';
 import 'common/data/repository/chat_repository.dart';
 import 'common/data/repository/tag_repository.dart';
+import 'common/features/settings/settings.dart';
+import 'common/features/theme/theme.dart';
 import 'features/locale/data/locale_repository_api.dart';
 import 'features/locale/locale.dart';
-import 'features/settings/cubit/settings_cubit.dart';
 import 'features/text_tags/text_tags.dart';
-import 'features/theme/theme.dart';
 import 'routes.dart';
 
 class JournalApp extends StatelessWidget {
@@ -42,7 +42,7 @@ class JournalApp extends StatelessWidget {
                     fontSizeFactor: context
                         .watch<SettingsCubit>()
                         .state
-                        .fontSize
+                        .fontScaleFactor
                         .scaleFactor,
                   ),
               useMaterial3: true,

@@ -48,5 +48,40 @@
   "choose_image": "Choose background image",
   "share_app": "Share app",
   "change_bubble_alignment": "Change bubble alignment",
-  "change_date_bubble": "Change data bubble alignment"
+  "change_date_bubble": "Change data bubble alignment",
+  "timeline_empty" : "Your timeline is empty!",
+  "timeline_empty_info": "There are no events to be displayed on your timeline, or you have filtered out all your pages in the filtermenu.",
+  "filter": "Filters",
+  "filter_info": "Tap to select a {rate} you want to include to the filter. All {rate} are included by default.",
+  "@filter_info":{
+    "placeholders": {
+    "rate": {
+            "type":"String"
+            }
+    }
+  },
+  "jump_to_date": "Jump to date",
+  "reset" : "Reset",
+  "picture": "Only picture",
+  "delete_element" : "Delete element!",
+  "search" : "Search",
+  "enter_event" : "Enter Event",
+  "home_title" : "Home",
+  "daily_title" : "Daily",
+  "timeline_title": "Timeline",
+  "explore_title" : "Explore",
+  "font_size": "Small/Medium/Large",
+  "bubble_alignment" : "Left/Right",
+  "date_bubble" : "Left/Center",
+  "pages" : "Pages",
+  "tags" : "Tags",
+  "labels" : "Labels",
+  "others" : "Others",
+  "statistics": "Statistics",
+  "total": "Totals",
+  "bookmark" : "Bookmarks",
+  "answers": "Answers",
+  "summary" : "Summary",
+  "popular" : "Popular",
+  "popular_instruction" : "This pie chart shows the popularity of such sections as: events with pictures, events with tags, events with sections"
 }
