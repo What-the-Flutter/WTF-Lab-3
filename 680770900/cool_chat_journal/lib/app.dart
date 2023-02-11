@@ -8,7 +8,7 @@ class CoolChatJournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) { 
-    var theme = AppTheme();
+    final theme = AppTheme();
     return MaterialApp(
       title: 'Cool Chat Journal',
       theme: theme.createThemeData(context),

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../model/events_group.dart';
-import '../events_page/events_page.dart';
+import '../../model/chat.dart';
+import '../../model/event.dart';
+import '../events_page/chat_page.dart';
 
-class EventsCard extends StatefulWidget {
+class ChatCard extends StatefulWidget {
 
   final Icon icon;
   final String title;
   final String subtitle;
 
-  const EventsCard({
+  const ChatCard({
     super.key,
     required this.icon,
     required this.title,
@@ -17,17 +18,20 @@ class EventsCard extends StatefulWidget {
   });
 
   @override
-  State<EventsCard> createState() => _EventsCardState();
+  State<ChatCard> createState() => _ChatCardState();
 }
 
-class _EventsCardState extends State<EventsCard> {
-  
- late EventsGroup _eventsGroup;
+class _ChatCardState extends State<ChatCard> {
+  late Chat _chat;
 
   @override
   void initState() {
     super.initState();
-    _eventsGroup = EventsGroup.empty(widget.title);
+    _chat = Chat(
+      name: widget.title,
+      events: <Event>[],
+      createdTime: DateTime.now(),
+    );
   }
 
   @override
@@ -40,7 +44,7 @@ class _EventsCardState extends State<EventsCard> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EventsPage(_eventsGroup)
+              builder: (context) => ChatPage(_chat)
             ),
           );
         },

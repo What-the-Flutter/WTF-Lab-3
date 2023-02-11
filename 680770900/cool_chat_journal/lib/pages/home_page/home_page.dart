@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'events_card.dart';
+import 'chat_card.dart';
 
 class HomePage extends StatelessWidget {
   
@@ -20,17 +20,17 @@ class HomePage extends StatelessWidget {
       ),
       body: ListView(
         children: const [
-          EventsCard(
+          ChatCard(
             icon: Icon(Icons.flight_takeoff),
             title: 'Travel',
             subtitle: 'No events. Click to create',
           ),
-          EventsCard(
+          ChatCard(
             icon: Icon(Icons.chair),
             title: 'Family',
             subtitle: 'No events. Click to create',
           ),
-          EventsCard(
+          ChatCard(
             icon: Icon(Icons.fitness_center),
             title: 'Sport',
             subtitle: 'No events. Click to create',

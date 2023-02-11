@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class BottomPanel extends StatefulWidget {
-  
   final void Function(String)? onSendText;
   final VoidCallback? onSendImage;
   final String? textFieldValue;
@@ -17,11 +16,12 @@ class BottomPanel extends StatefulWidget {
 }
 
 class _BottomPanelState extends State<BottomPanel> {
-
   final _textFocusNode = FocusNode();
   final _textController = TextEditingController();
 
-  void handleEnterText() {
+  // on
+  // private
+  void _onEnterText() {
     var onSendText = widget.onSendText;
 
     if (onSendText != null) {
@@ -32,42 +32,35 @@ class _BottomPanelState extends State<BottomPanel> {
     _textController.clear();
   }
 
-  void handleChangeText() {
-    setState(() {});
-  }
 
-  Widget buildMenuButton() {
+  Widget _createMenuButton() {
     return IconButton(
       icon: const Icon(Icons.widgets_rounded),
       onPressed: () => {},
     );
   }
 
-  Widget buildTextField() {
+  Widget _createTextField() {
     return Expanded(
       child: _EventField(
         textFieldValue: widget.textFieldValue,
         focusNode: _textFocusNode,
         controller: _textController,
-        onSubmitted: (_) => handleEnterText(),
+        onSubmitted: (_) => _onEnterText(),
       ),
     );
   }
 
-  Widget buildSendButton() {
+  Widget _createSendButton() {
     if (_textController.text.isNotEmpty) {
       return IconButton(
         icon: const Icon(Icons.send_rounded),
-        onPressed: handleEnterText,
+        onPressed: _onEnterText,
       );
     } else {
       return IconButton(
         icon: const Icon(Icons.add_a_photo_outlined),
-        onPressed: () {
-          if (widget.onSendImage != null) {
-            widget.onSendImage!();
-          }
-        },
+        onPressed: () => widget.onSendImage?.call(),
       );
     }
   }
@@ -80,7 +73,7 @@ class _BottomPanelState extends State<BottomPanel> {
       _textController.text = widget.textFieldValue!;
     }
     
-    _textController.addListener(handleChangeText);
+    _textController.addListener(() => setState(() {}));
   }
 
   @override
@@ -93,16 +86,15 @@ class _BottomPanelState extends State<BottomPanel> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        buildMenuButton(),
-        buildTextField(),
-        buildSendButton(),
+        _createMenuButton(),
+        _createTextField(),
+        _createSendButton(),
       ],
     );
   }
 }
 
 class _EventField extends StatelessWidget {
-
   final String? textFieldValue;
   final FocusNode? focusNode;
   final TextEditingController controller;

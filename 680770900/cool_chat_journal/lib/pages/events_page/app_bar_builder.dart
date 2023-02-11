@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
+// formater
+
 class AppBarBuilder {
-
   final String title;
-
-  final VoidCallback handleBackButton;
-  final VoidCallback handleResetSelection;
-  final VoidCallback handleShowFavorite;
-  final VoidCallback handleRemoval;
-  final VoidCallback handleMarkFavorites;
-  final VoidCallback handleEditAction;
-  final VoidCallback handleCloseEditMode;
-  final VoidCallback handleCopyAction;
+  final VoidCallback onBackButton;
+  final VoidCallback onResetSelection;
+  final VoidCallback onShowFavorite;
+  final VoidCallback onRemoval;
+  final VoidCallback onMarkFavorites;
+  final VoidCallback onEditAction;
+  final VoidCallback onCloseEditMode;
+  final VoidCallback onCopyAction;
 
   const AppBarBuilder({
     required this.title,
-    required this.handleBackButton,
-    required this.handleResetSelection,
-    required this.handleShowFavorite,
-    required this.handleRemoval,
-    required this.handleMarkFavorites,
-    required this.handleEditAction,
-    required this.handleCloseEditMode,
-    required this.handleCopyAction,
+    required this.onBackButton,
+    required this.onResetSelection,
+    required this.onShowFavorite,
+    required this.onRemoval,
+    required this.onMarkFavorites,
+    required this.onEditAction,
+    required this.onCloseEditMode,
+    required this.onCopyAction,
   });
 
-  Widget buildFavoriteAction(bool showFavorites) {
-    Icon bookmarkIcon;
+  Widget _createFavoriteAction(bool showFavorites) {
+    final Icon bookmarkIcon;
     if (showFavorites) {
       bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
     } else {
@@ -35,72 +35,72 @@ class AppBarBuilder {
 
     return IconButton(
       icon: bookmarkIcon,
-      onPressed: handleShowFavorite,
+      onPressed: onShowFavorite,
     );
   }
 
-  Widget buildSearchAction() {
+  Widget _createSearchAction() {
     return IconButton(
       icon: const Icon(Icons.search),
       onPressed: () => {},
     );
   }
 
-  Widget buildCloseEditModeAction() {
+  Widget _createCloseEditModeAction() {
     return IconButton(
       icon: const Icon(Icons.close),
-      onPressed: handleCloseEditMode,
+      onPressed: onCloseEditMode,
     );
   }
 
-  Widget buildDeleteAction() {
+  Widget _createDeleteAction() {
     return IconButton(
       icon: const Icon(Icons.delete),
-      onPressed: handleRemoval,
+      onPressed: onRemoval,
     );
   }
 
-  Widget buildCopyAction() {
+  Widget _createCopyAction() {
     return IconButton(
       icon: const Icon(Icons.copy),
-      onPressed: handleCopyAction,
+      onPressed: onCopyAction,
     );
   }
 
-  Widget buildMarkFavoriteAction() {
+  Widget _createMarkFavoriteAction() {
     return IconButton(
       icon: const Icon(Icons.bookmark_border),
-      onPressed: handleMarkFavorites,
+      onPressed: onMarkFavorites,
     );
   }
 
-  Widget buildEditAction() {
+  Widget _createEditAction() {
     return IconButton(
       icon: const Icon(Icons.edit),
-      onPressed: handleEditAction,
+      onPressed: onEditAction,
     );
   }
 
-  Widget buildAppBarLeading(int countSelected, bool isEditMode) {
+  Widget _createAppBarLeading(int countSelected, bool isEditMode) {
     if (countSelected == 0) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: handleBackButton,
+        onPressed: onBackButton,
       );
     } else if (isEditMode) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: handleCloseEditMode,
+        onPressed: onCloseEditMode,
       );
     } else {
       return IconButton(
         icon: const Icon(Icons.close),
-        onPressed: handleResetSelection,
+        onPressed: onResetSelection,
       );
     }
   }
 
-  Widget buildAppBarTitle(int countSelected, bool isEditMode) {
+  Widget _createAppBarTitle(int countSelected, bool isEditMode) {
     if (countSelected == 0) {
       return Text(title);
     } else if (isEditMode) {
@@ -111,7 +111,7 @@ class AppBarBuilder {
     }
   }
 
-  List<Widget> buildActions(
+  List<Widget> _createActions(
     int countSelected,
     bool showFavorites,
     bool isEditMode,
@@ -120,21 +120,21 @@ class AppBarBuilder {
     var actions = <Widget>[];
 
     if (countSelected == 0) {
-      actions.add(buildSearchAction());
-      actions.add(buildFavoriteAction(showFavorites));
+      actions.add(_createSearchAction());
+      actions.add(_createFavoriteAction(showFavorites));
     } else if (isEditMode) {
-      actions.add(buildCloseEditModeAction());
+      actions.add(_createCloseEditModeAction());
     } else {
       if (!isHasImage) {
         if (countSelected == 1) {
-          actions.add(buildEditAction());
+          actions.add(_createEditAction());
         }
 
-        actions.add(buildCopyAction());
+        actions.add(_createCopyAction());
       }
       
-      actions.add(buildMarkFavoriteAction());
-      actions.add(buildDeleteAction());
+      actions.add(_createMarkFavoriteAction());
+      actions.add(_createDeleteAction());
     }
 
     return actions;
@@ -147,9 +147,9 @@ class AppBarBuilder {
     bool isHasImage = false,
   }) {
     return AppBar(
-      leading: buildAppBarLeading(countSelected, isEditMode),
-      title: buildAppBarTitle(countSelected, isEditMode),
-      actions: buildActions(
+      leading: _createAppBarLeading(countSelected, isEditMode),
+      title: _createAppBarTitle(countSelected, isEditMode),
+      actions: _createActions(
         countSelected,
         showFavorites,
         isEditMode,
