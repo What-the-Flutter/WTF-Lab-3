@@ -31,6 +31,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _editChat(Chat oldChat, Chat newChat) {
+    final index = _chats.indexOf(oldChat);
+
+    setState(() {
+      _chats[index] = newChat;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +54,15 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) => ChatCard(
           chat: _chats[index],
           onDelete: () => _deleteChat(_chats[index]),
+          onEdit: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddChatPage(
+                oldChat: _chats[index],
+                onEditChat: _editChat,
+              )),
+            );
+          },
         )
       ),
       floatingActionButton: FloatingActionButton(

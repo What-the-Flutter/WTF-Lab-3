@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../model/chat.dart';
+import '../../model/event.dart';
 import 'chat_icons.dart';
 import 'icon_view.dart';
 
 class AddChatPage extends StatefulWidget {
+  final Chat? oldChat;
+  final void Function(Chat oldChat, Chat newChat)? onEditChat;
   final void Function(Chat)? onAddNewChat;
   
-  const AddChatPage({super.key, this.onAddNewChat});
+  const AddChatPage({
+    super.key,
+    this.oldChat,
+    this.onAddNewChat,
+    this.onEditChat,
+  });
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -27,13 +35,18 @@ class _AddChatPageState extends State<AddChatPage> {
 
   void _onAddChat() {    
     if (_hasTitle) {
-      widget.onAddNewChat?.call(
-        Chat.withoutEvents(
-          icon: Icon(ChatIcons.icons[_selectedIconIndex]),
-          name: _titleController.text,
-          createdTime: DateTime.now(),
-        ),
+      final chat = Chat(
+        icon: Icon(ChatIcons.icons[_selectedIconIndex]),
+        name: _titleController.text,
+        events: widget.oldChat?.events ?? <Event>[],
+        createdTime: widget.oldChat?.createdTime ?? DateTime.now(),
       );
+
+      if (widget.oldChat == null) {
+        widget.onAddNewChat?.call(chat);
+      } else {
+        widget.onEditChat?.call(widget.oldChat!, chat);
+      }
     }
 
     Navigator.pop(context);
@@ -46,12 +59,19 @@ class _AddChatPageState extends State<AddChatPage> {
   }
 
   Widget _createTitle() {
-    return const SafeArea(
+    final String titleText;
+    if (widget.oldChat == null) {
+      titleText = 'Create a new page';
+    } else {
+      titleText = 'Edit Page';
+    }
+
+    return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Text(
-          'Create a new page',
-          style: TextStyle(
+          titleText,
+          style: const TextStyle(
             fontSize: 30.0,
             fontWeight: FontWeight.bold,
           ),
@@ -102,6 +122,11 @@ class _AddChatPageState extends State<AddChatPage> {
     super.initState();
 
     _titleController.addListener(_onChangeTitle);
+
+
+    if (widget.oldChat != null) {
+      _titleController.text = widget.oldChat!.name;
+    }
   }
 
   @override
