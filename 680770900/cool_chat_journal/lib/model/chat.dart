@@ -31,6 +31,7 @@ class Chat {
     List<Event>? events,
     DateTime? createdTime,
     DateTime? latestEventTime,
+    bool? isPinned,
   }) {
     return Chat(
       icon: icon ?? this.icon,

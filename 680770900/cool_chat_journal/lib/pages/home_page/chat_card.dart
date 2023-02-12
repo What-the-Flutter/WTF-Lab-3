@@ -8,13 +8,17 @@ import 'delete_dialog.dart';
 
 class ChatCard extends StatelessWidget {
   final Chat chat;
+  final bool isPinned;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+  final VoidCallback? onPin;
   final DateFormat formatter = DateFormat.yMd().add_jm();
 
   ChatCard({
     super.key,
     required this.chat,
+    this.isPinned = false,
+    this.onPin,
     this.onDelete,
     this.onEdit,
   });
@@ -103,7 +107,10 @@ class ChatCard extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.attach_file),
             title: const Text('Pin/Unpin Page'),
-            onTap: () => {},
+            onTap: () {
+              Navigator.pop(context);
+              onPin?.call();
+            },
           ),
           ListTile(
             leading: const Icon(Icons.archive),
@@ -148,13 +155,27 @@ class ChatCard extends StatelessWidget {
           );
         },
         child: ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.colorScheme.background,
-            ),
-            child: Icon(chat.icon),
+          leading: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+                Container(
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: theme.colorScheme.background,
+                ),
+                child: Icon(chat.icon),
+              ),
+
+              if (isPinned)
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onBackground,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.push_pin, size: 20)
+                ),
+            ],
           ),
           title: Text(chat.name),
           subtitle: const Text('Fix me!'),

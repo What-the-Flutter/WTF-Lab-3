@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final _pinnedChats = <Chat>[];
   final _chats = <Chat>[];
 
   void _addNewChat(Chat newChat) {
@@ -39,8 +40,27 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _pinChat(Chat chat) {
+    setState(() {
+      if (_pinnedChats.contains(chat)) {
+        _pinnedChats.remove(chat);
+      } else {
+        _pinnedChats.add(chat);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final unpinnedChats = _chats.
+      where((chat) => !_pinnedChats.contains(chat)).
+      toList();
+
+    final chats = <Chat>[..._pinnedChats, ...unpinnedChats];
+
+
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -50,15 +70,17 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.appName),
       ),
       body:ListView.builder(
-        itemCount: _chats.length,
+        itemCount: chats.length,
         itemBuilder: (context, index) => ChatCard(
-          chat: _chats[index],
-          onDelete: () => _deleteChat(_chats[index]),
+          chat: chats[index],
+          isPinned: _pinnedChats.contains(chats[index]),
+          onPin: () => _pinChat(chats[index]),
+          onDelete: () => _deleteChat(chats[index]),
           onEdit: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AddChatPage(
-                oldChat: _chats[index],
+                oldChat: chats[index],
                 onEditChat: _editChat,
               )),
             );
