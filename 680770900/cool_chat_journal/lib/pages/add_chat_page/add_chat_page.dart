@@ -36,7 +36,7 @@ class _AddChatPageState extends State<AddChatPage> {
   void _onAddChat() {    
     if (_hasTitle) {
       final chat = Chat(
-        icon: Icon(ChatIcons.icons[_selectedIconIndex]),
+        icon: ChatIcons.icons[_selectedIconIndex],
         name: _titleController.text,
         events: widget.oldChat?.events ?? <Event>[],
         createdTime: widget.oldChat?.createdTime ?? DateTime.now(),

@@ -4,7 +4,7 @@ import 'event.dart';
 
 /// Contains all events from group 
 class Chat {
-  final Icon icon;
+  final IconData icon;
   final String name;
   final List<Event> events;
   final DateTime createdTime;
@@ -26,7 +26,7 @@ class Chat {
   }) : events = <Event>[];
 
   Chat copyWith({
-    Icon? icon,
+    IconData? icon,
     String? name,
     List<Event>? events,
     DateTime? createdTime,

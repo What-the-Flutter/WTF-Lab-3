@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../model/chat.dart';
+import '../add_chat_page/icon_view.dart';
 import '../events_page/chat_page.dart';
 import 'delete_dialog.dart';
 
@@ -8,13 +10,70 @@ class ChatCard extends StatelessWidget {
   final Chat chat;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+  final DateFormat formatter = DateFormat.yMd().add_jm();
 
-  const ChatCard({
+  ChatCard({
     super.key,
     required this.chat,
     this.onDelete,
     this.onEdit,
   });
+
+  void _showInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:(context) => Center(
+        child: Container(
+          margin: const EdgeInsets.all(40.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 30.0,
+            vertical: 20.0,
+          ),
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  IconView(
+                    icon: chat.icon,
+                    size: 60.0,  
+                  ),
+                  Text(
+                    chat.name,
+                    style: const TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const Text(
+                'Created',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(formatter.format(chat.createdTime)),
+      
+              if (chat.latestEventTime != null) 
+                Text(formatter.format(chat.latestEventTime!)),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 40.0),
+                child: TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _createDeleteDialog(BuildContext context) {
     showModalBottomSheet<bool>(
@@ -36,7 +95,10 @@ class ChatCard extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('Info'),
-            onTap: () => {},
+            onTap: () {
+              Navigator.pop(context);
+              _showInfo(context);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.attach_file),
@@ -92,7 +154,7 @@ class ChatCard extends StatelessWidget {
               shape: BoxShape.circle,
               color: theme.colorScheme.background,
             ),
-            child: chat.icon,
+            child: Icon(chat.icon),
           ),
           title: Text(chat.name),
           subtitle: const Text('Fix me!'),
