@@ -25,6 +25,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _deleteChat(Chat deletedChat) {
+    setState(() {
+      _chats.remove(deletedChat);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +45,7 @@ class _HomePageState extends State<HomePage> {
         itemCount: _chats.length,
         itemBuilder: (context, index) => ChatCard(
           chat: _chats[index],
+          onDelete: () => _deleteChat(_chats[index]),
         )
       ),
       floatingActionButton: FloatingActionButton(
