@@ -206,22 +206,28 @@ class _ChatPageState extends State<ChatPage> {
     return _selectedFlag.values.where((value) => value).length;
   }
 
+  List<Event> _generateEventsList() {
+    final List<Event> favorites;
+    if (_showFavorites) {
+      favorites = widget.chat.events.
+        where((event) => event.isFavorite).toList();
+    } else {
+      favorites = <Event>[];
+    }
+
+    final List<Event> events;
+    if (favorites.isEmpty) {
+      events = widget.chat.events;
+    } else {
+      events = favorites;
+    }
+
+    return events.reversed.toList();
+  }
+
   Widget _createEventsView() {
     if (widget.chat.events.isNotEmpty) {
-      
-      List<Event> events;
-      if (_showFavorites) {
-        events = widget.chat.events.
-          where((event) => event.isFavorite).toList();
-      } else {
-        events = widget.chat.events;
-      }
-
-      if (events.isEmpty) {
-        events = widget.chat.events;
-      }
-
-      events = events.reversed.toList();
+      final events = _generateEventsList();
      
       return ListView.builder(
         reverse: true,

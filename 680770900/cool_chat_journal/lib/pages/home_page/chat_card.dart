@@ -6,15 +6,11 @@ import '../events_page/chat_page.dart';
 
 class ChatCard extends StatefulWidget {
 
-  final Icon icon;
-  final String title;
-  final String subtitle;
+  final Chat chat;
 
   const ChatCard({
     super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
+    required this.chat,
   });
 
   @override
@@ -22,18 +18,6 @@ class ChatCard extends StatefulWidget {
 }
 
 class _ChatCardState extends State<ChatCard> {
-  late Chat _chat;
-
-  @override
-  void initState() {
-    super.initState();
-    _chat = Chat(
-      name: widget.title,
-      events: <Event>[],
-      createdTime: DateTime.now(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -44,7 +28,7 @@ class _ChatCardState extends State<ChatCard> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChatPage(_chat)
+              builder: (context) => ChatPage(widget.chat)
             ),
           );
         },
@@ -55,10 +39,10 @@ class _ChatCardState extends State<ChatCard> {
               shape: BoxShape.circle,
               color: theme.colorScheme.background,
             ),
-            child: widget.icon,
+            child: widget.chat.icon,
           ),
-          title: Text(widget.title),
-          subtitle: Text(widget.subtitle),
+          title: Text(widget.chat.name),
+          subtitle: const Text('Fix me!'),
         ),
       ),
     );
