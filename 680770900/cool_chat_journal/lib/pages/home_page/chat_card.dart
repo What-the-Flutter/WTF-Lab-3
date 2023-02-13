@@ -62,8 +62,21 @@ class ChatCard extends StatelessWidget {
               ),
               Text(formatter.format(chat.createdTime)),
       
-              if (chat.latestEventTime != null) 
-                Text(formatter.format(chat.latestEventTime!)),
+              if (chat.events.isNotEmpty) 
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Latest Event',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                
+                Text(formatter.format(chat.events.last.changeTime)),
+                ],
+              ),
 
               Padding(
                 padding: const EdgeInsets.only(top: 40.0),
