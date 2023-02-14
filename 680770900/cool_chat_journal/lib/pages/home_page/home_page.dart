@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../model/chat.dart';
+import '../../themes/custom_theme.dart';
+import '../../themes/themes.dart';
 import '../add_chat_page/add_chat_page.dart';
 import 'bottom_navigation.dart';
 import 'chat_card.dart';
@@ -16,7 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
+  var _theme = ThemeKeys.light;
   final _pinnedChats = <Chat>[];
   final _chats = <Chat>[];
 
@@ -50,16 +52,18 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _changeTheme() {
+    _theme = _theme == ThemeKeys.light ? ThemeKeys.dark : ThemeKeys.light;
+    CustomTheme.instanceOf(context).changeTheme(_theme); 
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final unpinnedChats = _chats.
       where((chat) => !_pinnedChats.contains(chat)).
       toList();
 
     final chats = <Chat>[..._pinnedChats, ...unpinnedChats];
-
-
 
     return Scaffold(
       appBar: AppBar(
@@ -68,6 +72,12 @@ class _HomePageState extends State<HomePage> {
           onPressed: () => print('Click to menu'),
         ),
         title: Text(widget.appName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.color_lens_outlined),
+            onPressed: _changeTheme,
+          ),
+        ],
       ),
       body:ListView.builder(
         itemCount: chats.length,

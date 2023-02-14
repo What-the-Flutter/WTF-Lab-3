@@ -116,8 +116,6 @@ class _EventField extends StatelessWidget {
 
       decoration: const InputDecoration(
         hintText: 'Enter event',
-        filled: true,
-        fillColor: Colors.white, 
       ),
 
       onSubmitted: onSubmitted,

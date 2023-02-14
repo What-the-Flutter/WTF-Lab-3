@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/chat.dart';
+import '../../themes/custom_theme.dart';
 import '../add_chat_page/icon_view.dart';
 import '../events_page/chat_page.dart';
 import 'delete_dialog.dart';
@@ -33,7 +34,7 @@ class ChatCard extends StatelessWidget {
             horizontal: 30.0,
             vertical: 20.0,
           ),
-          color: Colors.white,
+          color: CustomTheme.of(context).primaryColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -78,8 +79,11 @@ class ChatCard extends StatelessWidget {
                 ],
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0),
+              Container(
+                margin: const EdgeInsets.only(top: 40.0),
+                decoration: BoxDecoration(
+                  color: CustomTheme.of(context).backgroundColor,
+                ),
                 child: TextButton(
                   child: const Text('OK'),
                   onPressed: () => Navigator.pop(context),
