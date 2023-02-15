@@ -5,36 +5,32 @@ import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/fonts.dart';
-import '../../../theme/theme_cubit.dart';
+import '../settings_page/settings_cubit.dart';
 import 'create_chat_cubit.dart';
 import 'create_chat_state.dart';
 
 class CreateChatPage extends StatelessWidget {
   final _controller = TextEditingController();
-  final bool isCreatingMode;
-  final String initialText;
-  final int iconIndex;
+  final Chat? chat;
   late final CreateChatCubit createChatCubit;
 
   CreateChatPage({
-    required this.isCreatingMode,
-    this.initialText = '',
-    this.iconIndex = 0,
+    this.chat,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    createChatCubit = context.read<CreateChatCubit>();
+    createChatCubit = BlocProvider.of<CreateChatCubit>(context);
     return BlocBuilder<CreateChatCubit, CreateChatState>(
       builder: (context, state) {
-        if (!isCreatingMode && !state.isChanged) {
-          createChatCubit.changeSelectedIconIndex(iconIndex);
+        if (chat != null && !state.isChanged) {
+          createChatCubit.setToEdit(chat!);
         }
         return Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              color: BlocProvider.of<ThemeCubit>(context).isLight()
+              color: BlocProvider.of<SettingsCubit>(context).isLight()
                   ? ChatJournalColors.white
                   : ChatJournalColors.black,
             ),
@@ -47,7 +43,7 @@ class CreateChatPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      isCreatingMode ? 'Create a new Page' : 'Edit Page',
+                      chat != null ? 'Create a new Page' : 'Edit Page',
                       style: Fonts.createChatTitle,
                     ),
                     _inputPanel(state, context),
@@ -73,7 +69,7 @@ class CreateChatPage extends StatelessWidget {
         horizontal: 15,
       ),
       decoration: BoxDecoration(
-        color: BlocProvider.of<ThemeCubit>(context).isLight()
+        color: BlocProvider.of<SettingsCubit>(context).isLight()
             ? ChatJournalColors.iconGrey
             : ChatJournalColors.darkGrey,
         borderRadius: BorderRadius.circular(5),
@@ -94,7 +90,7 @@ class CreateChatPage extends StatelessWidget {
 
   Widget _textField(CreateChatState state, BuildContext context) {
     if (!state.isChanged && !state.isCreatingMode) {
-      _controller.text = initialText;
+      _controller.text = chat!.name;
     }
     return Container(
       constraints: const BoxConstraints(maxHeight: 30),
@@ -128,7 +124,7 @@ class CreateChatPage extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: BlocProvider.of<ThemeCubit>(context).isLight()
+                  color: BlocProvider.of<SettingsCubit>(context).isLight()
                       ? Colors.blueGrey
                       : ChatJournalColors.iconGrey,
                 ),
@@ -181,21 +177,26 @@ class CreateChatPage extends StatelessWidget {
           isDone ? Icons.done : Icons.cancel_outlined,
           size: 40,
         ),
-        onPressed: () {
+        onPressed: () async {
           final isChanged = _controller.text.isNotEmpty && state.isChanged;
           if (isChanged) {
             final date = DateTime.now();
-            final chat = Chat(
-              id: 0,
-              name: _controller.text,
-              iconIndex: state.selectedIconIndex,
-              creationDate: date,
-              events: [],
-            );
-            createChatCubit.addChat(chat);
-            Navigator.of(context).pop();
-            createChatCubit.reset();
+            if (state.isCreatingMode) {
+              final chat = Chat(
+                id: '',
+                name: _controller.text,
+                iconIndex: state.selectedIconIndex,
+                creationDate: date,
+                lastDate: date,
+              );
+              createChatCubit.addChat(chat);
+            } else {
+              await createChatCubit.updateChat(
+                  chat!.id, _controller.text, state.selectedIconIndex);
+            }
           }
+          createChatCubit.reset();
+          Navigator.of(context).pop();
         },
       ),
       duration: const Duration(milliseconds: 300),

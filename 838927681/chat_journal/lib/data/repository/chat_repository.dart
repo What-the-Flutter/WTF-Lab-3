@@ -1,22 +1,40 @@
+import 'dart:async';
+
 import '../../domain/entities/chat.dart';
 import '../../domain/repositories/api_chat_repository.dart';
-import '../provider/chat_provider.dart';
-import '../transfromer/transformer.dart';
-import 'event_repository.dart';
+import '../../domain/repositories/api_event_repository.dart';
+import '../models/db_chat.dart';
+import '../transformer/transformer.dart';
+import 'api_provider/api_data_provider.dart';
 
 class ChatRepository extends ApiChatRepository {
-  final provider = DataProvider();
-  final eventRepository = EventRepository();
-  static final chatsId = <int>{};
+  final ApiDataProvider provider;
+  final ApiEventRepository eventRepository;
+  final chatsStreamController = StreamController<List<Chat>>();
+  late final StreamSubscription<List<DBChat>> chatsStreamSubscription;
+
+  ChatRepository({
+    required this.provider,
+    required this.eventRepository,
+  }) {
+    chatsStreamSubscription = provider.chatsStream.listen(
+      (dbChats) {
+        final chats = <Chat>[];
+        for (final dbChat in dbChats) {
+          chats.add(Transformer.dbChatToEntity(dbChat));
+        }
+        chats.sort((a, b) => a.lastDate.compareTo(b.lastDate));
+        chatsStreamController.add(chats);
+      },
+    );
+  }
+
+  @override
+  Stream<List<Chat>> get chatsStream => chatsStreamController.stream;
 
   @override
   Future<void> addChat(Chat chat) async {
-    var id = 0;
-    while (chatsId.contains(id)) {
-      id++;
-    }
-    chatsId.add(id);
-    final dbChat = Transformer.chatToModel(chat.copyWith(id: id));
+    final dbChat = Transformer.chatToModel(chat);
     await provider.addChat(dbChat);
   }
 
@@ -29,26 +47,14 @@ class ChatRepository extends ApiChatRepository {
         return Transformer.dbChatToEntity(dbChats[index]);
       },
     );
-    for (var i = 0; i < chats.length; i++) {
-      chatsId.add(chats[i].id);
-      chats[i] = chats[i].copyWith(
-        events: await eventRepository.getEvents(
-          chats[i].id,
-        ),
-      );
-    }
-    chats.sort(
-      (a, b) {
-        return b.lastDate.compareTo(a.lastDate);
-      },
-    );
     return chats;
   }
 
-  void _setIds(List<Chat> chats) {
-    for (final chat in chats) {
-      chatsId.add(chat.id);
-    }
+  @override
+  Future<Chat> getChat(String id) async {
+    final dbChat = await provider.getChat(id);
+    final chat = Transformer.dbChatToEntity(dbChat);
+    return chat;
   }
 
   @override
@@ -60,4 +66,31 @@ class ChatRepository extends ApiChatRepository {
   Future<void> updateChat(Chat chat) async => await provider.updateChat(
         Transformer.chatToModel(chat),
       );
+
+  @override
+  Future<void> updateLast(String id, String lastMessage, DateTime? lastDate,
+      bool shouldCheck) async {
+    var chat = await getChat(id);
+    if (lastDate != null) {
+      final shouldReplace = (chat.lastDate.compareTo(lastDate) < 0 ||
+          chat.lastDate == chat.creationDate);
+      if (shouldCheck) {
+        if (shouldReplace) {
+          chat = chat.copyWith(
+            lastMessage: lastMessage,
+            lastDate: lastDate,
+          );
+        }
+      } else {
+        chat = chat.copyWith(
+          lastMessage: lastMessage,
+          lastDate: lastDate,
+        );
+      }
+    } else {
+      chat =
+          chat.copyWith(lastMessage: lastMessage, lastDate: chat.creationDate);
+    }
+    await provider.updateChat(Transformer.chatToModel(chat));
+  }
 }

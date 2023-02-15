@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../theme/colors.dart';
 import '../../theme/fonts.dart';
-import '../../theme/theme_cubit.dart';
+import '../pages/settings_page/settings_cubit.dart';
 
 class QuestionnaireBotButton extends StatelessWidget {
   QuestionnaireBotButton({super.key});
@@ -16,7 +16,7 @@ class QuestionnaireBotButton extends StatelessWidget {
       ),
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: BlocProvider.of<ThemeCubit>(context).isLight()
+          backgroundColor: BlocProvider.of<SettingsCubit>(context).isLight()
               ? ChatJournalColors.lightGreen
               : ChatJournalColors.darkGrey,
           shape: RoundedRectangleBorder(
@@ -29,14 +29,14 @@ class QuestionnaireBotButton extends StatelessWidget {
           children: [
             Icon(
               Icons.smart_toy,
-              color: BlocProvider.of<ThemeCubit>(context).isLight()
+              color: BlocProvider.of<SettingsCubit>(context).isLight()
                   ? Colors.black
                   : Colors.white,
             ),
             const SizedBox(width: 20),
             Text(
               'Questionnaire bot',
-              style: BlocProvider.of<ThemeCubit>(context).isLight()
+              style: BlocProvider.of<SettingsCubit>(context).isLight()
                   ? Fonts.questionnaireBotLightFont
                   : Fonts.questionnaireBotDarkFont,
             )

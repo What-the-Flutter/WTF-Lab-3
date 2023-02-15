@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +11,10 @@ import '../../../domain/entities/event.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/fonts.dart';
-import '../../../theme/theme_cubit.dart';
 import '../../widgets/search_delegate.dart';
 import '../chat_page/chat_page_cubit.dart';
 import '../chat_page/chat_page_state.dart';
+import '../settings_page/settings_cubit.dart';
 
 class ChatPage extends StatelessWidget {
   final Chat chat;
@@ -27,8 +26,7 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     chatCubit = context.read<ChatCubit>();
-    chatCubit.initState(chat.id);
-    print(chatCubit.state.events.length);
+    chatCubit.init(chat.id);
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         return WillPopScope(
@@ -48,7 +46,7 @@ class ChatPage extends StatelessWidget {
                 leading: !state.isSelecting
                     ? IconButton(
                         onPressed: () {
-                          chatCubit.changeIsEditingToValue(false);
+                          chatCubit.changeIsEditingToValue(value: false);
                           Navigator.of(context).pop(
                             chat,
                           );
@@ -76,7 +74,7 @@ class ChatPage extends StatelessWidget {
       return [
         IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => chatCubit.changeIsEditingToValue(false),
+          onPressed: () => chatCubit.changeIsEditingToValue(value: false),
         ),
       ];
     }
@@ -112,10 +110,7 @@ class ChatPage extends StatelessWidget {
             )
           : Container(),
       IconButton(
-        onPressed: () {
-          chatCubit.changeIsFavoriteEvent();
-          print(state.events[state.selectedIndex].isFavorite);
-        },
+        onPressed: chatCubit.changeIsFavoriteEvent,
         icon: Icon(state.events[state.selectedIndex].isFavorite
             ? Icons.bookmark
             : Icons.bookmark_border_outlined),
@@ -200,7 +195,7 @@ class ChatPage extends StatelessWidget {
 
   void _editEvent(ChatState state, BuildContext context) {
     if (state.events[state.selectedIndex].imagePath == '') {
-      chatCubit.changeIsEditingToValue(true);
+      chatCubit.changeIsEditingToValue(value: true);
       _controller.text = state.events[state.selectedIndex].text;
     }
   }
@@ -233,7 +228,7 @@ class ChatPage extends StatelessWidget {
             context: context,
             delegate: ChatJournalSearch(
               chatCubit: chatCubit,
-              themeCubit: BlocProvider.of<ThemeCubit>(context),
+              settingsCubit: BlocProvider.of<SettingsCubit>(context),
             ),
           );
         },
@@ -342,7 +337,7 @@ class ChatPage extends StatelessWidget {
               dateTime: DateTime.now(),
               imagePath: imagePath,
               parentId: chat.id,
-              id: 0,
+              id: '',
             ),
           );
         }
@@ -420,16 +415,16 @@ class ChatPage extends StatelessWidget {
 
   Widget _event(
       int index, List<Event> events, ChatState state, BuildContext context) {
-    final eventColor = BlocProvider.of<ThemeCubit>(context).isLight()
+    final eventColor = BlocProvider.of<SettingsCubit>(context).isLight()
         ? ChatJournalColors.lightGreen
         : ChatJournalColors.darkGrey;
-    final selectedEventColor = BlocProvider.of<ThemeCubit>(context).isLight()
+    final selectedEventColor = BlocProvider.of<SettingsCubit>(context).isLight()
         ? ChatJournalColors.accentLightGreen
         : ChatJournalColors.lightGrey;
     return Align(
       alignment: Alignment.centerLeft,
       child: Slidable(
-        key: ValueKey<Event>(state.events[index]),
+        key: UniqueKey(),
         startActionPane: ActionPane(
           motion: const ScrollMotion(),
           dismissible: DismissiblePane(
@@ -451,7 +446,7 @@ class ChatPage extends StatelessWidget {
             dismissalDuration: const Duration(milliseconds: 30),
             confirmDismiss: () async {
               _controller.text = state.events[index].text;
-              chatCubit.changeIsEditingToValue(true);
+              chatCubit.changeIsEditingToValue(value: true, index: index);
               return false;
             },
             closeOnCancel: true,
@@ -461,7 +456,7 @@ class ChatPage extends StatelessWidget {
             SlidableAction(
               onPressed: (context) {
                 _controller.text = state.events[index].text;
-                chatCubit.changeIsEditingToValue(true);
+                chatCubit.changeIsEditingToValue(value: true, index: index);
               },
               backgroundColor: Colors.transparent,
               foregroundColor: Theme.of(context).primaryColor,
@@ -516,7 +511,14 @@ class ChatPage extends StatelessWidget {
   Widget _typeEvent(
       int index, List<Event> events, ChatState state, BuildContext context) {
     if (events[index].imagePath != '') {
-      return Image.file(File(state.events[index].imagePath));
+      return CachedNetworkImage(
+        imageUrl: events[index].imagePath,
+        progressIndicatorBuilder: (context, url, progress) => Center(
+          child: CircularProgressIndicator(
+            value: progress.progress,
+          ),
+        ),
+      );
     }
     if (events[index].iconIndex != 0) {
       return _categoryEvent(events[index], context);
@@ -577,7 +579,7 @@ class ChatPage extends StatelessWidget {
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            color: BlocProvider.of<ThemeCubit>(context).isLight()
+            color: BlocProvider.of<SettingsCubit>(context).isLight()
                 ? ChatJournalColors.lightRed
                 : ChatJournalColors.lightGrey,
           ),
@@ -659,7 +661,7 @@ class ChatPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: BlocProvider.of<ThemeCubit>(context).isLight()
+            color: BlocProvider.of<SettingsCubit>(context).isLight()
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(8.0),
@@ -733,7 +735,7 @@ class ChatPage extends StatelessWidget {
         controller: _controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
-          fillColor: BlocProvider.of<ThemeCubit>(context).isLight()
+          fillColor: BlocProvider.of<SettingsCubit>(context).isLight()
               ? Colors.grey[200]
               : ChatJournalColors.lightGrey,
           filled: true,
@@ -769,7 +771,7 @@ class ChatPage extends StatelessWidget {
           text: _controller.text,
           dateTime: DateTime.now(),
           iconIndex: selectedIcon != 0 ? selectedIcon : 0,
-          id: 0,
+          id: '',
           parentId: chat.id,
         ),
       );

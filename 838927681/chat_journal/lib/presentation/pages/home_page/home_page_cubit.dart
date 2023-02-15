@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/chat.dart';
@@ -8,20 +10,27 @@ import 'home_page_state.dart';
 class HomePageCubit extends Cubit<HomePageState> {
   final ApiChatRepository chatRepository;
   final ApiEventRepository eventRepository;
+  late final StreamSubscription<List<Chat>> chatsStream;
 
   HomePageCubit({
     required this.eventRepository,
     required this.chatRepository,
   }) : super(const HomePageState(chats: [])) {
-    initState();
+    init();
   }
 
-  void initState() async {
+  void init() async {
     final chats = await chatRepository.getChats();
     emit(state.copyWith(chats: chats));
+    chatsStream = chatRepository.chatsStream.listen(
+      (event) {
+        event.sort((a, b) => b.lastDate.compareTo(a.lastDate));
+        emit(state.copyWith(chats: event));
+      },
+    );
   }
 
-  void updateChats() async {
+  Future<void> updateChats() async {
     final chats = await chatRepository.getChats();
     emit(state.copyWith(chats: chats));
   }
@@ -50,7 +59,7 @@ class HomePageCubit extends Cubit<HomePageState> {
     emit(state.copyWith(chats: chats));
   }
 
-  Future<DateTime> _lastDate(int id) async {
+  Future<DateTime> _lastDate(String id) async {
     final events = await eventRepository.getEvents(id);
     return events.last.dateTime;
   }
