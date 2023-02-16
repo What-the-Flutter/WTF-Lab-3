@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../model/chat.dart';
 import '../../themes/custom_theme.dart';
 import '../add_chat_page/icon_view.dart';
-import '../events_page/chat_page.dart';
+import '../chat_page/chat_page.dart';
 import 'delete_dialog.dart';
 
 class ChatCard extends StatelessWidget {
@@ -64,20 +64,20 @@ class ChatCard extends StatelessWidget {
               Text(formatter.format(chat.createdTime)),
       
               if (chat.events.isNotEmpty) 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Latest Event',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 30),
+                    const Text(
+                      'Latest Event',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                
-                Text(formatter.format(chat.events.last.changeTime)),
-                ],
-              ),
+                  
+                  Text(formatter.format(chat.events.last.changeTime)),
+                  ],
+                ),
 
               Container(
                 margin: const EdgeInsets.only(top: 40.0),
@@ -187,10 +187,13 @@ class ChatCard extends StatelessWidget {
               if (isPinned)
                 Container(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.onBackground,
+                    color: theme.colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.push_pin, size: 20)
+                  child: const Icon(
+                    Icons.push_pin,
+                    size: 20,
+                  ),
                 ),
             ],
           ),

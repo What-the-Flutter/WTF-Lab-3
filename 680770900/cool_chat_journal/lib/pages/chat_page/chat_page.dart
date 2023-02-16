@@ -10,7 +10,6 @@ import 'delete_dialog.dart';
 import 'event_view.dart';
 
 class ChatPage extends StatefulWidget {  
-
   final Chat chat;
 
   const ChatPage(this.chat);
@@ -222,7 +221,7 @@ class _ChatPageState extends State<ChatPage> {
       events = favorites;
     }
 
-    return events.reversed.toList();
+    return events.toList();
   }
 
   Widget _createEventsView() {
@@ -230,7 +229,6 @@ class _ChatPageState extends State<ChatPage> {
       final events = _generateEventsList();
      
       return ListView.builder(
-        reverse: true,
         itemCount: events.length,
         itemBuilder: (_, index) {
           _selectedFlag[index] = _selectedFlag[index] ?? false;  
