@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/category_store.dart';
+import '../../../data/source.dart';
 import '../../../models/category.dart';
 import '../../../theme/colors.dart';
 
@@ -12,24 +12,23 @@ class CategoryBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paddings = const EdgeInsets.symmetric(horizontal: 15, vertical: 10);
-    final store = CategoryStore(context: context);
     return Container(
       height: 90,
       color: messageBlocColor,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: store.categories.length,
+        itemCount: categories.length,
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
-              setCategory(index != 0 ? store.categories[index] : null);
+              setCategory(index != 0 ? categories[index] : null);
             },
             child: Padding(
               padding: paddings,
               child: Column(
                 children: [
-                  _buildCircleAvatar(store.categories[index].icon, index),
-                  Text(store.categories[index].title)
+                  _buildCircleAvatar(categories[index].icon, index),
+                  Text(categories[index].title)
                 ],
               ),
             ),

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../cubit/menu/menu_cubit.dart';
-import '../../cubit/menu/menu_state.dart';
 import 'daily_page.dart';
 import 'explore_page.dart';
 import 'home_page.dart';
@@ -21,12 +20,12 @@ class BottomMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MenuCubit, MenuState>(
-      builder: (context, state) {
+    return BlocBuilder<MenuCubit, int>(
+      builder: (context, pageState) {
         final local = AppLocalizations.of(context);
         final choosePage = context.read<MenuCubit>().choosePage;
         return Scaffold(
-          body: Center(child: _pages[state.pageIndex]),
+          body: Center(child: _pages[pageState]),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
@@ -47,7 +46,7 @@ class BottomMenu extends StatelessWidget {
                 label: local?.explorePage,
               ),
             ],
-            currentIndex: state.pageIndex,
+            currentIndex: pageState,
             onTap: choosePage,
           ),
         );

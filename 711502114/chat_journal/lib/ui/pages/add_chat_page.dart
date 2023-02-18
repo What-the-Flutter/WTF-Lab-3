@@ -1,9 +1,9 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../cubit/creation/creation_cubit.dart';
+import '../../cubit/creation/creation_state.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
 import '../../models/chat.dart';
@@ -22,28 +22,16 @@ class AddChatPage extends StatefulWidget {
 }
 
 class _AddChatPageState extends State<AddChatPage> {
-  IconData _fabIcon = Icons.close;
-  int _iconIndex = 0;
-  final _icons = IconList.data;
-  late final TextEditingController _fieldText;
-  bool _isEditMode = false;
+  String _title = '';
+  bool _isEdit = false;
 
   @override
   void initState() {
     super.initState();
-    _fieldText = TextEditingController();
-    _fieldText.addListener(_changeFABIcon);
 
     if (widget.chat != null) {
-      for (int i = 0; i < _icons.length; i++) {
-        if (widget.chat?.iconData == _icons[i]) {
-          _iconIndex = i;
-          break;
-        }
-      }
-
-      _fieldText.text = widget.chat?.title ?? '';
-      _isEditMode = true;
+      _title = widget.chat?.title ?? '';
+      _isEdit = true;
     }
   }
 
@@ -53,41 +41,58 @@ class _AddChatPageState extends State<AddChatPage> {
     final orientation = MediaQuery.of(context).orientation;
     final itemRowCount = orientation == Orientation.portrait ? 4 : 8;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: checkOrientation(context),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: orientation == Orientation.portrait ? 70 : 30),
-            Text(
-              !_isEditMode ? local?.addNewChat ?? '' : local?.editChat ?? '',
-              style: const TextStyle(fontSize: 26),
+    return BlocBuilder<CreationCubit, CreationState>(
+      builder: (context, state) {
+        final cubit = context.read<CreationCubit>();
+        return WillPopScope(
+          onWillPop: () async {
+            cubit.reset();
+            return true;
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: checkOrientation(context),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                      height: orientation == Orientation.portrait ? 70 : 30),
+                  Text(
+                    !_isEdit ? local?.addNewChat ?? '' : local?.editChat ?? '',
+                    style: const TextStyle(fontSize: 26),
+                  ),
+                  const SizedBox(height: 10),
+                  AddChatKeyboard(
+                    defaultValue: _title,
+                    onTyping: (val) {
+                      _title = val;
+                      _changeFABIcon(cubit);
+                    },
+                    pageLabel: local?.addPageLabel ?? '',
+                  ),
+                  _buildIconsTable(cubit, itemRowCount),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),
-            AddChatKeyboard(
-              fieldText: _fieldText,
-              pageLabel: local?.addPageLabel ?? '',
+            floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, _) {
+                final status = cubit.state.isFinished;
+                return Align(
+                  alignment: const Alignment(1, 0.87),
+                  child: FloatingActionButton(
+                    onPressed: () => _addOrEditChat(cubit, context),
+                    child: Icon(_isEdit || status ? Icons.check : Icons.close),
+                  ),
+                );
+              },
             ),
-            _buildIconsTable(itemRowCount),
-          ],
-        ),
-      ),
-      floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, _) {
-          return Align(
-            alignment: const Alignment(1, 0.87),
-            child: FloatingActionButton(
-              onPressed: () => _addOrEditChat(context),
-              child: Icon(_fabIcon),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildIconsTable(int itemRowCount) {
+  Widget _buildIconsTable(CreationCubit cubit, int itemRowCount) {
     return Expanded(
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(
@@ -100,55 +105,52 @@ class _AddChatPageState extends State<AddChatPage> {
           mainAxisSpacing: 40,
           crossAxisSpacing: 40,
         ),
-        itemCount: _icons.length,
+        itemCount: IconList.data.length,
         itemBuilder: (_, index) {
           return InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: ChatIcon(
-              child: Icon(_icons[index]),
+              child: Icon(IconList.data[index]),
               index: index,
-              pageIndex: _iconIndex,
+              pageIndex: cubit.state.index,
             ),
-            onTap: () => setState(() => _iconIndex = index),
+            onTap: () {
+              cubit.changeIndex(index);
+            },
           );
         },
       ),
     );
   }
 
-  void _changeFABIcon() {
-    if (_fabIcon == Icons.close && _fieldText.text.isNotEmpty ||
-        _fabIcon == Icons.check && _fieldText.text.isEmpty) {
-      setState(() {
-        _fabIcon = _fabIcon == Icons.close ? Icons.check : Icons.close;
-      });
+  void _changeFABIcon(CreationCubit cubit) {
+    if (_isEdit) return;
+
+    final status = cubit.state.isFinished;
+    if (_title.isNotEmpty && !status || _title.isEmpty && status) {
+      cubit.changeFinishStatus(!status);
     }
   }
 
-  void _addOrEditChat(BuildContext context) {
-    if (_fieldText.text.isNotEmpty) {
+  void _addOrEditChat(CreationCubit creationCubit, BuildContext context) {
+    if (_title.isNotEmpty) {
       final cubit = context.read<HomeCubit>();
       if (widget.chat == null) {
         cubit.add(
-          title: _fieldText.text,
-          iconData: _icons[_iconIndex],
+          title: _title,
+          iconData: IconList.data[creationCubit.state.index],
         );
       } else {
         cubit.edit(
           widget.chat?.id ?? 0,
-          title: _fieldText.text,
-          iconData: _icons[_iconIndex],
+          title: _title,
+          iconData: IconList.data[creationCubit.state.index],
         );
       }
     }
 
+    creationCubit.reset();
     closePage(context);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _fieldText.dispose();
   }
 }

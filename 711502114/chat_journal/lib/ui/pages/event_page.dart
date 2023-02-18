@@ -67,8 +67,8 @@ class _MessengerPageState extends State<MessengerPage> {
                         EventKeyboard(
                           width: size.width,
                           fieldText: _fieldText,
-                          editMode: cubit.editMode,
-                          category: cubit.category,
+                          cubit: cubit,
+                          update: updateChatLastEvent,
                         ),
                       ],
                     ),
@@ -130,13 +130,14 @@ class _MessengerPageState extends State<MessengerPage> {
   }
 
   List<Widget> _initEditAppBarTools(EventCubit cubit) {
-    final pencil = cubit.selectedItemIndexes.length == 1 && !cubit.editMode;
+    final pencil =
+        cubit.state.selectedItemIndexes.length == 1 && !cubit.editMode;
     return [
       Expanded(
         child: Align(
           alignment: const Alignment(.1, .15),
           child: Text(
-            '${cubit.selectedItemIndexes.length}',
+            '${cubit.state.selectedItemIndexes.length}',
             style: const TextStyle(
               fontSize: 25,
             ),

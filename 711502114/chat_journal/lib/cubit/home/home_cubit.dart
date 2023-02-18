@@ -6,18 +6,17 @@ import '../../models/chat.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  int _id = 0;
-
-  HomeCubit() : super(HomeState(chats: sourceChats));
+  HomeCubit() : super(HomeState(chats: sourceChats, id: 0));
 
   void update() {
     emit(state.copyWith(chats: state.chats));
   }
 
   void add({required String title, required IconData iconData}) {
+    final id = state.id + 1;
     state.chats.add(
       Chat(
-        id: _id++,
+        id: id,
         title: title,
         events: [],
         iconData: iconData,
@@ -25,13 +24,13 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
 
-    update();
+    emit(state.copyWith(chats: state.chats, id: id));
   }
 
   void delete(int id) {
     state.chats.removeWhere((chat) => chat.id == id);
 
-    update();
+    emit(state.copyWith(chats: state.chats));
   }
 
   void edit(int id, {required String title, required IconData iconData}) {
@@ -42,7 +41,7 @@ class HomeCubit extends Cubit<HomeState> {
       iconData: iconData,
     );
 
-    update();
+    emit(state.copyWith(chats: state.chats));
   }
 
   void changePin(int id) {
@@ -61,7 +60,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     });
 
-    update();
+    emit(state.copyWith(chats: state.chats));
   }
 
   void archive(int id, [bool isArchive = true]) {
@@ -69,7 +68,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     state.chats[index] = state.chats[index].copyWith(isArchive: isArchive);
 
-    update();
+    emit(state.copyWith(chats: state.chats));
   }
 
   int _findIndexById(int id) {

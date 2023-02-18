@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'cubit/creation/creation_cubit.dart';
 import 'cubit/event/event_cubit.dart';
 import 'cubit/home/home_cubit.dart';
 import 'cubit/menu/menu_cubit.dart';
@@ -24,6 +25,7 @@ class ChatJournalApplication extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => MenuCubit()),
         BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => CreationCubit()),
         BlocProvider(create: (_) => EventCubit()),
       ],
       child: MaterialApp(

@@ -10,54 +10,40 @@ import '../../models/event.dart';
 import 'event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
-  bool _isFavoriteMode = false;
-  bool _isSelectedMode = false;
-  bool _isEditMode = false;
-  bool _isCategoryMode = false;
+  EventCubit() : super(EventState(events: [], selectedItemIndexes: []));
 
-  Category? _category;
+  bool get favoriteMode => state.isFavoriteMode;
 
-  late List<Event> _events;
-  final List<int> selectedItemIndexes = [];
+  bool get selectedMode => state.isSelectedMode;
 
-  bool get favoriteMode => _isFavoriteMode;
+  bool get editMode => state.isEditMode;
 
-  bool get selectedMode => _isSelectedMode;
+  bool get categoryMode => state.isCategoryMode;
 
-  bool get editMode => _isEditMode;
+  Category? get category => state.category;
 
-  bool get categoryMode => _isCategoryMode;
+  List<Event> get events => state.events;
 
-  Category? get category => _category;
-
-  List<Event> get events => _events;
-
-  List<Event> get filterEvents =>
-      _isFavoriteMode ? events.where((e) => e.isFavorite).toList() : events;
-
-  EventCubit() : super(EventState(events: []));
+  List<Event> get filterEvents => state.isFavoriteMode
+      ? events.where((e) => e.isFavorite).toList()
+      : events;
 
   void init(Chat chat) {
     emit(state.copyWith(events: chat.events));
-    _events = state.events;
-  }
-
-  void update() {
-    emit(state.copyWith(events: state.events));
   }
 
   void changeFavorite() {
-    _isFavoriteMode = !_isFavoriteMode;
+    state.isFavoriteMode = !state.isFavoriteMode;
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void migrateEvents(Chat chat) {
-    selectedItemIndexes.sort();
+    state.selectedItemIndexes.sort();
 
     final migrationEvents = <Event>[];
-    for (int i in selectedItemIndexes) {
-      migrationEvents.add(_events[i]);
+    for (int i in state.selectedItemIndexes) {
+      migrationEvents.add(state.events[i]);
     }
 
     deleteMessage();
@@ -67,22 +53,22 @@ class EventCubit extends Cubit<EventState> {
       chat.events.add(unselectedEvent);
     }
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void startEditMode(TextEditingController fieldText) {
-    _isEditMode = true;
-    fieldText.text = events[selectedItemIndexes.last].message;
+    state.isEditMode = true;
+    fieldText.text = state.events[state.selectedItemIndexes.last].message;
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void copyText() {
-    selectedItemIndexes.sort();
+    state.selectedItemIndexes.sort();
     String? text;
 
-    for (int i in selectedItemIndexes) {
-      final message = events[i].message;
+    for (int i in state.selectedItemIndexes) {
+      final message = state.events[i].message;
       if (text == null) {
         text = '$message\n';
       } else {
@@ -96,61 +82,63 @@ class EventCubit extends Cubit<EventState> {
   }
 
   void changeFavoriteStatus() {
-    for (int i in selectedItemIndexes) {
-      events[i] = events[i].copyWith(isFavorite: !events[i].isFavorite);
+    for (int i in state.selectedItemIndexes) {
+      state.events[i] = state.events[i].copyWith(
+        isFavorite: !state.events[i].isFavorite,
+      );
     }
 
     finishEditMode();
   }
 
   void deleteMessage() {
-    selectedItemIndexes.sort();
+    state.selectedItemIndexes.sort();
 
     int shift = 0;
-    for (int i in selectedItemIndexes) {
-      events.removeAt(i + shift--);
+    for (int i in state.selectedItemIndexes) {
+      state.events.removeAt(i + shift--);
     }
 
     finishEditMode(deleteMode: true);
   }
 
   void addEvent(String message, [String? path]) {
-    events.add(
+    state.events.add(
       Event(
         message: message,
         dateTime: DateTime.now(),
         photoPath: path,
-        category: _category,
+        category: state.category,
       ),
     );
 
-    _category = null;
+    state.category = null;
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void handleSelecting(int index) {
-    if (selectedItemIndexes.isEmpty) {
-      _isSelectedMode = true;
-      events[index] = events[index].copyWith(isSelected: true);
+    if (state.selectedItemIndexes.isEmpty) {
+      state.isSelectedMode = true;
+      state.events[index] = state.events[index].copyWith(isSelected: true);
 
-      selectedItemIndexes.add(index);
-    } else if (!selectedItemIndexes.contains(index)) {
-      events[index] = events[index].copyWith(isSelected: true);
+      state.selectedItemIndexes.add(index);
+    } else if (!state.selectedItemIndexes.contains(index)) {
+      state.events[index] = state.events[index].copyWith(isSelected: true);
 
-      selectedItemIndexes.add(index);
-    } else if (selectedItemIndexes.length == 1) {
-      _isSelectedMode = false;
-      events[index] = events[index].copyWith(isSelected: false);
+      state.selectedItemIndexes.add(index);
+    } else if (state.selectedItemIndexes.length == 1) {
+      state.isSelectedMode = false;
+      state.events[index] = state.events[index].copyWith(isSelected: false);
 
-      selectedItemIndexes.remove(index);
+      state.selectedItemIndexes.remove(index);
     } else {
-      events[index] = events[index].copyWith(isSelected: false);
+      state.events[index] = state.events[index].copyWith(isSelected: false);
 
-      selectedItemIndexes.remove(index);
+      state.selectedItemIndexes.remove(index);
     }
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void finishEditMode({
@@ -159,41 +147,46 @@ class EventCubit extends Cubit<EventState> {
     bool editSuccess = false,
   }) {
     if (!deleteMode) {
-      for (int i in selectedItemIndexes) {
-        events[i] = events[i].copyWith(isSelected: false, category: _category);
+      for (int i in state.selectedItemIndexes) {
+        state.events[i] = state.events[i].copyWith(
+          isSelected: false,
+          category: state.category,
+        );
       }
     }
 
     if (fieldText != null && editSuccess) {
-      final index = selectedItemIndexes.last;
-      events[index] = events[index].copyWith(message: fieldText.text);
+      final index = state.selectedItemIndexes.last;
+      state.events[index] = state.events[index].copyWith(
+        message: fieldText.text,
+      );
     }
 
-    _isEditMode = false;
-    _isSelectedMode = false;
+    state.isEditMode = false;
+    state.isSelectedMode = false;
 
-    _category = null;
+    state.category = null;
 
-    selectedItemIndexes.clear();
+    state.selectedItemIndexes.clear();
     fieldText?.clear();
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void openCategory() {
-    _isCategoryMode = true;
+    state.isCategoryMode = true;
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void closeCategory() {
-    _isCategoryMode = false;
+    state.isCategoryMode = false;
 
-    update();
+    emit(state.copyWith(events: state.events));
   }
 
   void setCategory(Category? category) {
-    _category = category;
+    state.category = category;
 
     closeCategory();
   }

@@ -50,9 +50,7 @@ class _ArchivePageState extends State<ArchivePage> {
 
   Widget _initArchiveButton(BuildContext context, int id) {
     return IconButton(
-      onPressed: () {
-        context.read<HomeCubit>().archive(id, false);
-      },
+      onPressed: () => context.read<HomeCubit>().archive(id, false),
       icon: Icon(Icons.archive, color: iconColor),
     );
   }
