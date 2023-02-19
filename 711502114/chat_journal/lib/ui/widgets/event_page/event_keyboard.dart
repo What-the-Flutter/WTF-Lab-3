@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../cubit/event/event_cubit.dart';
-import '../../../theme/colors.dart';
+import '../../../cubit/theme/theme_cubit.dart';
 import '../../../utils/utils.dart';
 import 'attach_dialog.dart';
 import 'keyboard_icon.dart';
@@ -26,7 +27,9 @@ class EventKeyboard extends StatelessWidget {
     final local = AppLocalizations.of(context);
     return Container(
       width: width,
-      color: messageBlocColor,
+      color: BlocProvider.of<ThemeCubit>(context).isDark
+          ? const Color.fromRGBO(37, 47, 57, 1)
+          : const Color.fromRGBO(77, 157, 206, 0.7),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -47,7 +50,9 @@ class EventKeyboard extends StatelessWidget {
                 hintText: local?.enterFieldHint ?? '',
                 hintStyle: TextStyle(
                   fontSize: 20,
-                  color: secondaryMessageTextColor,
+                  color: BlocProvider.of<ThemeCubit>(context).isDark
+                      ? Colors.grey
+                      : Colors.white,
                 ),
               ),
               style: const TextStyle(fontSize: 20, color: Colors.white),

@@ -106,7 +106,7 @@ class EventCubit extends Cubit<EventState> {
     state.events.add(
       Event(
         message: message,
-        dateTime: DateTime.now(),
+        creationTime: DateTime.now().toString(),
         photoPath: path,
         category: state.category,
       ),

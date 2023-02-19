@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 
 import '../../data/source.dart';
 import '../../models/chat.dart';
@@ -12,15 +11,15 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  void add({required String title, required IconData iconData}) {
+  void add({required String title, required int iconNumber}) {
     final id = state.id + 1;
     state.chats.add(
       Chat(
         id: id,
         title: title,
         events: [],
-        iconData: iconData,
-        creationTime: DateTime.now(),
+        iconNumber: iconNumber,
+        creationTime: DateTime.now().toString(),
       ),
     );
 
@@ -33,12 +32,12 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  void edit(int id, {required String title, required IconData iconData}) {
+  void edit(int id, {required String title, required int iconNumber}) {
     final index = _findIndexById(id);
 
     state.chats[index] = state.chats[index].copyWith(
       title: title,
-      iconData: iconData,
+      iconNumber: iconNumber,
     );
 
     emit(state.copyWith(chats: state.chats));

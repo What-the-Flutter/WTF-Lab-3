@@ -6,7 +6,11 @@ class CreationCubit extends Cubit<CreationState> {
   CreationCubit() : super(CreationState(index: 0, isFinished: false));
 
   void reset() {
-    emit(state.copyWith(index: 0, isFinished: false));
+    emit(state.copyWith(index: 0, isFinished: false, isEditMode: false));
+  }
+
+  void setEditDefault({required int index, required bool editMode}) {
+    emit(state.copyWith(index: index, isFinished: true, isEditMode: editMode));
   }
 
   void changeIndex(int index) {

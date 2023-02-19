@@ -30,9 +30,9 @@ class AddChatKeyboard extends StatelessWidget {
           filled: true,
           border: InputBorder.none,
           labelText: pageLabel,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             fontSize: 20,
-            color: secondaryMessageTextColor,
+            color: Colors.white,
           ),
         ),
         style: TextStyle(fontSize: 20, color: addTextColor),

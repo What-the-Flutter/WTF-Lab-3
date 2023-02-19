@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../cubit/theme/theme_cubit.dart';
 import '../../../models/chat.dart';
 import '../../../theme/colors.dart';
+import '../../../utils/icons.dart';
 import '../../../utils/utils.dart';
 
 class InfoChatDialog extends StatelessWidget {
@@ -25,7 +28,7 @@ class InfoChatDialog extends StatelessWidget {
               color: circleMessageColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(chat.iconData),
+            child: Icon(IconMap.data[chat.iconNumber]),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -52,7 +55,11 @@ class InfoChatDialog extends StatelessWidget {
             ),
             Text(
               _useDateTimeFormat(context, chat.creationTime),
-              style: TextStyle(color: secondaryMessageTextColor),
+              style: TextStyle(
+                color: BlocProvider.of<ThemeCubit>(context).isDark
+                    ? Colors.grey
+                    : Colors.white,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
@@ -61,7 +68,11 @@ class InfoChatDialog extends StatelessWidget {
             ),
             Text(
               _useDateTimeFormat(context, _knowLastEvent()),
-              style: TextStyle(color: secondaryMessageTextColor),
+              style: TextStyle(
+                color: BlocProvider.of<ThemeCubit>(context).isDark
+                    ? Colors.grey
+                    : Colors.white,
+              ),
             ),
           ],
         ),
@@ -89,15 +100,15 @@ class InfoChatDialog extends StatelessWidget {
     );
   }
 
-  DateTime _knowLastEvent() {
+  String _knowLastEvent() {
     if (chat.events.isEmpty) return chat.creationTime;
 
-    return chat.events.last.dateTime;
+    return chat.events.last.creationTime.toString();
   }
 
-  String _useDateTimeFormat(BuildContext context, DateTime dateTime) {
-    final data = '${formatDate(context, dateTime)}';
-    final time = '${formatTime(dateTime, includeSec: false)}';
+  String _useDateTimeFormat(BuildContext context, String timeInfo) {
+    final data = '${formatDate(context, timeInfo)}';
+    final time = '${formatTime(timeInfo, includeSec: false)}';
     return '$data ($time)';
   }
 }

@@ -13,9 +13,9 @@ import '../widgets/add_chat_page/add_chat_keyboard.dart';
 import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
-  final Chat? chat;
+  final Chat? editChat;
 
-  const AddChatPage({Key? key, this.chat}) : super(key: key);
+  const AddChatPage({Key? key, this.editChat}) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -23,15 +23,14 @@ class AddChatPage extends StatefulWidget {
 
 class _AddChatPageState extends State<AddChatPage> {
   String _title = '';
-  bool _isEdit = false;
+  bool _isExit = false;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.chat != null) {
-      _title = widget.chat?.title ?? '';
-      _isEdit = true;
+    if (widget.editChat != null) {
+      _title = widget.editChat?.title ?? '';
     }
   }
 
@@ -44,8 +43,15 @@ class _AddChatPageState extends State<AddChatPage> {
     return BlocBuilder<CreationCubit, CreationState>(
       builder: (context, state) {
         final cubit = context.read<CreationCubit>();
+        if (!cubit.state.isEditMode && widget.editChat != null && !_isExit) {
+          cubit.setEditDefault(
+            index: widget.editChat?.iconNumber ?? 0,
+            editMode: true,
+          );
+        }
         return WillPopScope(
           onWillPop: () async {
+            _isExit = true;
             cubit.reset();
             return true;
           },
@@ -56,9 +62,12 @@ class _AddChatPageState extends State<AddChatPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                      height: orientation == Orientation.portrait ? 70 : 30),
+                    height: orientation == Orientation.portrait ? 70 : 30,
+                  ),
                   Text(
-                    !_isEdit ? local?.addNewChat ?? '' : local?.editChat ?? '',
+                    widget.editChat == null
+                        ? local?.addNewChat ?? ''
+                        : local?.editChat ?? '',
                     style: const TextStyle(fontSize: 26),
                   ),
                   const SizedBox(height: 10),
@@ -77,11 +86,12 @@ class _AddChatPageState extends State<AddChatPage> {
             floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
               builder: (context, _) {
                 final status = cubit.state.isFinished;
+                final isEdit = widget.editChat != null;
                 return Align(
                   alignment: const Alignment(1, 0.87),
                   child: FloatingActionButton(
                     onPressed: () => _addOrEditChat(cubit, context),
-                    child: Icon(_isEdit || status ? Icons.check : Icons.close),
+                    child: Icon(isEdit || status ? Icons.check : Icons.close),
                   ),
                 );
               },
@@ -105,13 +115,13 @@ class _AddChatPageState extends State<AddChatPage> {
           mainAxisSpacing: 40,
           crossAxisSpacing: 40,
         ),
-        itemCount: IconList.data.length,
+        itemCount: IconMap.data.length,
         itemBuilder: (_, index) {
           return InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: ChatIcon(
-              child: Icon(IconList.data[index]),
+              child: Icon(IconMap.data[index]),
               index: index,
               pageIndex: cubit.state.index,
             ),
@@ -125,7 +135,7 @@ class _AddChatPageState extends State<AddChatPage> {
   }
 
   void _changeFABIcon(CreationCubit cubit) {
-    if (_isEdit) return;
+    if (widget.editChat != null) return;
 
     final status = cubit.state.isFinished;
     if (_title.isNotEmpty && !status || _title.isEmpty && status) {
@@ -136,20 +146,21 @@ class _AddChatPageState extends State<AddChatPage> {
   void _addOrEditChat(CreationCubit creationCubit, BuildContext context) {
     if (_title.isNotEmpty) {
       final cubit = context.read<HomeCubit>();
-      if (widget.chat == null) {
+      if (widget.editChat == null) {
         cubit.add(
           title: _title,
-          iconData: IconList.data[creationCubit.state.index],
+          iconNumber: creationCubit.state.index,
         );
       } else {
         cubit.edit(
-          widget.chat?.id ?? 0,
+          widget.editChat?.id ?? 0,
           title: _title,
-          iconData: IconList.data[creationCubit.state.index],
+          iconNumber: creationCubit.state.index,
         );
       }
     }
 
+    _isExit = true;
     creationCubit.reset();
     closePage(context);
   }

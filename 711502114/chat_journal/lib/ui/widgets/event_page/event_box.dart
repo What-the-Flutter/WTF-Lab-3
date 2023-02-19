@@ -67,8 +67,8 @@ class EventBox extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text(formatDate(context, event.dateTime)),
-                      Text(formatTime(event.dateTime)),
+                      Text(formatDate(context, event.creationTime)),
+                      Text(formatTime(event.creationTime)),
                     ],
                   ),
                 ],

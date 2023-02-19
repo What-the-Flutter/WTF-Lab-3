@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../cubit/theme/theme_cubit.dart';
 import '../../theme/colors.dart';
 import '../widgets/home_page/chat_card.dart';
 
@@ -49,9 +50,12 @@ class _ArchivePageState extends State<ArchivePage> {
   }
 
   Widget _initArchiveButton(BuildContext context, int id) {
+    final color = BlocProvider.of<ThemeCubit>(context).isDark
+        ? Colors.white
+        : Colors.black;
     return IconButton(
       onPressed: () => context.read<HomeCubit>().archive(id, false),
-      icon: Icon(Icons.archive, color: iconColor),
+      icon: Icon(Icons.archive, color: color),
     );
   }
 }

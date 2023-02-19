@@ -4,7 +4,7 @@ import 'category.dart';
 
 class Event extends Equatable {
   final String message;
-  final DateTime dateTime;
+  final String creationTime;
   final bool isFavorite;
   final bool isSelected;
   final String? photoPath;
@@ -12,7 +12,7 @@ class Event extends Equatable {
 
   Event({
     required this.message,
-    required this.dateTime,
+    required this.creationTime,
     this.isFavorite = false,
     this.isSelected = false,
     this.photoPath,
@@ -21,7 +21,7 @@ class Event extends Equatable {
 
   Event copyWith({
     String? message,
-    DateTime? dateTime,
+    String? creationTime,
     bool? isFavorite,
     bool? isSelected,
     String? photoPath,
@@ -29,7 +29,7 @@ class Event extends Equatable {
   }) {
     return Event(
       message: message ?? this.message,
-      dateTime: dateTime ?? this.dateTime,
+      creationTime: creationTime ?? this.creationTime,
       isFavorite: isFavorite ?? this.isFavorite,
       isSelected: isSelected ?? this.isSelected,
       photoPath: photoPath ?? this.photoPath,
@@ -40,7 +40,7 @@ class Event extends Equatable {
   @override
   List<Object?> get props => [
         message,
-        dateTime,
+        creationTime,
         isFavorite,
         isSelected,
         photoPath,

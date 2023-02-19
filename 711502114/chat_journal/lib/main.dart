@@ -7,14 +7,13 @@ import 'cubit/creation/creation_cubit.dart';
 import 'cubit/event/event_cubit.dart';
 import 'cubit/home/home_cubit.dart';
 import 'cubit/menu/menu_cubit.dart';
+import 'cubit/theme/theme_cubit.dart';
+import 'cubit/theme/theme_state.dart';
 import 'l10n/l10n.dart';
-import 'theme/custom_user_theme.dart';
-import 'theme/theme_inherited.dart';
+import 'theme/theme_preferences.dart';
 import 'ui/pages/menu.dart';
 
-void main() async {
-  runApp(const CustomUserTheme(child: ChatJournalApplication()));
-}
+void main() async => runApp(const ChatJournalApplication());
 
 class ChatJournalApplication extends StatelessWidget {
   const ChatJournalApplication({super.key});
@@ -23,22 +22,28 @@ class ChatJournalApplication extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (_) => ThemeCubit(ThemePreferences()),
+          lazy: false,
+        ),
         BlocProvider(create: (_) => MenuCubit()),
         BlocProvider(create: (_) => HomeCubit()),
         BlocProvider(create: (_) => CreationCubit()),
         BlocProvider(create: (_) => EventCubit()),
       ],
-      child: MaterialApp(
-        theme: ThemeInherited.of(context).themeData,
-        debugShowCheckedModeBanner: false,
-        supportedLocales: L10n.all,
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        home: const BottomMenu(),
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (_, state) => MaterialApp(
+          theme: state.theme,
+          debugShowCheckedModeBanner: false,
+          supportedLocales: L10n.all,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          home: const BottomMenu(),
+        ),
       ),
     );
   }

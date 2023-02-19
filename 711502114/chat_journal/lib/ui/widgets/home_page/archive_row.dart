@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../cubit/theme/theme_cubit.dart';
 import '../../../theme/colors.dart';
 import '../../../utils/utils.dart';
 import '../../pages/archive_page.dart';
@@ -19,7 +21,9 @@ class ArchiveRow extends StatelessWidget {
             child: Icon(
               Icons.archive,
               size: 25,
-              color: iconColor,
+              color: BlocProvider.of<ThemeCubit>(context).isDark
+                  ? Colors.white
+                  : Colors.black,
             ),
           ),
           const SizedBox(width: 10),

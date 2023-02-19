@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../cubit/search/search_cubit.dart';
 import '../../cubit/search/search_state.dart';
+import '../../cubit/theme/theme_cubit.dart';
 import '../../theme/colors.dart';
 import '../widgets/event_page/event_box.dart';
 
@@ -43,7 +44,9 @@ class SearchPage extends StatelessWidget {
                     hintText: local?.searchFieldHint ?? '',
                     hintStyle: TextStyle(
                       fontSize: 18,
-                      color: secondaryMessageTextColor,
+                      color: BlocProvider.of<ThemeCubit>(context).isDark
+                          ? Colors.grey
+                          : Colors.white,
                     ),
                     border: InputBorder.none,
                   ),
