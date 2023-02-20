@@ -1,86 +1,118 @@
 import 'package:flutter/material.dart';
 
-import 'events_card.dart';
+import '../../model/chat.dart';
+import '../../themes/custom_theme.dart';
+import '../../themes/themes.dart';
+import '../add_chat_page/add_chat_page.dart';
+import 'bottom_navigation.dart';
+import 'chat_card.dart';
 
-class HomePage extends StatelessWidget {
-  
+class HomePage extends StatefulWidget {
   final String appName;
-  
-  const HomePage({super.key, required this.appName});  
-  
+
+  const HomePage({super.key, required this.appName});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var _theme = ThemeKeys.light;
+  final _pinnedChats = <Chat>[];
+  final _chats = <Chat>[];
+
+  void _addNewChat(Chat newChat) {
+    setState(() {
+      _chats.add(newChat);
+    });
+  }
+
+  void _deleteChat(Chat deletedChat) {
+    setState(() {
+      _chats.remove(deletedChat);
+    });
+  }
+
+  void _editChat(Chat oldChat, Chat newChat) {
+    final index = _chats.indexOf(oldChat);
+
+    setState(() {
+      _chats[index] = newChat;
+    });
+  }
+
+  void _pinChat(Chat chat) {
+    setState(() {
+      if (_pinnedChats.contains(chat)) {
+        _pinnedChats.remove(chat);
+      } else {
+        _pinnedChats.add(chat);
+      }
+    });
+  }
+
+  void _changeTheme() {
+    _theme = _theme == ThemeKeys.light ? ThemeKeys.dark : ThemeKeys.light;
+    CustomTheme.instanceOf(context).changeTheme(_theme);
+  }
+
+  void _onEditChat(Chat chat) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AddChatPage(
+                oldChat: chat,
+                onEditChat: _editChat,
+              )),
+    );
+  }
+
+  void _onAddNewChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AddChatPage(
+                onAddNewChat: _addNewChat,
+              )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final unpinnedChats =
+        _chats.where((chat) => !_pinnedChats.contains(chat)).toList();
+
+    final chats = <Chat>[..._pinnedChats, ...unpinnedChats];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => print('Click to menu'),
         ),
-        title: Text(appName),
-      ),
-      body: ListView(
-        children: const [
-          EventsCard(
-            icon: Icon(Icons.flight_takeoff),
-            title: 'Travel',
-            subtitle: 'No events. Click to create',
-          ),
-          EventsCard(
-            icon: Icon(Icons.chair),
-            title: 'Family',
-            subtitle: 'No events. Click to create',
-          ),
-          EventsCard(
-            icon: Icon(Icons.fitness_center),
-            title: 'Sport',
-            subtitle: 'No events. Click to create',
+        title: Text(widget.appName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.color_lens_outlined),
+            onPressed: _changeTheme,
           ),
         ],
       ),
+      body: ListView.builder(
+          itemCount: chats.length,
+          itemBuilder: (context, index) => ChatCard(
+                chat: chats[index],
+                isPinned: _pinnedChats.contains(chats[index]),
+                onPin: () => _pinChat(chats[index]),
+                onDelete: () => _deleteChat(chats[index]),
+                onEdit: () => _onEditChat(chats[index]),
+                onUpdate: () => setState(() {}),
+              )),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => print('Click to floating action button'),
+        onPressed: _onAddNewChat,
       ),
       bottomNavigationBar: BottomNavigation(),
-    );
-  }
-}
-
-class BottomNavigation extends StatefulWidget {
-  @override
-  State<BottomNavigation> createState() => _BottomNavigationState();
-}
-
-class _BottomNavigationState extends State<BottomNavigation> {
-  
-  int _currentIndex = 0;
-  
-  @override
-  Widget build(BuildContext context) {
-
-    final labelSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 12.0;
-
-    return BottomNavigationBar(
-      currentIndex: _currentIndex,
-      unselectedFontSize: labelSize,
-      selectedFontSize: labelSize + 2.0,
-      onTap: (value) {
-        setState(() {
-          _currentIndex = value;
-        });
-      },
-
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-
-        BottomNavigationBarItem(
-          icon: Icon(Icons.assignment),
-          label: 'Daily',
-        ),
-      ],
     );
   }
 }

@@ -1,13 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/event.dart';
 
 class EventView extends StatefulWidget {
-  
   final Event event;
   final bool isSelected;
-
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
@@ -15,7 +15,7 @@ class EventView extends StatefulWidget {
     required this.event,
     this.isSelected = false,
     this.onTap,
-    this.onLongPress,  
+    this.onLongPress,
   });
 
   @override
@@ -23,10 +23,9 @@ class EventView extends StatefulWidget {
 }
 
 class _EventViewState extends State<EventView> {
+  final _dateFormat = DateFormat('hh:mm');
 
-  final dateFormat = DateFormat('hh:mm');
-
-  Widget buildEventSubtitle() {
+  Widget _createEventSubtitle() {
     return UnconstrainedBox(
       child: Row(
         children: [
@@ -35,15 +34,13 @@ class _EventViewState extends State<EventView> {
               Icons.check_circle,
               size: 15.0,
             ),
-
           Text(
-            dateFormat.format(widget.event.changeTime),
+            _dateFormat.format(widget.event.changeTime),
             style: TextStyle(
               color: Colors.grey[700],
             ),
           ),
-    
-          if (widget.event.isFavorite) 
+          if (widget.event.isFavorite)
             const Icon(
               Icons.bookmark,
               color: Colors.deepOrange,
@@ -54,7 +51,21 @@ class _EventViewState extends State<EventView> {
     );
   }
 
-  Widget buildEventContent() {
+  Widget _createEventContent() {
+    final Widget eventContent;
+    if (widget.event.isImage) {
+      eventContent = Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Image.file(
+          File(widget.event.content),
+          width: 200.0,
+          height: 200.0,
+        ),
+      );
+    } else {
+      eventContent = Text(widget.event.content);
+    }
+
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
@@ -68,21 +79,9 @@ class _EventViewState extends State<EventView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.event.isImage)
-              Text(widget.event.content),
-
-            if (widget.event.isImage)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Image.file(
-                  widget.event.content,
-                  width: 200.0,
-                  height: 200.0,
-                ),
-              ),
-
+            eventContent,
             const SizedBox(height: 10.0),
-            buildEventSubtitle(), 
+            _createEventSubtitle(),
           ],
         ),
       ),
@@ -94,7 +93,7 @@ class _EventViewState extends State<EventView> {
     return Row(
       children: [
         Flexible(
-          child: buildEventContent(),
+          child: _createEventContent(),
         ),
       ],
     );
