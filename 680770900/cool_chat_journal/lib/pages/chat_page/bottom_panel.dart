@@ -19,8 +19,6 @@ class _BottomPanelState extends State<BottomPanel> {
   final _textFocusNode = FocusNode();
   final _textController = TextEditingController();
 
-  // on
-  // private
   void _onEnterText() {
     var onSendText = widget.onSendText;
 

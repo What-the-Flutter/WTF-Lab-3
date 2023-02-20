@@ -134,10 +134,16 @@ class _ChatPageState extends State<ChatPage> {
     ).then((value) {
       if (value == true) {
         final events = widget.chat.events;
-        for (var i = 0; i < widget.chat.events.length; i++) {
+        final deletedEvents = <Event>[];
+
+        for (var i = 0; i < events.length; i++) {
           if (_selectedFlag[i] == true) {
-            events.remove(events[i]);
+            deletedEvents.add(events[i]);
           }
+        }
+
+        for (final deletedEvent in deletedEvents) {
+          events.remove(deletedEvent);
         }
       }
     }).then(
@@ -227,10 +233,13 @@ class _ChatPageState extends State<ChatPage> {
   Widget _createEventsView() {
     if (widget.chat.events.isNotEmpty) {
       final events = _generateEventsList();
-     
+
       return ListView.builder(
+        reverse: true,
         itemCount: events.length,
-        itemBuilder: (_, index) {
+        itemBuilder: (_, i) {
+          var index = events.length - i - 1;
+
           _selectedFlag[index] = _selectedFlag[index] ?? false;  
           var isSelected = _selectedFlag[index]!;
 
