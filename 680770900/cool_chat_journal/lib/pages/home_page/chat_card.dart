@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +15,7 @@ class ChatCard extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
   final VoidCallback? onPin;
+  final VoidCallback? onUpdate;
   final DateFormat formatter = DateFormat.yMd().add_jm();
 
   ChatCard({
@@ -22,6 +25,7 @@ class ChatCard extends StatelessWidget {
     this.onPin,
     this.onDelete,
     this.onEdit,
+    this.onUpdate,
   });
 
   void _showInfo(BuildContext context) {
@@ -155,9 +159,31 @@ class ChatCard extends StatelessWidget {
     );
   }
 
+  String _generateSubtitle({int maxLength = 20}) {
+    final String subtitle;
+
+    if (chat.events.isNotEmpty) {
+      final event = chat.events.last;
+
+      if (event.isImage) {
+        subtitle = 'Image Entry';
+      } else {
+        final content = event.content;
+        subtitle = content
+          .replaceAll('\n', ' ')
+          .substring(0, min(content.length, maxLength));
+      }
+    } else {
+      subtitle = 'No events. Click to create one.';
+    }
+
+    return subtitle;
+  } 
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final subtitle = _generateSubtitle();
 
     return Card(
       child: InkWell(
@@ -169,7 +195,7 @@ class ChatCard extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ChatPage(chat)
             ),
-          );
+          ).then((value) => onUpdate?.call());
         },
         child: ListTile(
           leading: Stack(
@@ -198,7 +224,7 @@ class ChatCard extends StatelessWidget {
             ],
           ),
           title: Text(chat.name),
-          subtitle: const Text('Fix me!'),
+          subtitle: Text(subtitle),
         ),
       ),
     );

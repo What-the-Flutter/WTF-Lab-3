@@ -57,6 +57,25 @@ class _HomePageState extends State<HomePage> {
     CustomTheme.instanceOf(context).changeTheme(_theme); 
   }
 
+  void _onEditChat(Chat chat) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddChatPage(
+        oldChat: chat,
+        onEditChat: _editChat,
+      )),
+    );
+  }
+
+  void _onAddNewChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddChatPage(
+        onAddNewChat: _addNewChat,
+      )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final unpinnedChats = _chats.
@@ -86,25 +105,13 @@ class _HomePageState extends State<HomePage> {
           isPinned: _pinnedChats.contains(chats[index]),
           onPin: () => _pinChat(chats[index]),
           onDelete: () => _deleteChat(chats[index]),
-          onEdit: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddChatPage(
-                oldChat: chats[index],
-                onEditChat: _editChat,
-              )),
-            );
-          },
+          onEdit: () => _onEditChat(chats[index]),
+          onUpdate: () => setState(() {}),
         )
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddChatPage(
-            onAddNewChat: _addNewChat,
-          )),
-        ),
+        onPressed: _onAddNewChat,
       ),
       bottomNavigationBar: BottomNavigation(),
     );
