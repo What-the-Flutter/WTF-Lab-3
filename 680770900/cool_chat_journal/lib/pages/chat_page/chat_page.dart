@@ -9,7 +9,7 @@ import 'bottom_panel.dart';
 import 'delete_dialog.dart';
 import 'event_view.dart';
 
-class ChatPage extends StatefulWidget {  
+class ChatPage extends StatefulWidget {
   final Chat chat;
 
   const ChatPage(this.chat);
@@ -25,9 +25,10 @@ class _ChatPageState extends State<ChatPage> {
   bool _isEditMode = false;
 
   bool _isSelectionMode() => _countSelectedEvents() != 0;
-  bool _isHasImage() => _selectedFlag.keys.
-    where((key) => _selectedFlag[key] == true).
-    where((key) => widget.chat.events[key].isImage).isNotEmpty;
+  bool _isHasImage() => _selectedFlag.keys
+      .where((key) => _selectedFlag[key] == true)
+      .where((key) => widget.chat.events[key].isImage)
+      .isNotEmpty;
 
   void _addTextEvent(String eventText) {
     setState(() {
@@ -43,33 +44,29 @@ class _ChatPageState extends State<ChatPage> {
   Future<ImageSource?> _showImageDialog() {
     return showDialog<ImageSource>(
       context: context,
-      builder: (context) => AlertDialog(
-        content: const Text('Choose image source'),
-        actions: [
-          ElevatedButton(
-            child: const Text('Camera'), 
-            onPressed: () => Navigator.pop(context, ImageSource.camera),
-          ),
-          ElevatedButton(
-            child: const Text('Gallery'), 
-            onPressed: () => Navigator.pop(context, ImageSource.gallery),
-          ),
-        ]
-      ),
+      builder: (context) =>
+          AlertDialog(content: const Text('Choose image source'), actions: [
+        ElevatedButton(
+          child: const Text('Camera'),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        ElevatedButton(
+          child: const Text('Gallery'),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ]),
     );
   }
 
   Future<void> _uploadImage(ImageSource source) async {
     final image = await ImagePicker().pickImage(source: source);
-            
+
     if (image != null) {
-      widget.chat.events.add(
-        Event(
-          content: image.path,
-          isImage: true,
-          changeTime: DateTime.now(),
-        )
-      );
+      widget.chat.events.add(Event(
+        content: image.path,
+        isImage: true,
+        changeTime: DateTime.now(),
+      ));
     }
   }
 
@@ -78,20 +75,20 @@ class _ChatPageState extends State<ChatPage> {
       if (source != null) {
         await _uploadImage(source);
       }
-      
+
       setState(() {});
     });
   }
 
   void _editEvent(String eventText) {
-    final index = _selectedFlag.keys.
-      firstWhere((i) => _selectedFlag[i] == true);
+    final index =
+        _selectedFlag.keys.firstWhere((i) => _selectedFlag[i] == true);
 
     final sourceEvent = widget.chat.events[index];
-    
+
     setState(() {
       widget.chat.events[index] = sourceEvent.copyWith(
-        content: eventText, 
+        content: eventText,
       );
     });
 
@@ -101,13 +98,12 @@ class _ChatPageState extends State<ChatPage> {
 
   void _onTap(bool isSelected, int index) {
     if (_isSelectionMode()) {
-       _onLongPress(isSelected, index);
+      _onLongPress(isSelected, index);
     } else {
       final event = widget.chat.events[index];
       setState(() {
-        widget.chat.events[index] = event.copyWith(
-          isFavorite: !event.isFavorite
-        );
+        widget.chat.events[index] =
+            event.copyWith(isFavorite: !event.isFavorite);
       });
     }
   }
@@ -130,7 +126,7 @@ class _ChatPageState extends State<ChatPage> {
   void _onRemoval() {
     showModalBottomSheet<bool>(
       context: context,
-      builder: (context) => DeleteDialog(_countSelectedEvents()),  
+      builder: (context) => DeleteDialog(_countSelectedEvents()),
     ).then((value) {
       if (value == true) {
         final events = widget.chat.events;
@@ -146,9 +142,7 @@ class _ChatPageState extends State<ChatPage> {
           events.remove(deletedEvent);
         }
       }
-    }).then(
-      (value) => _onResetSelection()
-    );
+    }).then((value) => _onResetSelection());
   }
 
   void _onBackButton() {
@@ -190,13 +184,11 @@ class _ChatPageState extends State<ChatPage> {
   void _onCopyAction() {
     var copyText = '';
 
-    _selectedFlag.keys.where(
-      (key) => _selectedFlag[key] == true && !widget.chat.events[key].isImage
-    ).map(
-      (key) => copyText += copyText.isNotEmpty 
-        ? '${widget.chat.events[key].content}'
-        : '\n'
-    );
+    _selectedFlag.keys
+        .where((key) =>
+            _selectedFlag[key] == true && !widget.chat.events[key].isImage)
+        .map((key) => copyText +=
+            copyText.isNotEmpty ? '${widget.chat.events[key].content}' : '\n');
 
     Clipboard.setData(
       ClipboardData(
@@ -214,8 +206,8 @@ class _ChatPageState extends State<ChatPage> {
   List<Event> _generateEventsList() {
     final List<Event> favorites;
     if (_showFavorites) {
-      favorites = widget.chat.events.
-        where((event) => event.isFavorite).toList();
+      favorites =
+          widget.chat.events.where((event) => event.isFavorite).toList();
     } else {
       favorites = <Event>[];
     }
@@ -235,22 +227,21 @@ class _ChatPageState extends State<ChatPage> {
       final events = _generateEventsList();
 
       return ListView.builder(
-        reverse: true,
-        itemCount: events.length,
-        itemBuilder: (_, i) {
-          var index = events.length - i - 1;
+          reverse: true,
+          itemCount: events.length,
+          itemBuilder: (_, i) {
+            var index = events.length - i - 1;
 
-          _selectedFlag[index] = _selectedFlag[index] ?? false;  
-          var isSelected = _selectedFlag[index]!;
+            _selectedFlag[index] = _selectedFlag[index] ?? false;
+            var isSelected = _selectedFlag[index]!;
 
-          return EventView(
-            event: events[index],
-            isSelected: isSelected,
-            onTap: () => _onTap(isSelected, index),
-            onLongPress: () => _onLongPress(isSelected, index),
-          );
-        }
-      ); 
+            return EventView(
+              event: events[index],
+              isSelected: isSelected,
+              onTap: () => _onTap(isSelected, index),
+              onLongPress: () => _onLongPress(isSelected, index),
+            );
+          });
     } else {
       return Align(
         alignment: Alignment.topCenter,
@@ -260,26 +251,20 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _createScaffoldBody() {
-    var index = _selectedFlag.keys.
-      firstWhere((i) => _selectedFlag[i] == true, orElse: () => -1);
+    var index = _selectedFlag.keys
+        .firstWhere((i) => _selectedFlag[i] == true, orElse: () => -1);
 
     return Column(
       children: [
         Expanded(
           child: _createEventsView(),
         ),
-
         if (!_isSelectionMode())
           BottomPanel(
             onSendImage: _addImage,
             onSendText: _addTextEvent,
           ),
-
-        if (
-          _isEditMode &&
-          index != -1 &&
-          !widget.chat.events[index].isImage
-        )
+        if (_isEditMode && index != -1 && !widget.chat.events[index].isImage)
           BottomPanel(
             textFieldValue: widget.chat.events[index].content,
             onSendText: _editEvent,
@@ -314,22 +299,20 @@ class _ChatPageState extends State<ChatPage> {
         isEditMode: _isEditMode,
         isHasImage: _isHasImage(),
       ),
-
       body: _createScaffoldBody(),
     );
   }
 }
 
 class _WelcomeMessage extends StatelessWidget {
-  
   final String title;
 
   const _WelcomeMessage({required this.title});
-  
+
   @override
   Widget build(BuildContext context) {
     var titleMessage = 'This is the page where you can track '
-      'everything about "$title"';
+        'everything about "$title"';
 
     return Card(
       child: ListTile(

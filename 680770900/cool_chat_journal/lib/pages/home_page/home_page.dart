@@ -8,10 +8,9 @@ import 'bottom_navigation.dart';
 import 'chat_card.dart';
 
 class HomePage extends StatefulWidget {
-  
   final String appName;
-  
-  const HomePage({super.key, required this.appName});  
+
+  const HomePage({super.key, required this.appName});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -54,33 +53,34 @@ class _HomePageState extends State<HomePage> {
 
   void _changeTheme() {
     _theme = _theme == ThemeKeys.light ? ThemeKeys.dark : ThemeKeys.light;
-    CustomTheme.instanceOf(context).changeTheme(_theme); 
+    CustomTheme.instanceOf(context).changeTheme(_theme);
   }
 
   void _onEditChat(Chat chat) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddChatPage(
-        oldChat: chat,
-        onEditChat: _editChat,
-      )),
+      MaterialPageRoute(
+          builder: (context) => AddChatPage(
+                oldChat: chat,
+                onEditChat: _editChat,
+              )),
     );
   }
 
   void _onAddNewChat() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddChatPage(
-        onAddNewChat: _addNewChat,
-      )),
+      MaterialPageRoute(
+          builder: (context) => AddChatPage(
+                onAddNewChat: _addNewChat,
+              )),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final unpinnedChats = _chats.
-      where((chat) => !_pinnedChats.contains(chat)).
-      toList();
+    final unpinnedChats =
+        _chats.where((chat) => !_pinnedChats.contains(chat)).toList();
 
     final chats = <Chat>[..._pinnedChats, ...unpinnedChats];
 
@@ -98,17 +98,16 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body:ListView.builder(
-        itemCount: chats.length,
-        itemBuilder: (context, index) => ChatCard(
-          chat: chats[index],
-          isPinned: _pinnedChats.contains(chats[index]),
-          onPin: () => _pinChat(chats[index]),
-          onDelete: () => _deleteChat(chats[index]),
-          onEdit: () => _onEditChat(chats[index]),
-          onUpdate: () => setState(() {}),
-        )
-      ),
+      body: ListView.builder(
+          itemCount: chats.length,
+          itemBuilder: (context, index) => ChatCard(
+                chat: chats[index],
+                isPinned: _pinnedChats.contains(chats[index]),
+                onPin: () => _pinChat(chats[index]),
+                onDelete: () => _deleteChat(chats[index]),
+                onEdit: () => _onEditChat(chats[index]),
+                onUpdate: () => setState(() {}),
+              )),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: _onAddNewChat,

@@ -111,12 +111,12 @@ class AppBarBuilder {
     }
   }
 
-  List<Widget> _createActions(
-    int countSelected,
-    bool showFavorites,
-    bool isEditMode,
-    bool isHasImage,
-  ) {
+  List<Widget> _createActions({
+    int countSelected = 0,
+    bool showFavorites = false,
+    bool isEditMode = false,
+    bool isHasImage = false,
+  }) {
     var actions = <Widget>[];
 
     if (countSelected == 0) {
@@ -132,7 +132,7 @@ class AppBarBuilder {
 
         actions.add(_createCopyAction());
       }
-      
+
       actions.add(_createMarkFavoriteAction());
       actions.add(_createDeleteAction());
     }
@@ -150,10 +150,10 @@ class AppBarBuilder {
       leading: _createAppBarLeading(countSelected, isEditMode),
       title: _createAppBarTitle(countSelected, isEditMode),
       actions: _createActions(
-        countSelected,
-        showFavorites,
-        isEditMode,
-        isHasImage,
+        countSelected: countSelected,
+        showFavorites: showFavorites,
+        isEditMode: isEditMode,
+        isHasImage: isHasImage,
       ),
     );
   }

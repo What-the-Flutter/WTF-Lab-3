@@ -31,7 +31,7 @@ class ChatCard extends StatelessWidget {
   void _showInfo(BuildContext context) {
     showDialog(
       context: context,
-      builder:(context) => Center(
+      builder: (context) => Center(
         child: Container(
           margin: const EdgeInsets.all(40.0),
           padding: const EdgeInsets.symmetric(
@@ -47,7 +47,7 @@ class ChatCard extends StatelessWidget {
                 children: [
                   IconView(
                     icon: chat.icon,
-                    size: 60.0,  
+                    size: 60.0,
                   ),
                   Text(
                     chat.name,
@@ -58,7 +58,6 @@ class ChatCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
               const Text(
                 'Created',
                 style: TextStyle(
@@ -66,8 +65,7 @@ class ChatCard extends StatelessWidget {
                 ),
               ),
               Text(formatter.format(chat.createdTime)),
-      
-              if (chat.events.isNotEmpty) 
+              if (chat.events.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -78,11 +76,9 @@ class ChatCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  
-                  Text(formatter.format(chat.events.last.changeTime)),
+                    Text(formatter.format(chat.events.last.changeTime)),
                   ],
                 ),
-
               Container(
                 margin: const EdgeInsets.only(top: 40.0),
                 decoration: BoxDecoration(
@@ -170,15 +166,15 @@ class ChatCard extends StatelessWidget {
       } else {
         final content = event.content;
         subtitle = content
-          .replaceAll('\n', ' ')
-          .substring(0, min(content.length, maxLength));
+            .replaceAll('\n', ' ')
+            .substring(0, min(content.length, maxLength));
       }
     } else {
       subtitle = 'No events. Click to create one.';
     }
 
     return subtitle;
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,19 +185,17 @@ class ChatCard extends StatelessWidget {
       child: InkWell(
         onDoubleTap: onDelete,
         onLongPress: () => _createManagePanel(context),
-        onTap:() {
+        onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(chat)
-            ),
+            MaterialPageRoute(builder: (context) => ChatPage(chat)),
           ).then((value) => onUpdate?.call());
         },
         child: ListTile(
           leading: Stack(
             alignment: Alignment.bottomRight,
             children: [
-                Container(
+              Container(
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -209,7 +203,6 @@ class ChatCard extends StatelessWidget {
                 ),
                 child: Icon(chat.icon),
               ),
-
               if (isPinned)
                 Container(
                   decoration: BoxDecoration(

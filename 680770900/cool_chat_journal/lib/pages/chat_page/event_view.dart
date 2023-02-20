@@ -15,7 +15,7 @@ class EventView extends StatefulWidget {
     required this.event,
     this.isSelected = false,
     this.onTap,
-    this.onLongPress,  
+    this.onLongPress,
   });
 
   @override
@@ -23,7 +23,6 @@ class EventView extends StatefulWidget {
 }
 
 class _EventViewState extends State<EventView> {
-
   final _dateFormat = DateFormat('hh:mm');
 
   Widget _createEventSubtitle() {
@@ -35,15 +34,13 @@ class _EventViewState extends State<EventView> {
               Icons.check_circle,
               size: 15.0,
             ),
-
           Text(
             _dateFormat.format(widget.event.changeTime),
             style: TextStyle(
               color: Colors.grey[700],
             ),
           ),
-    
-          if (widget.event.isFavorite) 
+          if (widget.event.isFavorite)
             const Icon(
               Icons.bookmark,
               color: Colors.deepOrange,
@@ -84,7 +81,7 @@ class _EventViewState extends State<EventView> {
           children: [
             eventContent,
             const SizedBox(height: 10.0),
-            _createEventSubtitle(), 
+            _createEventSubtitle(),
           ],
         ),
       ),

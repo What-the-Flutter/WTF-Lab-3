@@ -5,11 +5,7 @@ class BottomPanel extends StatefulWidget {
   final VoidCallback? onSendImage;
   final String? textFieldValue;
 
-  const BottomPanel({
-    this.onSendText,
-    this.onSendImage,
-    this.textFieldValue
-  });
+  const BottomPanel({this.onSendText, this.onSendImage, this.textFieldValue});
 
   @override
   State<BottomPanel> createState() => _BottomPanelState();
@@ -29,7 +25,6 @@ class _BottomPanelState extends State<BottomPanel> {
     _textFocusNode.unfocus();
     _textController.clear();
   }
-
 
   Widget _createMenuButton() {
     return IconButton(
@@ -70,7 +65,7 @@ class _BottomPanelState extends State<BottomPanel> {
     if (widget.textFieldValue != null) {
       _textController.text = widget.textFieldValue!;
     }
-    
+
     _textController.addListener(() => setState(() {}));
   }
 
@@ -98,12 +93,11 @@ class _EventField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String)? onSubmitted;
 
-  const _EventField({
-    this.textFieldValue,
-    this.focusNode,
-    required this.controller,
-    this.onSubmitted
-  });
+  const _EventField(
+      {this.textFieldValue,
+      this.focusNode,
+      required this.controller,
+      this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -111,13 +105,10 @@ class _EventField extends StatelessWidget {
       focusNode: focusNode,
       controller: controller,
       maxLines: null,
-
       decoration: const InputDecoration(
         hintText: 'Enter event',
       ),
-
       onSubmitted: onSubmitted,
     );
   }
-
 }

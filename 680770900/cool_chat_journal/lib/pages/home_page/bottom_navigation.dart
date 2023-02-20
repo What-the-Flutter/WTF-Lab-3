@@ -6,12 +6,10 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  
   int _currentIndex = 0;
-  
+
   @override
   Widget build(BuildContext context) {
-
     final labelSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 12.0;
 
     return BottomNavigationBar(
@@ -23,13 +21,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
           _currentIndex = value;
         });
       },
-
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
         ),
-
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment),
           label: 'Daily',

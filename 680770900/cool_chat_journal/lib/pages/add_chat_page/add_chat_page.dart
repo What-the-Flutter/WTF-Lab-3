@@ -9,7 +9,7 @@ class AddChatPage extends StatefulWidget {
   final Chat? oldChat;
   final void Function(Chat oldChat, Chat newChat)? onEditChat;
   final void Function(Chat)? onAddNewChat;
-  
+
   const AddChatPage({
     super.key,
     this.oldChat,
@@ -23,7 +23,7 @@ class AddChatPage extends StatefulWidget {
 
 class _AddChatPageState extends State<AddChatPage> {
   final _titleController = TextEditingController();
-  
+
   bool _hasTitle = false;
   int _selectedIconIndex = 0;
 
@@ -33,7 +33,7 @@ class _AddChatPageState extends State<AddChatPage> {
     });
   }
 
-  void _onAddChat() {    
+  void _onAddChat() {
     if (_hasTitle) {
       final chat = Chat(
         icon: ChatIcons.icons[_selectedIconIndex],
@@ -76,7 +76,7 @@ class _AddChatPageState extends State<AddChatPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ), 
+      ),
     );
   }
 
@@ -88,9 +88,7 @@ class _AddChatPageState extends State<AddChatPage> {
         decoration: const InputDecoration(
           labelText: 'Name of the Page',
           border: OutlineInputBorder(
-            borderSide: BorderSide(
-              width: 3, color: Colors.greenAccent
-            ), //<-- SEE HERE
+            borderSide: BorderSide(width: 3),
           ),
         ),
       ),
@@ -123,7 +121,6 @@ class _AddChatPageState extends State<AddChatPage> {
 
     _titleController.addListener(_onChangeTitle);
 
-
     if (widget.oldChat != null) {
       _titleController.text = widget.oldChat!.name;
     }
@@ -132,7 +129,7 @@ class _AddChatPageState extends State<AddChatPage> {
   @override
   Widget build(BuildContext context) {
     final buttonIcon = _hasTitle ? Icons.done : Icons.close;
-    
+
     return Scaffold(
       body: Column(
         children: [

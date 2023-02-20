@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DeleteDialog extends StatelessWidget {
-  const DeleteDialog();
+  const DeleteDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,6 @@ class DeleteDialog extends StatelessWidget {
           const Text(
             'Are you sure you want delete this page?',
           ),
-          
           TextButton.icon(
             onPressed: () => Navigator.pop(context, true),
             icon: const Icon(
@@ -28,7 +27,6 @@ class DeleteDialog extends StatelessWidget {
             ),
             label: const Text('Delete'),
           ),
-
           TextButton.icon(
             onPressed: () => Navigator.pop(context, false),
             icon: const Icon(
@@ -41,5 +39,4 @@ class DeleteDialog extends StatelessWidget {
       ),
     );
   }
-
 }

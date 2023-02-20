@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'pages/home_page/home_page.dart';
-import 'theme.dart';
 import 'themes/custom_theme.dart';
 
-class CoolChatJournalApp extends StatelessWidget {  
+class CoolChatJournalApp extends StatelessWidget {
   const CoolChatJournalApp({super.key});
 
   @override
-  Widget build(BuildContext context) { 
-    //final theme = AppTheme();
+  Widget build(BuildContext context) {
     return CustomTheme(
       child: Builder(
         builder: (context) {

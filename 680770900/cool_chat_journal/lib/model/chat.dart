@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'event.dart';
 
-/// Contains all events from group 
+/// Contains all events from group
 class Chat {
   final IconData icon;
   final String name;

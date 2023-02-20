@@ -1,5 +1,5 @@
-/// Contains information about event.   
-class Event { 
+/// Contains information about event.
+class Event {
   final String content;
   final bool isImage;
   final bool isFavorite;

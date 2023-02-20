@@ -14,14 +14,14 @@ class CustomTheme extends StatefulWidget {
 
   static ThemeData of(BuildContext context) {
     final inherited =
-      context.dependOnInheritedWidgetOfExactType<_CustomThemeInherited>();
+        context.dependOnInheritedWidgetOfExactType<_CustomThemeInherited>();
     assert(inherited != null, 'Error');
     return inherited!.themeState.theme;
   }
 
   static _CustomThemeState instanceOf(BuildContext context) {
     final inherited =
-      context.dependOnInheritedWidgetOfExactType<_CustomThemeInherited>();
+        context.dependOnInheritedWidgetOfExactType<_CustomThemeInherited>();
     assert(inherited != null, 'Error');
     return inherited!.themeState;
   }
