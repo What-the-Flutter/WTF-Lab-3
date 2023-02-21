@@ -6,6 +6,7 @@ import '../../cubit/creation/creation_cubit.dart';
 import '../../cubit/creation/creation_state.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../models/category.dart';
 import '../../models/chat.dart';
 import '../../utils/icons.dart';
 import '../../utils/utils.dart';
@@ -14,8 +15,13 @@ import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
   final Chat? editChat;
+  final bool? isCategoryMode;
 
-  const AddChatPage({Key? key, this.editChat}) : super(key: key);
+  const AddChatPage({
+    Key? key,
+    this.editChat,
+    this.isCategoryMode,
+  }) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
@@ -65,9 +71,11 @@ class _AddChatPageState extends State<AddChatPage> {
                     height: orientation == Orientation.portrait ? 70 : 30,
                   ),
                   Text(
-                    widget.editChat == null
-                        ? local?.addNewChat ?? ''
-                        : local?.editChat ?? '',
+                    widget.isCategoryMode == true
+                        ? local?.addNewCategory ?? ''
+                        : widget.editChat == null
+                            ? local?.addNewChat ?? ''
+                            : local?.editChat ?? '',
                     style: const TextStyle(fontSize: 26),
                   ),
                   const SizedBox(height: 10),
@@ -77,7 +85,9 @@ class _AddChatPageState extends State<AddChatPage> {
                       _title = val;
                       _changeFABIcon(cubit);
                     },
-                    pageLabel: local?.addPageLabel ?? '',
+                    pageLabel: widget.isCategoryMode == true
+                        ? local?.addCategoryLabel ?? ''
+                        : local?.addPageLabel ?? '',
                   ),
                   _buildIconsTable(cubit, itemRowCount),
                 ],
@@ -147,10 +157,17 @@ class _AddChatPageState extends State<AddChatPage> {
     if (_title.isNotEmpty) {
       final cubit = context.read<HomeCubit>();
       if (widget.editChat == null) {
-        cubit.add(
-          title: _title,
-          iconNumber: creationCubit.state.index,
-        );
+        if (widget.isCategoryMode == true) {
+          Category.list.add(Category(
+            IconMap.data[creationCubit.state.index],
+            _title,
+          ));
+        } else {
+          cubit.add(
+            title: _title,
+            iconNumber: creationCubit.state.index,
+          );
+        }
       } else {
         cubit.edit(
           widget.editChat?.id ?? 0,

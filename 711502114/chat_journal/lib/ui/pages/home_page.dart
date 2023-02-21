@@ -30,7 +30,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(local?.homePage ?? ''),
         centerTitle: true,
-        leading: const Icon(Icons.menu_sharp),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(10),
@@ -42,6 +41,22 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(child: Text('${DateTime.now()}')),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(local?.settings ?? ''),
+              onTap: () {
+                closePage(context);
+                openNewPage(context, const AddChatPage(isCategoryMode: true));
+              },
+            )
+          ],
+        ),
       ),
       body: Center(
         child: Column(
