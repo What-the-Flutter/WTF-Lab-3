@@ -10,11 +10,7 @@ class AppTheme extends StatefulWidget {
   late final CustomTheme? _theme;
 
   AppTheme({required this.child, theme}) {
-    if (theme != null) {
-      _theme = theme;
-    } else {
-      _theme = null;
-    }
+    _theme = (theme != null) ? theme : null;
   }
 
   @override
@@ -22,58 +18,50 @@ class AppTheme extends StatefulWidget {
 }
 
 class _AppThemeState extends State<AppTheme> {
-  ThemeNotifier _theme = ThemeNotifier();
-  final List<CustomTheme> _themes = [];
+  final ThemeNotifier _theme = ThemeNotifier();
 
   _AppThemeState({theme}) {
-    _themes.add(
-      CustomTheme(
-        name: 'default',
-        themeColor: const Color(0xffB1CC74),
-        auxiliaryColor: const Color(0xffE8FCC2),
-        keyColor: const Color(0xffffffff),
-        backgroundColor: const Color(0xffffffff),
-        textColor: const Color(0xff545F66),
-        iconColor: const Color(0xff829399),
-        actionColor: const Color(0xffD0F4EA),
-      ),
-    );
-    _themes.add(
-      CustomTheme(
-        name: 'black',
-        themeColor: const Color(0xff000000),
-        auxiliaryColor: const Color(0xff7F8487),
-        keyColor: const Color(0xffffffff),
-        backgroundColor: const Color(0xff0F0E0E),
-        textColor: const Color(0xffffffff),
-        iconColor: const Color(0xffffffff),
-        actionColor: const Color(0xff1E5128),
-      ),
-    );
     if (theme != null) {
       _theme.update(theme);
-    } else {
-      _theme.update(_themes[0]);
     }
   }
 
-  void _changeColor() {
-    setState(() {
-      if (_themes.indexOf(_theme.theme) != _themes.length - 1) {
-        _theme.update(_themes[_themes.indexOf(_theme.theme) + 1]);
-      } else {
-        _theme.update(_themes[0]);
-      }
-    });
+  void _changeTheme() {
+    setState(
+      () {
+        var theme = (_theme.theme.name == 'default')
+            ? CustomTheme(
+                name: 'black',
+                themeColor: const Color(0xff000000),
+                auxiliaryColor: const Color(0xff7F8487),
+                keyColor: const Color(0xffffffff),
+                backgroundColor: const Color(0xff0F0E0E),
+                textColor: const Color(0xffffffff),
+                iconColor: const Color(0xffffffff),
+                actionColor: const Color(0xff1E5128),
+              )
+            : CustomTheme(
+                name: 'default',
+                themeColor: const Color(0xffB1CC74),
+                auxiliaryColor: const Color(0xffE8FCC2),
+                keyColor: const Color(0xffffffff),
+                backgroundColor: const Color(0xffffffff),
+                textColor: const Color(0xff545F66),
+                iconColor: const Color(0xff829399),
+                actionColor: const Color(0xffD0F4EA),
+              );
+        _theme.update(theme);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
+    return ChangeNotifierProvider<ThemeNotifier>(
+      create: (context) => ThemeNotifier(),
       child: InheritedAppTheme(
         theme: _theme,
-        changeTheme: _changeColor,
+        changeTheme: _changeTheme,
         child: widget.child,
       ),
     );
