@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/source.dart';
 import '../../../models/category.dart';
 import '../../../theme/colors.dart';
 
@@ -17,18 +16,16 @@ class CategoryBox extends StatelessWidget {
       color: messageBlocColor,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+        itemCount: Category.list.length,
         itemBuilder: (context, index) {
           return InkWell(
-            onTap: () {
-              setCategory(index != 0 ? categories[index] : null);
-            },
+            onTap: () => setCategory(index != 0 ? Category.list[index] : null),
             child: Padding(
               padding: paddings,
               child: Column(
                 children: [
-                  _buildCircleAvatar(categories[index].icon, index),
-                  Text(categories[index].title)
+                  _buildCircleAvatar(Category.list[index].icon, index),
+                  Text(Category.list[index].title)
                 ],
               ),
             ),

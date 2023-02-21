@@ -2,8 +2,10 @@ import '../../models/category.dart';
 import '../../models/event.dart';
 
 class EventState {
+  final int id;
+  final int chatId;
   final List<Event> events;
-  final List<int> selectedItemIndexes;
+  final List<int> selectedIndexes;
 
   bool isFavoriteMode;
   bool isSelectedMode;
@@ -13,8 +15,10 @@ class EventState {
   Category? category;
 
   EventState({
+    required this.id,
+    required this.chatId,
     required this.events,
-    required this.selectedItemIndexes,
+    required this.selectedIndexes,
     this.isFavoriteMode = false,
     this.isSelectedMode = false,
     this.isEditMode = false,
@@ -22,10 +26,12 @@ class EventState {
     this.category,
   });
 
-  EventState copyWith({List<Event>? events}) {
+  EventState copyWith({int? id, int? chatId, List<Event>? events}) {
     return EventState(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
       events: events ?? this.events,
-      selectedItemIndexes: selectedItemIndexes,
+      selectedIndexes: selectedIndexes,
       isFavoriteMode: isFavoriteMode,
       isSelectedMode: isSelectedMode,
       isEditMode: isEditMode,

@@ -1,7 +1,7 @@
 import '../../models/chat.dart';
 
 class HomeState {
-  int id;
+  final int id;
   final List<Chat> chats;
 
   HomeState({required this.chats, required this.id});

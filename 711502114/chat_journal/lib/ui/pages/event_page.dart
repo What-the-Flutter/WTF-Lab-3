@@ -40,7 +40,7 @@ class _MessengerPageState extends State<MessengerPage> {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<EventCubit>(context).init(widget.chat);
+    BlocProvider.of<EventCubit>(context).init(widget.chat.id);
     _local = AppLocalizations.of(context);
     final query = MediaQuery.of(context);
     final size = query.size;
@@ -54,8 +54,7 @@ class _MessengerPageState extends State<MessengerPage> {
             appBar: _buildAppBar(cubit),
             body: Stack(
               children: [
-                if (widget.chat.events.isEmpty)
-                  InfoBox(mainTitle: widget.chat.title),
+                if (cubit.events.isEmpty) InfoBox(mainTitle: widget.chat.title),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -130,14 +129,13 @@ class _MessengerPageState extends State<MessengerPage> {
   }
 
   List<Widget> _initEditAppBarTools(EventCubit cubit) {
-    final pencil =
-        cubit.state.selectedItemIndexes.length == 1 && !cubit.editMode;
+    final pencil = cubit.state.selectedIndexes.length == 1 && !cubit.editMode;
     return [
       Expanded(
         child: Align(
           alignment: const Alignment(.1, .15),
           child: Text(
-            '${cubit.state.selectedItemIndexes.length}',
+            '${cubit.state.selectedIndexes.length}',
             style: const TextStyle(
               fontSize: 25,
             ),

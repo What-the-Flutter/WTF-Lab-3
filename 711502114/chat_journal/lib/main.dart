@@ -9,6 +9,8 @@ import 'cubit/home/home_cubit.dart';
 import 'cubit/menu/menu_cubit.dart';
 import 'cubit/theme/theme_cubit.dart';
 import 'cubit/theme/theme_state.dart';
+import 'database/repository/chat_repository.dart';
+import 'database/repository/event_repository.dart';
 import 'l10n/l10n.dart';
 import 'theme/theme_preferences.dart';
 import 'ui/pages/menu.dart';
@@ -20,29 +22,48 @@ class ChatJournalApplication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider(
-          create: (_) => ThemeCubit(ThemePreferences()),
-          lazy: false,
+        RepositoryProvider<ChatRepository>(
+          create: (_) => ChatRepository(),
         ),
-        BlocProvider(create: (_) => MenuCubit()),
-        BlocProvider(create: (_) => HomeCubit()),
-        BlocProvider(create: (_) => CreationCubit()),
-        BlocProvider(create: (_) => EventCubit()),
+        RepositoryProvider<EventRepository>(
+          create: (_) => EventRepository(),
+        ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (_, state) => MaterialApp(
-          theme: state.theme,
-          debugShowCheckedModeBanner: false,
-          supportedLocales: L10n.all,
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          home: const BottomMenu(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => ThemeCubit(ThemePreferences()),
+            lazy: false,
+          ),
+          BlocProvider(create: (_) => MenuCubit()),
+          BlocProvider(
+            create: (context) => HomeCubit(
+              chatRepository: context.read<ChatRepository>(),
+              eventRepository: context.read<EventRepository>(),
+            ),
+          ),
+          BlocProvider(create: (_) => CreationCubit()),
+          BlocProvider(
+            create: (context) => EventCubit(
+              eventRepository: context.read<EventRepository>(),
+            ),
+          ),
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (_, state) => MaterialApp(
+            theme: state.theme,
+            debugShowCheckedModeBanner: false,
+            supportedLocales: L10n.all,
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            home: const BottomMenu(),
+          ),
         ),
       ),
     );

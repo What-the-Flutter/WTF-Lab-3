@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'category.dart';
 
 class Event extends Equatable {
+  final int id;
+  final int chatId;
   final String message;
   final String creationTime;
   final bool isFavorite;
@@ -11,6 +13,8 @@ class Event extends Equatable {
   final Category? category;
 
   Event({
+    required this.id,
+    required this.chatId,
     required this.message,
     required this.creationTime,
     this.isFavorite = false,
@@ -20,6 +24,8 @@ class Event extends Equatable {
   });
 
   Event copyWith({
+    int? id,
+    int? chatId,
     String? message,
     String? creationTime,
     bool? isFavorite,
@@ -28,6 +34,8 @@ class Event extends Equatable {
     Category? category,
   }) {
     return Event(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
       message: message ?? this.message,
       creationTime: creationTime ?? this.creationTime,
       isFavorite: isFavorite ?? this.isFavorite,
