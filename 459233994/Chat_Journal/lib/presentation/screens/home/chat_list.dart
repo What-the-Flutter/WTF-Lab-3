@@ -1,31 +1,51 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/event_page.dart';
-import '../../screens/add_event_page.dart';
-import '../../screens/messages.dart';
-import '../app_theme/inherited_app_theme.dart';
+import '../../../domain/entities/chat.dart';
+import '../../screens/chat/chat.dart';
+import '../../widgets/app_theme/inherited_app_theme.dart';
+import '../add_chat.dart';
 
-class EventList extends StatefulWidget {
-  final List<EventPage> _pages;
-  final Function _refresh;
+class ChatList extends StatefulWidget {
+  final List<Chat> _pages;
+  final Function _edit;
+  final Function _delete;
+  final Function _pin;
+  final Function _getChats;
 
-  EventList({
+  ChatList({
     required pages,
-    required refreshFunc,
+    required editFunc,
+    required deleteFunc,
+    required pinFunc,
+    required getChatsFunc,
   })  : _pages = pages,
-        _refresh = refreshFunc;
+        _edit = editFunc,
+        _delete = deleteFunc,
+        _getChats = getChatsFunc,
+        _pin = pinFunc;
 
   @override
-  State<EventList> createState() => _EventListState(pages: _pages);
+  State<ChatList> createState() => _ChatListState(pages: _pages);
 }
 
-class _EventListState extends State<EventList> {
-  final List<EventPage> _pages;
-  final List<EventPage> _pinnedPages = [];
+class _ChatListState extends State<ChatList> {
+  final List<Chat> _pages;
+  final List<Chat> _pinnedPages = [];
 
-  _EventListState({required pages}) : _pages = pages;
+  _ChatListState({required pages}) : _pages = pages;
 
-  Widget _listView(List<EventPage> pages, bool pinableList) {
+  @override
+  Widget build(BuildContext context) {
+    _setPinnedPages();
+    return Column(
+      children: <Widget>[
+        _listView(_pinnedPages, true),
+        _listView(_pages, false),
+      ],
+    );
+  }
+
+  Widget _listView(List<Chat> pages, bool pinableList) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -66,7 +86,7 @@ class _EventListState extends State<EventList> {
     );
   }
 
-  Widget _bottomShield(BuildContext context, EventPage page) {
+  Widget _bottomShield(BuildContext context, Chat page) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -140,15 +160,17 @@ class _EventListState extends State<EventList> {
     );
   }
 
-  Widget _setPinableIcon(EventPage page) {
+  Widget _setPinableIcon(Chat page) {
     if (page.isPinned) {
-      print(1111);
       return SizedBox(
         width: 40,
         height: 40,
         child: Stack(
           children: <Widget>[
-            Center(child: page.pageIcon),
+            Center(
+              child: Icon(page.pageIcon,
+                  color: InheritedAppTheme.of(context)?.getTheme.iconColor),
+            ),
             Align(
               alignment: Alignment.bottomRight,
               child: Icon(
@@ -164,12 +186,15 @@ class _EventListState extends State<EventList> {
       return SizedBox(
         width: 40,
         height: 40,
-        child: Center(child: page.pageIcon),
+        child: Center(
+          child: Icon(page.pageIcon,
+              color: InheritedAppTheme.of(context)?.getTheme.iconColor),
+        ),
       );
     }
   }
 
-  Future<void> _showDialog(EventPage page) async {
+  Future<void> _showDialog(Chat page) async {
     Navigator.pop(context);
     await showDialog<void>(
       context: context,
@@ -181,12 +206,15 @@ class _EventListState extends State<EventList> {
             Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   // padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      page.pageIcon,
+                      Icon(page.pageIcon,
+                          color: InheritedAppTheme.of(context)
+                              ?.getTheme
+                              .iconColor),
                       Text(
                         page.name,
                         style: TextStyle(
@@ -214,8 +242,9 @@ class _EventListState extends State<EventList> {
                         child: Text(
                           page.createTime,
                           style: TextStyle(
-                            color:
-                                InheritedAppTheme.of(context)?.getTheme.textColor,
+                            color: InheritedAppTheme.of(context)
+                                ?.getTheme
+                                .textColor,
                           ),
                         ),
                       )
@@ -263,59 +292,50 @@ class _EventListState extends State<EventList> {
         _pinnedPages.add(_pages[i]);
       }
     }
-    print(_pinnedPages.length);
   }
 
-  void _edit(BuildContext context, EventPage page) async {
+  void _edit(BuildContext context, Chat chat) async {
     var edited = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddEventPage(
-          theme: InheritedAppTheme.of(context)?.getTheme,
-        ),
+        builder: (context) => AddChatScreen(),
       ),
     );
     if (edited != null) {
-      _pages[_pages.indexOf(page)] = _pages[_pages.indexOf(page)].copyWith(
-        name: edited.name,
-        pageIcon: edited.pageIcon,
-        isPinned: edited.isPinned,
+      widget._edit(
+        oldChat: chat,
+        editedChat: chat.copyWith(
+          name: edited.name,
+          pageIcon: edited.pageIcon,
+          isPinned: edited.isPinned,
+        ),
       );
-      widget._refresh();
       Navigator.pop(context);
     }
   }
 
-  void _delete(BuildContext context, EventPage page) {
-    _pages.removeAt(_pages.indexOf(page));
-    widget._refresh();
+  void _delete(BuildContext context, Chat chat) {
+    widget._delete(chat: chat);
     Navigator.pop(context);
   }
 
-  void _pin(BuildContext context, EventPage page) {
-    if (_pages[_pages.indexOf(page)].isPinned == true) {
-      _pages[_pages.indexOf(page)] =
-          _pages[_pages.indexOf(page)].copyWith(isPinned: false);
-    } else {
-      _pages[_pages.indexOf(page)] =
-          _pages[_pages.indexOf(page)].copyWith(isPinned: true);
-    }
-    setState(() {});
+  void _pin(BuildContext context, Chat chat) {
+    widget._pin(chat: chat);
     Navigator.pop(context);
   }
 
-  void _tapHandler(BuildContext context, EventPage page) {
+  void _tapHandler(BuildContext context, Chat page) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => MessagesScreen(
-          theme: InheritedAppTheme.of(context)?.getTheme,
-          title: page.name,
+        builder: (context) => ChatScreen(
+          chat: page,
+          getChatsDelegate: widget._getChats,
         ),
       ),
     );
   }
 
-  void _longPressHandler(BuildContext context, EventPage page) {
+  void _longPressHandler(BuildContext context, Chat page) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -325,17 +345,6 @@ class _EventListState extends State<EventList> {
           page,
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _setPinnedPages();
-    return Column(
-      children: <Widget>[
-        _listView(_pinnedPages, true),
-        _listView(_pages, false),
-      ],
     );
   }
 }

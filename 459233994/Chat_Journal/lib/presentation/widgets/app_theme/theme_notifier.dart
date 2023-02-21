@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'theme.dart';
 
-class ThemeNotifier extends ChangeNotifier{
+class ThemeNotifier extends ChangeNotifier {
+  bool isDefaultTheme = true;
   late CustomTheme _theme = CustomTheme(
     name: 'default',
     themeColor: const Color(0xffB1CC74),
@@ -18,13 +19,10 @@ class ThemeNotifier extends ChangeNotifier{
 
   CustomTheme get theme => _theme;
 
-  void update(CustomTheme theme){
+  void update(CustomTheme theme) {
+    // print(isDefaultTheme);
+    isDefaultTheme = !isDefaultTheme;
     _theme = theme;
-    print(hasListeners);
     notifyListeners();
   }
-
-  // final themeProvider = ChangeNotifierProvider<ThemeNotifier>((ref) {
-  //   return ThemeNotifier();
-  // });
 }
