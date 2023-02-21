@@ -8,63 +8,69 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var items = [
+  List<Widget> items = [
     ListTile(
       leading: Container(
-        child: Icon(
+        width: 54,
+        height: 54,
+        decoration: BoxDecoration(
+          color: Colors.deepPurple.shade300,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(27),
+          ),
+        ),
+        child: const Icon(
           Icons.flight_takeoff,
           size: 32,
           color: Colors.white,
         ),
+      ),
+      title: const Text('Travel'),
+      subtitle: const Text('No events. Click to create one.'),
+      hoverColor: Colors.deepPurple.shade200,
+      onTap: () {},
+    ),
+    ListTile(
+      leading: Container(
         width: 54,
         height: 54,
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade300,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(27),
           ),
         ),
-      ),
-      title: Text('Travel'),
-      subtitle: Text('No events. Click to create one.'),
-    ),
-    ListTile(
-      leading: Container(
-        child: Icon(
+        child: const Icon(
           Icons.chair,
           color: Colors.white,
           size: 32,
         ),
+      ),
+      title: const Text('Family'),
+      subtitle: const Text('No events. Click to create one.'),
+      hoverColor: Colors.deepPurple.shade200,
+      onTap: () {},
+    ),
+    ListTile(
+      leading: Container(
         width: 54,
         height: 54,
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade300,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(27),
           ),
         ),
-      ),
-      title: Text('Family'),
-      subtitle: Text('No events. Click to create one.'),
-    ),
-    ListTile(
-      leading: Container(
-        child: Icon(
+        child: const Icon(
           Icons.fitness_center,
           color: Colors.white,
           size: 32,
         ),
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple.shade300,
-          borderRadius: BorderRadius.all(
-            Radius.circular(27),
-          ),
-        ),
       ),
-      title: Text('Sports'),
-      subtitle: Text('No events. Click to create one.'),
+      title: const Text('Sports'),
+      subtitle: const Text('No events. Click to create one.'),
+      hoverColor: Colors.deepPurple.shade200,
+      onTap: () {},
     ),
   ];
 
@@ -72,7 +78,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Home',
           style: TextStyle(
             fontWeight: FontWeight.w600,
@@ -82,12 +88,12 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).canvasColor,
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {},
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.invert_colors),
+            icon: const Icon(Icons.invert_colors),
             onPressed: () {},
           ),
         ],
@@ -95,17 +101,18 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: ListTile(
+              onTap: () {},
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               tileColor: Theme.of(context).highlightColor,
-              title: Row(
+              title: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.smart_toy_outlined,
-                    size: 40,
+                    size: 32,
                   ),
                   SizedBox(
                     width: 16,
@@ -113,22 +120,24 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     'Questionnaire Bot',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 20,
                     ),
                   ),
                 ],
               ),
-              visualDensity: VisualDensity(vertical: 3),
+              visualDensity: const VisualDensity(vertical: 3),
             ),
           ),
           Expanded(
             child: ListView.separated(
               itemCount: items.length,
               itemBuilder: (context, index) {
-                return items[index];
+                return Material(
+                  child: items[index],
+                );
               },
               separatorBuilder: (context, index) {
-                return Divider(
+                return const Divider(
                   thickness: 2,
                 );
               },
@@ -136,21 +145,21 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: Container(
+      floatingActionButton: SizedBox(
         width: 64,
         height: 64,
         child: FloatingActionButton(
           onPressed: () {},
-          child: Icon(
+          elevation: 16,
+          child: const Icon(
             Icons.add,
             size: 32,
           ),
-          elevation: 16,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
