@@ -4,11 +4,12 @@ import '../../models/event.dart';
 
 class SearchState extends Equatable {
   final List<Event> events;
+  final List<Event> fullEvents;
 
-  SearchState(this.events);
+  SearchState(this.events, this.fullEvents);
 
   SearchState copyWith(List<Event>? events) {
-    return SearchState(events ?? this.events);
+    return SearchState(events ?? this.events, fullEvents);
   }
 
   @override

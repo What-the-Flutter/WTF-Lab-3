@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/chat.dart';
 import '../../../theme/colors.dart';
+import '../../../utils/icons.dart';
 import '../../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
@@ -46,13 +47,16 @@ class ChatCard extends StatelessWidget {
             color: circleMessageColor,
             shape: BoxShape.circle,
           ),
-          child: Icon(chat.iconData),
+          child: Icon(IconMap.data[chat.iconNumber]),
         ),
         if (chat.isPin)
           Positioned(
             right: -5,
             bottom: -1,
-            child: Icon(Icons.push_pin, color: pinIconColor),
+            child: Icon(
+              Icons.push_pin,
+              color: pinIconColor,
+            ),
           ),
       ],
     );
@@ -90,8 +94,8 @@ class ChatCard extends StatelessWidget {
   Text _buildTimeText(BuildContext context) {
     String? time;
     if (chat.events.isNotEmpty) {
-      final dateTime = chat.events.last.dateTime;
-      time = formatDate(context, dateTime, includeTime: true);
+      final creationTime = chat.events.last.creationTime;
+      time = formatDate(context, creationTime, includeTime: true);
     }
     return Text(
       time ?? '',

@@ -1,11 +1,12 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../cubit/creation/creation_cubit.dart';
+import '../../cubit/creation/creation_state.dart';
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../models/category.dart';
 import '../../models/chat.dart';
 import '../../utils/icons.dart';
 import '../../utils/utils.dart';
@@ -13,37 +14,29 @@ import '../widgets/add_chat_page/add_chat_keyboard.dart';
 import '../widgets/add_chat_page/chat_icon.dart';
 
 class AddChatPage extends StatefulWidget {
-  final Chat? chat;
+  final Chat? editChat;
+  final bool? isCategoryMode;
 
-  const AddChatPage({Key? key, this.chat}) : super(key: key);
+  const AddChatPage({
+    Key? key,
+    this.editChat,
+    this.isCategoryMode,
+  }) : super(key: key);
 
   @override
   State<AddChatPage> createState() => _AddChatPageState();
 }
 
 class _AddChatPageState extends State<AddChatPage> {
-  IconData _fabIcon = Icons.close;
-  int _iconIndex = 0;
-  final _icons = IconList.data;
-  late final TextEditingController _fieldText;
-  bool _isEditMode = false;
+  String _title = '';
+  bool _isExit = false;
 
   @override
   void initState() {
     super.initState();
-    _fieldText = TextEditingController();
-    _fieldText.addListener(_changeFABIcon);
 
-    if (widget.chat != null) {
-      for (int i = 0; i < _icons.length; i++) {
-        if (widget.chat?.iconData == _icons[i]) {
-          _iconIndex = i;
-          break;
-        }
-      }
-
-      _fieldText.text = widget.chat?.title ?? '';
-      _isEditMode = true;
+    if (widget.editChat != null) {
+      _title = widget.editChat?.title ?? '';
     }
   }
 
@@ -53,41 +46,73 @@ class _AddChatPageState extends State<AddChatPage> {
     final orientation = MediaQuery.of(context).orientation;
     final itemRowCount = orientation == Orientation.portrait ? 4 : 8;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: checkOrientation(context),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: orientation == Orientation.portrait ? 70 : 30),
-            Text(
-              !_isEditMode ? local?.addNewChat ?? '' : local?.editChat ?? '',
-              style: const TextStyle(fontSize: 26),
-            ),
-            const SizedBox(height: 10),
-            AddChatKeyboard(
-              fieldText: _fieldText,
-              pageLabel: local?.addPageLabel ?? '',
-            ),
-            _buildIconsTable(itemRowCount),
-          ],
-        ),
-      ),
-      floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, _) {
-          return Align(
-            alignment: const Alignment(1, 0.87),
-            child: FloatingActionButton(
-              onPressed: () => _addOrEditChat(context),
-              child: Icon(_fabIcon),
-            ),
+    return BlocBuilder<CreationCubit, CreationState>(
+      builder: (context, state) {
+        final cubit = context.read<CreationCubit>();
+        if (!cubit.state.isEditMode && widget.editChat != null && !_isExit) {
+          cubit.setEditDefault(
+            index: widget.editChat?.iconNumber ?? 0,
+            editMode: true,
           );
-        },
-      ),
+        }
+        return WillPopScope(
+          onWillPop: () async {
+            _isExit = true;
+            cubit.reset();
+            return true;
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: checkOrientation(context),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    height: orientation == Orientation.portrait ? 70 : 30,
+                  ),
+                  Text(
+                    widget.isCategoryMode == true
+                        ? local?.addNewCategory ?? ''
+                        : widget.editChat == null
+                            ? local?.addNewChat ?? ''
+                            : local?.editChat ?? '',
+                    style: const TextStyle(fontSize: 26),
+                  ),
+                  const SizedBox(height: 10),
+                  AddChatKeyboard(
+                    defaultValue: _title,
+                    onTyping: (val) {
+                      _title = val;
+                      _changeFABIcon(cubit);
+                    },
+                    pageLabel: widget.isCategoryMode == true
+                        ? local?.addCategoryLabel ?? ''
+                        : local?.addPageLabel ?? '',
+                  ),
+                  _buildIconsTable(cubit, itemRowCount),
+                ],
+              ),
+            ),
+            floatingActionButton: BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, _) {
+                final status = cubit.state.isFinished;
+                final isEdit = widget.editChat != null;
+                return Align(
+                  alignment: const Alignment(1, 0.87),
+                  child: FloatingActionButton(
+                    onPressed: () => _addOrEditChat(cubit, context),
+                    child: Icon(isEdit || status ? Icons.check : Icons.close),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildIconsTable(int itemRowCount) {
+  Widget _buildIconsTable(CreationCubit cubit, int itemRowCount) {
     return Expanded(
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(
@@ -100,55 +125,60 @@ class _AddChatPageState extends State<AddChatPage> {
           mainAxisSpacing: 40,
           crossAxisSpacing: 40,
         ),
-        itemCount: _icons.length,
+        itemCount: IconMap.data.length,
         itemBuilder: (_, index) {
           return InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: ChatIcon(
-              child: Icon(_icons[index]),
+              child: Icon(IconMap.data[index]),
               index: index,
-              pageIndex: _iconIndex,
+              pageIndex: cubit.state.index,
             ),
-            onTap: () => setState(() => _iconIndex = index),
+            onTap: () {
+              cubit.changeIndex(index);
+            },
           );
         },
       ),
     );
   }
 
-  void _changeFABIcon() {
-    if (_fabIcon == Icons.close && _fieldText.text.isNotEmpty ||
-        _fabIcon == Icons.check && _fieldText.text.isEmpty) {
-      setState(() {
-        _fabIcon = _fabIcon == Icons.close ? Icons.check : Icons.close;
-      });
+  void _changeFABIcon(CreationCubit cubit) {
+    if (widget.editChat != null) return;
+
+    final status = cubit.state.isFinished;
+    if (_title.isNotEmpty && !status || _title.isEmpty && status) {
+      cubit.changeFinishStatus(!status);
     }
   }
 
-  void _addOrEditChat(BuildContext context) {
-    if (_fieldText.text.isNotEmpty) {
+  void _addOrEditChat(CreationCubit creationCubit, BuildContext context) {
+    if (_title.isNotEmpty) {
       final cubit = context.read<HomeCubit>();
-      if (widget.chat == null) {
-        cubit.add(
-          title: _fieldText.text,
-          iconData: _icons[_iconIndex],
-        );
+      if (widget.editChat == null) {
+        if (widget.isCategoryMode == true) {
+          Category.list.add(Category(
+            IconMap.data[creationCubit.state.index],
+            _title,
+          ));
+        } else {
+          cubit.add(
+            title: _title,
+            iconNumber: creationCubit.state.index,
+          );
+        }
       } else {
         cubit.edit(
-          widget.chat?.id ?? 0,
-          title: _fieldText.text,
-          iconData: _icons[_iconIndex],
+          widget.editChat?.id ?? 0,
+          title: _title,
+          iconNumber: creationCubit.state.index,
         );
       }
     }
 
+    _isExit = true;
+    creationCubit.reset();
     closePage(context);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _fieldText.dispose();
   }
 }

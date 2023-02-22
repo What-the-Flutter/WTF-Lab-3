@@ -16,7 +16,6 @@ const hoverElementColor = Color.fromRGBO(161, 161, 161, 0.05);
 Color iconColor = Colors.white;
 
 Color messageBlocColor = const Color.fromRGBO(37, 47, 57, 1);
-Color secondaryMessageTextColor = const Color.fromRGBO(37, 47, 57, 1);
 
 Color addChatColor = botBackgroundColor;
 Color addTextColor = Colors.black;
@@ -33,7 +32,6 @@ class CustomTheme {
   static ThemeData get lightTheme {
     iconColor = Colors.black;
     messageBlocColor = circleMessageColor;
-    secondaryMessageTextColor = Colors.white;
     dialogBackgroundColor = const Color.fromARGB(255, 76, 104, 135);
     dialogOkButton = _mainColor;
     addChatColor = _elementsColor;
@@ -69,7 +67,6 @@ class CustomTheme {
   static ThemeData get darkTheme {
     iconColor = Colors.white;
     messageBlocColor = const Color.fromRGBO(37, 47, 57, 1);
-    secondaryMessageTextColor = Colors.grey;
     dialogBackgroundColor = _mainDarkColor;
     dialogOkButton = _mainColor;
     addChatColor = botBackgroundColor;
