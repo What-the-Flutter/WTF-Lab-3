@@ -11,12 +11,12 @@ class _HomePageState extends State<HomePage> {
   List<Widget> items = [
     ListTile(
       leading: Container(
-        width: 54,
-        height: 54,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade300,
           borderRadius: const BorderRadius.all(
-            Radius.circular(27),
+            Radius.circular(24),
           ),
         ),
         child: const Icon(
@@ -27,38 +27,38 @@ class _HomePageState extends State<HomePage> {
       ),
       title: const Text('Travel'),
       subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade200,
+      hoverColor: Colors.deepPurple.shade100,
       onTap: () {},
     ),
     ListTile(
       leading: Container(
-        width: 54,
-        height: 54,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade300,
           borderRadius: const BorderRadius.all(
-            Radius.circular(27),
+            Radius.circular(24),
           ),
         ),
         child: const Icon(
-          Icons.chair,
+          Icons.weekend_outlined,
           color: Colors.white,
           size: 32,
         ),
       ),
       title: const Text('Family'),
       subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade200,
+      hoverColor: Colors.deepPurple.shade100,
       onTap: () {},
     ),
     ListTile(
       leading: Container(
-        width: 54,
-        height: 54,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade300,
           borderRadius: const BorderRadius.all(
-            Radius.circular(27),
+            Radius.circular(24),
           ),
         ),
         child: const Icon(
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
       ),
       title: const Text('Sports'),
       subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade200,
+      hoverColor: Colors.deepPurple.shade100,
       onTap: () {},
     ),
   ];
