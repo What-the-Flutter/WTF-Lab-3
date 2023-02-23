@@ -1,7 +1,9 @@
 import '../entities/event.dart';
 
 abstract class ApiEventRepository {
-  Future<List<Event>> getEvents(int parentId);
+  Stream<List<Event>> get eventStream;
+
+  Future<List<Event>> getEvents(String parentId);
 
   Future<void> addEvent(Event event);
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/chat.dart';
@@ -9,15 +11,39 @@ import 'chat_page_state.dart';
 class ChatCubit extends Cubit<ChatState> {
   final ApiEventRepository eventRepository;
   final ApiChatRepository chatRepository;
+  late final StreamSubscription<List<Event>> eventStream;
 
   ChatCubit({
     required this.eventRepository,
     required this.chatRepository,
-  }) : super(ChatState());
+  }) : super(ChatState()) {
+    _initEventStream();
+  }
 
-  Future<void> initState(int id) async {
+  void _initEventStream() {
+    eventStream = eventRepository.eventStream.listen((event) {
+      final events = event
+          .where(
+            (element) => element.parentId == state.chatId,
+          )
+          .toList();
+      events.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      final favorites = _getFavorites(events);
+      emit(state.copyWith(events: events, favorites: favorites));
+    });
+  }
+
+  Future<void> init(String id) async {
     final events = await eventRepository.getEvents(id);
-    emit(state.copyWith(events: events));
+    final favorites = _getFavorites(events);
+    favorites.sort((a, b) {
+      return a.dateTime.compareTo(b.dateTime);
+    });
+    emit(state.copyWith(events: events, favorites: favorites, chatId: id));
+  }
+
+  List<Event> _getFavorites(List<Event> events) {
+    return events.where((element) => element.isFavorite).toList();
   }
 
   void favoritesModeToFalse() {
@@ -25,7 +51,10 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void _changeIsFavoriteEventToOpposite(
-      int index, List<Event> events, List<Event> favorites) {
+    int index,
+    List<Event> events,
+    List<Event> favorites,
+  ) {
     var event = state.isFavoritesMode ? favorites[index] : events[index];
     final allIndex = state.isFavoritesMode ? events.indexOf(event) : index;
     if (event.isFavorite == true) {
@@ -48,9 +77,12 @@ class ChatCubit extends Cubit<ChatState> {
     final allEvents = List<Event>.from(state.events);
     if (state.selectedCount == 1) {
       _changeIsFavoriteEventToOpposite(
-          state.selectedIndex, allEvents, favorites);
+        state.selectedIndex,
+        allEvents,
+        favorites,
+      );
     } else {
-      for (var i = 0; i < state.events.length; i++) {
+      for (var i = 0; i < allEvents.length; i++) {
         if (events[i].isSelected) {
           _changeIsFavoriteEventToOpposite(i, allEvents, favorites);
         }
@@ -62,10 +94,8 @@ class ChatCubit extends Cubit<ChatState> {
     _selectionToFalse(allEvents);
     emit(
       state.copyWith(
-        events: allEvents,
         selectedCount: 0,
         isSelecting: false,
-        favorites: favorites,
       ),
     );
   }
@@ -74,9 +104,10 @@ class ChatCubit extends Cubit<ChatState> {
     final events = List<Event>.from(state.events);
     events.add(event);
     await eventRepository.addEvent(event);
+    await chatRepository.updateLast(
+        event.parentId, event.text, event.dateTime, false);
     emit(
       state.copyWith(
-        events: events,
         isFavoritesMode: false,
         selectedIcon: 0,
         isSendingImage: false,
@@ -116,8 +147,8 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void changeSelection() {
+    final events = List<Event>.from(state.events);
     if (state.isSelecting) {
-      final events = List<Event>.from(state.events);
       _selectionToFalse(events);
       emit(state.copyWith(
           events: events,
@@ -125,14 +156,14 @@ class ChatCubit extends Cubit<ChatState> {
           selectedCount: 0,
           isSelectedImage: false));
     } else {
-      var event = state.events[state.selectedIndex];
+      var event = events[state.selectedIndex];
       event = event.copyWith(isSelected: true);
-      state.events[state.selectedIndex] = event;
+      events[state.selectedIndex] = event;
       final isSelectedImageState =
-          state.events[state.selectedIndex].imagePath == '' ? false : true;
+          events[state.selectedIndex].imagePath == '' ? false : true;
       emit(
         state.copyWith(
-          events: state.events,
+          events: events,
           isSelecting: true,
           selectedCount: 1,
           isSelectedImage: isSelectedImageState,
@@ -197,12 +228,13 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void changeIsEditingToValue(bool value) {
+  void changeIsEditingToValue({required bool value, int index = 0}) {
     final events = List<Event>.from(state.events);
     _selectionToFalse(events);
     emit(
       state.copyWith(
         events: events,
+        selectedIndex: index,
         isEditing: value,
         isSelecting: false,
         selectedCount: 0,
@@ -219,23 +251,22 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void changeSelectedItem(int index) {
-    final selectedState = state.events[index].isSelected;
+    final events = List<Event>.from(state.events);
+    final selectedState = events[index].isSelected;
     final bool isSelectedImageState;
     if (selectedState == true) {
       isSelectedImageState =
-          state.events[index].imagePath != '' ? false : state.isSelectedImage;
+          events[index].imagePath != '' ? false : state.isSelectedImage;
       decrementSelectedCount();
     } else {
       isSelectedImageState =
-          state.events[index].imagePath != '' ? true : state.isSelectedImage;
+          events[index].imagePath != '' ? true : state.isSelectedImage;
       incrementSelectedCount();
     }
 
-    state.events[index] =
-        state.events[index].copyWith(isSelected: !selectedState);
+    events[index] = events[index].copyWith(isSelected: !selectedState);
     emit(
-      state.copyWith(
-          events: state.events, isSelectedImage: isSelectedImageState),
+      state.copyWith(events: events, isSelectedImage: isSelectedImageState),
     );
   }
 
@@ -264,11 +295,14 @@ class ChatCubit extends Cubit<ChatState> {
 
   void changeText(String text) {
     final events = List<Event>.from(state.events);
-    events[state.selectedIndex] = events[state.selectedIndex].copyWith(
-      text: text,
-    );
-    eventRepository.updateEvent(events[state.selectedIndex]);
-    emit(state.copyWith(events: events, isEditing: false));
+    var event = events[state.selectedIndex];
+    event = event.copyWith(text: text);
+    if (state.selectedIndex == events.length - 1) {
+      chatRepository.updateLast(
+          event.parentId, event.text, event.dateTime, false);
+    }
+    eventRepository.updateEvent(event);
+    emit(state.copyWith(isEditing: false));
   }
 
   void changeRadioIndex(int? value) {
@@ -281,21 +315,17 @@ class ChatCubit extends Cubit<ChatState> {
 
   void _deleteEvents(List<Event> allEvents, List<Event> favorites, int index) {
     final event = state.isFavoritesMode ? favorites[index] : allEvents[index];
-    if (event.isFavorite) {
-      favorites.remove(event);
-    }
-    if (state.selectedCount == 1) {
+    if (state.selectedCount <= 1) {
       allEvents.remove(event);
       eventRepository.deleteEvent(event);
     } else {
       var i = 0;
       while (i < allEvents.length) {
         if (allEvents[i].isSelected) {
-          allEvents.removeAt(i);
           eventRepository.deleteEvent(allEvents[i]);
-        } else {
-          i++;
         }
+        allEvents.removeWhere((element) => element.isSelected);
+        i++;
       }
     }
   }
@@ -303,12 +333,19 @@ class ChatCubit extends Cubit<ChatState> {
   void deleteEvents(int index) {
     final favorites = List<Event>.from(state.favorites);
     final allEvents = List<Event>.from(state.events);
+    final chatId = allEvents.first.parentId;
     _deleteEvents(allEvents, favorites, index);
     _selectionToFalse(allEvents);
+    if (allEvents.isNotEmpty) {
+      final event = allEvents.last;
+      chatRepository.updateLast(
+          event.parentId, event.text, event.dateTime, false);
+    } else {
+      chatRepository.updateLast(
+          chatId, 'No events. Click to create one', null, false);
+    }
     emit(
       state.copyWith(
-        events: allEvents,
-        favorites: favorites,
         isSelecting: false,
         selectedCount: 0,
       ),
@@ -317,12 +354,13 @@ class ChatCubit extends Cubit<ChatState> {
 
   void onTapEvent(int index) {
     final events = List<Event>.from(
-        state.isFavoritesMode ? state.favorites : state.events);
+      state.isFavoritesMode ? state.favorites : state.events,
+    );
     final favorites = List<Event>.from(state.favorites);
     final allEvents = List<Event>.from(state.events);
     var selectedCount = state.selectedCount;
     if (!state.isSelecting) {
-      if (state.selectedCount == 0) {
+      if (state.selectedCount <= 1) {
         _changeIsFavoriteEventToOpposite(index, allEvents, favorites);
       } else {
         for (var i = 0; i < state.events.length; i++) {
@@ -331,9 +369,7 @@ class ChatCubit extends Cubit<ChatState> {
           }
         }
       }
-      favorites.sort((a, b) {
-        return a.dateTime.compareTo(b.dateTime);
-      });
+      favorites.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     } else {
       final event =
           allEvents[index].copyWith(isSelected: !allEvents[index].isSelected);
@@ -369,7 +405,6 @@ class ChatCubit extends Cubit<ChatState> {
     }
     emit(
       state.copyWith(
-        events: events,
         selectedIndex: selectedIndex,
         isSelecting: false,
         selectedCount: 0,
@@ -378,11 +413,31 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void transferEvents(int id) {
-    final favorites = List<Event>.from(state.favorites);
+  void _changeLastMessage() {
+    if (state.selectedIndex == state.events.length - 1) {
+      if (state.events.length == 1) {
+        chatRepository.updateLast(
+          state.chatId,
+          'No events. Click to create one',
+          null,
+          false,
+        );
+      } else {
+        chatRepository.updateLast(
+          state.chatId,
+          state.events[state.selectedIndex - 1].text,
+          state.events[state.selectedIndex - 1].dateTime,
+          false,
+        );
+      }
+    }
+  }
+
+  void transferEvents(String id) {
     final events = List<Event>.from(state.events);
     if (state.selectedCount == 1) {
       final event = events[state.selectedIndex];
+      chatRepository.updateLast(id, event.text, event.dateTime, true);
       events.remove(event);
       eventRepository.updateEvent(
         event.copyWith(parentId: id, isSelected: false),
@@ -391,20 +446,35 @@ class ChatCubit extends Cubit<ChatState> {
       var i = 0;
       while (i < events.length) {
         if (events[i].isSelected) {
+          chatRepository.updateLast(
+              id, events[i].text, events[i].dateTime, true);
           eventRepository.updateEvent(
             events[i].copyWith(
               parentId: id,
               isSelected: false,
             ),
           );
-          events.removeAt(i);
         }
+        events.removeWhere((element) => element.isSelected);
       }
+    }
+    if (events.isNotEmpty) {
+      chatRepository.updateLast(
+        state.chatId,
+        events.last.text,
+        events.last.dateTime,
+        false,
+      );
+    } else {
+      chatRepository.updateLast(
+        state.chatId,
+        'No events. Click to create one',
+        null,
+        false,
+      );
     }
     emit(
       state.copyWith(
-        events: events,
-        favorites: favorites,
         isSelecting: false,
         selectedCount: 0,
         selectedRadioIndex: 0,

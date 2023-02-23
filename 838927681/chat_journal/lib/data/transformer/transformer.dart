@@ -10,6 +10,8 @@ class Transformer {
       iconIndex: dbChat.iconIndex,
       name: dbChat.name,
       creationDate: DateTime.parse(dbChat.creationDate),
+      lastDate: DateTime.parse(dbChat.lastDate),
+      lastMessage: dbChat.lastMessage,
     );
   }
 
@@ -21,29 +23,31 @@ class Transformer {
       dateTime: DateTime.parse(dbEvent.dateTime),
       iconIndex: dbEvent.iconIndex,
       imagePath: dbEvent.imagePath,
-      isFavorite: dbEvent.isFavorite == 1 ? true : false,
+      isFavorite: dbEvent.isFavorite,
       isSelected: false,
     );
   }
 
   static DBEvent eventToModel(Event event) {
     return DBEvent(
-      id: event.id,
-      parentId: event.parentId,
+      id: event.id.toString(),
+      parentId: event.parentId.toString(),
       text: event.text,
       dateTime: event.dateTime.toString(),
       imagePath: event.imagePath,
       iconIndex: event.iconIndex,
-      isFavorite: event.isFavorite ? 1 : 0,
+      isFavorite: event.isFavorite,
     );
   }
 
   static DBChat chatToModel(Chat chat) {
     return DBChat(
-      id: chat.id,
+      id: chat.id.toString(),
       name: chat.name,
       iconIndex: chat.iconIndex,
       creationDate: chat.creationDate.toString(),
+      lastDate: chat.lastDate.toString(),
+      lastMessage: chat.lastMessage,
     );
   }
 }

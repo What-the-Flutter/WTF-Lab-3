@@ -10,16 +10,8 @@ class CreateChatCubit extends Cubit<CreateChatState> {
 
   CreateChatCubit({
     required this.chatRepository,
-    required bool isCreatingMode,
     int selectedIcon = 0,
-  }) : super(
-          CreateChatState(
-            selectedIconIndex: selectedIcon,
-            isNotEmpty: false,
-            isCreatingMode: isCreatingMode,
-            isChanged: false,
-          ),
-        );
+  }) : super(const CreateChatState());
 
   void changeSelectedIconIndex(int index) {
     emit(state.copyWith(selectedIconIndex: index));
@@ -81,5 +73,15 @@ class CreateChatCubit extends Cubit<CreateChatState> {
 
   Future<void> addChat(Chat chat) async {
     await chatRepository.addChat(chat);
+  }
+
+  Future<void> updateChat(String id, String name, int iconIndex) async {
+    var chat = await chatRepository.getChat(id);
+    chat = chat.copyWith(
+      id: id,
+      name: name,
+      iconIndex: iconIndex,
+    );
+    await chatRepository.updateChat(chat);
   }
 }
