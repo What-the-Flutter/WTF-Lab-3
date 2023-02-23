@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "272592152729",
+    "project_id": "chatjournal-21c06",
+    "storage_bucket": "chatjournal-21c06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272592152729:android:f9ef89fef6677330157008",
+        "android_client_info": {
+          "package_name": "com.example.chat_journal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272592152729-is4sa0vhf12fjg2khah6fr7dfjf7rr4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chat_journal",
+            "certificate_hash": "9c3ddf6fd78c35f59e6df8ee5c78f037874f331e"
+          }
+        },
+        {
+          "client_id": "272592152729-7l9k4vv1spt78t1df4mjm8tgjjdke2p1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiRh-yMTLoFEAYEsv5bOQ54qfE60XLywk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272592152729-7l9k4vv1spt78t1df4mjm8tgjjdke2p1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
