@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../models/events_tab.dart';
 import '../models/message_event.dart';
+import '../providers/events_tabs_provider.dart';
+import '../theme/custom_theme_inherited.dart';
 
 class ChatPage extends StatefulWidget {
-  final String title;
+  final EventsTab tab;
 
-  const ChatPage({Key? key, required this.title}) : super(key: key);
+  const ChatPage({Key? key, required this.tab}) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final EventsTabsProvider _provider = EventsTabsProvider();
   final TextEditingController _controller = TextEditingController();
   final List<MessageEvent> _events = [];
   final List<MessageEvent> _selectedEvents = [];
@@ -23,8 +27,15 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          CustomThemeInherited.of(context).mode.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor:
+            CustomThemeInherited.of(context).mode.appBarTheme.backgroundColor,
+        title: Text(
+          widget.tab.name,
+          style: CustomThemeInherited.of(context).mode.textTheme.headlineLarge,
+        ),
         centerTitle: true,
         actions: [
           if (_selectionMode)
@@ -39,7 +50,7 @@ class _ChatPageState extends State<ChatPage> {
             IconButton(
               onPressed: () {
                 for (var x in _selectedEvents) {
-                  _events.remove(x);
+                  widget.tab.events.remove(x);
                 }
                 _selectedEvents.clear();
                 setState(() => _selectionMode = false);
@@ -59,26 +70,27 @@ class _ChatPageState extends State<ChatPage> {
           if (_selectionMode && _selectedEvents.length == 1)
             IconButton(
               onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: _selectedEvents.single.text));
+                await Clipboard.setData(
+                    ClipboardData(text: _selectedEvents.single.text));
                 _selectedEvents.clear();
                 setState(() => _selectionMode = false);
               },
               icon: const Icon(Icons.save),
             ),
-
         ],
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _events.length,
-              itemBuilder: (context, index) => _message(_events[index]),
+              itemCount: widget.tab.events.length,
+              itemBuilder: (context, index) =>
+                  _message(widget.tab.events[index], context),
               shrinkWrap: true,
             ),
           ),
           if (_editedEvent != null) _editedMessage(),
-          _inputRow(),
+          _inputRow(context),
         ],
       ),
     );
@@ -107,9 +119,8 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _message(MessageEvent event) {
-    const messageTextStyle = TextStyle(color: Colors.black, fontSize: 20);
-    const timeTextStyle = TextStyle(color: Colors.blueGrey, fontSize: 16);
+  Widget _message(MessageEvent event, BuildContext context) {
+    const timeTextStyle = TextStyle(color: Colors.blueGrey, fontSize: 14);
     return ColoredBox(
       color: _selectedEvents.contains(event)
           ? Colors.lightBlueAccent
@@ -138,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black12,
+                  color: CustomThemeInherited.of(context).mode.cardColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 margin: const EdgeInsets.all(10),
@@ -149,7 +160,10 @@ class _ChatPageState extends State<ChatPage> {
                       padding: const EdgeInsets.only(bottom: 20),
                       child: Text(
                         event.text,
-                        style: messageTextStyle,
+                        style: CustomThemeInherited.of(context)
+                            .mode
+                            .textTheme
+                            .headlineMedium,
                       ),
                     ),
                     Positioned(
@@ -170,10 +184,10 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _inputRow() {
+  Widget _inputRow(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      color: Colors.teal[300],
+      color: Colors.teal.shade300,
       height: 100,
       child: Row(
         children: [
@@ -195,7 +209,7 @@ class _ChatPageState extends State<ChatPage> {
             onPressed: () {
               if (_editedEvent == null) {
                 setState(() {
-                  _events.add(
+                  widget.tab.events.add(
                     MessageEvent(
                       text: _controller.text,
                       dateTime: DateTime.now(),
@@ -211,7 +225,11 @@ class _ChatPageState extends State<ChatPage> {
                 });
               }
             },
-            child: const Icon(Icons.send),
+            child: Icon(
+              Icons.send,
+              color:
+                  CustomThemeInherited.of(context).mode.primaryIconTheme.color,
+            ),
           ),
         ],
       ),
