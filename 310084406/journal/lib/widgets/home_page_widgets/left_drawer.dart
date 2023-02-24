@@ -27,11 +27,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
             title: const Text('Language'),
             onTap: () {},
           ),
-          ListTile(
-            leading: const Icon(Icons.light_mode),
-            title: const Text('Light/Dark mode'),
-            onTap: () {},
-          ),
         ],
       ),
     );
