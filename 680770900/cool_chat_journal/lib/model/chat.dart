@@ -9,10 +9,10 @@ class Chat {
   final List<Event> events;
   final DateTime createdTime;
 
-  Chat({
+  const Chat({
     required this.icon,
     required this.name,
-    required this.events,
+    this.events = const <Event>[],
     required this.createdTime,
   });
 
@@ -27,8 +27,6 @@ class Chat {
     String? name,
     List<Event>? events,
     DateTime? createdTime,
-    DateTime? latestEventTime,
-    bool? isPinned,
   }) {
     return Chat(
       icon: icon ?? this.icon,

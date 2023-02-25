@@ -106,7 +106,7 @@ class AppBarBuilder {
     } else if (isEditMode) {
       return const Text('Edit mode');
     } else {
-      var count = countSelected;
+      final count = countSelected;
       return Text(count.toString());
     }
   }
@@ -117,7 +117,7 @@ class AppBarBuilder {
     bool isEditMode = false,
     bool isHasImage = false,
   }) {
-    var actions = <Widget>[];
+    final actions = <Widget>[];
 
     if (countSelected == 0) {
       actions.add(_createSearchAction());

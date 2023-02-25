@@ -5,7 +5,7 @@ class Event {
   final bool isFavorite;
   final DateTime changeTime;
 
-  Event({
+  const Event({
     required this.content,
     this.isFavorite = false,
     this.isImage = false,

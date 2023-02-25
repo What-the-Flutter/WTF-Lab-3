@@ -93,11 +93,12 @@ class _EventField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String)? onSubmitted;
 
-  const _EventField(
-      {this.textFieldValue,
-      this.focusNode,
-      required this.controller,
-      this.onSubmitted});
+  const _EventField({
+    this.textFieldValue,
+    this.focusNode,
+    required this.controller,
+    this.onSubmitted,
+  });
 
   @override
   Widget build(BuildContext context) {
