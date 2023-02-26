@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../theme/colors.dart';
+import '../../../cubit/theme/theme_cubit.dart';
 
 class InfoBox extends StatelessWidget {
   final String mainTitle;
@@ -33,7 +34,9 @@ class InfoBox extends StatelessWidget {
         alignment: const Alignment(0, -1),
         child: Container(
           decoration: BoxDecoration(
-            color: messageBlocColor,
+            color: BlocProvider.of<ThemeCubit>(context).isDark
+                ? const Color.fromRGBO(37, 47, 57, 1)
+                : const Color.fromRGBO(77, 157, 206, 0.7),
             borderRadius: BorderRadius.circular(7),
           ),
           child: Padding(
@@ -56,7 +59,9 @@ class InfoBox extends StatelessWidget {
                 Text(
                   desc,
                   style: TextStyle(
-                    color: secondaryMessageTextColor,
+                    color: BlocProvider.of<ThemeCubit>(context).isDark
+                        ? Colors.grey
+                        : Colors.white,
                     fontSize: 19,
                   ),
                   overflow: TextOverflow.clip,

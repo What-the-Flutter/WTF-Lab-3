@@ -2,98 +2,83 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../data/provider/theme_provider.dart';
-import '../../data/repository/chat_repository.dart';
-import '../../data/repository/event_repository.dart';
 import '../../theme/colors.dart';
 import '../../theme/fonts.dart';
-import '../../theme/theme_cubit.dart';
-import '../../theme/theme_state.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/theme_button.dart';
-import 'chat_page/chat_page_cubit.dart';
-import 'create_chat_page/create_chat_cubit.dart';
 import 'home_page/home.dart';
-import 'home_page/home_page_cubit.dart';
+import 'main_page/app_cubit.dart';
+import 'settings_page/settings.dart';
+import 'settings_page/settings_cubit.dart';
+import 'settings_page/settings_state.dart';
 
 class ChatJournal extends StatelessWidget {
+  final SettingsState state;
   final title = 'Home';
 
-  const ChatJournal({super.key});
+  ChatJournal({required this.state, super.key}) {
+    //_init();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<ChatRepository>(
-          create: (context) => ChatRepository(),
-        ),
-        RepositoryProvider<EventRepository>(
-          create: (context) => EventRepository(),
-        ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<ThemeCubit>(
-            create: (context) => ThemeCubit(themeProvider: ThemeProvider()),
-            lazy: false,
-          ),
-          BlocProvider<ChatCubit>(
-            create: (context) => ChatCubit(
-              eventRepository: context.read<EventRepository>(),
-              chatRepository: context.read<ChatRepository>(),
-            ),
-          ),
-          BlocProvider<CreateChatCubit>(
-            create: (context) => CreateChatCubit(
-              chatRepository: context.read<ChatRepository>(),
-              isCreatingMode: true,
-            ),
-          ),
-          BlocProvider<HomePageCubit>(
-            create: (context) => HomePageCubit(
-              chatRepository: context.read<ChatRepository>(),
-              eventRepository: context.read<EventRepository>(),
-            ),
-          ),
-        ],
-        child: BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, state) {
-            return MaterialApp(
-              theme: state.theme,
-              home: _mainPage(state, context),
-            );
-          },
-        ),
-      ),
-    );
+    return _mainPage(context);
   }
 
-  Widget _mainPage(ThemeState state, BuildContext context) {
+  Widget _mainPage(BuildContext context) {
+    final isAuthenticated = BlocProvider.of<AppCubit>(context).isAuthenticated;
+    if (isAuthenticated) {
+      return Builder(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                title,
+              ),
+              centerTitle: true,
+              actions: const [
+                ThemeButton(),
+              ],
+            ),
+            drawer: _drawer(state, context),
+            body: HomePage(
+              settingsState: state,
+            ),
+            bottomNavigationBar: const BottomNavigation(),
+          );
+        },
+      );
+    } else {
+      return _notAuthenticated(context);
+    }
+  }
+
+  Widget _notAuthenticated(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          title,
-        ),
-        centerTitle: true,
-        actions: const [
-          ThemeButton(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text('Please try again'),
+          TextButton(
+            onPressed: () async {
+              await BlocProvider.of<AppCubit>(context).authenticate();
+            },
+            child: const Text('try again'),
+          ),
         ],
       ),
-      drawer: _drawer(state, context),
-      body: HomePage(themeState: state),
-      bottomNavigationBar: const BottomNavigation(),
     );
   }
 
-  Widget _drawer(ThemeState state, BuildContext context) {
+  Widget _drawer(SettingsState state, BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: BlocProvider.of<ThemeCubit>(context).isLight()
+              color: BlocProvider.of<SettingsCubit>(context).isLight()
                   ? ChatJournalColors.green
                   : ChatJournalColors.black,
             ),
@@ -121,9 +106,16 @@ class ChatJournal extends StatelessWidget {
             title: Text('Statistics'),
             leading: Icon(Icons.analytics),
           ),
-          const ListTile(
-            title: Text('Settings'),
-            leading: Icon(Icons.settings),
+          ListTile(
+            title: const Text('Settings'),
+            leading: const Icon(Icons.settings),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const Settings(),
+                ),
+              );
+            },
           ),
           const ListTile(
             title: Text('Feedback'),

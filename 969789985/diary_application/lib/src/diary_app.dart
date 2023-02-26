@@ -1,25 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'common/database/chat_database.dart';
-import 'common/themes/cubit/theme_cubit.dart';
-import 'common/themes/themes/themes.dart';
-import 'common/themes/widget/theme_scope.dart';
-import 'features/chat_list/data/repo/chat_repository.dart';
-import 'features/start_screen.dart';
+import 'core/data/datasource/source/chat_source.dart';
+import 'core/data/datasource/source/message_source.dart';
+import 'core/data/datasource/source/storage_source.dart';
+import 'core/data/datasource/source/tag_source.dart';
+import 'core/data/repository/chat/chat_repository.dart';
+import 'core/util/resources/themes.dart';
+import 'core/util/typedefs.dart';
+import 'feature/cubit/theme/theme_cubit.dart';
+import 'feature/page/safety/safety_page.dart';
+import 'feature/widget/settings/security_section/scope/security_scope.dart';
+import 'feature/widget/theme/theme_scope.dart';
 
 class DiaryApp extends StatelessWidget {
-  const DiaryApp({super.key});
+  final FId firebaseUid;
+
+  const DiaryApp({
+    super.key,
+    required this.firebaseUid,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => ChatDatabase(),
-      child: RepositoryProvider(
-        create: (context) => ChatRepository(
-          provider: context.read<ChatDatabase>(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => ChatSource(
+            firebaseUserId: firebaseUid,
+          ),
         ),
-        child: ThemeScope(
+        RepositoryProvider(
+          create: (context) => ChatRepository(
+            provider: context.read<ChatSource>(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => MessageSource(
+            firebaseUserId: firebaseUid,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => TagSource(
+            firebaseUserId: firebaseUid,
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => StorageSource(
+            firebaseUserId: firebaseUid,
+          ),
+        ),
+      ],
+      child: ThemeScope(
+        child: SecurityScope(
           child: BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
               return MaterialApp(
@@ -27,7 +60,7 @@ class DiaryApp extends StatelessWidget {
                 theme: state.isDarkMode
                     ? Themes.getThemeFromKey(ThemeKeys.dark)
                     : Themes.getThemeFromKey(ThemeKeys.light),
-                home: const StartScreen(),
+                home: const SafetyPage(),
               );
             },
           ),

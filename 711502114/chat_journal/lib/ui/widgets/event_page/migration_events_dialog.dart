@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../cubit/home/home_cubit.dart';
 import '../../../models/chat.dart';
 import '../../../theme/colors.dart';
+import '../../../utils/icons.dart';
 
 class MigrationEventsDialog extends StatelessWidget {
   final Function(Chat chat) handleClicking;
@@ -44,7 +45,7 @@ class MigrationEventsDialog extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(chats[i].iconData),
+                        Icon(IconMap.data[chats[i].iconNumber]),
                         const SizedBox(width: 20),
                         Text('${chats[i].title}'),
                       ],

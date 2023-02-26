@@ -7,14 +7,14 @@ import '../../domain/entities/event.dart';
 import '../../domain/entities/icon_map.dart';
 import '../../theme/colors.dart';
 import '../../theme/fonts.dart';
-import '../../theme/theme_cubit.dart';
 import '../pages/chat_page/chat_page_cubit.dart';
+import '../pages/settings_page/settings_cubit.dart';
 
 class ChatJournalSearch extends SearchDelegate {
   final ChatCubit chatCubit;
-  final ThemeCubit themeCubit;
+  final SettingsCubit settingsCubit;
 
-  ChatJournalSearch({required this.chatCubit, required this.themeCubit});
+  ChatJournalSearch({required this.chatCubit, required this.settingsCubit});
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -84,7 +84,7 @@ class ChatJournalSearch extends SearchDelegate {
             vertical: 30,
           ),
           decoration: BoxDecoration(
-            color: themeCubit.isLight()
+            color: settingsCubit.isLight()
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(10),
@@ -125,7 +125,7 @@ class ChatJournalSearch extends SearchDelegate {
             horizontal: 20,
           ),
           decoration: BoxDecoration(
-            color: themeCubit.isLight()
+            color: settingsCubit.isLight()
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(10),
@@ -173,10 +173,10 @@ class ChatJournalSearch extends SearchDelegate {
   }
 
   Widget _event(List<Event> events, int index) {
-    final eventColor = themeCubit.isLight()
+    final eventColor = settingsCubit.isLight()
         ? ChatJournalColors.lightGreen
         : ChatJournalColors.darkGrey;
-    final selectedEventColor = themeCubit.isLight()
+    final selectedEventColor = settingsCubit.isLight()
         ? ChatJournalColors.accentLightGreen
         : ChatJournalColors.lightGrey;
     return Align(
@@ -285,7 +285,7 @@ class ChatJournalSearch extends SearchDelegate {
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            color: themeCubit.isLight()
+            color: settingsCubit.isLight()
                 ? ChatJournalColors.lightRed
                 : ChatJournalColors.lightGrey,
           ),

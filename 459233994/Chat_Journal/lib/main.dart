@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'presentation/screens/main.dart';
+import 'presentation/screens/main_screen.dart';
 import 'presentation/widgets/app_theme/app_theme.dart';
 
 void main() {

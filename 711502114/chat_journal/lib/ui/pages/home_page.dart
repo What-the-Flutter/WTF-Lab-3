@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../cubit/home/home_cubit.dart';
 import '../../cubit/home/home_state.dart';
+import '../../cubit/theme/theme_cubit.dart';
 import '../../models/chat.dart';
-import '../../theme/colors.dart';
-import '../../theme/theme_inherited.dart';
 import '../../utils/utils.dart';
 import '../widgets/home_page/archive_row.dart';
 import '../widgets/home_page/chat_card.dart';
 import '../widgets/home_page/popup_bottom_menu.dart';
+import '../widgets/home_page/questionnaire_bot_row.dart';
 import 'add_chat_page.dart';
 import 'event_page.dart';
 
@@ -31,25 +30,40 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(local?.homePage ?? ''),
         centerTitle: true,
-        leading: const Icon(Icons.menu_sharp),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(10),
             child: IconButton(
               icon: const Icon(Icons.invert_colors),
               onPressed: () {
-                ThemeInherited.of(context).switchTheme();
+                BlocProvider.of<ThemeCubit>(context).switchTheme();
               },
             ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(child: Text('${DateTime.now()}')),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(local?.settings ?? ''),
+              onTap: () {
+                closePage(context);
+                openNewPage(context, const AddChatPage(isCategoryMode: true));
+              },
+            )
+          ],
+        ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 20),
-            _createBotBox(context),
+            const QuestionnaireBot(),
             const SizedBox(height: 5),
             _createMessagesList(local),
           ],
@@ -59,37 +73,6 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => openNewPage(context, const AddChatPage()),
         tooltip: local?.add,
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _createBotBox(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: botBackgroundColor,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/bot.svg',
-              height: 25,
-              width: 25,
-              color: iconColor,
-            ),
-            const SizedBox(width: 28),
-            Text(
-              AppLocalizations.of(context)?.bot ?? '',
-              style: const TextStyle(
-                fontSize: 18,
-              ),
-            )
-          ],
-        ),
       ),
     );
   }

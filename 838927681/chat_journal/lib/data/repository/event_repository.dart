@@ -1,17 +1,34 @@
+import 'dart:async';
+
 import '../../domain/entities/event.dart';
 import '../../domain/repositories/api_event_repository.dart';
 import '../models/db_event.dart';
-import '../provider/chat_provider.dart';
-import '../transfromer/transformer.dart';
+import '../transformer/transformer.dart';
+import 'api_provider/api_data_provider.dart';
 
 class EventRepository extends ApiEventRepository {
-  final provider = DataProvider();
-  static final eventsId = <int>{};
+  final ApiDataProvider provider;
+  final eventStreamController = StreamController<List<Event>>();
+  late final StreamSubscription<List<DBEvent>> eventStreamSubscription;
+
+  EventRepository({required this.provider}) {
+    eventStreamSubscription = provider.eventsStream.listen(
+      (dbEvents) {
+        final events = <Event>[];
+        for (final dbEvent in dbEvents) {
+          events.add(Transformer.dbEventToEntity(dbEvent));
+        }
+        eventStreamController.add(events);
+      },
+    );
+  }
 
   @override
-  Future<List<Event>> getEvents(int parentId) async {
+  Stream<List<Event>> get eventStream => eventStreamController.stream;
+
+  @override
+  Future<List<Event>> getEvents(String parentId) async {
     var dbEvents = await provider.events;
-    _setIds(dbEvents);
     dbEvents =
         dbEvents.where((element) => element.parentId == parentId).toList();
     dbEvents.sort((a, b) {
@@ -26,25 +43,13 @@ class EventRepository extends ApiEventRepository {
     return events;
   }
 
-  void _setIds(List<DBEvent> events) {
-    for (final event in events) {
-      print('${event.text}: ${event.parentId}');
-      eventsId.add(event.id);
-    }
-  }
-
   @override
   Future<void> updateEvent(Event event) async =>
       provider.updateEvent(Transformer.eventToModel(event));
 
   @override
   Future<void> addEvent(Event event) async {
-    var id = 0;
-    while (eventsId.contains(id)) {
-      id++;
-    }
-    eventsId.add(id);
-    await provider.addEvent(Transformer.eventToModel(event.copyWith(id: id)));
+    await provider.addEvent(Transformer.eventToModel(event));
   }
 
   @override

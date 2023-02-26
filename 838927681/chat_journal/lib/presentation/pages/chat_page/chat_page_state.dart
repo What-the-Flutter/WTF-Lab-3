@@ -17,6 +17,7 @@ class ChatState extends Equatable {
   final int selectedIcon;
   final int? selectedRadioIndex;
   final int counterId;
+  final String chatId;
 
   ChatState({
     this.events = const [],
@@ -33,24 +34,25 @@ class ChatState extends Equatable {
     this.selectedIcon = 0,
     this.selectedRadioIndex = 0,
     this.counterId = 0,
+    this.chatId = '',
   });
 
-  ChatState copyWith({
-    List<Event>? events,
-    List<Event>? favorites,
-    bool? isSelecting,
-    int? selectedCount,
-    bool? isEditing,
-    bool? isFavoritesMode,
-    bool? isTyping,
-    bool? isSendingImage,
-    int? selectedIndex,
-    bool? isSelectedImage,
-    bool? isSelectingCategory,
-    int? selectedIcon,
-    int? selectedRadioIndex,
-    int? counterId,
-  }) {
+  ChatState copyWith(
+      {List<Event>? events,
+      List<Event>? favorites,
+      bool? isSelecting,
+      int? selectedCount,
+      bool? isEditing,
+      bool? isFavoritesMode,
+      bool? isTyping,
+      bool? isSendingImage,
+      int? selectedIndex,
+      bool? isSelectedImage,
+      bool? isSelectingCategory,
+      int? selectedIcon,
+      int? selectedRadioIndex,
+      int? counterId,
+      String? chatId}) {
     return ChatState(
       events: events ?? this.events,
       favorites: favorites ?? this.favorites,
@@ -66,6 +68,7 @@ class ChatState extends Equatable {
       selectedIcon: selectedIcon ?? this.selectedIcon,
       selectedRadioIndex: selectedRadioIndex ?? this.selectedRadioIndex,
       counterId: counterId ?? this.counterId,
+      chatId: chatId ?? this.chatId,
     );
   }
 
@@ -84,5 +87,6 @@ class ChatState extends Equatable {
         isSelectingCategory,
         selectedIcon,
         selectedRadioIndex,
+        chatId
       ];
 }

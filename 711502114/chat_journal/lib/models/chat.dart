@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 import 'event.dart';
 
@@ -7,8 +6,8 @@ class Chat extends Equatable {
   final int id;
   final String title;
   final List<Event> events;
-  final IconData iconData;
-  final DateTime creationTime;
+  final int iconNumber;
+  final String creationTime;
   final bool isPin;
   final bool isArchive;
 
@@ -16,7 +15,7 @@ class Chat extends Equatable {
     required this.id,
     required this.title,
     required this.events,
-    required this.iconData,
+    required this.iconNumber,
     required this.creationTime,
     this.isPin = false,
     this.isArchive = false,
@@ -25,7 +24,7 @@ class Chat extends Equatable {
   Chat copyWith({
     int? id,
     String? title,
-    IconData? iconData,
+    int? iconNumber,
     bool? isPin,
     bool? isArchive,
   }) {
@@ -33,7 +32,7 @@ class Chat extends Equatable {
       id: id ?? this.id,
       title: title ?? this.title,
       events: events,
-      iconData: iconData ?? this.iconData,
+      iconNumber: iconNumber ?? this.iconNumber,
       creationTime: creationTime,
       isPin: isPin ?? this.isPin,
       isArchive: isArchive ?? this.isArchive,
@@ -45,7 +44,7 @@ class Chat extends Equatable {
         id,
         title,
         events,
-        iconData,
+        iconNumber,
         creationTime,
         isPin,
         isArchive,

@@ -1,10 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.chat_journal">
    <application
         android:label="chat_journal"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        <activity
+        android:icon="@mipmap/ic_launcher"
+       tools:ignore="MissingClass">
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+           android:exported="true">
+       </receiver>
+       <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

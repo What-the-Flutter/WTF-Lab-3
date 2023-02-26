@@ -38,7 +38,7 @@ class ChatFunctions {
   void editChat() {
     closePage(context);
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => AddChatPage(chat: chat),
+      builder: (_) => AddChatPage(editChat: chat),
     ));
   }
 

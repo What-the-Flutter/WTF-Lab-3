@@ -9,10 +9,10 @@ class CreateChatState extends Equatable {
 
   const CreateChatState({
     this.counterId = 0,
-    required this.selectedIconIndex,
-    required this.isNotEmpty,
-    required this.isCreatingMode,
-    required this.isChanged,
+    this.selectedIconIndex = 0,
+    this.isNotEmpty = false,
+    this.isCreatingMode = true,
+    this.isChanged = false,
   });
 
   CreateChatState copyWith({

@@ -1,6 +1,6 @@
 class Event {
-  final int id;
-  final int parentId;
+  final String id;
+  final String parentId;
   final String text;
   final String imagePath;
   final int iconIndex;
@@ -20,8 +20,8 @@ class Event {
   });
 
   Event copyWith({
-    int? id,
-    int? parentId,
+    String? id,
+    String? parentId,
     String? text,
     DateTime? dateTime,
     String? imagePath,

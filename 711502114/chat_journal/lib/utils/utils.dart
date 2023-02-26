@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-String formatDate(BuildContext context, DateTime date,
+String formatDate(BuildContext context, String date,
     {bool includeTime = false}) {
   final local = AppLocalizations.of(context);
 
   if (local == null) return '';
 
-  final year = date.year;
-  final month = date.month;
-  final day = date.day;
+  final dateTime = DateTime.parse(date);
+
+  final year = dateTime.year;
+  final month = dateTime.month;
+  final day = dateTime.day;
 
   final dateTimeNow = DateTime.now();
   final nowYear = dateTimeNow.year;
@@ -38,14 +40,16 @@ String _getMonthName(AppLocalizations local, int month) => [
       local.dec,
     ][month];
 
-String formatTime(DateTime time, {bool includeSec = true}) {
-  final hours = time.hour;
+String formatTime(String time, {bool includeSec = true}) {
+  final dateTime = DateTime.parse(time);
+
+  final hours = dateTime.hour;
   final hour = hours < 10 ? '0$hours' : '$hours';
 
-  final minutes = time.minute;
+  final minutes = dateTime.minute;
   final min = minutes < 10 ? '0$minutes' : '$minutes';
 
-  return '$hour:$min${_addSeconds(time.second, includeSec)}';
+  return '$hour:$min${_addSeconds(dateTime.second, includeSec)}';
 }
 
 String _addSeconds(int seconds, bool include) {
