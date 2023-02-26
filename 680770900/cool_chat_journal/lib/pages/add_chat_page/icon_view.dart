@@ -58,7 +58,9 @@ class IconView extends StatelessWidget {
       onTap: onTap,
       child: Stack(alignment: Alignment.bottomRight, children: [
         _createIconView(colorScheme),
-        if (isSelected) _createSelectionIcon(colorScheme),
+        
+        if (isSelected)
+          _createSelectionIcon(colorScheme),
       ]),
     );
   }

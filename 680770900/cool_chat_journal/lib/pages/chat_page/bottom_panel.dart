@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../cubit/chats_cubit.dart';
+import '../../model/chat.dart';
 
 class BottomPanel extends StatefulWidget {
-  final void Function(String)? onSendText;
-  final VoidCallback? onSendImage;
+  final int chatIndex;
+  final VoidCallback? resetSelection;
   final String? textFieldValue;
+  final int? editEventIndex;
 
-  const BottomPanel({this.onSendText, this.onSendImage, this.textFieldValue});
+  const BottomPanel({
+    required this.chatIndex,
+    this.resetSelection,
+    this.textFieldValue,
+    this.editEventIndex,  
+  });
 
   @override
   State<BottomPanel> createState() => _BottomPanelState();
@@ -15,12 +26,48 @@ class _BottomPanelState extends State<BottomPanel> {
   final _textFocusNode = FocusNode();
   final _textController = TextEditingController();
 
-  void _onEnterText() {
-    var onSendText = widget.onSendText;
+  Future<ImageSource?> _showImageDialog() {
+    return showDialog<ImageSource>(
+      context: context,
+      builder: (context) =>
+          AlertDialog(content: const Text('Choose image source'), actions: [
+        ElevatedButton(
+          child: const Text('Camera'),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        ElevatedButton(
+          child: const Text('Gallery'),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ]),
+    );
+  }
 
-    if (onSendText != null) {
-      onSendText(_textController.text);
+  void _onAddImage() async {
+    final source= await _showImageDialog();
+
+    if (source != null) {
+      final image = await ImagePicker().pickImage(source: source);
+
+      if (image != null) {
+        context.read<ChatsCubit>()
+          .addNewImageEvent(widget.chatIndex, image.path);
+      }
     }
+  }
+
+  void _onEnterText() {
+    final editEventIndex = widget.editEventIndex;
+
+    if (editEventIndex == null) {
+      context.read<ChatsCubit>()
+        .addNewTextEvent(widget.chatIndex, _textController.text);
+    } else {
+      context.read<ChatsCubit>()
+        .editTextEvent(widget.chatIndex, editEventIndex, _textController.text);
+    }
+
+    widget.resetSelection?.call();
 
     _textFocusNode.unfocus();
     _textController.clear();
@@ -53,7 +100,7 @@ class _BottomPanelState extends State<BottomPanel> {
     } else {
       return IconButton(
         icon: const Icon(Icons.add_a_photo_outlined),
-        onPressed: () => widget.onSendImage?.call(),
+        onPressed: _onAddImage,
       );
     }
   }

@@ -1,161 +1,31 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../cubit/chats_cubit.dart';
 import '../../model/chat.dart';
-import '../../themes/custom_theme.dart';
-import '../add_chat_page/icon_view.dart';
 import '../chat_page/chat_page.dart';
-import 'delete_dialog.dart';
+import 'manage_panel_dialog.dart';
 
 class ChatCard extends StatelessWidget {
-  final Chat chat;
+  final int chatIndex;
   final bool isPinned;
-  final VoidCallback? onDelete;
-  final VoidCallback? onEdit;
-  final VoidCallback? onPin;
-  final VoidCallback? onUpdate;
-  final DateFormat formatter = DateFormat.yMd().add_jm();
 
   ChatCard({
     super.key,
-    required this.chat,
+    required this.chatIndex,
     this.isPinned = false,
-    this.onPin,
-    this.onDelete,
-    this.onEdit,
-    this.onUpdate,
   });
-
-  void _showInfo(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => Center(
-        child: Container(
-          margin: const EdgeInsets.all(40.0),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 30.0,
-            vertical: 20.0,
-          ),
-          color: CustomTheme.of(context).primaryColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  IconView(
-                    icon: chat.icon,
-                    size: 60.0,
-                  ),
-                  Text(
-                    chat.name,
-                    style: const TextStyle(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const Text(
-                'Created',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(formatter.format(chat.createdTime)),
-              if (chat.events.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Latest Event',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(formatter.format(chat.events.last.changeTime)),
-                  ],
-                ),
-              Container(
-                margin: const EdgeInsets.only(top: 40.0),
-                decoration: BoxDecoration(
-                  color: CustomTheme.of(context).backgroundColor,
-                ),
-                child: TextButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _createDeleteDialog(BuildContext context) {
-    showModalBottomSheet<bool>(
-      context: context,
-      builder: (context) => const DeleteDialog(),
-    ).then((isDelete) {
-      if (isDelete != true) return;
-
-      onDelete?.call();
-    });
-  }
 
   void _createManagePanel(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text('Info'),
-            onTap: () {
-              Navigator.pop(context);
-              _showInfo(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.attach_file),
-            title: const Text('Pin/Unpin Page'),
-            onTap: () {
-              Navigator.pop(context);
-              onPin?.call();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.archive),
-            title: const Text('Archive Page'),
-            onTap: () => {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Edit Page'),
-            onTap: () {
-              Navigator.pop(context);
-              onEdit?.call();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.delete, color: Colors.red),
-            title: const Text('Delete Page'),
-            onTap: () {
-              Navigator.pop(context);
-              _createDeleteDialog(context);
-            },
-          ),
-        ],
-      ),
+      builder: (context) => ManagePanelDialog(chatIndex: chatIndex),
     );
   }
 
-  String _generateSubtitle({int maxLength = 20}) {
+  String _generateSubtitle(Chat chat, {int maxLength = 20}) {
     final String subtitle;
 
     if (chat.events.isNotEmpty) {
@@ -179,17 +49,19 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtitle = _generateSubtitle();
+    final chat = context.read<ChatsCubit>().state.chats[chatIndex];
+    final subtitle = _generateSubtitle(chat);
 
     return Card(
       child: InkWell(
-        onDoubleTap: onDelete,
         onLongPress: () => _createManagePanel(context),
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ChatPage(chat)),
-          ).then((value) => onUpdate?.call());
+            MaterialPageRoute(
+              builder: (context) => ChatPage(chatIndex: chatIndex),
+            ),
+          );
         },
         child: ListTile(
           leading: Stack(
@@ -203,6 +75,7 @@ class ChatCard extends StatelessWidget {
                 ),
                 child: Icon(chat.icon),
               ),
+              
               if (isPinned)
                 Container(
                   decoration: BoxDecoration(
