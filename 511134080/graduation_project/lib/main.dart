@@ -1,23 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/pages/home_page.dart';
+
+import 'chat_journal.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: const HomePage(),
-    );
-  }
+  runApp(const ChatJournal());
 }

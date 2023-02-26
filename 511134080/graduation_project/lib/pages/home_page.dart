@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../entities/event_list_title.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -8,69 +10,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Widget> items = [
-    ListTile(
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple.shade300,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(24),
-          ),
-        ),
-        child: const Icon(
-          Icons.flight_takeoff,
-          size: 32,
-          color: Colors.white,
-        ),
+  final List<Widget> _items = [
+    const EventListTile(
+      icon: Icon(
+        Icons.flight_takeoff,
+        size: 32,
+        color: Colors.white,
       ),
-      title: const Text('Travel'),
-      subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade100,
-      onTap: () {},
+      title: 'Travel',
+      subtitle: 'No events. Click to create one.',
     ),
-    ListTile(
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple.shade300,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(24),
-          ),
-        ),
-        child: const Icon(
-          Icons.weekend_outlined,
-          color: Colors.white,
-          size: 32,
-        ),
+    const EventListTile(
+      icon: Icon(
+        Icons.weekend_outlined,
+        color: Colors.white,
+        size: 32,
       ),
-      title: const Text('Family'),
-      subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade100,
-      onTap: () {},
+      title: 'Family',
+      subtitle: 'No events. Click to create one.',
     ),
-    ListTile(
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple.shade300,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(24),
-          ),
-        ),
-        child: const Icon(
-          Icons.fitness_center,
-          color: Colors.white,
-          size: 32,
-        ),
+    const EventListTile(
+      icon: Icon(
+        Icons.fitness_center,
+        color: Colors.white,
+        size: 32,
       ),
-      title: const Text('Sports'),
-      subtitle: const Text('No events. Click to create one.'),
-      hoverColor: Colors.deepPurple.shade100,
-      onTap: () {},
+      title: 'Sports',
+      subtitle: 'No events. Click to create one.',
     ),
   ];
 
@@ -130,10 +96,10 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: items.length,
+              itemCount: _items.length,
               itemBuilder: (context, index) {
                 return Material(
-                  child: items[index],
+                  child: _items[index],
                 );
               },
               separatorBuilder: (context, index) {
@@ -178,7 +144,10 @@ class _HomePageState extends State<HomePage> {
             ),
             label: 'Timeline',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore')
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore),
+            label: 'Explore',
+          ),
         ],
       ),
     );
