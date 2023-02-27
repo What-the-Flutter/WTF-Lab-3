@@ -18,7 +18,9 @@ class ChatBody extends StatelessWidget {
             ? const EmptyMessage(message: Strings.chatEmptyMessage)
             : BlocBuilder<MessageSearchCubit, MessageSearchState>(
                 builder: (context, state) {
-                  return MessageList(messages: state.messages);
+                  return MessageList(
+                    messages: state.messages,
+                  );
                 },
               );
       },

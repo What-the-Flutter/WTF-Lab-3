@@ -4,16 +4,21 @@ import 'dart:io';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../domain/api/message/api_message_provider.dart';
-import '../../../domain/api/message/api_message_repository.dart';
-import '../../../domain/api/storage/api_storage_provider.dart';
-import '../../../domain/api/tag/api_tag_provider.dart';
 import '../../../domain/models/local/chat/chat_model.dart';
 import '../../../domain/models/local/message/message_model.dart';
 import '../../../domain/models/local/tag/tag_model.dart';
+import '../../../domain/provider/message/api_message_provider.dart';
+import '../../../domain/provider/storage/api_storage_provider.dart';
+import '../../../domain/provider/tag/api_tag_provider.dart';
+import '../../../domain/repository/message/api_message_repository.dart';
 import '../../../util/typedefs.dart';
 
-class MessageRepository extends ApiMessageRepository {
+class MessageRepository implements ApiMessageRepository {
+  final ApiMessageProvider _provider;
+  final ApiStorageProvider _storageProvider;
+  final ApiTagProvider _tagProvider;
+  final ChatModel _currentChat;
+
   MessageRepository({
     required ApiMessageProvider provider,
     required ApiStorageProvider storageProvider,
@@ -24,16 +29,19 @@ class MessageRepository extends ApiMessageRepository {
         _tagProvider = tagProvider,
         _currentChat = currentChat;
 
-  final ApiMessageProvider _provider;
-  final ApiStorageProvider _storageProvider;
-  final ApiTagProvider _tagProvider;
-  final ChatModel _currentChat;
-
   FId get currentChatId => _currentChat.id;
 
   @override
-  ValueStream<IList<MessageModel>> get rxChatStreams => _provider
-      .messages(chatId: currentChatId)
+  ValueStream<IList<MessageModel>> get messagesStreamForChat => _provider
+      .messages(chatId: currentChatId, forChat: true)
+      .transform(
+        _provider.messageStreamTransform(_fetchFile, _tag),
+      )
+      .shareValueSeeded(IList([]));
+
+  @override
+  ValueStream<IList<MessageModel>> get messagesStreamForTimeline => _provider
+      .messages(chatId: currentChatId, forChat: false)
       .transform(
         _provider.messageStreamTransform(_fetchFile, _tag),
       )
@@ -71,7 +79,7 @@ class MessageRepository extends ApiMessageRepository {
 
   @override
   Future<void> addToFavorites(IList<MessageModel> messages) async {
-    for(final message in messages) {
+    for (final message in messages) {
       await _provider.updateMessage(
         await _provider.firebaseMessage(
           currentChatId,
@@ -83,10 +91,9 @@ class MessageRepository extends ApiMessageRepository {
     }
   }
 
-
   @override
   Future<void> removeFromFavorites(IList<MessageModel> messages) async {
-    for(final message in messages) {
+    for (final message in messages) {
       await _provider.updateMessage(
         await _provider.firebaseMessage(
           currentChatId,

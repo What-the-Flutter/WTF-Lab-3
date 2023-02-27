@@ -2,14 +2,15 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../core/domain/api/tag/api_tag_repository.dart';
 import '../../../core/domain/models/local/tag/tag_model.dart';
-
-part 'appearance_state.dart';
+import '../../../core/domain/repository/tag/api_tag_repository.dart';
 
 part 'appearance_cubit.freezed.dart';
+part 'appearance_state.dart';
 
 class AppearanceCubit extends Cubit<AppearanceState> {
+  final ApiTagRepository _repository;
+
   AppearanceCubit({
     required ApiTagRepository repository,
   })  : _repository = repository,
@@ -28,8 +29,6 @@ class AppearanceCubit extends Cubit<AppearanceState> {
       ),
     );
   }
-
-  final ApiTagRepository _repository;
 
   void onTagTextChanged(String value) {
     emit(

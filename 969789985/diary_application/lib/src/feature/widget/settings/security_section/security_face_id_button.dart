@@ -20,6 +20,7 @@ class SecurityFaceIdButton extends StatelessWidget {
       buttonTitle: 'Face ID',
       buttonDescription: 'Use your device\'s Face ID',
       iconCodePoint: Icons.face.codePoint,
+      isRemovable: false,
     );
   }
 }

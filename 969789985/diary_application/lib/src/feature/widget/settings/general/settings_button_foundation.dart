@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/util/typedefs.dart';
 import '../../../../core/util/resources/dimensions.dart';
 import '../../../../core/util/resources/icons.dart';
+import '../../../../core/util/typedefs.dart';
 
 class SettingsButtonFoundation extends StatelessWidget {
   final Callback action;
   final int iconCodePoint;
   final String buttonTitle;
   final String buttonDescription;
+  final bool isRemovable;
 
   const SettingsButtonFoundation({
     super.key,
@@ -16,6 +17,7 @@ class SettingsButtonFoundation extends StatelessWidget {
     required this.iconCodePoint,
     required this.buttonTitle,
     required this.buttonDescription,
+    required this.isRemovable,
   });
 
   @override
@@ -44,6 +46,7 @@ class SettingsButtonFoundation extends StatelessWidget {
                   fontFamily: AppIcons.material,
                 ),
                 size: IconsSize.extraLarge,
+                color: isRemovable ? Colors.red : null,
               ),
               const SizedBox(width: Insets.large),
               Column(
@@ -51,11 +54,18 @@ class SettingsButtonFoundation extends StatelessWidget {
                 children: [
                   Text(
                     buttonTitle,
-                    style: const TextStyle(fontSize: FontsSize.normal),
+                    style: TextStyle(
+                      fontSize: FontsSize.normal,
+                      color: isRemovable ? Colors.red : null,
+                    ),
                   ),
                   Text(
                     buttonDescription,
-                    style: TextStyle(color: Theme.of(context).hintColor),
+                    style: TextStyle(
+                      color: isRemovable
+                          ? Colors.red
+                          : Theme.of(context).hintColor,
+                    ),
                   ),
                 ],
               ),

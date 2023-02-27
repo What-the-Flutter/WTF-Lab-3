@@ -19,11 +19,15 @@ class ArchiveCard extends StatelessWidget {
       child: Card(
         color: Color(ThemeScope.of(context).state.primaryColor),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Radii.appConstant),
+          borderRadius: BorderRadius.circular(
+            ThemeScope.of(context).state.messageBorderRadius,
+          ),
         ),
         child: MaterialButton(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Radii.appConstant),
+            borderRadius: BorderRadius.circular(
+              ThemeScope.of(context).state.messageBorderRadius,
+            ),
           ),
           onPressed: () => Navigator.push(
             context,

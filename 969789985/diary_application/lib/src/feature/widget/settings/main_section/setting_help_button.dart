@@ -14,6 +14,7 @@ class SettingsHelpButton extends StatelessWidget {
       iconCodePoint: Icons.integration_instructions_outlined.codePoint,
       buttonTitle: 'Help',
       buttonDescription: 'Application instructions',
+      isRemovable: false,
     );
   }
 }

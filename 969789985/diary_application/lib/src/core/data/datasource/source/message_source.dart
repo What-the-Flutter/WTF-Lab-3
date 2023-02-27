@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:developer' as dev;
-import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../domain/api/message/api_message_provider.dart';
-import '../../../domain/models/firebase/message/firebase_message_model.dart';
+import '../../../domain/models/db/message/firebase_message_model.dart';
 import '../../../domain/models/local/message/message_model.dart';
+import '../../../domain/provider/message/api_message_provider.dart';
 import '../../../util/extension/snapshot_extension.dart';
 import '../../../util/typedefs.dart';
 import '../converter/tag_converter.dart';
@@ -29,6 +28,7 @@ class MessageSource extends MessageReference
   @override
   ValueStream<IList<FirebaseMessageModel>> messages({
     required FId chatId,
+    required bool forChat,
   }) {
     messagesReference.keepSynced(true);
 
@@ -39,10 +39,15 @@ class MessageSource extends MessageReference
             FirebaseMessageModel.fromJson,
           );
 
-          return messages
-              .where((mes) => mes.chatId == chatId)
-              .toIList()
-              .sort((compF, compS) => compF.sendDate.compareTo(compS.sendDate));
+          if (forChat) {
+            return messages.where((mes) => mes.chatId == chatId).toIList().sort(
+                  (compF, compS) => compF.sendDate.compareTo(compS.sendDate),
+                );
+          } else {
+            return messages.toIList().sort(
+                  (compF, compS) => compF.sendDate.compareTo(compS.sendDate),
+                );
+          }
         }
         return IList<FirebaseMessageModel>([]);
       },
@@ -119,6 +124,7 @@ class MessageSource extends MessageReference
   ) {
     return MessageModel(
       id: availableMessage.id,
+      parentId: availableMessage.chatId,
       messageText: availableMessage.messageText,
       sendDate: availableMessage.sendDate,
       tags: availableMessage.tagsIds.map(tag).toIList(),

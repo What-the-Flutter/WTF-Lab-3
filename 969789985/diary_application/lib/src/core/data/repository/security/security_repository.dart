@@ -1,5 +1,3 @@
-import 'dart:developer' as dev;
-
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
@@ -7,7 +5,8 @@ import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../domain/api/security/api_security_repository.dart';
+import '../../../domain/repository/security/api_security_repository.dart';
+import '../../../util/logger.dart';
 import '../../../util/resources/strings.dart';
 
 enum SecurityMode {
@@ -22,7 +21,7 @@ enum SecurityMode {
   const SecurityMode(this.securityMode);
 }
 
-class SecurityRepository extends ApiSecurityRepository {
+class SecurityRepository implements ApiSecurityRepository {
   static const String _securityModeKey =
       'com.wtflab.diary_application_security_mode';
   static const String _securityPasscodeKey =
@@ -42,10 +41,26 @@ class SecurityRepository extends ApiSecurityRepository {
     _securityMode = await preference.getString(_securityModeKey) ??
         SecurityMode.noneSecurity.securityMode;
 
+    logger(
+      'Security mode is: $_securityMode',
+      'Preferences security mode',
+    );
+
     _passcode = await preference.getString(_securityPasscodeKey) ?? '';
 
+    logger(
+      'Current_passcode: $_passcode',
+      'Preferences passcode',
+    );
+
     _isDeviceSupportedBiometrics =
-        await LocalAuthentication().isDeviceSupported();
+        await LocalAuthentication().canCheckBiometrics ||
+            await LocalAuthentication().isDeviceSupported();
+
+    logger(
+      'Device can support biometrics: $_isDeviceSupportedBiometrics',
+      'Biometric_possibility',
+    );
 
     _availableBiometric = await LocalAuthentication().getAvailableBiometrics();
   }
@@ -66,9 +81,9 @@ class SecurityRepository extends ApiSecurityRepository {
   Future<void> setSecurityMode(String value) async {
     final preferences = await SharedPreferences.getInstance();
 
-    dev.log(
+    logger(
       'The value of security mode is: $value',
-      name: 'Preference_security_mode',
+      'Preference_security_mode',
     );
 
     await preferences.setString(_securityModeKey, value);
@@ -78,9 +93,9 @@ class SecurityRepository extends ApiSecurityRepository {
   Future<void> setPasscode(String value) async {
     final preferences = await SharedPreferences.getInstance();
 
-    dev.log(
+    logger(
       'The hash of passcode is: $value',
-      name: 'Preference_security_passcode_hash',
+      'Preference_security_passcode_hash',
     );
 
     await preferences.setString(_securityPasscodeKey, value);
@@ -108,10 +123,8 @@ class SecurityRepository extends ApiSecurityRepository {
         ),
       );
     } on PlatformException catch (e) {
-      _logger('AuthError: $e', 'Local_Authentication_error');
+      logger('AuthError: $e', 'Local_Authentication_error');
       return false;
     }
   }
-
-  void _logger(String msg, String tag) => dev.log(msg, name: tag);
 }

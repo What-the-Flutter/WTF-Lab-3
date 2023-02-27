@@ -4,14 +4,18 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/api/message/api_message_repository.dart';
 import '../../../../core/domain/models/local/message/message_model.dart';
-
-part 'message_search_state.dart';
+import '../../../../core/domain/repository/message/api_message_repository.dart';
 
 part 'message_search_cubit.freezed.dart';
+part 'message_search_state.dart';
 
 class MessageSearchCubit extends Cubit<MessageSearchState> {
+  late IList<MessageModel> messages;
+
+  final ApiMessageRepository _repository;
+  late final StreamSubscription<IList<MessageModel>> _subscription;
+
   MessageSearchCubit({
     required ApiMessageRepository repository,
   })  : _repository = repository,
@@ -20,7 +24,7 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
             messages: IListConst([]),
           ),
         ) {
-    _subscription = _repository.rxChatStreams.listen(
+    _subscription = _repository.messagesStreamForChat.listen(
       (messages) {
         this.messages = messages;
         emit(
@@ -31,11 +35,6 @@ class MessageSearchCubit extends Cubit<MessageSearchState> {
       },
     );
   }
-
-  late IList<MessageModel> messages;
-
-  final ApiMessageRepository _repository;
-  late final StreamSubscription<IList<MessageModel>> _subscription;
 
   @override
   Future<void> close() {

@@ -1,4 +1,5 @@
 abstract class Radii {
+  static const double none = 0.0;
   static const double extraSmall = 2.0;
   static const double small = 4.0;
   static const double medium = 8.0;

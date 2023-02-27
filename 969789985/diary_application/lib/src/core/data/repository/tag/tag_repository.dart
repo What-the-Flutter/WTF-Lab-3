@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'dart:developer' as dev;
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../domain/api/tag/api_tag_provider.dart';
-import '../../../domain/api/tag/api_tag_repository.dart';
 import '../../../domain/models/local/tag/tag_model.dart';
+import '../../../domain/provider/tag/api_tag_provider.dart';
+import '../../../domain/repository/tag/api_tag_repository.dart';
 import '../../../util/typedefs.dart';
 
-class TagRepository extends ApiTagRepository {
+class TagRepository implements ApiTagRepository {
   TagRepository({
     required ApiTagProvider provider,
   }) : _provider = provider;

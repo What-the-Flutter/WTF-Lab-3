@@ -13,6 +13,7 @@ class SettingsInfoButton extends StatelessWidget {
       iconCodePoint: Icons.info_outline_rounded.codePoint,
       buttonTitle: 'Info',
       buttonDescription: 'Any other information',
+      isRemovable: false,
     );
   }
 }

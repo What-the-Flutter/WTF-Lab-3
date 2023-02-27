@@ -18,8 +18,14 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ThemeState {
   bool get isDarkMode => throw _privateConstructorUsedError;
   double get messageFontSize => throw _privateConstructorUsedError;
+  double get messageBorderRadius => throw _privateConstructorUsedError;
   int get primaryColor => throw _privateConstructorUsedError;
   int get primaryItemColor => throw _privateConstructorUsedError;
+  String get messageAlignment => throw _privateConstructorUsedError;
+  bool get dateBubbleVisible => throw _privateConstructorUsedError;
+  int get chatBackgroundColor => throw _privateConstructorUsedError;
+  String get imagePath => throw _privateConstructorUsedError;
+  File? get image => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ThemeStateCopyWith<ThemeState> get copyWith =>
@@ -35,8 +41,14 @@ abstract class $ThemeStateCopyWith<$Res> {
   $Res call(
       {bool isDarkMode,
       double messageFontSize,
+      double messageBorderRadius,
       int primaryColor,
-      int primaryItemColor});
+      int primaryItemColor,
+      String messageAlignment,
+      bool dateBubbleVisible,
+      int chatBackgroundColor,
+      String imagePath,
+      File? image});
 }
 
 /// @nodoc
@@ -54,8 +66,14 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
   $Res call({
     Object? isDarkMode = null,
     Object? messageFontSize = null,
+    Object? messageBorderRadius = null,
     Object? primaryColor = null,
     Object? primaryItemColor = null,
+    Object? messageAlignment = null,
+    Object? dateBubbleVisible = null,
+    Object? chatBackgroundColor = null,
+    Object? imagePath = null,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       isDarkMode: null == isDarkMode
@@ -66,6 +84,10 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
           ? _value.messageFontSize
           : messageFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      messageBorderRadius: null == messageBorderRadius
+          ? _value.messageBorderRadius
+          : messageBorderRadius // ignore: cast_nullable_to_non_nullable
+              as double,
       primaryColor: null == primaryColor
           ? _value.primaryColor
           : primaryColor // ignore: cast_nullable_to_non_nullable
@@ -74,6 +96,26 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
           ? _value.primaryItemColor
           : primaryItemColor // ignore: cast_nullable_to_non_nullable
               as int,
+      messageAlignment: null == messageAlignment
+          ? _value.messageAlignment
+          : messageAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateBubbleVisible: null == dateBubbleVisible
+          ? _value.dateBubbleVisible
+          : dateBubbleVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      chatBackgroundColor: null == chatBackgroundColor
+          ? _value.chatBackgroundColor
+          : chatBackgroundColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      imagePath: null == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as File?,
     ) as $Val);
   }
 }
@@ -89,8 +131,14 @@ abstract class _$$_ThemeStateCopyWith<$Res>
   $Res call(
       {bool isDarkMode,
       double messageFontSize,
+      double messageBorderRadius,
       int primaryColor,
-      int primaryItemColor});
+      int primaryItemColor,
+      String messageAlignment,
+      bool dateBubbleVisible,
+      int chatBackgroundColor,
+      String imagePath,
+      File? image});
 }
 
 /// @nodoc
@@ -106,8 +154,14 @@ class __$$_ThemeStateCopyWithImpl<$Res>
   $Res call({
     Object? isDarkMode = null,
     Object? messageFontSize = null,
+    Object? messageBorderRadius = null,
     Object? primaryColor = null,
     Object? primaryItemColor = null,
+    Object? messageAlignment = null,
+    Object? dateBubbleVisible = null,
+    Object? chatBackgroundColor = null,
+    Object? imagePath = null,
+    Object? image = freezed,
   }) {
     return _then(_$_ThemeState(
       isDarkMode: null == isDarkMode
@@ -118,6 +172,10 @@ class __$$_ThemeStateCopyWithImpl<$Res>
           ? _value.messageFontSize
           : messageFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      messageBorderRadius: null == messageBorderRadius
+          ? _value.messageBorderRadius
+          : messageBorderRadius // ignore: cast_nullable_to_non_nullable
+              as double,
       primaryColor: null == primaryColor
           ? _value.primaryColor
           : primaryColor // ignore: cast_nullable_to_non_nullable
@@ -126,6 +184,26 @@ class __$$_ThemeStateCopyWithImpl<$Res>
           ? _value.primaryItemColor
           : primaryItemColor // ignore: cast_nullable_to_non_nullable
               as int,
+      messageAlignment: null == messageAlignment
+          ? _value.messageAlignment
+          : messageAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateBubbleVisible: null == dateBubbleVisible
+          ? _value.dateBubbleVisible
+          : dateBubbleVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      chatBackgroundColor: null == chatBackgroundColor
+          ? _value.chatBackgroundColor
+          : chatBackgroundColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      imagePath: null == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as File?,
     ));
   }
 }
@@ -136,21 +214,39 @@ class _$_ThemeState implements _ThemeState {
   const _$_ThemeState(
       {required this.isDarkMode,
       required this.messageFontSize,
+      required this.messageBorderRadius,
       required this.primaryColor,
-      required this.primaryItemColor});
+      required this.primaryItemColor,
+      required this.messageAlignment,
+      required this.dateBubbleVisible,
+      required this.chatBackgroundColor,
+      required this.imagePath,
+      required this.image});
 
   @override
   final bool isDarkMode;
   @override
   final double messageFontSize;
   @override
+  final double messageBorderRadius;
+  @override
   final int primaryColor;
   @override
   final int primaryItemColor;
+  @override
+  final String messageAlignment;
+  @override
+  final bool dateBubbleVisible;
+  @override
+  final int chatBackgroundColor;
+  @override
+  final String imagePath;
+  @override
+  final File? image;
 
   @override
   String toString() {
-    return 'ThemeState(isDarkMode: $isDarkMode, messageFontSize: $messageFontSize, primaryColor: $primaryColor, primaryItemColor: $primaryItemColor)';
+    return 'ThemeState(isDarkMode: $isDarkMode, messageFontSize: $messageFontSize, messageBorderRadius: $messageBorderRadius, primaryColor: $primaryColor, primaryItemColor: $primaryItemColor, messageAlignment: $messageAlignment, dateBubbleVisible: $dateBubbleVisible, chatBackgroundColor: $chatBackgroundColor, imagePath: $imagePath, image: $image)';
   }
 
   @override
@@ -162,15 +258,36 @@ class _$_ThemeState implements _ThemeState {
                 other.isDarkMode == isDarkMode) &&
             (identical(other.messageFontSize, messageFontSize) ||
                 other.messageFontSize == messageFontSize) &&
+            (identical(other.messageBorderRadius, messageBorderRadius) ||
+                other.messageBorderRadius == messageBorderRadius) &&
             (identical(other.primaryColor, primaryColor) ||
                 other.primaryColor == primaryColor) &&
             (identical(other.primaryItemColor, primaryItemColor) ||
-                other.primaryItemColor == primaryItemColor));
+                other.primaryItemColor == primaryItemColor) &&
+            (identical(other.messageAlignment, messageAlignment) ||
+                other.messageAlignment == messageAlignment) &&
+            (identical(other.dateBubbleVisible, dateBubbleVisible) ||
+                other.dateBubbleVisible == dateBubbleVisible) &&
+            (identical(other.chatBackgroundColor, chatBackgroundColor) ||
+                other.chatBackgroundColor == chatBackgroundColor) &&
+            (identical(other.imagePath, imagePath) ||
+                other.imagePath == imagePath) &&
+            (identical(other.image, image) || other.image == image));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, isDarkMode, messageFontSize, primaryColor, primaryItemColor);
+      runtimeType,
+      isDarkMode,
+      messageFontSize,
+      messageBorderRadius,
+      primaryColor,
+      primaryItemColor,
+      messageAlignment,
+      dateBubbleVisible,
+      chatBackgroundColor,
+      imagePath,
+      image);
 
   @JsonKey(ignore: true)
   @override
@@ -183,17 +300,35 @@ abstract class _ThemeState implements ThemeState {
   const factory _ThemeState(
       {required final bool isDarkMode,
       required final double messageFontSize,
+      required final double messageBorderRadius,
       required final int primaryColor,
-      required final int primaryItemColor}) = _$_ThemeState;
+      required final int primaryItemColor,
+      required final String messageAlignment,
+      required final bool dateBubbleVisible,
+      required final int chatBackgroundColor,
+      required final String imagePath,
+      required final File? image}) = _$_ThemeState;
 
   @override
   bool get isDarkMode;
   @override
   double get messageFontSize;
   @override
+  double get messageBorderRadius;
+  @override
   int get primaryColor;
   @override
   int get primaryItemColor;
+  @override
+  String get messageAlignment;
+  @override
+  bool get dateBubbleVisible;
+  @override
+  int get chatBackgroundColor;
+  @override
+  String get imagePath;
+  @override
+  File? get image;
   @override
   @JsonKey(ignore: true)
   _$$_ThemeStateCopyWith<_$_ThemeState> get copyWith =>

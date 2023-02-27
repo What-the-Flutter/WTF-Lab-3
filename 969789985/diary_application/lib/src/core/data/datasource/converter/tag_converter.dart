@@ -1,6 +1,5 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
-import '../../../domain/models/firebase/tag/firebase_tag_model.dart';
 import '../../../domain/models/local/tag/tag_model.dart';
 import '../../../util/typedefs.dart';
 

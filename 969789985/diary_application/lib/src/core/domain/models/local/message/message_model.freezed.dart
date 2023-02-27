@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MessageModel {
   String get id => throw _privateConstructorUsedError;
+  String get parentId => throw _privateConstructorUsedError;
   String get messageText => throw _privateConstructorUsedError;
   DateTime get sendDate => throw _privateConstructorUsedError;
   IList<Future<File>> get images => throw _privateConstructorUsedError;
@@ -36,6 +37,7 @@ abstract class $MessageModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String parentId,
       String messageText,
       DateTime sendDate,
       IList<Future<File>> images,
@@ -57,6 +59,7 @@ class _$MessageModelCopyWithImpl<$Res, $Val extends MessageModel>
   @override
   $Res call({
     Object? id = null,
+    Object? parentId = null,
     Object? messageText = null,
     Object? sendDate = null,
     Object? images = null,
@@ -67,6 +70,10 @@ class _$MessageModelCopyWithImpl<$Res, $Val extends MessageModel>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      parentId: null == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
               as String,
       messageText: null == messageText
           ? _value.messageText
@@ -102,6 +109,7 @@ abstract class _$$_MessageModelCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
+      String parentId,
       String messageText,
       DateTime sendDate,
       IList<Future<File>> images,
@@ -121,6 +129,7 @@ class __$$_MessageModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? parentId = null,
     Object? messageText = null,
     Object? sendDate = null,
     Object? images = null,
@@ -131,6 +140,10 @@ class __$$_MessageModelCopyWithImpl<$Res>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      parentId: null == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
               as String,
       messageText: null == messageText
           ? _value.messageText
@@ -161,6 +174,7 @@ class __$$_MessageModelCopyWithImpl<$Res>
 class _$_MessageModel extends _MessageModel {
   _$_MessageModel(
       {required this.id,
+      required this.parentId,
       required this.messageText,
       required this.sendDate,
       required this.images,
@@ -170,6 +184,8 @@ class _$_MessageModel extends _MessageModel {
 
   @override
   final String id;
+  @override
+  final String parentId;
   @override
   final String messageText;
   @override
@@ -183,7 +199,7 @@ class _$_MessageModel extends _MessageModel {
 
   @override
   String toString() {
-    return 'MessageModel._internal(id: $id, messageText: $messageText, sendDate: $sendDate, images: $images, tags: $tags, isFavorite: $isFavorite)';
+    return 'MessageModel._internal(id: $id, parentId: $parentId, messageText: $messageText, sendDate: $sendDate, images: $images, tags: $tags, isFavorite: $isFavorite)';
   }
 
   @override
@@ -192,6 +208,8 @@ class _$_MessageModel extends _MessageModel {
         (other.runtimeType == runtimeType &&
             other is _$_MessageModel &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
             (identical(other.messageText, messageText) ||
                 other.messageText == messageText) &&
             (identical(other.sendDate, sendDate) ||
@@ -206,6 +224,7 @@ class _$_MessageModel extends _MessageModel {
   int get hashCode => Object.hash(
       runtimeType,
       id,
+      parentId,
       messageText,
       sendDate,
       const DeepCollectionEquality().hash(images),
@@ -222,6 +241,7 @@ class _$_MessageModel extends _MessageModel {
 abstract class _MessageModel extends MessageModel {
   factory _MessageModel(
       {required final String id,
+      required final String parentId,
       required final String messageText,
       required final DateTime sendDate,
       required final IList<Future<File>> images,
@@ -231,6 +251,8 @@ abstract class _MessageModel extends MessageModel {
 
   @override
   String get id;
+  @override
+  String get parentId;
   @override
   String get messageText;
   @override
