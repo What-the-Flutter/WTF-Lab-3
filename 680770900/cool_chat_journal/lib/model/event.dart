@@ -1,15 +1,19 @@
+import 'category.dart';
+
 /// Contains information about event.
 class Event {
   final String content;
   final bool isImage;
   final bool isFavorite;
   final DateTime changeTime;
+  final Category? category;
 
   const Event({
     required this.content,
+    required this.changeTime,
     this.isFavorite = false,
     this.isImage = false,
-    required this.changeTime,
+    this.category,
   });
 
   Event copyWith({
@@ -17,12 +21,14 @@ class Event {
     bool? isImage,
     bool? isFavorite,
     DateTime? changeTime,
+    Category? category,
   }) {
     return Event(
       content: content ?? this.content,
       isImage: isImage ?? this.isImage,
       isFavorite: isFavorite ?? this.isFavorite,
       changeTime: changeTime ?? this.changeTime,
+      category: category ?? this.category,
     );
   }
 }

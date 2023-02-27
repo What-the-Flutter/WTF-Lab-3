@@ -1,9 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../cubit/chats_cubit.dart';
-import '../../model/chat.dart';
+import '../../model/category.dart';
+import '../../model/event.dart';
+import 'category_view.dart';
 
 class BottomPanel extends StatefulWidget {
   final int chatIndex;
@@ -25,6 +28,8 @@ class BottomPanel extends StatefulWidget {
 class _BottomPanelState extends State<BottomPanel> {
   final _textFocusNode = FocusNode();
   final _textController = TextEditingController();
+  var _showCategories = false;
+  Category? _selectedCategory;
 
   Future<ImageSource?> _showImageDialog() {
     return showDialog<ImageSource>(
@@ -51,7 +56,11 @@ class _BottomPanelState extends State<BottomPanel> {
 
       if (image != null) {
         context.read<ChatsCubit>()
-          .addNewImageEvent(widget.chatIndex, image.path);
+          .addEvent(widget.chatIndex, Event(
+            content: image.path,
+            isImage: true,
+            changeTime: DateTime.now(),
+          ));
       }
     }
   }
@@ -61,11 +70,23 @@ class _BottomPanelState extends State<BottomPanel> {
 
     if (editEventIndex == null) {
       context.read<ChatsCubit>()
-        .addNewTextEvent(widget.chatIndex, _textController.text);
+        .addEvent(widget.chatIndex, Event(
+          content: _textController.text,
+          changeTime: DateTime.now(),
+          category: _selectedCategory,
+        ));
     } else {
+      final oldEvent = context.read<ChatsCubit>()
+        .state.chats[widget.chatIndex].events[editEventIndex];
       context.read<ChatsCubit>()
-        .editTextEvent(widget.chatIndex, editEventIndex, _textController.text);
+        .editEvent(widget.chatIndex, editEventIndex, oldEvent.copyWith(
+          content: _textController.text,
+          category: _selectedCategory,
+        ));
     }
+
+    _showCategories = false;
+    _selectedCategory = null;
 
     widget.resetSelection?.call();
 
@@ -73,10 +94,17 @@ class _BottomPanelState extends State<BottomPanel> {
     _textController.clear();
   }
 
-  Widget _createMenuButton() {
+  Widget _createCategoriesButton() {
+    final IconData icon;
+    if (_selectedCategory != null) {
+      icon = _selectedCategory!.icon;
+    } else {
+      icon = Icons.widgets_rounded;
+    }
+
     return IconButton(
-      icon: const Icon(Icons.widgets_rounded),
-      onPressed: () => {},
+      icon: Icon(icon),
+      onPressed: () => setState(() => _showCategories = !_showCategories),
     );
   }
 
@@ -105,6 +133,52 @@ class _BottomPanelState extends State<BottomPanel> {
     }
   }
 
+  Widget _createCategoriesList() {
+    final categories = AvailableCategories.categories;
+    return SizedBox(
+      height: 65,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () => setState(() {
+              _selectedCategory = null;
+              _showCategories = false;
+            }),
+            child: const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: CategoryView(
+                category: Category(
+                  name: 'Cancel',
+                  icon: Icons.cancel,
+                ),
+              ),
+            ),
+          ),
+      
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              itemBuilder: (context, index) => InkWell(
+                onTap: () => setState(() {
+                  _selectedCategory = categories[index];
+                  _showCategories = false;
+                }),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: CategoryView(
+                    category: categories[index],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -124,11 +198,19 @@ class _BottomPanelState extends State<BottomPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _createMenuButton(),
-        _createTextField(),
-        _createSendButton(),
+        if (_showCategories)
+          _createCategoriesList(),
+    
+        Row(
+          children: [
+            _createCategoriesButton(),
+            _createTextField(),
+            _createSendButton(),
+          ],
+        ),
       ],
     );
   }

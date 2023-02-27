@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/chats_cubit.dart';
 import '../../model/chat.dart';
 import '../../model/event.dart';
-import 'chat_icons.dart';
+import '../../model/chat_icons.dart';
 import 'icon_view.dart';
 
 class AddChatPage extends StatefulWidget {

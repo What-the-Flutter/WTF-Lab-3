@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'category.dart';
 import 'event.dart';
 
 /// Contains all events from group
@@ -12,15 +13,9 @@ class Chat {
   const Chat({
     required this.icon,
     required this.name,
+    required this.createdTime,
     this.events = const <Event>[],
-    required this.createdTime,
   });
-
-  Chat.withoutEvents({
-    required this.icon,
-    required this.name,
-    required this.createdTime,
-  }) : events = <Event>[];
 
   Chat copyWith({
     IconData? icon,

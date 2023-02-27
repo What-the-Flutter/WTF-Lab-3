@@ -8,7 +8,9 @@ import '../../model/chats_state.dart';
 import '../../model/event.dart';
 import 'bottom_panel.dart';
 import 'delete_dialog.dart';
+import 'event_search_delegate.dart';
 import 'event_view.dart';
+import 'transfer_dialog.dart';
 
 class ChatPage extends StatefulWidget {
   final int chatIndex;
@@ -55,6 +57,23 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  void _transferEvents(BuildContext context) async {
+    final newChat = await showDialog<int>(
+      context: context,
+      builder: (context) => const TransferDialog(),
+    );
+
+    if (newChat != null) {
+      context.read<ChatsCubit>().transferEvents(
+        widget.chatIndex,
+        newChat,
+        _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+      );
+    }
+
+    _resetSelection();
+  }
+
   void _deleteEvents() async {
     final value = await showModalBottomSheet<bool>(
       context: context,
@@ -62,18 +81,10 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     if (value == true) {
-      final events = _chat.events;
-      final deletedEvents = <Event>[];
-
-      for (var i = 0; i < events.length; i++) {
-        if (_selectedFlag[i] == true) {
-          deletedEvents.add(events[i]);
-        }
-      }
-
-      for (final deletedEvent in deletedEvents) {
-        events.remove(deletedEvent);
-      }
+      context.read<ChatsCubit>().deleteEvents(
+        widget.chatIndex,
+        _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+      );
     }
 
     _resetSelection();
@@ -105,6 +116,17 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _resetSelection();
+  }
+
+  void _searchEvents() async {
+    await showSearch(
+      context: context,
+      delegate: EventSearchDelegate(
+        events: _chat.events,
+        onTap: _onTap,
+        onLongPress: _onLongPress,
+      ),
+    );
   }
 
   int _countSelectedEvents() {
@@ -146,11 +168,38 @@ class _ChatPageState extends State<ChatPage> {
               _selectedFlag[viewIndex] = _selectedFlag[viewIndex] ?? false;
               final isSelected = _selectedFlag[viewIndex]!;
 
-              return EventView(
-                event: events[viewIndex],
-                isSelected: isSelected,
-                onTap: () => _onTap(isSelected, viewIndex),
-                onLongPress: () => _onLongPress(isSelected, viewIndex),
+              return Dismissible(
+                background: Container(
+                  color: Colors.green,
+                ),
+                secondaryBackground: Container(
+                  color: Colors.red,
+                ),
+                key: ValueKey<int>(viewIndex),
+                child: EventView(
+                  event: events[viewIndex],
+                  isSelected: isSelected,
+                  onTap: () => _onTap(isSelected, viewIndex),
+                  onLongPress: () => _onLongPress(isSelected, viewIndex),
+                ),
+
+                confirmDismiss: (direction) async {
+                  if (direction == DismissDirection.endToStart) {
+                    return true;
+                  } else if (!_isEditMode) {
+                    setState(() {
+                      _selectedFlag[viewIndex] = true;
+                      _isEditMode = true;
+                    });
+                    return false;
+                  }
+                },
+                onDismissed: (direction) {
+                  context.read<ChatsCubit>().deleteEvent(
+                    widget.chatIndex,
+                    viewIndex,
+                  );
+                },
               );
             }
           );
@@ -173,10 +222,11 @@ class _ChatPageState extends State<ChatPage> {
         Expanded(
           child: _createEventsView(),
         ),
+
         if (!_isSelectionMode())
-        BottomPanel(
-          chatIndex: widget.chatIndex,
-        ),
+          BottomPanel(
+            chatIndex: widget.chatIndex,
+          ),
 
         if (_isEditMode && index != -1 && !_chat.events[index].isImage)
           BottomPanel(
@@ -237,7 +287,7 @@ class _ChatPageState extends State<ChatPage> {
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.search),
-        onPressed: () => {},
+        onPressed: _searchEvents,
       ),
       IconButton(
         icon: bookmarkIcon,
@@ -258,25 +308,25 @@ class _ChatPageState extends State<ChatPage> {
     ];
   }
 
-  List<Widget> _createActionsForSelectionMode() {
-    final actions = <Widget>[];
+  List<Widget> _createActionsForSelectionMode(BuildContext context) {
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.reply),
+        onPressed: () => _transferEvents(context),
+      ),
 
-    if (!_isHasImage()) {
-      actions.addAll([
-        if (_countSelectedEvents() == 1)
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => setState(() => _isEditMode = true),
-          ),
+      if (!_isHasImage() && _countSelectedEvents() == 1)
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => setState(() => _isEditMode = true),
+        ),
 
+      if (!_isHasImage())
         IconButton(
           icon: const Icon(Icons.copy),
           onPressed: _copyEvents,
-        )
-      ]);
-    }
+        ),
 
-    actions.addAll([
       IconButton(
         icon: const Icon(Icons.bookmark_border),
         onPressed: _markFavorites,
@@ -286,18 +336,16 @@ class _ChatPageState extends State<ChatPage> {
         icon: const Icon(Icons.delete),
         onPressed: _deleteEvents,
       ),
-    ]);
-
-    return actions;
+    ];
   }
 
-  List<Widget> _createActions() {
+  List<Widget> _createActions(BuildContext context) {
     if (_countSelectedEvents() == 0) {
       return _createActionsForNotSelectionMode();
     } else if (_isEditMode) {
       return _createActionsForEditMode();
     } else {
-      return _createActionsForSelectionMode();
+      return _createActionsForSelectionMode(context);
     }
   }
 
@@ -307,7 +355,7 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         leading: _createAppBarLeading(),
         title: _createAppBarTitle(),
-        actions: _createActions(),
+        actions: _createActions(context),
       ),
       body: _createScaffoldBody(),
     );

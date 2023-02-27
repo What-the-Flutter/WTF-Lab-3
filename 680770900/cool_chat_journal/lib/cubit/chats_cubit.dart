@@ -7,8 +7,6 @@ import '../model/event.dart';
 class ChatsCubit extends Cubit<ChatsState> {
   ChatsCubit({required initialState}) : super(initialState);
 
-
-
   void addNewChat(Chat newChat) {
     final chats = List<Chat>.from(state.chats)
       ..add(newChat);
@@ -52,37 +50,44 @@ class ChatsCubit extends Cubit<ChatsState> {
     emit(state.copyWith(pinnedChats: pinnedChats));
   }
 
-  void addNewTextEvent(int chatIndex, String text) {
+  void addEvent(int chatIndex, Event event) {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events)
-      ..add(Event(
-        content: text,
-        changeTime: DateTime.now()
-      ));
+      ..add(event);
 
     editChat(chatIndex, chat.copyWith(events: events));
   }
 
-  void editTextEvent(int chatIndex, int index, String newText) {
+  void editEvent(int chatIndex, int eventIndex, Event event) {
+    final chat = state.chats[chatIndex];
+    final events = List<Event>.from(chat.events);
+    events[eventIndex] = event;
+
+    editChat(chatIndex, chat.copyWith(events: events));
+  }
+
+  void deleteEvent(int chatIndex, int eventIndex) {
+    final chat = state.chats[chatIndex];
+    final events = List<Event>.from(chat.events)
+      ..removeAt(eventIndex);
+
+
+    editChat(chatIndex, chat.copyWith(events: events));
+  }
+
+  void deleteEvents(int chatIndex, Iterable<int> eventsIndexes) {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events);
 
-    final oldEvent = events[index];
-    events[index] = oldEvent.copyWith(
-      content: newText,
-    );
+    final deletedEvents = <Event>[];
 
-    editChat(chatIndex, chat.copyWith(events: events));
-  }
+    for (final i in eventsIndexes) {
+      deletedEvents.add(events[i]);
+    }
 
-  Future<void> addNewImageEvent(int chatIndex, String imagePath) async {
-    final chat = state.chats[chatIndex];
-    final events = List<Event>.from(chat.events)
-      ..add(Event(
-        content: imagePath,
-        isImage: true,
-        changeTime: DateTime.now()
-      ));
+    for (final event in deletedEvents) {
+      events.remove(event);
+    }
 
     editChat(chatIndex, chat.copyWith(events: events));
   }
@@ -97,5 +102,21 @@ class ChatsCubit extends Cubit<ChatsState> {
     );
 
     editChat(chatIndex, chat.copyWith(events: events));
+  }
+
+  void transferEvent(int sourceIndex, int destinationIndex, int eventIndex) {
+    final event = state.chats[sourceIndex].events[eventIndex];
+
+    addEvent(destinationIndex, event);
+    deleteEvent(sourceIndex, eventIndex);
+  }
+
+  void transferEvents(int source, int destination, Iterable<int> events) {
+    for (final i in events) {
+      final event = state.chats[source].events[i];
+      addEvent(destination, event);
+    }
+
+    deleteEvents(source, events);
   }
 }
