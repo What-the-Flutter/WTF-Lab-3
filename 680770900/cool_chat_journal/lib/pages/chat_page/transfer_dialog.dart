@@ -30,10 +30,8 @@ class _TransferDialogState extends State<TransferDialog> {
           child: Column(
             children: [
               const Text('Select the page you want to migrate the selected '
-                'event(s) to!'),
-
+                  'event(s) to!'),
               const SizedBox(height: 10),
-          
               Expanded(
                 child: BlocBuilder<ChatsCubit, ChatsState>(
                   builder: (context, state) => ListView.builder(
@@ -41,7 +39,7 @@ class _TransferDialogState extends State<TransferDialog> {
                     itemBuilder: (context, index) {
                       return RadioListTile(
                         title: Text(state.chats[index].name),
-                        activeColor:  CustomTheme.of(context).backgroundColor,
+                        activeColor: CustomTheme.of(context).backgroundColor,
                         value: index,
                         groupValue: _selectedChat,
                         onChanged: (value) => setState(
@@ -52,7 +50,6 @@ class _TransferDialogState extends State<TransferDialog> {
                   ),
                 ),
               ),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -66,7 +63,6 @@ class _TransferDialogState extends State<TransferDialog> {
                       onPressed: () => Navigator.pop(context, _selectedChat),
                     ),
                   ),
-
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(

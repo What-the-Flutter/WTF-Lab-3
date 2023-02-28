@@ -126,8 +126,8 @@ class _AddChatPageState extends State<AddChatPage> {
     _titleController.addListener(_onChangeTitle);
 
     if (widget.oldChatIndex != null) {
-      final oldChat = context.read<ChatsCubit>()
-        .state.chats[widget.oldChatIndex!];
+      final oldChat =
+          context.read<ChatsCubit>().state.chats[widget.oldChatIndex!];
 
       _titleController.text = oldChat.name;
     }

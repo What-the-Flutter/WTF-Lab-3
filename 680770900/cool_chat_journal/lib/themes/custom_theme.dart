@@ -39,10 +39,10 @@ class _CustomThemeState extends State<CustomTheme> {
   _CustomThemeState(ThemeKeys initalThemeKey) {
     _theme = AppThemes.getThemeFromKey(initalThemeKey);
     _currentKey = initalThemeKey;
-  } 
+  }
 
   void _setNextTheme() {
-    switch(_currentKey) {
+    switch (_currentKey) {
       case ThemeKeys.light:
         _currentKey = ThemeKeys.dark;
         break;

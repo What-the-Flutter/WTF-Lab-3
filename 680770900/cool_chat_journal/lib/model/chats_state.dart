@@ -12,8 +12,9 @@ class ChatsState {
   ChatsState copyWith({
     List<Chat>? chats,
     Map<int, bool>? pinnedChats,
-  }) => ChatsState(
-    chats: chats ?? this.chats,
-    pinnedChats: pinnedChats ?? this.pinnedChats,
-  );
+  }) =>
+      ChatsState(
+        chats: chats ?? this.chats,
+        pinnedChats: pinnedChats ?? this.pinnedChats,
+      );
 }

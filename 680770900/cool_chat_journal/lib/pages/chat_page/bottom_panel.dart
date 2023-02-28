@@ -17,7 +17,7 @@ class BottomPanel extends StatefulWidget {
     required this.chatIndex,
     this.resetSelection,
     this.textFieldValue,
-    this.editEventIndex,  
+    this.editEventIndex,
   });
 
   @override
@@ -48,18 +48,19 @@ class _BottomPanelState extends State<BottomPanel> {
   }
 
   void _onAddImage() async {
-    final source= await _showImageDialog();
+    final source = await _showImageDialog();
 
     if (source != null) {
       final image = await ImagePicker().pickImage(source: source);
 
       if (image != null) {
-        context.read<ChatsCubit>()
-          .addEvent(widget.chatIndex, Event(
-            content: image.path,
-            isImage: true,
-            changeTime: DateTime.now(),
-          ));
+        context.read<ChatsCubit>().addEvent(
+            widget.chatIndex,
+            Event(
+              content: image.path,
+              isImage: true,
+              changeTime: DateTime.now(),
+            ));
       }
     }
   }
@@ -68,20 +69,26 @@ class _BottomPanelState extends State<BottomPanel> {
     final editEventIndex = widget.editEventIndex;
 
     if (editEventIndex == null) {
-      context.read<ChatsCubit>()
-        .addEvent(widget.chatIndex, Event(
-          content: _textController.text,
-          changeTime: DateTime.now(),
-          category: _selectedCategory,
-        ));
+      context.read<ChatsCubit>().addEvent(
+          widget.chatIndex,
+          Event(
+            content: _textController.text,
+            changeTime: DateTime.now(),
+            category: _selectedCategory,
+          ));
     } else {
-      final oldEvent = context.read<ChatsCubit>()
-        .state.chats[widget.chatIndex].events[editEventIndex];
-      context.read<ChatsCubit>()
-        .editEvent(widget.chatIndex, editEventIndex, oldEvent.copyWith(
-          content: _textController.text,
-          category: _selectedCategory,
-        ));
+      final oldEvent = context
+          .read<ChatsCubit>()
+          .state
+          .chats[widget.chatIndex]
+          .events[editEventIndex];
+      context.read<ChatsCubit>().editEvent(
+          widget.chatIndex,
+          editEventIndex,
+          oldEvent.copyWith(
+            content: _textController.text,
+            category: _selectedCategory,
+          ));
     }
 
     _showCategories = false;
@@ -154,7 +161,6 @@ class _BottomPanelState extends State<BottomPanel> {
               ),
             ),
           ),
-      
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -200,9 +206,7 @@ class _BottomPanelState extends State<BottomPanel> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_showCategories)
-          _createCategoriesList(),
-    
+        if (_showCategories) _createCategoriesList(),
         Row(
           children: [
             _createCategoriesButton(),

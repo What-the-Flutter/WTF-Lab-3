@@ -44,7 +44,6 @@ class InfoDialog extends StatelessWidget {
                 ),
               ],
             ),
-            
             const Text(
               'Created',
               style: TextStyle(
@@ -52,7 +51,6 @@ class InfoDialog extends StatelessWidget {
               ),
             ),
             Text(formatter.format(chat.createdTime)),
-            
             if (chat.events.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +65,6 @@ class InfoDialog extends StatelessWidget {
                   Text(formatter.format(chat.events.last.changeTime)),
                 ],
               ),
-
             Container(
               margin: const EdgeInsets.only(top: 40.0),
               decoration: BoxDecoration(
@@ -83,5 +80,4 @@ class InfoDialog extends StatelessWidget {
       ),
     );
   }
-
 }

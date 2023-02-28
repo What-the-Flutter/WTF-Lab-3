@@ -8,21 +8,19 @@ class ChatsCubit extends Cubit<ChatsState> {
   ChatsCubit({required initialState}) : super(initialState);
 
   void addNewChat(Chat newChat) {
-    final chats = List<Chat>.from(state.chats)
-      ..add(newChat);
+    final chats = List<Chat>.from(state.chats)..add(newChat);
     emit(state.copyWith(chats: chats));
   }
 
   void deletedChat(int index) {
-    final chats = List<Chat>.from(state.chats)
-      ..removeAt(index);
+    final chats = List<Chat>.from(state.chats)..removeAt(index);
     emit(state.copyWith(chats: chats));
   }
 
   void editChat(int index, Chat newChat) {
     final chats = List<Chat>.from(state.chats);
     chats[index] = newChat;
-    emit(state.copyWith(chats: chats)); 
+    emit(state.copyWith(chats: chats));
   }
 
   void pinChat(int index) {
@@ -33,8 +31,7 @@ class ChatsCubit extends Cubit<ChatsState> {
 
   void addEvent(int chatIndex, Event event) {
     final chat = state.chats[chatIndex];
-    final events = List<Event>.from(chat.events)
-      ..add(event);
+    final events = List<Event>.from(chat.events)..add(event);
     editChat(chatIndex, chat.copyWith(events: events));
   }
 
@@ -47,8 +44,7 @@ class ChatsCubit extends Cubit<ChatsState> {
 
   void deleteEvent(int chatIndex, int eventIndex) {
     final chat = state.chats[chatIndex];
-    final events = List<Event>.from(chat.events)
-      ..removeAt(eventIndex);
+    final events = List<Event>.from(chat.events)..removeAt(eventIndex);
     editChat(chatIndex, chat.copyWith(events: events));
   }
 

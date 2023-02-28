@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
     }
 
     return chatCards;
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +52,14 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<ChatsCubit, ChatsState>(
-        builder: (context, state) {
-          final chatCards = _createChatCards(state.chats, state.pinnedChats);
+      body: BlocBuilder<ChatsCubit, ChatsState>(builder: (context, state) {
+        final chatCards = _createChatCards(state.chats, state.pinnedChats);
 
-          return ListView.builder(
-            itemCount: chatCards.length,
-            itemBuilder: (context, index) => chatCards[index],
-          );
-        }
-      ),
+        return ListView.builder(
+          itemCount: chatCards.length,
+          itemBuilder: (context, index) => chatCards[index],
+        );
+      }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => Navigator.push(

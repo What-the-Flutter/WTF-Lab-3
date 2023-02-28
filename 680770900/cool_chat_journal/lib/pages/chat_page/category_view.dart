@@ -9,7 +9,7 @@ class CategoryView extends StatelessWidget {
     super.key,
     required this.category,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -20,5 +20,4 @@ class CategoryView extends StatelessWidget {
       ],
     );
   }
-
 }

@@ -65,10 +65,10 @@ class _ChatPageState extends State<ChatPage> {
 
     if (newChat != null) {
       context.read<ChatsCubit>().transferEvents(
-        widget.chatIndex,
-        newChat,
-        _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
-      );
+            widget.chatIndex,
+            newChat,
+            _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+          );
     }
 
     _resetSelection();
@@ -82,9 +82,9 @@ class _ChatPageState extends State<ChatPage> {
 
     if (value == true) {
       context.read<ChatsCubit>().deleteEvents(
-        widget.chatIndex,
-        _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
-      );
+            widget.chatIndex,
+            _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+          );
     }
 
     _resetSelection();
@@ -96,16 +96,15 @@ class _ChatPageState extends State<ChatPage> {
         context.read<ChatsCubit>().markFavoriteEvent(widget.chatIndex, i);
       }
     }
-    
+
     _resetSelection();
   }
 
   void _copyEvents() {
     var copyText = '';
 
-    final selected = _selectedFlag.keys
-      .where((key) =>
-        _selectedFlag[key] == true && !_chat.events[key].isImage);
+    final selected = _selectedFlag.keys.where(
+        (key) => _selectedFlag[key] == true && !_chat.events[key].isImage);
 
     for (var key in selected) {
       copyText += '${_chat.events[key].content}\n';
@@ -139,7 +138,8 @@ class _ChatPageState extends State<ChatPage> {
     final List<Event> favorites;
     if (_showFavorites) {
       favorites = state.chats[widget.chatIndex].events
-        .where((event) => event.isFavorite).toList();
+          .where((event) => event.isFavorite)
+          .toList();
     } else {
       favorites = <Event>[];
     }
@@ -161,53 +161,51 @@ class _ChatPageState extends State<ChatPage> {
 
         if (events.isNotEmpty) {
           return ListView.builder(
-            reverse: true,
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              final viewIndex = events.length - index - 1;
+              reverse: true,
+              itemCount: events.length,
+              itemBuilder: (context, index) {
+                final viewIndex = events.length - index - 1;
 
-              _selectedFlag[viewIndex] = _selectedFlag[viewIndex] ?? false;
-              final isSelected = _selectedFlag[viewIndex]!;
+                _selectedFlag[viewIndex] = _selectedFlag[viewIndex] ?? false;
+                final isSelected = _selectedFlag[viewIndex]!;
 
-              return Dismissible(
-                background: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.all(15.0),
-                  child: const Icon(Icons.edit),
-                ),
-                secondaryBackground: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.all(15.0),
-                  child: const Icon(Icons.delete),
-                ),
-                key: ValueKey<int>(viewIndex),
-                child: EventView(
-                  event: events[viewIndex],
-                  isSelected: isSelected,
-                  onTap: () => _onTap(isSelected, viewIndex),
-                  onLongPress: () => _onLongPress(isSelected, viewIndex),
-                ),
-
-                confirmDismiss: (direction) async {
-                  if (direction == DismissDirection.endToStart) {
-                    return true;
-                  } else if (!_isEditMode) {
-                    setState(() {
-                      _selectedFlag[viewIndex] = true;
-                      _isEditMode = true;
-                    });
-                    return false;
-                  }
-                },
-                onDismissed: (direction) {
-                  context.read<ChatsCubit>().deleteEvent(
-                    widget.chatIndex,
-                    viewIndex,
-                  );
-                },
-              );
-            }
-          );
+                return Dismissible(
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const Icon(Icons.edit),
+                  ),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const Icon(Icons.delete),
+                  ),
+                  key: ValueKey<int>(viewIndex),
+                  child: EventView(
+                    event: events[viewIndex],
+                    isSelected: isSelected,
+                    onTap: () => _onTap(isSelected, viewIndex),
+                    onLongPress: () => _onLongPress(isSelected, viewIndex),
+                  ),
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      return true;
+                    } else if (!_isEditMode) {
+                      setState(() {
+                        _selectedFlag[viewIndex] = true;
+                        _isEditMode = true;
+                      });
+                      return false;
+                    }
+                  },
+                  onDismissed: (direction) {
+                    context.read<ChatsCubit>().deleteEvent(
+                          widget.chatIndex,
+                          viewIndex,
+                        );
+                  },
+                );
+              });
         } else {
           return Align(
             alignment: Alignment.topCenter,
@@ -227,12 +225,10 @@ class _ChatPageState extends State<ChatPage> {
         Expanded(
           child: _createEventsView(),
         ),
-
         if (!_isSelectionMode())
           BottomPanel(
             chatIndex: widget.chatIndex,
           ),
-
         if (_isEditMode && index != -1 && !_chat.events[index].isImage)
           BottomPanel(
             chatIndex: widget.chatIndex,
@@ -241,8 +237,8 @@ class _ChatPageState extends State<ChatPage> {
               _resetSelection();
             },
             textFieldValue: _chat.events[index].content,
-            editEventIndex: _selectedFlag.keys.firstWhere(
-              (i) => _selectedFlag[i] == true),
+            editEventIndex:
+                _selectedFlag.keys.firstWhere((i) => _selectedFlag[i] == true),
           ),
       ],
     );
@@ -307,7 +303,7 @@ class _ChatPageState extends State<ChatPage> {
         icon: const Icon(Icons.close),
         onPressed: () {
           _isEditMode = false;
-          _resetSelection(); 
+          _resetSelection();
         },
       ),
     ];
@@ -319,24 +315,20 @@ class _ChatPageState extends State<ChatPage> {
         icon: const Icon(Icons.reply),
         onPressed: () => _transferEvents(context),
       ),
-
       if (!_isHasImage() && _countSelectedEvents() == 1)
         IconButton(
           icon: const Icon(Icons.edit),
           onPressed: () => setState(() => _isEditMode = true),
         ),
-
       if (!_isHasImage())
         IconButton(
           icon: const Icon(Icons.copy),
           onPressed: _copyEvents,
         ),
-
       IconButton(
         icon: const Icon(Icons.bookmark_border),
         onPressed: _markFavorites,
       ),
-
       IconButton(
         icon: const Icon(Icons.delete),
         onPressed: _deleteEvents,

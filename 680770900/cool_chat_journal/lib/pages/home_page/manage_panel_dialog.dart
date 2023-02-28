@@ -65,7 +65,7 @@ class ManagePanelDialog extends StatelessWidget {
           title: const Text('Edit Page'),
           onTap: () {
             Navigator.pop(context);
-            
+
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -83,7 +83,6 @@ class ManagePanelDialog extends StatelessWidget {
           },
         ),
       ],
-    ); 
+    );
   }
-
 }

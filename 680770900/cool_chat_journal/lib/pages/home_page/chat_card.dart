@@ -75,7 +75,6 @@ class ChatCard extends StatelessWidget {
                 ),
                 child: Icon(chat.icon),
               ),
-              
               if (isPinned)
                 Container(
                   decoration: BoxDecoration(

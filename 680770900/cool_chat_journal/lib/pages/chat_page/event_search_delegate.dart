@@ -27,7 +27,7 @@ class EventSearchDelegate extends SearchDelegate {
   }
 
   Widget _createSearchResult(List<Event> result) {
-     return ListView.builder(
+    return ListView.builder(
       itemCount: result.length,
       itemBuilder: (context, index) => EventView(
         event: result[index],
@@ -42,7 +42,7 @@ class EventSearchDelegate extends SearchDelegate {
     return [
       IconButton(
         icon: const Icon(Icons.clear),
-        onPressed: () => query = '',  
+        onPressed: () => query = '',
       ),
     ];
   }
