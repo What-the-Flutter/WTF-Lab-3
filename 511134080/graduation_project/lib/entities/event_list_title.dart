@@ -43,11 +43,3 @@ class EventListTile extends StatelessWidget {
     );
   }
 }
-
-/*
-
-Icon(
-Icons.flight_takeoff,
-size: 32,
-color: Colors.white,
-),*/
