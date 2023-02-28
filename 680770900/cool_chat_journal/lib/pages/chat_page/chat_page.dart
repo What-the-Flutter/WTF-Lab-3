@@ -103,11 +103,13 @@ class _ChatPageState extends State<ChatPage> {
   void _copyEvents() {
     var copyText = '';
 
-    _selectedFlag.keys
-        .where((key) =>
-            _selectedFlag[key] == true && !_chat.events[key].isImage)
-        .map((key) => copyText +=
-            copyText.isNotEmpty ? '${_chat.events[key].content}' : '\n');
+    final selected = _selectedFlag.keys
+      .where((key) =>
+        _selectedFlag[key] == true && !_chat.events[key].isImage);
+
+    for (var key in selected) {
+      copyText += '${_chat.events[key].content}\n';
+    }
 
     Clipboard.setData(
       ClipboardData(
@@ -136,9 +138,8 @@ class _ChatPageState extends State<ChatPage> {
   List<Event> _generateEventsList(ChatsState state) {
     final List<Event> favorites;
     if (_showFavorites) {
-      favorites =
-        state.chats[widget.chatIndex].events
-          .where((event) => event.isFavorite).toList();
+      favorites = state.chats[widget.chatIndex].events
+        .where((event) => event.isFavorite).toList();
     } else {
       favorites = <Event>[];
     }
@@ -170,10 +171,14 @@ class _ChatPageState extends State<ChatPage> {
 
               return Dismissible(
                 background: Container(
-                  color: Colors.green,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.all(15.0),
+                  child: const Icon(Icons.edit),
                 ),
                 secondaryBackground: Container(
-                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.all(15.0),
+                  child: const Icon(Icons.delete),
                 ),
                 key: ValueKey<int>(viewIndex),
                 child: EventView(

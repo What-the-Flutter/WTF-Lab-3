@@ -15,7 +15,7 @@ class EventSearchDelegate extends SearchDelegate {
   });
 
   List<Event> _createEventsList() {
-    var findedNotes = <Event>[];
+    final findedNotes = <Event>[];
 
     for (final event in events) {
       if (!event.isImage && event.content.contains(query)) {

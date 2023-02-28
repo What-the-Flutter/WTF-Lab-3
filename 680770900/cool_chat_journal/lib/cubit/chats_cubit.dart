@@ -10,43 +10,24 @@ class ChatsCubit extends Cubit<ChatsState> {
   void addNewChat(Chat newChat) {
     final chats = List<Chat>.from(state.chats)
       ..add(newChat);
-
     emit(state.copyWith(chats: chats));
   }
 
   void deletedChat(int index) {
     final chats = List<Chat>.from(state.chats)
       ..removeAt(index);
-
     emit(state.copyWith(chats: chats));
   }
 
   void editChat(int index, Chat newChat) {
     final chats = List<Chat>.from(state.chats);
     chats[index] = newChat;
-
     emit(state.copyWith(chats: chats)); 
   }
 
   void pinChat(int index) {
     final pinnedChats = Map<int, bool>.from(state.pinnedChats);
-
-    if (pinnedChats[index] == true) {
-      pinnedChats[index] = false;
-    } else {
-      pinnedChats[index] = true;
-    }
-
-    emit(state.copyWith(pinnedChats: pinnedChats));
-  }
-
-  void resetSelection() {
-    final pinnedChats = Map<int, bool>.from(state.pinnedChats);
-
-    for (final index in pinnedChats.keys) {
-      pinnedChats[index] = false;
-    }
-
+    pinnedChats[index] = !(pinnedChats[index] ?? false);
     emit(state.copyWith(pinnedChats: pinnedChats));
   }
 
@@ -54,7 +35,6 @@ class ChatsCubit extends Cubit<ChatsState> {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events)
       ..add(event);
-
     editChat(chatIndex, chat.copyWith(events: events));
   }
 
@@ -62,7 +42,6 @@ class ChatsCubit extends Cubit<ChatsState> {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events);
     events[eventIndex] = event;
-
     editChat(chatIndex, chat.copyWith(events: events));
   }
 
@@ -70,20 +49,13 @@ class ChatsCubit extends Cubit<ChatsState> {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events)
       ..removeAt(eventIndex);
-
-
     editChat(chatIndex, chat.copyWith(events: events));
   }
 
   void deleteEvents(int chatIndex, Iterable<int> eventsIndexes) {
     final chat = state.chats[chatIndex];
     final events = List<Event>.from(chat.events);
-
-    final deletedEvents = <Event>[];
-
-    for (final i in eventsIndexes) {
-      deletedEvents.add(events[i]);
-    }
+    final deletedEvents = eventsIndexes.map((i) => events[i]);
 
     for (final event in deletedEvents) {
       events.remove(event);

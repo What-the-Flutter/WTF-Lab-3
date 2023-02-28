@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'category.dart';
 import 'event.dart';
 
 /// Contains all events from group

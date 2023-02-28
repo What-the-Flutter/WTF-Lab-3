@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubit/chats_cubit.dart';
+import '../../model/chat.dart';
 import '../../model/chats_state.dart';
 import '../../themes/custom_theme.dart';
 import '../add_chat_page/add_chat_page.dart';
@@ -12,6 +13,28 @@ class HomePage extends StatelessWidget {
   final String appName;
 
   const HomePage({super.key, required this.appName});
+
+  List<ChatCard> _createChatCards(
+    List<Chat> chats,
+    Map<int, bool> pinnedChats,
+  ) {
+    final chatCards = <ChatCard>[];
+
+    for (var i = 0; i < chats.length; i++) {
+      final chatCard = ChatCard(
+        chatIndex: i,
+        isPinned: pinnedChats[i] ?? false,
+      );
+
+      if (chatCard.isPinned == true) {
+        chatCards.insert(0, chatCard);
+      } else {
+        chatCards.add(chatCard);
+      }
+    }
+
+    return chatCards;
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +53,14 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: BlocBuilder<ChatsCubit, ChatsState>(
-        builder: (context, state) => ListView.builder(
-          itemCount: state.chats.length,
-          itemBuilder: (context, index) => ChatCard(
-            chatIndex: index,
-            isPinned: state.pinnedChats[index] ?? false,
-          ),
-        ),
+        builder: (context, state) {
+          final chatCards = _createChatCards(state.chats, state.pinnedChats);
+
+          return ListView.builder(
+            itemCount: chatCards.length,
+            itemBuilder: (context, index) => chatCards[index],
+          );
+        }
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
