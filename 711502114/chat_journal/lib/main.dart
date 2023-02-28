@@ -3,17 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'cubit/creation/creation_cubit.dart';
-import 'cubit/event/event_cubit.dart';
-import 'cubit/home/home_cubit.dart';
-import 'cubit/menu/menu_cubit.dart';
-import 'cubit/theme/theme_cubit.dart';
-import 'cubit/theme/theme_state.dart';
-import 'database/repository/chat_repository.dart';
-import 'database/repository/event_repository.dart';
+import 'domain/repositories/chat_repository.dart';
+import 'domain/repositories/event_repository.dart';
 import 'l10n/l10n.dart';
+import 'presentation/pages/chat/event_cubit.dart';
+import 'presentation/pages/creation/creation_cubit.dart';
+import 'presentation/pages/home/home_cubit.dart';
+import 'presentation/pages/menu/menu.dart';
+import 'presentation/pages/menu/menu_cubit.dart';
+import 'theme/theme_cubit.dart';
 import 'theme/theme_preferences.dart';
-import 'ui/pages/menu.dart';
+import 'theme/theme_state.dart';
 
 void main() async => runApp(const ChatJournalApplication());
 
