@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import '../../../domain/api/storage/api_storage_provider.dart';
-import '../../../domain/api/storage/api_storage_repository.dart';
+import '../../../domain/provider/storage/api_storage_provider.dart';
+import '../../../domain/repository/storage/api_storage_repository.dart';
 
-class StorageRepository extends ApiStorageRepository {
+class StorageRepository implements ApiStorageRepository {
   final ApiStorageProvider _provider;
 
   StorageRepository({required ApiStorageProvider provider})

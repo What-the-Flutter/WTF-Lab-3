@@ -23,6 +23,7 @@ mixin _$MessageControlState {
   bool get isSelectMode => throw _privateConstructorUsedError;
   bool get isEditMode => throw _privateConstructorUsedError;
   bool get isFavoriteMode => throw _privateConstructorUsedError;
+  bool get selectionVisible => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -32,7 +33,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
@@ -41,7 +43,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         manageMode,
   }) =>
       throw _privateConstructorUsedError;
@@ -54,7 +57,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -63,7 +67,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
   }) =>
       throw _privateConstructorUsedError;
@@ -76,7 +81,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -85,7 +91,8 @@ mixin _$MessageControlState {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
     required TResult orElse(),
   }) =>
@@ -128,7 +135,8 @@ abstract class $MessageControlStateCopyWith<$Res> {
       int selectedCount,
       bool isSelectMode,
       bool isEditMode,
-      bool isFavoriteMode});
+      bool isFavoriteMode,
+      bool selectionVisible});
 
   $MessageModelCopyWith<$Res> get message;
 }
@@ -153,6 +161,7 @@ class _$MessageControlStateCopyWithImpl<$Res, $Val extends MessageControlState>
     Object? isSelectMode = null,
     Object? isEditMode = null,
     Object? isFavoriteMode = null,
+    Object? selectionVisible = null,
   }) {
     return _then(_value.copyWith(
       messages: null == messages
@@ -183,6 +192,10 @@ class _$MessageControlStateCopyWithImpl<$Res, $Val extends MessageControlState>
           ? _value.isFavoriteMode
           : isFavoriteMode // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectionVisible: null == selectionVisible
+          ? _value.selectionVisible
+          : selectionVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -210,7 +223,8 @@ abstract class _$$_DefaultModeCopyWith<$Res>
       int selectedCount,
       bool isSelectMode,
       bool isEditMode,
-      bool isFavoriteMode});
+      bool isFavoriteMode,
+      bool selectionVisible});
 
   @override
   $MessageModelCopyWith<$Res> get message;
@@ -234,6 +248,7 @@ class __$$_DefaultModeCopyWithImpl<$Res>
     Object? isSelectMode = null,
     Object? isEditMode = null,
     Object? isFavoriteMode = null,
+    Object? selectionVisible = null,
   }) {
     return _then(_$_DefaultMode(
       messages: null == messages
@@ -264,6 +279,10 @@ class __$$_DefaultModeCopyWithImpl<$Res>
           ? _value.isFavoriteMode
           : isFavoriteMode // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectionVisible: null == selectionVisible
+          ? _value.selectionVisible
+          : selectionVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -278,7 +297,8 @@ class _$_DefaultMode extends _DefaultMode {
       required this.selectedCount,
       required this.isSelectMode,
       required this.isEditMode,
-      required this.isFavoriteMode})
+      required this.isFavoriteMode,
+      required this.selectionVisible})
       : super._();
 
   @override
@@ -295,10 +315,12 @@ class _$_DefaultMode extends _DefaultMode {
   final bool isEditMode;
   @override
   final bool isFavoriteMode;
+  @override
+  final bool selectionVisible;
 
   @override
   String toString() {
-    return 'MessageControlState.defaultMode(messages: $messages, selected: $selected, message: $message, selectedCount: $selectedCount, isSelectMode: $isSelectMode, isEditMode: $isEditMode, isFavoriteMode: $isFavoriteMode)';
+    return 'MessageControlState.defaultMode(messages: $messages, selected: $selected, message: $message, selectedCount: $selectedCount, isSelectMode: $isSelectMode, isEditMode: $isEditMode, isFavoriteMode: $isFavoriteMode, selectionVisible: $selectionVisible)';
   }
 
   @override
@@ -317,7 +339,9 @@ class _$_DefaultMode extends _DefaultMode {
             (identical(other.isEditMode, isEditMode) ||
                 other.isEditMode == isEditMode) &&
             (identical(other.isFavoriteMode, isFavoriteMode) ||
-                other.isFavoriteMode == isFavoriteMode));
+                other.isFavoriteMode == isFavoriteMode) &&
+            (identical(other.selectionVisible, selectionVisible) ||
+                other.selectionVisible == selectionVisible));
   }
 
   @override
@@ -329,7 +353,8 @@ class _$_DefaultMode extends _DefaultMode {
       selectedCount,
       isSelectMode,
       isEditMode,
-      isFavoriteMode);
+      isFavoriteMode,
+      selectionVisible);
 
   @JsonKey(ignore: true)
   @override
@@ -347,7 +372,8 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
@@ -356,11 +382,12 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         manageMode,
   }) {
     return defaultMode(messages, selected, message, selectedCount, isSelectMode,
-        isEditMode, isFavoriteMode);
+        isEditMode, isFavoriteMode, selectionVisible);
   }
 
   @override
@@ -373,7 +400,8 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -382,11 +410,12 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
   }) {
     return defaultMode?.call(messages, selected, message, selectedCount,
-        isSelectMode, isEditMode, isFavoriteMode);
+        isSelectMode, isEditMode, isFavoriteMode, selectionVisible);
   }
 
   @override
@@ -399,7 +428,8 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -408,13 +438,14 @@ class _$_DefaultMode extends _DefaultMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
     required TResult orElse(),
   }) {
     if (defaultMode != null) {
       return defaultMode(messages, selected, message, selectedCount,
-          isSelectMode, isEditMode, isFavoriteMode);
+          isSelectMode, isEditMode, isFavoriteMode, selectionVisible);
     }
     return orElse();
   }
@@ -459,7 +490,8 @@ abstract class _DefaultMode extends MessageControlState {
       required final int selectedCount,
       required final bool isSelectMode,
       required final bool isEditMode,
-      required final bool isFavoriteMode}) = _$_DefaultMode;
+      required final bool isFavoriteMode,
+      required final bool selectionVisible}) = _$_DefaultMode;
   const _DefaultMode._() : super._();
 
   @override
@@ -476,6 +508,8 @@ abstract class _DefaultMode extends MessageControlState {
   bool get isEditMode;
   @override
   bool get isFavoriteMode;
+  @override
+  bool get selectionVisible;
   @override
   @JsonKey(ignore: true)
   _$$_DefaultModeCopyWith<_$_DefaultMode> get copyWith =>
@@ -497,7 +531,8 @@ abstract class _$$_ManageModeCopyWith<$Res>
       int selectedCount,
       bool isSelectMode,
       bool isEditMode,
-      bool isFavoriteMode});
+      bool isFavoriteMode,
+      bool selectionVisible});
 
   @override
   $MessageModelCopyWith<$Res> get message;
@@ -521,6 +556,7 @@ class __$$_ManageModeCopyWithImpl<$Res>
     Object? isSelectMode = null,
     Object? isEditMode = null,
     Object? isFavoriteMode = null,
+    Object? selectionVisible = null,
   }) {
     return _then(_$_ManageMode(
       messages: null == messages
@@ -551,6 +587,10 @@ class __$$_ManageModeCopyWithImpl<$Res>
           ? _value.isFavoriteMode
           : isFavoriteMode // ignore: cast_nullable_to_non_nullable
               as bool,
+      selectionVisible: null == selectionVisible
+          ? _value.selectionVisible
+          : selectionVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -565,7 +605,8 @@ class _$_ManageMode extends _ManageMode {
       required this.selectedCount,
       required this.isSelectMode,
       required this.isEditMode,
-      required this.isFavoriteMode})
+      required this.isFavoriteMode,
+      required this.selectionVisible})
       : super._();
 
   @override
@@ -582,10 +623,12 @@ class _$_ManageMode extends _ManageMode {
   final bool isEditMode;
   @override
   final bool isFavoriteMode;
+  @override
+  final bool selectionVisible;
 
   @override
   String toString() {
-    return 'MessageControlState.manageMode(messages: $messages, selected: $selected, message: $message, selectedCount: $selectedCount, isSelectMode: $isSelectMode, isEditMode: $isEditMode, isFavoriteMode: $isFavoriteMode)';
+    return 'MessageControlState.manageMode(messages: $messages, selected: $selected, message: $message, selectedCount: $selectedCount, isSelectMode: $isSelectMode, isEditMode: $isEditMode, isFavoriteMode: $isFavoriteMode, selectionVisible: $selectionVisible)';
   }
 
   @override
@@ -604,7 +647,9 @@ class _$_ManageMode extends _ManageMode {
             (identical(other.isEditMode, isEditMode) ||
                 other.isEditMode == isEditMode) &&
             (identical(other.isFavoriteMode, isFavoriteMode) ||
-                other.isFavoriteMode == isFavoriteMode));
+                other.isFavoriteMode == isFavoriteMode) &&
+            (identical(other.selectionVisible, selectionVisible) ||
+                other.selectionVisible == selectionVisible));
   }
 
   @override
@@ -616,7 +661,8 @@ class _$_ManageMode extends _ManageMode {
       selectedCount,
       isSelectMode,
       isEditMode,
-      isFavoriteMode);
+      isFavoriteMode,
+      selectionVisible);
 
   @JsonKey(ignore: true)
   @override
@@ -634,7 +680,8 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
@@ -643,11 +690,12 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)
+            bool isFavoriteMode,
+            bool selectionVisible)
         manageMode,
   }) {
     return manageMode(messages, selected, message, selectedCount, isSelectMode,
-        isEditMode, isFavoriteMode);
+        isEditMode, isFavoriteMode, selectionVisible);
   }
 
   @override
@@ -660,7 +708,8 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
@@ -669,11 +718,12 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
   }) {
     return manageMode?.call(messages, selected, message, selectedCount,
-        isSelectMode, isEditMode, isFavoriteMode);
+        isSelectMode, isEditMode, isFavoriteMode, selectionVisible);
   }
 
   @override
@@ -686,7 +736,8 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
@@ -695,13 +746,14 @@ class _$_ManageMode extends _ManageMode {
             int selectedCount,
             bool isSelectMode,
             bool isEditMode,
-            bool isFavoriteMode)?
+            bool isFavoriteMode,
+            bool selectionVisible)?
         manageMode,
     required TResult orElse(),
   }) {
     if (manageMode != null) {
       return manageMode(messages, selected, message, selectedCount,
-          isSelectMode, isEditMode, isFavoriteMode);
+          isSelectMode, isEditMode, isFavoriteMode, selectionVisible);
     }
     return orElse();
   }
@@ -746,7 +798,8 @@ abstract class _ManageMode extends MessageControlState {
       required final int selectedCount,
       required final bool isSelectMode,
       required final bool isEditMode,
-      required final bool isFavoriteMode}) = _$_ManageMode;
+      required final bool isFavoriteMode,
+      required final bool selectionVisible}) = _$_ManageMode;
   const _ManageMode._() : super._();
 
   @override
@@ -763,6 +816,8 @@ abstract class _ManageMode extends MessageControlState {
   bool get isEditMode;
   @override
   bool get isFavoriteMode;
+  @override
+  bool get selectionVisible;
   @override
   @JsonKey(ignore: true)
   _$$_ManageModeCopyWith<_$_ManageMode> get copyWith =>

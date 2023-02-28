@@ -14,6 +14,7 @@ import '../../cubit/chat/message_search/message_search_cubit.dart';
 import '../../widget/chat/app_bar/chat_app_bar.dart';
 import '../../widget/chat/bottom_panel/chat_bottom_panel.dart';
 import '../../widget/chat/chat_box/chat_body.dart';
+import '../../widget/theme/theme_scope.dart';
 
 class ChatPage extends StatelessWidget {
   final ChatModel chat;
@@ -28,12 +29,28 @@ class ChatPage extends StatelessWidget {
     return _InitCubits(
       chat: chat,
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: ThemeScope.of(context).state.chatBackgroundColor == -1
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Color(ThemeScope.of(context).state.chatBackgroundColor),
         appBar: ChatAppBar(
           chat: chat,
         ),
         bottomNavigationBar: ChatBottomPanel(chatId: chat.id),
-        body: const ChatBody(),
+        body: Container(
+          decoration: BoxDecoration(
+            image: ThemeScope.of(context).state.imagePath == ''
+                ? null
+                : DecorationImage(
+                    image: FileImage(ThemeScope.of(context).state.image!),
+                    fit: BoxFit.cover,
+                  ),
+          ),
+          child: BlocBuilder<MessageSearchCubit, MessageSearchState>(
+            builder: (context, state) {
+              return const ChatBody();
+            },
+          ),
+        ),
       ),
     );
   }

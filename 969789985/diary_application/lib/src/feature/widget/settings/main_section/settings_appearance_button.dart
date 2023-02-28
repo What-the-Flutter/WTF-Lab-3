@@ -18,6 +18,7 @@ class SettingsAppearanceButton extends StatelessWidget {
       iconCodePoint: Icons.color_lens_outlined.codePoint,
       buttonTitle: 'Appearance',
       buttonDescription: 'Change the App\'s Appearance',
+      isRemovable: false,
     );
   }
 }

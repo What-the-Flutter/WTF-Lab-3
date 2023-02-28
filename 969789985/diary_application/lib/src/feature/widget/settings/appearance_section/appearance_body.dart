@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/util/resources/dimensions.dart';
 import '../general/settings_divider.dart';
-import 'appearance_color_example.dart';
-import 'appearance_colors_switcher.dart';
-import 'appearance_font_size_switcher.dart';
-import 'appearance_message_example.dart';
-import 'appearance_tag_add.dart';
+import 'appearance_section_elements/appearance_color_example.dart';
+import 'appearance_section_elements/appearance_colors_switcher.dart';
+import 'appearance_section_elements/appearance_default_values.dart';
+import 'appearance_section_elements/appearance_font_size_switcher.dart';
+import 'appearance_section_elements/appearance_group_header_switcher.dart';
+import 'appearance_section_elements/appearance_load_image_button.dart';
+import 'appearance_section_elements/appearance_message_alignment.dart';
+import 'appearance_section_elements/appearance_message_example.dart';
+import 'appearance_section_elements/appearance_radius_switcher.dart';
+import 'appearance_section_elements/appearance_tag_add.dart';
 
 class AppearanceBody extends StatelessWidget {
   const AppearanceBody({super.key});
@@ -17,14 +22,32 @@ class AppearanceBody extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: [
+        const SizedBox(height: Insets.medium),
         const AppearanceFontSizeSwitcher(),
         const SizedBox(height: Insets.medium),
-        const AppearanceMessageExample(message: 'Hello! ☺'),
-        const SizedBox(height: Insets.small),
-        const AppearanceMessageExample(
-          message:
-              'We hope you are in a great mood today, because it is important for us!',
+        const AppearanceMessageExample(),
+        const SizedBox(height: Insets.medium),
+        const AppearanceMessageAlignment(),
+        const SizedBox(height: Insets.medium),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Insets.appConstantLarge * 1.2,
+          ),
+          child: Row(
+            children: [
+              const Text(
+                'Date bubble',
+                style: TextStyle(fontSize: FontsSize.large),
+              ),
+              const SizedBox(width: Insets.medium),
+              const AppearanceGroupHeaderSwitcher(),
+            ],
+          ),
         ),
+        const SizedBox(height: Insets.medium),
+        const AppearanceRadiusSwitcher(),
+        const SizedBox(height: Insets.medium),
+        const AppearanceLoadImageButton(),
         const SettingsDivider(),
         Row(
           children: [
@@ -39,6 +62,8 @@ class AppearanceBody extends StatelessWidget {
         ),
         const SettingsDivider(),
         const AppearanceTagAdd(),
+        const SettingsDivider(),
+        const AppearanceDefaultValues(),
         const SettingsDivider(),
       ],
     );

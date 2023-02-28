@@ -9,6 +9,7 @@ import '../theme_switcher.dart';
 import 'drawer_notification_button.dart';
 import 'drawer_search_button.dart';
 import 'drawer_settings_button.dart';
+import 'drawer_share_button.dart';
 
 class NavigationDrawerMenu extends StatelessWidget {
   const NavigationDrawerMenu({super.key});
@@ -35,7 +36,7 @@ class NavigationDrawerMenu extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              ThemeSwitcher(),
+              const ThemeSwitcher(),
             ],
           ),
         ),
@@ -53,6 +54,7 @@ class NavigationDrawerMenu extends StatelessWidget {
         const DrawerSearchButton(),
         const DrawerNotificationButton(),
         const DrawerSettingsButton(),
+        const DrawerShareButton(),
       ],
     );
   }

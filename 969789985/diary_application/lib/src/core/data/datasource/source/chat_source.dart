@@ -5,9 +5,9 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../domain/api/chat/api_chat_provider.dart';
-import '../../../domain/models/firebase/chat/firebase_chat_model.dart';
+import '../../../domain/models/db/chat/firebase_chat_model.dart';
 import '../../../domain/models/local/chat/chat_model.dart';
+import '../../../domain/provider/chat/api_chat_provider.dart';
 import '../../../util/extension/snapshot_extension.dart';
 import '../../../util/typedefs.dart';
 import '../reference/chat_reference.dart';

@@ -26,14 +26,17 @@ class MessageSelectionCheckbox extends StatelessWidget {
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 200),
             opacity: state.isSelectMode && !state.isEditMode ? 1 : 0,
-            child: Checkbox(
-              value: state.selected.containsKey(message.id)
-                  ? state.selected[message.id]
-                  : false,
-              onChanged: (value) =>
-                  context.read<MessageControlCubit>().selectOne(message),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Radii.medium),
+            child: Visibility(
+              visible: state.selectionVisible,
+              child: Checkbox(
+                value: state.selected.containsKey(message.id)
+                    ? state.selected[message.id]
+                    : false,
+                onChanged: (value) =>
+                    context.read<MessageControlCubit>().selectOne(message),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Radii.medium),
+                ),
               ),
             ),
           ),

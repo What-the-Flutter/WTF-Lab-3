@@ -19,6 +19,7 @@ class SecurityFingerprintButton extends StatelessWidget {
       buttonTitle: 'Fingerprint',
       buttonDescription: 'Use your device\'s fingerprint',
       iconCodePoint: Icons.fingerprint.codePoint,
+      isRemovable: false,
     );
   }
 }

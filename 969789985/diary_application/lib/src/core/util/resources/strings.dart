@@ -6,6 +6,12 @@ abstract class AuthSelections {
   static const String withPasscodeAndBiometric = '_with_passcode_and_biometric';
 }
 
+abstract class MessageAlignment {
+  static const String start = '_start';
+  static const String center = '_center';
+  static const String end = '_end';
+}
+
 abstract class Strings {
   static const String chatTitleTooltipMessage =
       'Give a short and meaningful title (for example,\nif your chat is about sports events,\ngive it the name "Sport").';
@@ -37,4 +43,6 @@ abstract class Strings {
 
   static const String passcodeWarning =
       'Be careful, if you forget or lose your passcode, you will no longer be able to access your data';
+
+  static const String appGitShare = 'https://github.com/flutterwtf/WTF-Lab-3/tree/main/969789985/diary_application';
 }

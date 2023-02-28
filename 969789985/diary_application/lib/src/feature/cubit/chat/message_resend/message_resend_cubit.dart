@@ -2,16 +2,17 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/api/chat/api_chat_repository.dart';
 import '../../../../core/domain/models/local/chat/chat_model.dart';
 import '../../../../core/domain/models/local/message/message_model.dart';
+import '../../../../core/domain/repository/chat/api_chat_repository.dart';
 import '../../../../core/util/typedefs.dart';
 
 part 'message_resend_cubit.freezed.dart';
-
 part 'message_resend_state.dart';
 
 class MessageResendCubit extends Cubit<MessageResendState> {
+  final ApiChatRepository _repository;
+
   MessageResendCubit({
     required ApiChatRepository repository,
   })  : _repository = repository,
@@ -21,8 +22,6 @@ class MessageResendCubit extends Cubit<MessageResendState> {
             selectedChats: IMap(),
           ),
         );
-
-  final ApiChatRepository _repository;
 
   IList<ChatModel> get _chats => _repository.chats.value;
 
