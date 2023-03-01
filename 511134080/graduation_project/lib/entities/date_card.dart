@@ -12,17 +12,20 @@ class DateCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-          margin: EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.deepOrangeAccent.shade100,
-            borderRadius: BorderRadius.all(
-              Radius.circular(8),
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(30),
+              topLeft: Radius.circular(8),
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(30),
             ),
           ),
           child: Text(
             DateFormat('dd.MM.yyyy').format(date),
-            style: TextStyle(),
+            style: const TextStyle(),
           ),
         ),
       ],

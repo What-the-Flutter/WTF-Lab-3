@@ -4,7 +4,7 @@ class EventCardModel {
   String title;
   DateTime time;
   bool isFavourite;
-  bool isLongPress;
+  bool isSelected;
   bool isSelectionMode;
 
   Key id;
@@ -14,7 +14,7 @@ class EventCardModel {
     required this.time,
     required this.id,
     this.isFavourite = false,
-    this.isLongPress = false,
+    this.isSelected = false,
     this.isSelectionMode = false,
   });
 }

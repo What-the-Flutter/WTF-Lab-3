@@ -20,7 +20,7 @@ class ChatJournal extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
-          '/': (context) => HomePage(),
+          '/': (context) => const HomePage(),
         },
       ),
     );

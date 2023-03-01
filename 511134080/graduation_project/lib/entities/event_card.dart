@@ -6,22 +6,12 @@ import 'package:provider/provider.dart';
 import '../providers/events_provider.dart';
 
 class EventCard extends StatelessWidget {
-  final cardModel;
+  final EventCardModel cardModel;
 
-  EventCard({
-    required String title,
-    required DateTime time,
-    bool isFavourite = false,
-    bool isLongPress = false,
+  const EventCard({
+    required this.cardModel,
     required Key key,
-  })  : cardModel = EventCardModel(
-          title: title,
-          time: time,
-          id: key,
-          isFavourite: isFavourite,
-          isLongPress: isLongPress,
-        ),
-        super(key: key);
+  }) : super(key: key);
 
   Widget _createEventCardContent(BuildContext context) {
     return Column(
@@ -29,9 +19,9 @@ class EventCard extends StatelessWidget {
       children: [
         Text(
           cardModel.title,
-          style: TextStyle(),
+          style: const TextStyle(),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Row(
@@ -39,17 +29,17 @@ class EventCard extends StatelessWidget {
             Icon(
               Icons.check_circle,
               size: 16,
-              color: cardModel.isLongPress
+              color: cardModel.isSelected
                   ? Colors.black38
                   : Theme.of(context).primaryColor.withAlpha(0),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Text(
               DateFormat('hh:mm a').format(cardModel.time),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Consumer<EventsProvider>(
@@ -73,16 +63,16 @@ class EventCard extends StatelessWidget {
       onTap: () {
         if (!cardModel.isSelectionMode) {
           Provider.of<EventsProvider>(context, listen: false)
-              .manageFavouriteEventCard(this);
+              .manageFavouriteEventCard(cardModel);
         } else {
           Provider.of<EventsProvider>(context, listen: false)
-              .manageSelectedEvent(this);
+              .manageSelectedEvent(cardModel);
         }
       },
       onLongPress: () {
         if (!cardModel.isSelectionMode) {
           Provider.of<EventsProvider>(context, listen: false)
-              .turnOnSelectionMode(this);
+              .turnOnSelectionMode(cardModel);
         }
       },
       child: Row(
@@ -90,15 +80,15 @@ class EventCard extends StatelessWidget {
         children: [
           Consumer<EventsProvider>(
             builder: (context, provider, child) => Container(
-              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-              margin: EdgeInsets.all(8),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+              margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: cardModel.isLongPress
+                color: cardModel.isSelected
                     ? Theme.of(context).primaryColor.withAlpha(99)
                     : Theme.of(context).primaryColor.withAlpha(72),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
+                borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(8),
+                  topLeft: Radius.circular(8),
                   bottomRight: Radius.circular(8),
                 ),
               ),

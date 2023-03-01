@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/models/chat_model.dart';
+import 'package:graduation_project/providers/events_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../entities/event_list_title.dart';
 
@@ -10,42 +13,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _items = <Widget>[
-    EventListTile(
-      icon: Icon(
-        Icons.flight_takeoff,
-        size: 32,
-        color: Colors.white,
-      ),
-      title: 'Travel',
-      subtitle: 'No events. Click to create one.',
-      key: UniqueKey(),
-    ),
-    EventListTile(
-      icon: Icon(
-        Icons.weekend_outlined,
-        color: Colors.white,
-        size: 32,
-      ),
-      title: 'Family',
-      subtitle: 'No events. Click to create one.',
-      key: UniqueKey(),
-    ),
-    EventListTile(
-      icon: Icon(
-        Icons.fitness_center,
-        color: Colors.white,
-        size: 32,
-      ),
-      title: 'Sports',
-      subtitle: 'No events. Click to create one.',
-      key: UniqueKey(),
-    ),
-  ];
+  var chats = <ChatModel>[];
+
+  @override
+  void initState() {
+    super.initState();
+    chats = Provider.of<EventsProvider>(context, listen: false).chats;
+  }
+
+  Widget _createListTile(int index) {
+    return EventListTile(
+      chat: chats[index],
+    );
+  }
 
   AppBar _createAppBar() {
     return AppBar(
-      title: Text(
+      title: const Text(
         'Home',
         style: TextStyle(
           fontWeight: FontWeight.w600,
@@ -100,10 +84,12 @@ class _HomePageState extends State<HomePage> {
         ),
         Expanded(
           child: ListView.separated(
-            itemCount: _items.length,
+            itemCount: chats.length,
             itemBuilder: (context, index) {
-              return Material(
-                child: _items[index],
+              return Consumer<EventsProvider>(
+                builder: (context, provider, child) => Material(
+                  child: _createListTile(index),
+                ),
               );
             },
             separatorBuilder: (context, index) {

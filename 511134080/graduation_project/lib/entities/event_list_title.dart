@@ -6,20 +6,9 @@ import 'package:provider/provider.dart';
 import '../models/chat_model.dart';
 
 class EventListTile extends StatelessWidget {
-  final Icon icon;
+  final ChatModel chat;
 
-  final String title;
-
-  final String subtitle;
-
-  ChatModel chat;
-
-  EventListTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required Key super.key,
-  }) : chat = ChatModel(id: key);
+  const EventListTile({super.key, required this.chat});
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +22,18 @@ class EventListTile extends StatelessWidget {
             Radius.circular(24),
           ),
         ),
-        child: icon,
+        child: chat.icon,
       ),
-      title: Text(title),
-      subtitle: Text(subtitle),
+      title: Text(chat.title),
+      subtitle: Consumer<EventsProvider>(
+        builder: (context, provider, child) => Text(chat.lastEventTitle),
+      ),
       hoverColor: Colors.deepPurple.shade100,
       onTap: () {
-        context.read<EventsProvider>().addChat(chat);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => EventPage(
-              title: title,
               chat: chat,
             ),
           ),

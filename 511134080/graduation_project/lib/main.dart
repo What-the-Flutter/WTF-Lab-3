@@ -4,6 +4,6 @@ import 'chat_journal.dart';
 
 void main() {
   runApp(
-    ChatJournal(),
+    const ChatJournal(),
   );
 }
