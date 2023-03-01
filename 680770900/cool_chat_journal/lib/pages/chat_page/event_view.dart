@@ -79,6 +79,18 @@ class _EventViewState extends State<EventView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.event.category != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(widget.event.category!.icon),
+                    const SizedBox(width: 10),
+                    Text(widget.event.category!.name),
+                  ],
+                ),
+              ),
             eventContent,
             const SizedBox(height: 10.0),
             _createEventSubtitle(),

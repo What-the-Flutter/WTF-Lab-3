@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../cubit/chats_cubit.dart';
 import '../../model/chat.dart';
+import '../../model/chat_icons.dart';
 import '../../model/event.dart';
-import 'chat_icons.dart';
 import 'icon_view.dart';
 
 class AddChatPage extends StatefulWidget {
-  final Chat? oldChat;
-  final void Function(Chat oldChat, Chat newChat)? onEditChat;
-  final void Function(Chat)? onAddNewChat;
+  final int? oldChatIndex;
 
   const AddChatPage({
     super.key,
-    this.oldChat,
-    this.onAddNewChat,
-    this.onEditChat,
+    this.oldChatIndex,
   });
 
   @override
@@ -23,7 +21,6 @@ class AddChatPage extends StatefulWidget {
 
 class _AddChatPageState extends State<AddChatPage> {
   final _titleController = TextEditingController();
-
   bool _hasTitle = false;
   int _selectedIconIndex = 0;
 
@@ -33,19 +30,26 @@ class _AddChatPageState extends State<AddChatPage> {
     });
   }
 
-  void _onAddChat() {
+  void _saveChat(BuildContext context) {
     if (_hasTitle) {
+      final Chat? oldChat;
+      if (widget.oldChatIndex != null) {
+        oldChat = context.read<ChatsCubit>().state.chats[widget.oldChatIndex!];
+      } else {
+        oldChat = null;
+      }
+
       final chat = Chat(
         icon: ChatIcons.icons[_selectedIconIndex],
         name: _titleController.text,
-        events: widget.oldChat?.events ?? <Event>[],
-        createdTime: widget.oldChat?.createdTime ?? DateTime.now(),
+        events: oldChat?.events ?? <Event>[],
+        createdTime: oldChat?.createdTime ?? DateTime.now(),
       );
 
-      if (widget.oldChat == null) {
-        widget.onAddNewChat?.call(chat);
+      if (widget.oldChatIndex == null) {
+        context.read<ChatsCubit>().addNewChat(chat);
       } else {
-        widget.onEditChat?.call(widget.oldChat!, chat);
+        context.read<ChatsCubit>().editChat(widget.oldChatIndex!, chat);
       }
     }
 
@@ -60,7 +64,7 @@ class _AddChatPageState extends State<AddChatPage> {
 
   Widget _createTitle() {
     final String titleText;
-    if (widget.oldChat == null) {
+    if (widget.oldChatIndex == null) {
       titleText = 'Create a new page';
     } else {
       titleText = 'Edit Page';
@@ -121,8 +125,11 @@ class _AddChatPageState extends State<AddChatPage> {
 
     _titleController.addListener(_onChangeTitle);
 
-    if (widget.oldChat != null) {
-      _titleController.text = widget.oldChat!.name;
+    if (widget.oldChatIndex != null) {
+      final oldChat =
+          context.read<ChatsCubit>().state.chats[widget.oldChatIndex!];
+
+      _titleController.text = oldChat.name;
     }
   }
 
@@ -142,7 +149,7 @@ class _AddChatPageState extends State<AddChatPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(buttonIcon),
-        onPressed: _onAddChat,
+        onPressed: () => _saveChat(context),
       ),
     );
   }

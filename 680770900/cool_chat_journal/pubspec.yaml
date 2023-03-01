@@ -39,6 +39,8 @@ dependencies:
   intl: ^0.18.0
   image_picker: ^0.8.6+1
   flex_color_scheme: ^6.1.2
+  bloc: ^8.1.1
+  flutter_bloc: ^8.1.2
 
 dev_dependencies:
   flutter_test:
