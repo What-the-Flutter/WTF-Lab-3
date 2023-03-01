@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/providers/events_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'pages/home_page.dart';
 
@@ -7,17 +9,20 @@ class ChatJournal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => EventsProvider(),
+      child: MaterialApp(
+        title: 'Chat Journal',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+          '/': (context) => HomePage(),
+        },
       ),
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-      },
     );
   }
 }

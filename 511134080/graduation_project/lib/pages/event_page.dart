@@ -3,37 +3,38 @@ import 'package:graduation_project/entities/date_card.dart';
 import 'package:intl/intl.dart';
 
 import '../entities/event_card.dart';
+import '../models/chat_model.dart';
 
 class EventPage extends StatefulWidget {
   final String title;
 
+  ChatModel chat;
+
   EventPage({
     required this.title,
-    Key? key,
-  }) : super(key: key);
+    required this.chat,
+  });
 
   @override
   State<EventPage> createState() => _EventPageState();
 }
 
 class _EventPageState extends State<EventPage> {
-  var _eventCards = <Widget>[];
-
   final textFieldController = TextEditingController();
 
-  void clearTextInput() {
+  void _clearTextInput() {
     textFieldController.clear();
   }
 
   Widget _returnEventsOrHintMessage(BuildContext context) {
-    if (_eventCards.isNotEmpty) {
+    if (widget.chat.allCards.isNotEmpty) {
       return Expanded(
         flex: 10,
         child: ListView.builder(
-          itemCount: _eventCards.length,
+          itemCount: widget.chat.allCards.length,
           reverse: true,
           itemBuilder: (context, index) {
-            return _eventCards.reversed.elementAt(index);
+            return widget.chat.allCards.reversed.elementAt(index);
           },
         ),
       );
@@ -66,26 +67,67 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
-  void OnEnterEvent(String title) {
+  void _onEnterEvent(String title) {
     setState(() {
-      var lastEvent =
-          _eventCards.isEmpty ? null : _eventCards.last as EventCard;
+      var lastEvent = widget.chat.allCards.isEmpty
+          ? null
+          : widget.chat.allCards.last as EventCard;
       if (lastEvent == null ||
-          DateFormat('dd-MM-yyyy').format(lastEvent.time) !=
+          DateFormat('dd-MM-yyyy').format(lastEvent.cardModel.time) !=
               DateFormat('dd-MM-yyyy').format(DateTime.now())) {
-        _eventCards.add(
+        widget.chat.allCards.add(
           DateCard(date: DateTime.now()),
         );
       }
-      _eventCards.add(
+      widget.chat.allCards.add(
         EventCard(
           title: title,
           time: DateTime.now(),
+          key: UniqueKey(),
         ),
       );
-      clearTextInput();
+      _clearTextInput();
     });
   }
+
+  /*AppBar _createAppBar(BuildContext context) {
+    Consumer<EventsProvider>(builder: (context, provider, child) {
+      if (widget.chat.selectedCards.isEmpty) {
+        return AppBar(
+          centerTitle: true,
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+          title: Text(
+            widget.title,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.bookmark_border_outlined),
+              onPressed: () {},
+            ),
+          ],
+          backgroundColor: Theme.of(context).primaryColor,
+        );
+      } else {
+        return AppBar(
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+          leading: Icon(
+            Icons.close,
+          ),
+        );
+      }
+    });
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +185,7 @@ class _EventPageState extends State<EventPage> {
                           ),
                           onSubmitted: (String? value) {
                             if (value != '') {
-                              OnEnterEvent(value!);
+                              _onEnterEvent(value!);
                             }
                           },
                         ),
