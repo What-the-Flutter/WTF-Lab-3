@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,12 +19,13 @@ import 'settings_page/settings_state.dart';
 class InitBlocs extends StatelessWidget {
   final FirebaseProvider firebaseProvider;
   final SettingsProvider settingsProvider;
+  final User? user;
 
-  const InitBlocs({
-    required this.firebaseProvider,
+  InitBlocs({
+    required this.user,
     required this.settingsProvider,
     super.key,
-  });
+  }): firebaseProvider = FirebaseProvider(user: user);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class InitBlocs extends StatelessWidget {
         RepositoryProvider<SettingsRepository>(
           create: (context) =>
               SettingsRepository(settingsProvider: settingsProvider),
-        )
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -82,12 +84,15 @@ class InitBlocs extends StatelessWidget {
         ],
         child: BlocBuilder<AppCubit, AppState>(
           builder: (context, state) {
+            final appState = state;
             return BlocBuilder<SettingsCubit, SettingsState>(
               builder: (context, state) {
                 return MaterialApp(
                   theme: state.theme,
+                  debugShowCheckedModeBanner: false,
                   home: ChatJournal(
-                    state: state,
+                    settingsState: state,
+                    appState: appState,
                   ),
                 );
               },

@@ -10,4 +10,6 @@ abstract class ApiEventRepository {
   Future<void> deleteEvent(Event event);
 
   Future<void> updateEvent(Event event);
+
+  Future<List<Event>> getAllEvents();
 }

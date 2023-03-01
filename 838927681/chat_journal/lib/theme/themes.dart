@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'colors.dart';
 
-enum _Themes {
-  _light,
-  _dark,
-}
-
 class Themes {
-  static final eventColor = ChatJournalColors.lightGreen;
-  static final selectedEventColor = ChatJournalColors.accentLightGreen;
   static const _floatingActionButtonTheme = FloatingActionButtonThemeData(
     backgroundColor: ChatJournalColors.accentYellow,
   );
@@ -26,6 +19,7 @@ class Themes {
     primaryColor: ChatJournalColors.green,
     backgroundColor: ChatJournalColors.white,
     brightness: Brightness.light,
+    textTheme: normalTextTheme,
   );
 
   static final darkTheme = ThemeData(
@@ -41,5 +35,69 @@ class Themes {
       backgroundColor: ChatJournalColors.black,
     ),
     floatingActionButtonTheme: _floatingActionButtonTheme,
+    textTheme: normalTextTheme,
+  );
+
+  static TextTheme normalTextTheme = const TextTheme(
+    headline1: TextStyle(
+      fontSize: 24,
+    ),
+    headline2: TextStyle(
+      fontSize: 22,
+    ),
+    headline3: TextStyle(
+      fontSize: 20,
+    ),
+    headline4: TextStyle(
+      fontSize: 18,
+    ),
+    bodyText1: TextStyle(
+      fontSize: 16,
+    ),
+    bodyText2: TextStyle(
+      fontSize: 18,
+    ),
+  );
+
+  static TextTheme smallTextTheme = const TextTheme(
+    headline1: TextStyle(
+      fontSize: 22,
+    ),
+    headline2: TextStyle(
+      fontSize: 20,
+    ),
+    headline3: TextStyle(
+      fontSize: 18,
+    ),
+    headline4: TextStyle(
+      fontSize: 16,
+    ),
+    bodyText1: TextStyle(
+      fontSize: 14,
+    ),
+    bodyText2: TextStyle(
+      fontSize: 16,
+    ),
+  );
+
+  static TextTheme largeTextTheme = const TextTheme(
+    headline1: TextStyle(
+      fontSize: 26,
+    ),
+    headline2: TextStyle(
+      fontSize: 24,
+    ),
+    headline3: TextStyle(
+      fontSize: 22,
+    ),
+    headline4: TextStyle(
+      fontSize: 20,
+    ),
+    bodyText1: TextStyle(
+      fontSize: 18,
+    ),
+    bodyText2: TextStyle(
+      fontSize: 20,
+    ),
   );
 }

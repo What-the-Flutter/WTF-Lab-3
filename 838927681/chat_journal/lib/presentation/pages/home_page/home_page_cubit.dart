@@ -8,21 +8,23 @@ import '../../../domain/repositories/api_event_repository.dart';
 import 'home_page_state.dart';
 
 class HomePageCubit extends Cubit<HomePageState> {
-  final ApiChatRepository chatRepository;
-  final ApiEventRepository eventRepository;
-  late final StreamSubscription<List<Chat>> chatsStream;
+  final ApiChatRepository _chatRepository;
+  final ApiEventRepository _eventRepository;
+  late final StreamSubscription<List<Chat>> _chatsStream;
 
   HomePageCubit({
-    required this.eventRepository,
-    required this.chatRepository,
-  }) : super(const HomePageState(chats: [])) {
+    required ApiEventRepository eventRepository,
+    required ApiChatRepository chatRepository,
+  })  : _eventRepository = eventRepository,
+        _chatRepository = chatRepository,
+        super(const HomePageState(chats: [])) {
     init();
   }
 
   void init() async {
-    final chats = await chatRepository.getChats();
+    final chats = await _chatRepository.getChats();
     emit(state.copyWith(chats: chats));
-    chatsStream = chatRepository.chatsStream.listen(
+    _chatsStream = _chatRepository.chatsStream.listen(
       (event) {
         event.sort((a, b) => b.lastDate.compareTo(a.lastDate));
         emit(state.copyWith(chats: event));
@@ -31,21 +33,21 @@ class HomePageCubit extends Cubit<HomePageState> {
   }
 
   Future<void> updateChats() async {
-    final chats = await chatRepository.getChats();
+    final chats = await _chatRepository.getChats();
     emit(state.copyWith(chats: chats));
   }
 
   void addChat(Chat chat) {
     final chats = List<Chat>.from(state.chats);
     chats.add(chat);
-    chatRepository.addChat(chat);
     emit(state.copyWith(chats: chats));
+    _chatRepository.addChat(chat);
   }
 
   void deleteChat(Chat chat) {
     final chats = List<Chat>.from(state.chats);
     chats.remove(chat);
-    chatRepository.removeChat(chat);
+    _chatRepository.removeChat(chat);
     emit(state.copyWith(chats: chats));
   }
 
@@ -60,7 +62,7 @@ class HomePageCubit extends Cubit<HomePageState> {
   }
 
   Future<DateTime> _lastDate(String id) async {
-    final events = await eventRepository.getEvents(id);
+    final events = await _eventRepository.getEvents(id);
     return events.last.dateTime;
   }
 
@@ -68,5 +70,11 @@ class HomePageCubit extends Cubit<HomePageState> {
     return state.lastEvent != null
         ? state.lastEvent!.text
         : 'No events. Click to create one';
+  }
+
+  @override
+  Future<void> close() {
+    _chatsStream.cancel();
+    return super.close();
   }
 }

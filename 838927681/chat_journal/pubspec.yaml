@@ -39,6 +39,8 @@ dependencies:
   cached_network_image: ^3.2.3
   path_provider: ^2.0.12
   local_auth: ^2.1.3
+  share_plus: ^6.3.1
+  hashtager: ^1.0.4
 
 provider:
   intl: ^0.17.0

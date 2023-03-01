@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
-import '../../../theme/fonts.dart';
 import '../settings_page/settings_cubit.dart';
 import 'create_chat_cubit.dart';
 import 'create_chat_state.dart';
@@ -42,10 +41,15 @@ class CreateChatPage extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text(
-                      chat != null ? 'Create a new Page' : 'Edit Page',
-                      style: Fonts.createChatTitle,
-                    ),
+                    Text(chat != null ? 'Edit Page' : 'Create a new Page',
+                        style: context
+                            .watch<SettingsCubit>()
+                            .state
+                            .fontSize
+                            .headline2!
+                            .copyWith(
+                              fontWeight: FontWeight.bold,
+                            )),
                     _inputPanel(state, context),
                     _iconGrid(state, context),
                   ],
@@ -79,7 +83,9 @@ class CreateChatPage extends StatelessWidget {
         children: [
           Text(
             'Name of the Page',
-            style: Fonts.createChatInputTitle,
+            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+              color: ChatJournalColors.accentYellow,
+            ),
             textAlign: TextAlign.left,
           ),
           _textField(state, context),
@@ -89,7 +95,7 @@ class CreateChatPage extends StatelessWidget {
   }
 
   Widget _textField(CreateChatState state, BuildContext context) {
-    if (!state.isChanged && !state.isCreatingMode) {
+    if (!state.isChanged && !state.isCreatingMode && chat != null) {
       _controller.text = chat!.name;
     }
     return Container(
