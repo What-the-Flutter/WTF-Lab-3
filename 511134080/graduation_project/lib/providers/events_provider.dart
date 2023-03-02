@@ -136,6 +136,7 @@ class EventsProvider with ChangeNotifier {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();
+    updateLastEvent(chat);
     notifyListeners();
   }
 

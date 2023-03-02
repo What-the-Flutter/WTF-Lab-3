@@ -24,6 +24,7 @@ class _EventPageState extends State<EventPage> {
   final _textFieldController = TextEditingController();
   var _isEditingMode = false;
   var _isShowingFavourites = false;
+  var _isButtonCameraClicked = false;
   final FocusNode _myFocusNode = FocusNode();
 
   void _clearTextInput() {
@@ -353,11 +354,17 @@ class _EventPageState extends State<EventPage> {
                           },
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.camera_alt_rounded,
-                          color: Theme.of(context).primaryColor,
+                      Builder(
+                        builder: (c) => IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isButtonCameraClicked = !_isButtonCameraClicked;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.camera_alt_rounded,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       )
                     ],
