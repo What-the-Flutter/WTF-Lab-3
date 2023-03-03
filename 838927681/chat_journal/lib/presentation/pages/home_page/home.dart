@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
-import '../../../theme/fonts.dart';
 import '../../widgets/questionnaire_bot.dart';
 import '../chat_page/chat_page.dart';
 import '../create_chat_page/create_chat_cubit.dart';
@@ -84,9 +83,13 @@ class HomePage extends StatelessWidget {
           ListTile(
             title: Text(
               state.chats[i].name,
-              style: Fonts.mainPageChatTitle,
+              style: settingsState.fontSize.headline4!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(state.chats[i].lastMessage),
+            subtitle: Text(
+              state.chats[i].lastMessage,
+              style: settingsState.fontSize.bodyText1!,
+            ),
             leading: _chatIcon(state.chats[i], context),
           ),
           _divider(),
@@ -176,7 +179,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             chat.name,
-            style: Fonts.createChatTitle,
+            style: settingsState.fontSize.bodyText1!,
           ),
         ],
       ),
@@ -197,7 +200,7 @@ class HomePage extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('OK', style: Fonts.chatMenuFont),
+          child: Text('OK', style: settingsState.fontSize.headline4!),
         ),
       ],
     );
@@ -207,10 +210,11 @@ class HomePage extends StatelessWidget {
     return ListTile(
       title: Text(
         text,
-        style: Fonts.eventFont,
+        style: settingsState.fontSize.bodyText1!,
       ),
       subtitle: Text(
         DateFormat.yMd().add_jm().format(date),
+        style: settingsState.fontSize.bodyText1!,
       ),
     );
   }
@@ -272,7 +276,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 30),
           Text(
             name,
-            style: Fonts.chatMenuFont,
+            style: settingsState.fontSize.bodyText1!,
           )
         ],
       ),

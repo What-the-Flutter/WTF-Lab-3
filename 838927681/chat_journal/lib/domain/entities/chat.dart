@@ -1,4 +1,3 @@
-
 class Chat {
   final String id;
   final String name;

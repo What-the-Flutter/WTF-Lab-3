@@ -5,10 +5,11 @@ import '../../../domain/services/fingerptint_auth.dart';
 import 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
-  final ApiSettingsRepository settingsRepository;
+  final ApiSettingsRepository _settingsRepository;
 
-  AppCubit({required this.settingsRepository})
-      : super(const AppState(isLocked: true)) {
+  AppCubit({required ApiSettingsRepository settingsRepository})
+      : _settingsRepository = settingsRepository,
+        super(const AppState(isLocked: true)) {
     _init();
   }
 
@@ -16,16 +17,19 @@ class AppCubit extends Cubit<AppState> {
 
   void _init() async {
     final bool isAuth;
-    if (!state.isAuthenticated && await settingsRepository.isLocked) {
+    if (!state.isAuthenticated && await _settingsRepository.isLocked) {
       isAuth = await FingerPrintAuth.authenticate();
     } else {
       isAuth = true;
     }
-    emit(state.copyWith(isAuthenticated: isAuth));
+    emit(state.copyWith(isAuthenticated: isAuth, tryingUnlock: false));
   }
 
   Future<void> authenticate() async {
+    emit(state.copyWith(tryingUnlock: true));
     final isAuth = await FingerPrintAuth.authenticate();
-    emit(state.copyWith(isAuthenticated: isAuth));
+    emit(state.copyWith(isAuthenticated: isAuth, tryingUnlock: false));
   }
+
+  bool get tryingUnlock => state.tryingUnlock;
 }

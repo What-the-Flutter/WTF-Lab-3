@@ -5,6 +5,7 @@ import '../../../domain/entities/event.dart';
 class ChatState extends Equatable {
   final List<Event> events;
   final List<Event> favorites;
+  final Set<String> tags;
   final bool isSelecting;
   final int selectedCount;
   final bool isEditing;
@@ -18,6 +19,8 @@ class ChatState extends Equatable {
   final int? selectedRadioIndex;
   final int counterId;
   final String chatId;
+  final bool isAddingTag;
+  final String currentInput;
 
   ChatState({
     this.events = const [],
@@ -35,24 +38,31 @@ class ChatState extends Equatable {
     this.selectedRadioIndex = 0,
     this.counterId = 0,
     this.chatId = '',
+    this.tags = const {},
+    this.isAddingTag = false,
+    this.currentInput = '',
   });
 
-  ChatState copyWith(
-      {List<Event>? events,
-      List<Event>? favorites,
-      bool? isSelecting,
-      int? selectedCount,
-      bool? isEditing,
-      bool? isFavoritesMode,
-      bool? isTyping,
-      bool? isSendingImage,
-      int? selectedIndex,
-      bool? isSelectedImage,
-      bool? isSelectingCategory,
-      int? selectedIcon,
-      int? selectedRadioIndex,
-      int? counterId,
-      String? chatId}) {
+  ChatState copyWith({
+    List<Event>? events,
+    List<Event>? favorites,
+    bool? isSelecting,
+    int? selectedCount,
+    bool? isEditing,
+    bool? isFavoritesMode,
+    bool? isTyping,
+    bool? isSendingImage,
+    int? selectedIndex,
+    bool? isSelectedImage,
+    bool? isSelectingCategory,
+    int? selectedIcon,
+    int? selectedRadioIndex,
+    int? counterId,
+    String? chatId,
+    Set<String>? tags,
+    bool? isAddingTag,
+    String? currentInput,
+  }) {
     return ChatState(
       events: events ?? this.events,
       favorites: favorites ?? this.favorites,
@@ -69,6 +79,9 @@ class ChatState extends Equatable {
       selectedRadioIndex: selectedRadioIndex ?? this.selectedRadioIndex,
       counterId: counterId ?? this.counterId,
       chatId: chatId ?? this.chatId,
+      tags: tags ?? this.tags,
+      isAddingTag: isAddingTag ?? this.isAddingTag,
+      currentInput: currentInput ?? this.currentInput,
     );
   }
 
@@ -87,6 +100,9 @@ class ChatState extends Equatable {
         isSelectingCategory,
         selectedIcon,
         selectedRadioIndex,
-        chatId
+        chatId,
+        tags,
+        isAddingTag,
+        currentInput,
       ];
 }
