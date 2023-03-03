@@ -10,7 +10,7 @@ class ChatJournal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => EventsProvider(),
+      create: (_) => EventsProvider(),
       child: MaterialApp(
         title: 'Chat Journal',
         theme: ThemeData(
@@ -20,7 +20,7 @@ class ChatJournal extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
-          '/': (context) => const HomePage(),
+          '/': (_) => const HomePage(),
         },
       ),
     );

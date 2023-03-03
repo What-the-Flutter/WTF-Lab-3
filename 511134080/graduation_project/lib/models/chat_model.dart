@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:graduation_project/models/event_card_model.dart';
 
 class ChatModel {
-  Key id;
-  Icon icon;
+  dynamic id;
+  final int iconId;
   String title;
   String lastEventTitle = 'No events. Click here to create one.';
 
@@ -12,7 +11,7 @@ class ChatModel {
   var selectedCards = <EventCardModel>[];
 
   ChatModel({
-    required this.icon,
+    required this.iconId,
     required this.title,
     required this.id,
   });

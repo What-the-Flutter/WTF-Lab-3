@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/models/chat_model.dart';
 import 'package:graduation_project/providers/events_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../entities/event_list_title.dart';
+import '../widgets/event_list_title.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var chats = <ChatModel>[];
+  late final chats;
 
   @override
   void initState() {
@@ -58,8 +57,9 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8),
           child: ListTile(
             onTap: () {},
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             tileColor: Theme.of(context).highlightColor,
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -85,14 +85,14 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: ListView.separated(
             itemCount: chats.length,
-            itemBuilder: (context, index) {
+            itemBuilder: (_, index) {
               return Consumer<EventsProvider>(
-                builder: (context, provider, child) => Material(
+                builder: (_, __, ___) => Material(
                   child: _createListTile(index),
                 ),
               );
             },
-            separatorBuilder: (context, index) {
+            separatorBuilder: (_, __) {
               return const Divider(
                 thickness: 2,
               );

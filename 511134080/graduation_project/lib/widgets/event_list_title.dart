@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/pages/event_page.dart';
 import 'package:graduation_project/providers/events_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class EventListTile extends StatelessWidget {
             Radius.circular(24),
           ),
         ),
-        child: chat.icon,
+        child: icons[chat.iconId],
       ),
       title: Text(chat.title),
       subtitle: Consumer<EventsProvider>(

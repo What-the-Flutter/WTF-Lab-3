@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/entities/date_card.dart';
 import 'package:graduation_project/models/event_card_model.dart';
+import 'package:graduation_project/widgets/date_card.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../entities/event_card.dart';
 import '../models/chat_model.dart';
 import '../providers/events_provider.dart';
+import '../widgets/event_card.dart';
 
 class EventPage extends StatefulWidget {
   final ChatModel chat;
@@ -24,7 +24,6 @@ class _EventPageState extends State<EventPage> {
   final _textFieldController = TextEditingController();
   var _isEditingMode = false;
   var _isShowingFavourites = false;
-  var _isButtonCameraClicked = false;
   final FocusNode _myFocusNode = FocusNode();
 
   void _clearTextInput() {
@@ -32,14 +31,14 @@ class _EventPageState extends State<EventPage> {
   }
 
   Widget _createListViewItem(index) {
-    Iterable<EventCardModel> cards;
+    final Iterable<EventCardModel> cards;
     if (_isShowingFavourites) {
       cards = widget.chat.favouriteCards.reversed;
     } else {
       cards = widget.chat.allCards.reversed;
     }
 
-    var current = cards.elementAt(index);
+    final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
       return Column(
@@ -50,7 +49,7 @@ class _EventPageState extends State<EventPage> {
         ],
       );
     } else {
-      var next = cards.elementAt(index + 1);
+      final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
         return Column(
@@ -67,7 +66,7 @@ class _EventPageState extends State<EventPage> {
 
   void _onEnterEvent(String title) {
     if (!_isEditingMode) {
-      var cardModel = EventCardModel(
+      final cardModel = EventCardModel(
         title: title,
         time: DateTime.now(),
         id: UniqueKey(),
@@ -85,47 +84,48 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
-  Widget _returnEventsOrHintMessage(BuildContext context) {
-    if (widget.chat.allCards.isNotEmpty) {
-      if (_isShowingFavourites && widget.chat.favouriteCards.isEmpty) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          color: Theme.of(context).primaryColor.withAlpha(30),
-          child: Column(
-            children: [
-              Text(
-                'This is the page where you can track everything about "${widget.chat.title}!"\n',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
+  Widget _returnEvents() {
+    return Expanded(
+      flex: 10,
+      child: ListView.builder(
+        itemCount: _isShowingFavourites
+            ? widget.chat.favouriteCards.length
+            : widget.chat.allCards.length,
+        reverse: true,
+        itemBuilder: (_, index) {
+          return Consumer<EventsProvider>(
+            builder: (_, __, ___) => _createListViewItem(index),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _returnHintMessage() {
+    if (_isShowingFavourites) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.all(16),
+        color: Theme.of(context).primaryColor.withAlpha(30),
+        child: Column(
+          children: [
+            Text(
+              'This is the page where you can track everything about "${widget.chat.title}!"\n',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
               ),
-              const Text(
-                'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                ),
-              )
-            ],
-          ),
-        );
-      }
-      return Expanded(
-        flex: 10,
-        child: ListView.builder(
-          itemCount: _isShowingFavourites
-              ? widget.chat.favouriteCards.length
-              : widget.chat.allCards.length,
-          reverse: true,
-          itemBuilder: (context, index) {
-            return Consumer<EventsProvider>(
-              builder: (context, provider, child) => _createListViewItem(index),
-            );
-          },
+            ),
+            const Text(
+              'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+              ),
+            )
+          ],
         ),
       );
     } else {
@@ -315,12 +315,15 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventsProvider>(builder: (context, provider, child) {
+    return Consumer<EventsProvider>(builder: (context, _, __) {
       return Scaffold(
         appBar: _createAppBar(context),
         body: Column(
           children: [
-            _returnEventsOrHintMessage(context),
+            widget.chat.allCards.isEmpty ||
+                    _isShowingFavourites && widget.chat.favouriteCards.isEmpty
+                ? _returnHintMessage()
+                : _returnEvents(),
             Expanded(
               flex: 1,
               child: Align(
@@ -354,19 +357,13 @@ class _EventPageState extends State<EventPage> {
                           },
                         ),
                       ),
-                      Builder(
-                        builder: (c) => IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isButtonCameraClicked = !_isButtonCameraClicked;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.camera_alt_rounded,
-                            color: Theme.of(context).primaryColor,
-                          ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Theme.of(context).primaryColor,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

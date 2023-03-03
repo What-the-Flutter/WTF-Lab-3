@@ -43,7 +43,7 @@ class EventCard extends StatelessWidget {
               width: 5,
             ),
             Consumer<EventsProvider>(
-              builder: (context, provider, child) => Icon(
+              builder: (context, _, __) => Icon(
                 Icons.bookmark,
                 size: 16,
                 color: cardModel.isFavourite
@@ -79,7 +79,7 @@ class EventCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Consumer<EventsProvider>(
-            builder: (context, provider, child) => Container(
+            builder: (context, _, __) => Container(
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(

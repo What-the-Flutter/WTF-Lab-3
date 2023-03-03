@@ -7,29 +7,17 @@ import '../models/event_card_model.dart';
 class EventsProvider with ChangeNotifier {
   final _chats = <ChatModel>[
     ChatModel(
-      icon: const Icon(
-        Icons.flight_takeoff,
-        size: 32,
-        color: Colors.white,
-      ),
+      iconId: 0,
       title: 'Travel',
       id: UniqueKey(),
     ),
     ChatModel(
-      icon: const Icon(
-        Icons.weekend_outlined,
-        color: Colors.white,
-        size: 32,
-      ),
+      iconId: 1,
       title: 'Family',
       id: UniqueKey(),
     ),
     ChatModel(
-      icon: const Icon(
-        Icons.fitness_center,
-        color: Colors.white,
-        size: 32,
-      ),
+      iconId: 2,
       title: 'Sports',
       id: UniqueKey(),
     ),
@@ -46,13 +34,8 @@ class EventsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // void addChat(ChatModel chat) {
-  //   _chats.add(chat);
-  //   notifyListeners();
-  // }
-
   void manageFavouriteEventCard(EventCardModel cardModel) {
-    for (var chat in _chats) {
+    for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
         if (cardModel.isFavourite) {
           chat.favouriteCards.remove(cardModel);
@@ -67,7 +50,7 @@ class EventsProvider with ChangeNotifier {
   }
 
   void turnOnSelectionMode(EventCardModel cardModel) {
-    for (var chat in _chats) {
+    for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
         for (var card in chat.allCards) {
           card.isSelectionMode = true;
@@ -81,7 +64,7 @@ class EventsProvider with ChangeNotifier {
   }
 
   void manageSelectedEvent(EventCardModel cardModel) {
-    for (var chat in _chats) {
+    for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
         if (cardModel.isSelected) {
           chat.selectedCards.remove(cardModel);
@@ -101,7 +84,7 @@ class EventsProvider with ChangeNotifier {
   }
 
   void manageFavouritesFromSelectionMode(ChatModel chat) {
-    for (var card in chat.selectedCards) {
+    for (final card in chat.selectedCards) {
       if (card.isFavourite) {
         chat.favouriteCards.remove(card);
       } else {
@@ -110,7 +93,7 @@ class EventsProvider with ChangeNotifier {
       card.isFavourite = !card.isFavourite;
       card.isSelected = false;
     }
-    for (var card in chat.allCards) {
+    for (final card in chat.allCards) {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();
@@ -118,10 +101,10 @@ class EventsProvider with ChangeNotifier {
   }
 
   void cancelSelectionMode(ChatModel chat) {
-    for (var card in chat.selectedCards) {
+    for (final card in chat.selectedCards) {
       card.isSelected = false;
     }
-    for (var card in chat.allCards) {
+    for (final card in chat.allCards) {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();
@@ -129,10 +112,10 @@ class EventsProvider with ChangeNotifier {
   }
 
   void deleteSelectedCards(ChatModel chat) {
-    for (var card in chat.selectedCards) {
+    for (final card in chat.selectedCards) {
       chat.allCards.remove(card);
     }
-    for (var card in chat.allCards) {
+    for (final card in chat.allCards) {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();
@@ -142,11 +125,11 @@ class EventsProvider with ChangeNotifier {
 
   Future<void> copySelectedCards(ChatModel chat) async {
     String text = '';
-    for (var card in chat.selectedCards) {
+    for (final card in chat.selectedCards) {
       text += '${card.title}\n';
       card.isSelected = false;
     }
-    for (var card in chat.allCards) {
+    for (final card in chat.allCards) {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();
@@ -155,10 +138,10 @@ class EventsProvider with ChangeNotifier {
   }
 
   void editSelectedEventCard(ChatModel chat, newTitle) {
-    var selectedCard = chat.selectedCards.first;
+    final selectedCard = chat.selectedCards.first;
     selectedCard.title = newTitle;
     selectedCard.isSelected = false;
-    for (var card in chat.allCards) {
+    for (final card in chat.allCards) {
       card.isSelectionMode = false;
     }
     chat.selectedCards.clear();

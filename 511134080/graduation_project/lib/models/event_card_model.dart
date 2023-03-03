@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class EventCardModel {
   String title;
   DateTime time;
@@ -7,7 +5,7 @@ class EventCardModel {
   bool isSelected;
   bool isSelectionMode;
 
-  Key id;
+  dynamic id;
 
   EventCardModel({
     required this.title,
