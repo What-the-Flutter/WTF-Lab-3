@@ -1,18 +1,35 @@
+import 'package:flutter/foundation.dart';
 import 'package:graduation_project/models/event_card_model.dart';
 
+@immutable
 class ChatModel {
-  dynamic id;
+  final dynamic id;
   final int iconId;
-  String title;
-  String lastEventTitle = 'No events. Click here to create one.';
+  final String title;
+  final String lastEventTitle;
 
-  var allCards = <EventCardModel>[];
-  var favouriteCards = <EventCardModel>[];
-  var selectedCards = <EventCardModel>[];
+  final List<EventCardModel> allCards;
 
-  ChatModel({
+  const ChatModel({
     required this.iconId,
     required this.title,
     required this.id,
+    required this.allCards,
+    this.lastEventTitle = 'No events. Click here to create one.',
   });
+
+  ChatModel copyWith({
+    dynamic newId,
+    int? newIconId,
+    String? newTitle,
+    String? newLastEventTitle,
+    List<EventCardModel>? newAllCards,
+  }) {
+    return ChatModel(
+        id: newId ?? id,
+        iconId: newIconId ?? iconId,
+        title: newTitle ?? title,
+        lastEventTitle: newLastEventTitle ?? lastEventTitle,
+        allCards: newAllCards ?? allCards);
+  }
 }

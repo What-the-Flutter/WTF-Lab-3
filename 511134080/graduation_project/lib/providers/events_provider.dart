@@ -10,16 +10,19 @@ class EventsProvider with ChangeNotifier {
       iconId: 0,
       title: 'Travel',
       id: UniqueKey(),
+      allCards: const [],
     ),
     ChatModel(
       iconId: 1,
       title: 'Family',
       id: UniqueKey(),
+      allCards: const [],
     ),
     ChatModel(
       iconId: 2,
       title: 'Sports',
       id: UniqueKey(),
+      allCards: const [],
     ),
   ];
 
@@ -27,9 +30,10 @@ class EventsProvider with ChangeNotifier {
 
   void updateLastEvent(ChatModel chat) {
     if (chat.allCards.isNotEmpty) {
-      chat.lastEventTitle = chat.allCards.last.title;
+      chat = chat.copyWith(newLastEventTitle: chat.allCards.last.title);
     } else {
-      chat.lastEventTitle = 'No events. Click here to create one';
+      chat = chat.copyWith(
+          newLastEventTitle: 'No events. Click here to create one');
     }
     notifyListeners();
   }
@@ -37,12 +41,9 @@ class EventsProvider with ChangeNotifier {
   void manageFavouriteEventCard(EventCardModel cardModel) {
     for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
-        if (cardModel.isFavourite) {
-          chat.favouriteCards.remove(cardModel);
-        } else {
-          chat.favouriteCards.add(cardModel);
-        }
-        cardModel.isFavourite = !cardModel.isFavourite;
+        cardModel = cardModel.copyWith(
+          isFavourite: !cardModel.isFavourite,
+        );
         notifyListeners();
         return;
       }
@@ -53,10 +54,13 @@ class EventsProvider with ChangeNotifier {
     for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
         for (var card in chat.allCards) {
-          card.isSelectionMode = true;
+          card = card.copyWith(
+            isSelectionMode: true,
+          );
         }
-        cardModel.isSelected = true;
-        chat.selectedCards.add(cardModel);
+        cardModel = cardModel.copyWith(
+          isSelected: true,
+        );
         notifyListeners();
         return;
       }
@@ -67,16 +71,17 @@ class EventsProvider with ChangeNotifier {
     for (final chat in _chats) {
       if (chat.allCards.contains(cardModel)) {
         if (cardModel.isSelected) {
-          chat.selectedCards.remove(cardModel);
-          if (chat.selectedCards.isEmpty) {
+          if (chat.allCards.where((element) => element.isSelected).isEmpty) {
             for (var card in chat.allCards) {
-              card.isSelectionMode = false;
+              card = card.copyWith(
+                isSelectionMode: false,
+              );
             }
           }
-        } else {
-          chat.selectedCards.add(cardModel);
         }
-        cardModel.isSelected = !cardModel.isSelected;
+        cardModel = cardModel.copyWith(
+          isSelected: !cardModel.isSelected,
+        );
         notifyListeners();
         return;
       }
@@ -84,67 +89,78 @@ class EventsProvider with ChangeNotifier {
   }
 
   void manageFavouritesFromSelectionMode(ChatModel chat) {
-    for (final card in chat.selectedCards) {
-      if (card.isFavourite) {
-        chat.favouriteCards.remove(card);
-      } else {
-        chat.favouriteCards.add(card);
-      }
-      card.isFavourite = !card.isFavourite;
-      card.isSelected = false;
+    for (var card in chat.allCards.where((element) => element.isSelected)) {
+      card = card.copyWith(
+        isFavourite: !card.isFavourite,
+        isSelected: false,
+      );
     }
-    for (final card in chat.allCards) {
-      card.isSelectionMode = false;
+    for (var card in chat.allCards) {
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    chat.selectedCards.clear();
     notifyListeners();
   }
 
   void cancelSelectionMode(ChatModel chat) {
-    for (final card in chat.selectedCards) {
-      card.isSelected = false;
+    for (var card in chat.allCards.where((element) => element.isSelected)) {
+      card = card.copyWith(
+        isSelected: false,
+      );
     }
-    for (final card in chat.allCards) {
-      card.isSelectionMode = false;
+    for (var card in chat.allCards) {
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    chat.selectedCards.clear();
     notifyListeners();
   }
 
   void deleteSelectedCards(ChatModel chat) {
-    for (final card in chat.selectedCards) {
+    for (final card in chat.allCards.where((element) => element.isSelected)) {
       chat.allCards.remove(card);
     }
-    for (final card in chat.allCards) {
-      card.isSelectionMode = false;
+    for (var card in chat.allCards) {
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    chat.selectedCards.clear();
     updateLastEvent(chat);
     notifyListeners();
   }
 
   Future<void> copySelectedCards(ChatModel chat) async {
     String text = '';
-    for (final card in chat.selectedCards) {
+    for (var card in chat.allCards.where((element) => element.isSelected)) {
       text += '${card.title}\n';
-      card.isSelected = false;
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    for (final card in chat.allCards) {
-      card.isSelectionMode = false;
+    for (var card in chat.allCards) {
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    chat.selectedCards.clear();
     notifyListeners();
     await Clipboard.setData(ClipboardData(text: text));
   }
 
   void editSelectedEventCard(ChatModel chat, newTitle) {
-    final selectedCard = chat.selectedCards.first;
-    selectedCard.title = newTitle;
-    selectedCard.isSelected = false;
-    for (final card in chat.allCards) {
-      card.isSelectionMode = false;
+    var selectedCard =
+        chat.allCards.where((element) => element.isSelected).first;
+
+    selectedCard = selectedCard.copyWith(
+      newTitle: newTitle,
+      isSelected: false,
+    );
+
+    for (var card in chat.allCards) {
+      card = card.copyWith(
+        isSelectionMode: false,
+      );
     }
-    chat.selectedCards.clear();
     notifyListeners();
   }
 

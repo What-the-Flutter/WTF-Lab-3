@@ -9,9 +9,9 @@ import '../providers/events_provider.dart';
 import '../widgets/event_card.dart';
 
 class EventPage extends StatefulWidget {
-  final ChatModel chat;
+  ChatModel chat;
 
-  const EventPage({
+  EventPage({
     super.key,
     required this.chat,
   });
@@ -33,12 +33,18 @@ class _EventPageState extends State<EventPage> {
   Widget _createListViewItem(index) {
     final Iterable<EventCardModel> cards;
     if (_isShowingFavourites) {
-      cards = widget.chat.favouriteCards.reversed;
+      cards = widget.chat.allCards
+          .where((element) => element.isFavourite)
+          .toList()
+          .reversed;
     } else {
       cards = widget.chat.allCards.reversed;
     }
 
     final current = cards.elementAt(index);
+    print('CURRENT');
+    print('CURRENT');
+    print(current.isFavourite);
 
     if (cards.length == 1 || index == cards.length - 1) {
       return Column(
@@ -80,7 +86,7 @@ class _EventPageState extends State<EventPage> {
           .editSelectedEventCard(widget.chat, title);
       _isEditingMode = false;
       _myFocusNode.unfocus();
-      _textFieldController.text = '';
+      _clearTextInput();
     }
   }
 
@@ -89,7 +95,9 @@ class _EventPageState extends State<EventPage> {
       flex: 10,
       child: ListView.builder(
         itemCount: _isShowingFavourites
-            ? widget.chat.favouriteCards.length
+            ? widget.chat.allCards
+                .where((element) => element.isFavourite)
+                .length
             : widget.chat.allCards.length,
         reverse: true,
         itemBuilder: (_, index) {
@@ -189,11 +197,13 @@ class _EventPageState extends State<EventPage> {
   }
 
   AppBar _createAppBar(BuildContext context) {
-    if (widget.chat.selectedCards.isNotEmpty) {
+    if (widget.chat.allCards
+        .where((element) => element.isSelected)
+        .isNotEmpty) {
       return AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          '${widget.chat.selectedCards.length}',
+          '${widget.chat.allCards.where((element) => element.isSelected).length}',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w300,
@@ -223,12 +233,17 @@ class _EventPageState extends State<EventPage> {
             icon: const Icon(
               Icons.edit,
             ),
-            onPressed: widget.chat.selectedCards.length > 1
+            onPressed: widget.chat.allCards
+                        .where((element) => element.isSelected)
+                        .length >
+                    1
                 ? null
                 : () {
                     _isEditingMode = true;
-                    _textFieldController.text =
-                        widget.chat.selectedCards.first.title;
+                    _textFieldController.text = widget.chat.allCards
+                        .where((element) => element.isSelected)
+                        .first
+                        .title;
                     _myFocusNode.requestFocus();
                   },
             disabledColor: Theme.of(context).primaryColor,
@@ -321,7 +336,10 @@ class _EventPageState extends State<EventPage> {
         body: Column(
           children: [
             widget.chat.allCards.isEmpty ||
-                    _isShowingFavourites && widget.chat.favouriteCards.isEmpty
+                    _isShowingFavourites &&
+                        widget.chat.allCards
+                            .where((element) => element.isFavourite)
+                            .isEmpty
                 ? _returnHintMessage()
                 : _returnEvents(),
             Expanded(

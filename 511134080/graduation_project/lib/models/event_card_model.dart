@@ -1,13 +1,16 @@
+import 'package:flutter/foundation.dart';
+
+@immutable
 class EventCardModel {
-  String title;
-  DateTime time;
-  bool isFavourite;
-  bool isSelected;
-  bool isSelectionMode;
+  final String title;
+  final DateTime time;
+  final bool isFavourite;
+  final bool isSelected;
+  final bool isSelectionMode;
 
-  dynamic id;
+  final dynamic id;
 
-  EventCardModel({
+  const EventCardModel({
     required this.title,
     required this.time,
     required this.id,
@@ -15,4 +18,22 @@ class EventCardModel {
     this.isSelected = false,
     this.isSelectionMode = false,
   });
+
+  EventCardModel copyWith({
+    String? newTitle,
+    DateTime? newTime,
+    dynamic newId,
+    bool? isFavourite,
+    bool? isSelected,
+    bool? isSelectionMode,
+  }) {
+    return EventCardModel(
+      title: newTitle ?? title,
+      time: newTime ?? time,
+      id: newId ?? id,
+      isFavourite: isFavourite ?? this.isFavourite,
+      isSelected: isSelected ?? this.isSelected,
+      isSelectionMode: isSelectionMode ?? this.isSelectionMode,
+    );
+  }
 }

@@ -65,11 +65,13 @@ class EventCard extends StatelessWidget {
           Provider.of<EventsProvider>(context, listen: false)
               .manageFavouriteEventCard(cardModel);
         } else {
+          print('selection mode');
           Provider.of<EventsProvider>(context, listen: false)
               .manageSelectedEvent(cardModel);
         }
       },
       onLongPress: () {
+        print('Long press');
         if (!cardModel.isSelectionMode) {
           Provider.of<EventsProvider>(context, listen: false)
               .turnOnSelectionMode(cardModel);

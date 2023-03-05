@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project/providers/events_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../models/chat_model.dart';
 import '../widgets/event_list_title.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final chats;
+  late final List<ChatModel> chats;
 
   @override
   void initState() {
