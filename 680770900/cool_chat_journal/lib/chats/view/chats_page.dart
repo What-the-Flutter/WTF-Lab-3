@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../chat/models/chat.dart';
+import '../../chat_editor/chat_editor.dart';
 import '../../themes/custom_theme.dart';
 import '../cubit/chats_cubit.dart';
 import '../widgets/widgets.dart';
@@ -30,8 +31,13 @@ class ChatsView extends StatelessWidget {
         chat: chat,
         onDeleteChat: () => cubit.deleteChat(chat.id),
         onSwitchChatPinning: () => cubit.switchChatPinning(chat.id),
-        onEditChat: () => throw UnimplementedError(),
-      )
+        onEditChat: () => Navigator.of(context).push<void>(
+          ChatEditorPage.route(
+            chatsCubit: cubit,
+            sourceChat: chat,
+          ),
+        ),
+      ),
     );
   }
 
@@ -53,13 +59,7 @@ class ChatsView extends StatelessWidget {
       ),
       body: BlocBuilder<ChatsCubit, ChatsState>(
         builder: (_, state) {
-          //final chats = state.chats;
-          final chats = <Chat>[
-            Chat.empty,
-            Chat.empty,
-            Chat.empty,
-          ];
-
+          final chats = state.chats;
           return ListView.builder(
             itemCount: chats.length,
             itemBuilder: (context, index) => ChatCard(
@@ -76,12 +76,13 @@ class ChatsView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: null,
-        // onPressed: () => Navigator.of(context).push<void>(
-        //   ChatEditorPage.route(
-        //     context.read<ChatsCubit>(),
-        //   ),
-        // ), 
+        onPressed: () {
+          Navigator.of(context).push<void>(
+            ChatEditorPage.route(
+              chatsCubit: context.read<ChatsCubit>(),
+            ),
+          );
+        }
       ),
       bottomNavigationBar: const BottomNavigation(),
     );
