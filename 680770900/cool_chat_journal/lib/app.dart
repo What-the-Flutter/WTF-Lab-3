@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/chats/chats.dart';
+import 'chats/chats.dart';
 import 'themes/custom_theme.dart';
 
 class CoolChatJournalApp extends StatelessWidget {
@@ -14,7 +14,7 @@ class CoolChatJournalApp extends StatelessWidget {
           return MaterialApp(
             title: 'Cool Chat Journal',
             theme: CustomTheme.of(context),
-            home: const Chats(appName: 'Cool Chat Journal'),
+            home: const ChatsPage(),
           );
         }
       ),
