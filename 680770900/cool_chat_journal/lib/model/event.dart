@@ -2,6 +2,7 @@ import 'category.dart';
 
 /// Contains information about event.
 class Event {
+  final int id;
   final String content;
   final bool isImage;
   final bool isFavorite;
@@ -9,6 +10,7 @@ class Event {
   final Category? category;
 
   const Event({
+    this.id = 0,
     required this.content,
     required this.changeTime,
     this.isFavorite = false,

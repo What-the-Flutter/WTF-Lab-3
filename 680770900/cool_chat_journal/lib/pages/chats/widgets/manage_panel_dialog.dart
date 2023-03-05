@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubit/chats_cubit.dart';
-import '../add_chat_page/add_chat_page.dart';
+import '../../../model/chat.dart';
+import '../../edit_chat/edit_chat.dart';
+import '../cubit/chats_cubit.dart';
 import 'delete_dialog.dart';
 import 'info_dialog.dart';
 
 class ManagePanelDialog extends StatelessWidget {
-  final int chatIndex;
+  final Chat chat;
 
   const ManagePanelDialog({
     super.key,
-    required this.chatIndex,
+    required this.chat,
   });
 
   void _createDeleteDialog(BuildContext context) async {
@@ -21,16 +22,14 @@ class ManagePanelDialog extends StatelessWidget {
     );
 
     if (isDelete == true) {
-      context.read<ChatsCubit>().deletedChat(chatIndex);
+      context.read<ChatsCubit>().deleteChat(chat.id);
     }
   }
 
   void _showInfo(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => InfoDialog(
-        chat: context.read<ChatsCubit>().state.chats[chatIndex],
-      ),
+      builder: (context) => InfoDialog(chat: chat),
     );
   }
 
@@ -52,7 +51,7 @@ class ManagePanelDialog extends StatelessWidget {
           title: const Text('Pin/Unpin Page'),
           onTap: () {
             Navigator.pop(context);
-            context.read<ChatsCubit>().pinChat(chatIndex);
+            context.read<ChatsCubit>().switchChatPinning(chat.id);
           },
         ),
         ListTile(
@@ -63,15 +62,19 @@ class ManagePanelDialog extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text('Edit Page'),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context);
 
-            Navigator.push(
+            final newChat = await Navigator.push<Chat>(
               context,
               MaterialPageRoute(
-                builder: (_) => AddChatPage(oldChatIndex: chatIndex),
+                builder: (_) => EditChat(oldChat: chat),
               ),
             );
+
+            if (newChat != null) {
+              context.read<ChatsCubit>().editChat(chat.id, newChat);
+            }
           },
         ),
         ListTile(

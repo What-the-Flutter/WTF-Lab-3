@@ -3,29 +3,32 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubit/chats_cubit.dart';
-import '../../model/chat.dart';
-import '../chat_page/chat_page.dart';
+import '../../../model/chat.dart';
+import '../../chat/chat_page.dart';
+import '../../chat/cubit/chat_cubit.dart';
 import 'manage_panel_dialog.dart';
 
 class ChatCard extends StatelessWidget {
-  final int chatIndex;
-  final bool isPinned;
+  final Chat chat;
 
   ChatCard({
     super.key,
-    required this.chatIndex,
-    this.isPinned = false,
+    required this.chat,
   });
 
   void _createManagePanel(BuildContext context) {
+    final chatCubit = context.read<ChatCubit>();
+
     showModalBottomSheet(
       context: context,
-      builder: (context) => ManagePanelDialog(chatIndex: chatIndex),
+      builder: (context) => BlocProvider.value(
+        value: chatCubit,
+        child: ManagePanelDialog(chat: chat),
+      ),
     );
   }
 
-  String _generateSubtitle(Chat chat, {int maxLength = 20}) {
+  String _generateSubtitle({int maxLength = 20}) {
     final String subtitle;
 
     if (chat.events.isNotEmpty) {
@@ -49,8 +52,7 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final chat = context.read<ChatsCubit>().state.chats[chatIndex];
-    final subtitle = _generateSubtitle(chat);
+    final subtitle = _generateSubtitle();
 
     return Card(
       child: InkWell(
@@ -59,7 +61,7 @@ class ChatCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChatPage(chatIndex: chatIndex),
+              builder: (context) => ChatPage(chat: chat),
             ),
           );
         },
@@ -75,7 +77,7 @@ class ChatCard extends StatelessWidget {
                 ),
                 child: Icon(chat.icon),
               ),
-              if (isPinned)
+              if (chat.isPinned)
                 Container(
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,

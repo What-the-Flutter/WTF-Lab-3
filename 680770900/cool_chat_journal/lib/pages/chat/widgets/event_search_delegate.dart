@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../model/event.dart';
+import '../../../model/event.dart';
 import 'event_view.dart';
 
 class EventSearchDelegate extends SearchDelegate {

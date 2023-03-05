@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../model/chat.dart';
-import '../../themes/custom_theme.dart';
-import '../add_chat_page/icon_view.dart';
+import '../../../model/chat.dart';
+import '../../../themes/custom_theme.dart';
+import '../../edit_chat/widgets/icon_view.dart';
 
 class InfoDialog extends StatelessWidget {
   final Chat chat;
