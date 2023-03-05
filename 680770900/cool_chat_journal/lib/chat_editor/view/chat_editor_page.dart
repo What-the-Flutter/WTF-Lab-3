@@ -95,9 +95,15 @@ class ChatEditorView extends StatelessWidget {
   }
 
   Widget _createTitleField(BuildContext context) {
+    final initialValue = sourceChat?.name;
+    if (initialValue != null) {
+      context.read<ChatEditorCubit>().changeTitle(initialValue);
+    }
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: TextField(
+      child: TextFormField(
+        initialValue: initialValue,
         decoration: const InputDecoration(
           labelText: 'Name of the Page',
           border: OutlineInputBorder(
@@ -105,7 +111,7 @@ class ChatEditorView extends StatelessWidget {
           ),
         ),
         onChanged: (value) =>
-           context.read<ChatEditorCubit>().changeTitle(value),
+          context.read<ChatEditorCubit>().changeTitle(value),
       ),
     );
   }
