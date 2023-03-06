@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/app_theme/inherited_app_theme.dart';
-import '../../widgets/app_theme/theme_notifier.dart';
+import '../app_theme/inherited_app_theme.dart';
+import '../app_theme/theme_notifier.dart';
 
 
 

@@ -1,48 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../domain/entities/chat.dart';
+import '../../screens/add_chat.dart';
 import '../../screens/chat/chat.dart';
-import '../../widgets/app_theme/inherited_app_theme.dart';
-import '../add_chat.dart';
+import '../../screens/home/home_cubit.dart';
+import '../../screens/home/home_state.dart';
+import '../app_theme/inherited_app_theme.dart';
 
 class ChatList extends StatefulWidget {
   final List<Chat> _pages;
-  final Function _edit;
-  final Function _delete;
-  final Function _pin;
-  final Function _getChats;
 
   ChatList({
     required pages,
-    required editFunc,
-    required deleteFunc,
-    required pinFunc,
-    required getChatsFunc,
-  })  : _pages = pages,
-        _edit = editFunc,
-        _delete = deleteFunc,
-        _getChats = getChatsFunc,
-        _pin = pinFunc;
+  }) : _pages = pages;
 
   @override
   State<ChatList> createState() => _ChatListState(pages: _pages);
 }
 
 class _ChatListState extends State<ChatList> {
-  final List<Chat> _pages;
+  final List<Chat> _pages = [];
   final List<Chat> _pinnedPages = [];
+  final DateFormat formatter = DateFormat('Hm');
 
-  _ChatListState({required pages}) : _pages = pages;
+  _ChatListState({required pages});
 
   @override
   Widget build(BuildContext context) {
+    _pages.clear();
+    _pages.addAll(ReadContext(context).read<HomeCubit>().getChats());
     _setPinnedPages();
-    return Column(
-      children: <Widget>[
-        _listView(_pinnedPages, true),
-        _listView(_pages, false),
-      ],
-    );
+    return BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+      return Column(
+        children: <Widget>[
+          _listView(_pinnedPages, true),
+          _listView(_pages, false),
+        ],
+      );
+    });
   }
 
   Widget _listView(List<Chat> pages, bool pinableList) {
@@ -68,6 +65,7 @@ class _ChatListState extends State<ChatList> {
             leading: _setPinableIcon(pages[index]),
             onTap: () => _tapHandler(
               context,
+              index,
               _pages[_pages.indexOf(
                 pages[index],
               )],
@@ -240,7 +238,7 @@ class _ChatListState extends State<ChatList> {
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          page.createTime,
+                          formatter.format(page.createTime),
                           style: TextStyle(
                             color: InheritedAppTheme.of(context)
                                 ?.getTheme
@@ -287,6 +285,7 @@ class _ChatListState extends State<ChatList> {
 
   void _setPinnedPages() {
     _pinnedPages.clear();
+    // var pages = ReadContext(context).read<HomeCubit>().getChats();
     for (var i = 0; i < _pages.length; i++) {
       if (_pages[i].isPinned == true) {
         _pinnedPages.add(_pages[i]);
@@ -302,34 +301,34 @@ class _ChatListState extends State<ChatList> {
       ),
     );
     if (edited != null) {
-      widget._edit(
-        oldChat: chat,
-        editedChat: chat.copyWith(
-          name: edited.name,
-          pageIcon: edited.pageIcon,
-          isPinned: edited.isPinned,
-        ),
-      );
+      ReadContext(context).read<HomeCubit>().editChat(
+            editedChat: chat.copyWith(
+              name: edited.name,
+              pageIcon: edited.pageIcon,
+              isPinned: edited.isPinned,
+            ),
+          );
       Navigator.pop(context);
     }
   }
 
   void _delete(BuildContext context, Chat chat) {
-    widget._delete(chat: chat);
+    ReadContext(context).read<HomeCubit>().deleteChat(chat: chat);
     Navigator.pop(context);
   }
 
   void _pin(BuildContext context, Chat chat) {
-    widget._pin(chat: chat);
+    ReadContext(context)
+        .read<HomeCubit>()
+        .pinChat(chat: chat.copyWith(isPinned: !chat.isPinned));
     Navigator.pop(context);
   }
 
-  void _tapHandler(BuildContext context, Chat page) {
+  void _tapHandler(BuildContext context, int index, Chat page) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ChatScreen(
-          chat: page,
-          getChatsDelegate: widget._getChats,
+          chat: ReadContext(context).read<HomeCubit>().getChat(index),
         ),
       ),
     );

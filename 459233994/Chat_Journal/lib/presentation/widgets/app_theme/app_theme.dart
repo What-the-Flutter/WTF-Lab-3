@@ -21,9 +21,27 @@ class _AppThemeState extends State<AppTheme> {
   final ThemeNotifier _theme = ThemeNotifier();
 
   _AppThemeState({theme}) {
+    loadTheme();
     if (theme != null) {
       _theme.update(theme);
     }
+  }
+
+  void loadTheme() async {
+    await _theme.loadPreferences();
+    setState(() {
+      if(!_theme.isDefaultTheme){_theme.getStartTheme(CustomTheme(
+        name: 'black',
+        themeColor: const Color(0xff000000),
+        auxiliaryColor: const Color(0xff7F8487),
+        keyColor: const Color(0xffffffff),
+        backgroundColor: const Color(0xff0F0E0E),
+        textColor: const Color(0xffffffff),
+        iconColor: const Color(0xffffffff),
+        actionColor: const Color(0xff1E5128),
+      ));}
+    });
+
   }
 
   void _changeTheme() {
@@ -50,6 +68,8 @@ class _AppThemeState extends State<AppTheme> {
                 iconColor: const Color(0xff829399),
                 actionColor: const Color(0xffD0F4EA),
               );
+        print(theme.name);
+
         _theme.update(theme);
       },
     );

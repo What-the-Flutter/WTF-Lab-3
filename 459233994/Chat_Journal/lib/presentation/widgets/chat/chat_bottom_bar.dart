@@ -5,27 +5,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/entities/event.dart';
-import '../../widgets/app_theme/inherited_app_theme.dart';
+import '../../screens/chat/chat_cubit.dart';
+import '../app_theme/inherited_app_theme.dart';
 import 'chat_bottom_bar_cubit.dart';
 import 'chat_bottom_bar_state.dart';
 
 class ChatBottomBar extends StatefulWidget {
-  final Function _addToChat;
+  final int chatId;
 
   ChatBottomBar({
-    required addToChat,
-  }) : _addToChat = addToChat;
+    required this.chatId,
+  });
 
   @override
-  State<ChatBottomBar> createState() => _ChatBottomBarState(
-        addToChat: _addToChat,
-      );
+  State<ChatBottomBar> createState() => _ChatBottomBarState();
 }
 
 class _ChatBottomBarState extends State<ChatBottomBar> {
   final _textController = TextEditingController();
   final GlobalKey _globalKey = GlobalKey();
-  final Function _addToChat;
   final List<IconData> _icons = [
     Icons.remove_circle,
     Icons.title,
@@ -47,10 +45,6 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
     Icons.castle,
   ];
   int _pickedIcon = 0;
-
-  _ChatBottomBarState({
-    required addToChat,
-  }) : _addToChat = addToChat;
 
   @override
   void dispose() {
@@ -114,12 +108,12 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
     );
     if (pickedFile != null) {
       var imageFile = File(pickedFile.path);
-      _addToChat(
-        Event(
-          imageData: imageFile,
-        ),
-        context,
-      );
+      ReadContext(context).read<ChatCubit>().addEventToChat(
+            Event(
+              chatId: widget.chatId,
+              imageData: imageFile,
+            ),
+          );
     }
   }
 
@@ -134,17 +128,19 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
             ),
             onTap: () {
               _pickedIcon == 0
-                  ? _addToChat(
-                      Event(textData: _textController.text),
-                      context,
-                    )
-                  : _addToChat(
-                      Event(
-                        textData: _textController.text,
-                        category: _icons[_pickedIcon],
-                      ),
-                      context,
-                    );
+                  ? ReadContext(context).read<ChatCubit>().addEventToChat(
+                        Event(
+                          textData: _textController.text,
+                          chatId: widget.chatId,
+                        ),
+                      )
+                  : ReadContext(context).read<ChatCubit>().addEventToChat(
+                        Event(
+                          chatId: widget.chatId,
+                          textData: _textController.text,
+                          category: _icons[_pickedIcon],
+                        ),
+                      );
               ReadContext(_globalKey.currentContext!)
                   .read<ChatBottomBarCubit>()
                   .changeState('');

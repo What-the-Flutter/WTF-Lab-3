@@ -1,22 +1,31 @@
+import '../../../data/repos/event_repository.dart';
 import '../../../domain/entities/chat.dart';
 
-abstract class ChatState {}
+class ChatState {
+  final EventRepositoryImpl eventRepository = EventRepositoryImpl();
+  final Chat? chat;
+  final bool isLoaded;
+  final bool? isFavorite;
+  final bool? isSearched;
 
-class ChatNotLoaded extends ChatState {}
+  ChatState({
+    this.chat,
+    this.isFavorite,
+    this.isSearched,
+    required this.isLoaded,
+  });
 
-class ChatLoaded extends ChatState {
-  final Chat chat;
-  final bool isFavorite;
-
-  ChatLoaded({required this.chat, required this.isFavorite});
-
-  ChatLoaded copyWith({
+  ChatState copyWith({
     Chat? chat,
     bool? isFavorite,
+    bool? isSearched,
+    bool? isLoaded,
   }) {
-    return ChatLoaded(
+    return ChatState(
+      isLoaded: isLoaded ?? this.isLoaded,
       chat: chat ?? this.chat,
       isFavorite: isFavorite ?? this.isFavorite,
+      isSearched: isSearched ?? this.isSearched,
     );
   }
 }
