@@ -149,10 +149,6 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  // void updateCurrentText(String currentText) {
-  //   emit(state.copyWith(currentText: currentText));
-  // }
-
   void resetSelection() {
     emit(
       state.copyWith(

@@ -12,7 +12,6 @@ class ChatState extends Equatable {
   final bool isEditMode;
   final bool isFavoriteMode;
   final List<int> selectedEventsIds;
-  //final String currentText;
   final bool showCategories;
   final Category? selectedCategory;
 
@@ -23,7 +22,6 @@ class ChatState extends Equatable {
     this.isFavoriteMode = false,
     this.selectedEventsIds = const [],
     this.showCategories = false,
-    //this.currentText = '',
     this.selectedCategory,
   });
 
@@ -33,7 +31,6 @@ class ChatState extends Equatable {
     bool? isEditMode,
     bool? isFavoriteMode,
     List<int>? selectedEventsIds,
-    //String? currentText,
     bool? showCategories,
     NullPropertyWrapper<Category?>? selectedCategory,
   }) =>
@@ -43,7 +40,6 @@ class ChatState extends Equatable {
         isEditMode: isEditMode ?? this.isEditMode,
         isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
         selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
-        //currentText: currentText ?? this.currentText,
         showCategories: showCategories ?? this.showCategories,
         selectedCategory: selectedCategory != null
             ? selectedCategory.value
@@ -57,7 +53,6 @@ class ChatState extends Equatable {
         isEditMode,
         isFavoriteMode,
         selectedEventsIds,
-        //currentText,
         showCategories,
         selectedCategory
       ];
