@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'theme_saver.dart';
 import 'themes.dart';
 
 class CustomTheme extends StatefulWidget {
   final Widget child;
-  final ThemeKeys initalThemeKey;
 
   const CustomTheme({
     super.key,
-    this.initalThemeKey = ThemeKeys.light,
     required this.child,
   });
 
@@ -27,19 +26,16 @@ class CustomTheme extends StatefulWidget {
   }
 
   @override
-  _CustomThemeState createState() => _CustomThemeState(initalThemeKey);
+  _CustomThemeState createState() => _CustomThemeState();
 }
 
 class _CustomThemeState extends State<CustomTheme> {
-  late ThemeData _theme;
-  late ThemeKeys _currentKey;
+  final _saver = ThemeSaver();
+
+  var _theme = AppThemes.getThemeFromKey(ThemeKeys.light);
+  var _currentKey = ThemeKeys.light;
 
   ThemeData get theme => _theme;
-
-  _CustomThemeState(ThemeKeys initalThemeKey) {
-    _theme = AppThemes.getThemeFromKey(initalThemeKey);
-    _currentKey = initalThemeKey;
-  }
 
   void _setNextTheme() {
     switch (_currentKey) {
@@ -64,13 +60,22 @@ class _CustomThemeState extends State<CustomTheme> {
       _theme = AppThemes.getThemeFromKey(key);
       _currentKey = key;
     });
+
+    _saver.save(key);
   }
 
   @override
   void initState() {
     super.initState();
-    _theme = AppThemes.getThemeFromKey(widget.initalThemeKey);
-    _currentKey = widget.initalThemeKey;
+
+    _saver.read().then(
+      (theme) {
+        setState(() {
+          _theme = AppThemes.getThemeFromKey(theme);
+          _currentKey = theme;  
+        });
+      }
+    );    
   }
 
   @override
