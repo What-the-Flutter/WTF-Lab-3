@@ -53,9 +53,8 @@ class ChatEditorView extends StatelessWidget {
     if (title.isNotEmpty) {
       final chatsCubit = context.read<ChatsCubit>();
       final iconIndex = context.read<ChatEditorCubit>().state.iconIndex;
-      final nextId = chatsCubit.state.nextId;
       final chat = Chat(
-        id: sourceChat?.id ?? nextId,
+        id: sourceChat?.id ?? 0,
         icon: ChatIcons.icons[iconIndex],
         name: title,
         events: sourceChat?.events ?? <Event>[],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../chat/models/chat.dart';
+import '../../chat/chat.dart';
 import '../../chat_editor/chat_editor.dart';
 import '../../themes/custom_theme.dart';
 import '../cubit/chats_cubit.dart';
@@ -65,11 +65,12 @@ class ChatsView extends StatelessWidget {
             itemBuilder: (context, index) => ChatCard(
               chat: chats[index],
               onOpenManagePanel: () => _openManagePanel(context, chats[index]),
-              // onOpenChat: () => Navigator.of(context).push<void>(
-              //   ChatPage.route(
-              //     context.read<ChatsCubit>(),
-              //   ),
-              // ),
+              onOpenChat: () => Navigator.of(context).push<void>(
+                ChatPage.route(
+                  chatsCubit: context.read<ChatsCubit>(),
+                  chat: chats[index],
+                ),
+              ),
             ),
           );
         }
