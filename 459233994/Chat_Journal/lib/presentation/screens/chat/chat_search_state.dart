@@ -1,12 +1,21 @@
 import '../../../domain/entities/event.dart';
 
-abstract class ChatSearchState {}
+class ChatSearchState {
+  final bool isSearched;
+  final List<Event>? events;
 
-class ChatSearchLoaded extends ChatSearchState {
-  List<Event> events;
-  ChatSearchLoaded({required this.events});
+  ChatSearchState({
+    required this.isSearched,
+    this.events,
+  });
+
+  ChatSearchState copyWith({
+    List<Event>? events,
+    bool? isSearched,
+  }) {
+    return ChatSearchState(
+      isSearched: isSearched ?? this.isSearched,
+      events: events ?? this.events,
+    );
+  }
 }
-
-class ChatSearchNotLoaded extends ChatSearchState {}
-
-class ChatNotSearch extends ChatSearchState {}

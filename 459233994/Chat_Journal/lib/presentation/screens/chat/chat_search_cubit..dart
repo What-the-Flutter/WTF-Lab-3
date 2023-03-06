@@ -4,12 +4,10 @@ import '../../../domain/entities/event.dart';
 import 'chat_search_state.dart';
 
 class ChatSearchCubit extends Cubit<ChatSearchState> {
-  ChatSearchCubit() : super(ChatNotSearch());
+  ChatSearchCubit() : super(ChatSearchState(isSearched: false));
 
-  void changeState() {
-    (state is ChatNotSearch || state is ChatSearchLoaded)
-        ? emit(ChatSearchNotLoaded())
-        : emit(ChatNotSearch());
+  void closeSearch() {
+    emit(ChatSearchState(isSearched: false));
   }
 
   Future<void> searchEvents(String event, List<Event> events) async {
@@ -17,9 +15,8 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
       (element) =>
           (element.textData != null && element.textData!.contains(event)),
     );
-    print(searchedEvents.length);
     emit(
-      ChatSearchLoaded(events: searchedEvents.toList()),
+      state.copyWith(events: searchedEvents.toList(), isSearched: true),
     );
   }
 }
