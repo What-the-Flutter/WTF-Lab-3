@@ -1,110 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../cubit/chats_cubit.dart';
 import '../../model/chat.dart';
+import '../../model/chats_state.dart';
 import '../../model/event.dart';
-import 'app_bar_builder.dart';
 import 'bottom_panel.dart';
 import 'delete_dialog.dart';
+import 'event_search_delegate.dart';
 import 'event_view.dart';
+import 'transfer_dialog.dart';
 
 class ChatPage extends StatefulWidget {
-  final Chat chat;
+  final int chatIndex;
 
-  const ChatPage(this.chat);
+  const ChatPage({required this.chatIndex});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final Map<int, bool> _selectedFlag = {};
-  late final AppBarBuilder _appBarBuilder;
-  bool _showFavorites = false;
-  bool _isEditMode = false;
+  final _selectedFlag = <int, bool>{};
+  var _showFavorites = false;
+  var _isEditMode = false;
 
   bool _isSelectionMode() => _countSelectedEvents() != 0;
   bool _isHasImage() => _selectedFlag.keys
       .where((key) => _selectedFlag[key] == true)
-      .where((key) => widget.chat.events[key].isImage)
+      .where((key) => _chat.events[key].isImage)
       .isNotEmpty;
 
-  void _addTextEvent(String eventText) {
+  Chat get _chat => context.read<ChatsCubit>().state.chats[widget.chatIndex];
+
+  void _resetSelection() {
     setState(() {
-      widget.chat.events.add(
-        Event(
-          content: eventText,
-          changeTime: DateTime.now(),
-        ),
-      );
-    });
-  }
-
-  Future<ImageSource?> _showImageDialog() {
-    return showDialog<ImageSource>(
-      context: context,
-      builder: (context) =>
-          AlertDialog(content: const Text('Choose image source'), actions: [
-        ElevatedButton(
-          child: const Text('Camera'),
-          onPressed: () => Navigator.pop(context, ImageSource.camera),
-        ),
-        ElevatedButton(
-          child: const Text('Gallery'),
-          onPressed: () => Navigator.pop(context, ImageSource.gallery),
-        ),
-      ]),
-    );
-  }
-
-  Future<void> _uploadImage(ImageSource source) async {
-    final image = await ImagePicker().pickImage(source: source);
-
-    if (image != null) {
-      widget.chat.events.add(Event(
-        content: image.path,
-        isImage: true,
-        changeTime: DateTime.now(),
-      ));
-    }
-  }
-
-  void _addImage() {
-    _showImageDialog().then((source) async {
-      if (source != null) {
-        await _uploadImage(source);
+      for (final eventId in _selectedFlag.keys) {
+        _selectedFlag[eventId] = false;
       }
-
-      setState(() {});
     });
-  }
-
-  void _editEvent(String eventText) {
-    final index =
-        _selectedFlag.keys.firstWhere((i) => _selectedFlag[i] == true);
-
-    final sourceEvent = widget.chat.events[index];
-
-    setState(() {
-      widget.chat.events[index] = sourceEvent.copyWith(
-        content: eventText,
-      );
-    });
-
-    _isEditMode = false;
-    _onResetSelection();
   }
 
   void _onTap(bool isSelected, int index) {
     if (_isSelectionMode()) {
       _onLongPress(isSelected, index);
     } else {
-      final event = widget.chat.events[index];
-      setState(() {
-        widget.chat.events[index] =
-            event.copyWith(isFavorite: !event.isFavorite);
-      });
+      context.read<ChatsCubit>().markFavoriteEvent(widget.chatIndex, index);
     }
   }
 
@@ -115,80 +57,58 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _onResetSelection() {
-    setState(() {
-      for (final i in _selectedFlag.keys) {
-        _selectedFlag[i] = false;
-      }
-    });
+  void _transferEvents(BuildContext context) async {
+    final newChat = await showDialog<int>(
+      context: context,
+      builder: (context) => const TransferDialog(),
+    );
+
+    if (newChat != null) {
+      context.read<ChatsCubit>().transferEvents(
+            widget.chatIndex,
+            newChat,
+            _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+          );
+    }
+
+    _resetSelection();
   }
 
-  void _onRemoval() {
-    showModalBottomSheet<bool>(
+  void _deleteEvents() async {
+    final value = await showModalBottomSheet<bool>(
       context: context,
       builder: (context) => DeleteDialog(_countSelectedEvents()),
-    ).then((value) {
-      if (value == true) {
-        final events = widget.chat.events;
-        final deletedEvents = <Event>[];
+    );
 
-        for (var i = 0; i < events.length; i++) {
-          if (_selectedFlag[i] == true) {
-            deletedEvents.add(events[i]);
-          }
-        }
+    if (value == true) {
+      context.read<ChatsCubit>().deleteEvents(
+            widget.chatIndex,
+            _selectedFlag.keys.where((i) => _selectedFlag[i] ?? false),
+          );
+    }
 
-        for (final deletedEvent in deletedEvents) {
-          events.remove(deletedEvent);
-        }
-      }
-    }).then((value) => _onResetSelection());
+    _resetSelection();
   }
 
-  void _onBackButton() {
-    Navigator.pop(context);
-  }
-
-  void _onShowFavorite() {
-    setState(() => _showFavorites = !_showFavorites);
-  }
-
-  void _onMarkFavorites() {
-    final events = widget.chat.events;
-    for (var i = 0; i < widget.chat.events.length; i++) {
+  void _markFavorites() {
+    for (var i = 0; i < _chat.events.length; i++) {
       if (_selectedFlag[i] == true) {
-        final event = events[i];
-
-        events[i] = event.copyWith(
-          isFavorite: !event.isFavorite,
-        );
+        context.read<ChatsCubit>().markFavoriteEvent(widget.chatIndex, i);
       }
     }
-    _onResetSelection();
+
+    _resetSelection();
   }
 
-  void _onEditAction() {
-    setState(() {
-      _isEditMode = true;
-    });
-  }
-
-  void _onCloseEditMode() {
-    setState(() {
-      _isEditMode = false;
-    });
-
-    _onResetSelection();
-  }
-
-  void _onCopyAction() {
+  void _copyEvents() {
     var copyText = '';
 
-    _selectedFlag.keys
-        .where((key) =>
-            _selectedFlag[key] == true && !widget.chat.events[key].isImage)
-        .map((key) => copyText +=
-            copyText.isNotEmpty ? '${widget.chat.events[key].content}' : '\n');
+    final selected = _selectedFlag.keys.where(
+        (key) => _selectedFlag[key] == true && !_chat.events[key].isImage);
+
+    for (var key in selected) {
+      copyText += '${_chat.events[key].content}\n';
+    }
 
     Clipboard.setData(
       ClipboardData(
@@ -196,25 +116,37 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
 
-    _onResetSelection();
+    _resetSelection();
+  }
+
+  void _searchEvents() async {
+    await showSearch(
+      context: context,
+      delegate: EventSearchDelegate(
+        events: _chat.events,
+        onTap: _onTap,
+        onLongPress: _onLongPress,
+      ),
+    );
   }
 
   int _countSelectedEvents() {
     return _selectedFlag.values.where((value) => value).length;
   }
 
-  List<Event> _generateEventsList() {
+  List<Event> _generateEventsList(ChatsState state) {
     final List<Event> favorites;
     if (_showFavorites) {
-      favorites =
-          widget.chat.events.where((event) => event.isFavorite).toList();
+      favorites = state.chats[widget.chatIndex].events
+          .where((event) => event.isFavorite)
+          .toList();
     } else {
       favorites = <Event>[];
     }
 
     final List<Event> events;
     if (favorites.isEmpty) {
-      events = widget.chat.events;
+      events = state.chats[widget.chatIndex].events;
     } else {
       events = favorites;
     }
@@ -223,31 +155,65 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _createEventsView() {
-    if (widget.chat.events.isNotEmpty) {
-      final events = _generateEventsList();
+    return BlocBuilder<ChatsCubit, ChatsState>(
+      builder: (context, state) {
+        final events = _generateEventsList(state);
 
-      return ListView.builder(
-          reverse: true,
-          itemCount: events.length,
-          itemBuilder: (_, i) {
-            var index = events.length - i - 1;
+        if (events.isNotEmpty) {
+          return ListView.builder(
+              reverse: true,
+              itemCount: events.length,
+              itemBuilder: (context, index) {
+                final viewIndex = events.length - index - 1;
 
-            _selectedFlag[index] = _selectedFlag[index] ?? false;
-            var isSelected = _selectedFlag[index]!;
+                _selectedFlag[viewIndex] = _selectedFlag[viewIndex] ?? false;
+                final isSelected = _selectedFlag[viewIndex]!;
 
-            return EventView(
-              event: events[index],
-              isSelected: isSelected,
-              onTap: () => _onTap(isSelected, index),
-              onLongPress: () => _onLongPress(isSelected, index),
-            );
-          });
-    } else {
-      return Align(
-        alignment: Alignment.topCenter,
-        child: _WelcomeMessage(title: widget.chat.name),
-      );
-    }
+                return Dismissible(
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const Icon(Icons.edit),
+                  ),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const Icon(Icons.delete),
+                  ),
+                  key: ValueKey<int>(viewIndex),
+                  child: EventView(
+                    event: events[viewIndex],
+                    isSelected: isSelected,
+                    onTap: () => _onTap(isSelected, viewIndex),
+                    onLongPress: () => _onLongPress(isSelected, viewIndex),
+                  ),
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      return true;
+                    } else if (!_isEditMode) {
+                      setState(() {
+                        _selectedFlag[viewIndex] = true;
+                        _isEditMode = true;
+                      });
+                      return false;
+                    }
+                  },
+                  onDismissed: (direction) {
+                    context.read<ChatsCubit>().deleteEvent(
+                          widget.chatIndex,
+                          viewIndex,
+                        );
+                  },
+                );
+              });
+        } else {
+          return Align(
+            alignment: Alignment.topCenter,
+            child: _WelcomeMessage(title: _chat.name),
+          );
+        }
+      },
+    );
   }
 
   Widget _createScaffoldBody() {
@@ -261,43 +227,132 @@ class _ChatPageState extends State<ChatPage> {
         ),
         if (!_isSelectionMode())
           BottomPanel(
-            onSendImage: _addImage,
-            onSendText: _addTextEvent,
+            chatIndex: widget.chatIndex,
           ),
-        if (_isEditMode && index != -1 && !widget.chat.events[index].isImage)
+        if (_isEditMode && index != -1 && !_chat.events[index].isImage)
           BottomPanel(
-            textFieldValue: widget.chat.events[index].content,
-            onSendText: _editEvent,
+            chatIndex: widget.chatIndex,
+            resetSelection: () {
+              _isEditMode = false;
+              _resetSelection();
+            },
+            textFieldValue: _chat.events[index].content,
+            editEventIndex:
+                _selectedFlag.keys.firstWhere((i) => _selectedFlag[i] == true),
           ),
       ],
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Widget _createAppBarLeading() {
+    if (_countSelectedEvents() == 0) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(context),
+      );
+    } else if (_isEditMode) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          _isEditMode = false;
+          _resetSelection();
+        },
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: _resetSelection,
+      );
+    }
+  }
 
-    _appBarBuilder = AppBarBuilder(
-      title: widget.chat.name,
-      onBackButton: _onBackButton,
-      onResetSelection: _onResetSelection,
-      onShowFavorite: _onShowFavorite,
-      onRemoval: _onRemoval,
-      onMarkFavorites: _onMarkFavorites,
-      onEditAction: _onEditAction,
-      onCloseEditMode: _onCloseEditMode,
-      onCopyAction: _onCopyAction,
-    );
+  Widget _createAppBarTitle() {
+    final selectedEvents = _countSelectedEvents();
+    if (selectedEvents == 0) {
+      return Text(_chat.name);
+    } else if (_isEditMode) {
+      return const Text('Edit mode');
+    } else {
+      return Text(selectedEvents.toString());
+    }
+  }
+
+  List<Widget> _createActionsForNotSelectionMode() {
+    final Icon bookmarkIcon;
+    if (_showFavorites) {
+      bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
+    } else {
+      bookmarkIcon = const Icon(Icons.bookmark_border);
+    }
+
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: _searchEvents,
+      ),
+      IconButton(
+        icon: bookmarkIcon,
+        onPressed: () => setState(() => _showFavorites = !_showFavorites),
+      ),
+    ];
+  }
+
+  List<Widget> _createActionsForEditMode() {
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () {
+          _isEditMode = false;
+          _resetSelection();
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _createActionsForSelectionMode(BuildContext context) {
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.reply),
+        onPressed: () => _transferEvents(context),
+      ),
+      if (!_isHasImage() && _countSelectedEvents() == 1)
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => setState(() => _isEditMode = true),
+        ),
+      if (!_isHasImage())
+        IconButton(
+          icon: const Icon(Icons.copy),
+          onPressed: _copyEvents,
+        ),
+      IconButton(
+        icon: const Icon(Icons.bookmark_border),
+        onPressed: _markFavorites,
+      ),
+      IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: _deleteEvents,
+      ),
+    ];
+  }
+
+  List<Widget> _createActions(BuildContext context) {
+    if (_countSelectedEvents() == 0) {
+      return _createActionsForNotSelectionMode();
+    } else if (_isEditMode) {
+      return _createActionsForEditMode();
+    } else {
+      return _createActionsForSelectionMode(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBarBuilder.build(
-        countSelected: _countSelectedEvents(),
-        showFavorites: _showFavorites,
-        isEditMode: _isEditMode,
-        isHasImage: _isHasImage(),
+      appBar: AppBar(
+        leading: _createAppBarLeading(),
+        title: _createAppBarTitle(),
+        actions: _createActions(context),
       ),
       body: _createScaffoldBody(),
     );

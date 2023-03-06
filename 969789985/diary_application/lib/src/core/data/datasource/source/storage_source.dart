@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../domain/api/storage/api_storage_provider.dart';
+import '../../../domain/provider/storage/api_storage_provider.dart';
 import '../../../util/typedefs.dart';
 import '../reference/storage_reference.dart';
 

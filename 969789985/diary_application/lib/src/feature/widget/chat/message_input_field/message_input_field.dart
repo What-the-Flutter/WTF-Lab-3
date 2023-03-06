@@ -51,9 +51,17 @@ class _MessageInputFieldState extends State<MessageInputField> {
             ),
             AnimatedContainer(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(Radii.appConstant),
-                  topLeft: Radius.circular(Radii.appConstant),
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(
+                    ThemeScope.of(context).state.imagePath == ''
+                        ? Radii.appConstant
+                        : Radii.none,
+                  ),
+                  topLeft: Radius.circular(
+                    ThemeScope.of(context).state.imagePath == ''
+                        ? Radii.appConstant
+                        : Radii.none,
+                  ),
                 ),
                 color: Color(ThemeScope.of(context).state.primaryColor),
               ),

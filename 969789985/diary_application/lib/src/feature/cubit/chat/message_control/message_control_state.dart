@@ -12,6 +12,7 @@ class MessageControlState with _$MessageControlState {
     required bool isSelectMode,
     required bool isEditMode,
     required bool isFavoriteMode,
+    required bool selectionVisible,
   }) = _DefaultMode;
 
   const factory MessageControlState.manageMode({
@@ -22,5 +23,6 @@ class MessageControlState with _$MessageControlState {
     required bool isSelectMode,
     required bool isEditMode,
     required bool isFavoriteMode,
+    required bool selectionVisible,
   }) = _ManageMode;
 }

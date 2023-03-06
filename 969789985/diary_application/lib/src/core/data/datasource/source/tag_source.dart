@@ -5,9 +5,9 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../domain/api/tag/api_tag_provider.dart';
-import '../../../domain/models/firebase/tag/firebase_tag_model.dart';
+import '../../../domain/models/db/tag/firebase_tag_model.dart';
 import '../../../domain/models/local/tag/tag_model.dart';
+import '../../../domain/provider/tag/api_tag_provider.dart';
 import '../../../util/extension/snapshot_extension.dart';
 import '../../../util/typedefs.dart';
 import '../reference/tag_reference.dart';

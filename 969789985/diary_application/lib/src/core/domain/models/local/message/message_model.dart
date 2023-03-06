@@ -13,6 +13,7 @@ class MessageModel with _$MessageModel {
 
   factory MessageModel._internal({
     required String id,
+    required String parentId,
     required String messageText,
     required DateTime sendDate,
     required IList<Future<File>> images,
@@ -22,6 +23,7 @@ class MessageModel with _$MessageModel {
 
   factory MessageModel({
     String? id,
+    String? parentId,
     String messageText = '',
     DateTime? sendDate,
     IList<Future<File>>? images,
@@ -30,6 +32,7 @@ class MessageModel with _$MessageModel {
   }) =>
       MessageModel._internal(
         id: id ?? '_id',
+        parentId: parentId ?? '_parent_id',
         messageText: messageText,
         sendDate: sendDate ?? DateTime.now(),
         images: images ?? const IListConst([]),

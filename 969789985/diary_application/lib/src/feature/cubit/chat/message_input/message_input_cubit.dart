@@ -5,18 +5,21 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/api/message/api_message_repository.dart';
-import '../../../../core/domain/api/storage/api_storage_repository.dart';
-import '../../../../core/domain/api/tag/api_tag_repository.dart';
 import '../../../../core/domain/models/local/message/message_model.dart';
 import '../../../../core/domain/models/local/tag/tag_model.dart';
+import '../../../../core/domain/repository/message/api_message_repository.dart';
+import '../../../../core/domain/repository/storage/api_storage_repository.dart';
+import '../../../../core/domain/repository/tag/api_tag_repository.dart';
 import '../../../../core/util/typedefs.dart';
 
 part 'message_input_cubit.freezed.dart';
-
 part 'message_input_state.dart';
 
 class MessageInputCubit extends Cubit<MessageInputState> {
+  final ApiMessageRepository _repository;
+  final ApiTagRepository _tagRepository;
+  final ApiStorageRepository _storageRepository;
+
   MessageInputCubit({
     required ApiMessageRepository repository,
     required ApiTagRepository tagRepository,
@@ -43,10 +46,6 @@ class MessageInputCubit extends Cubit<MessageInputState> {
       },
     );
   }
-
-  final ApiMessageRepository _repository;
-  final ApiTagRepository _tagRepository;
-  final ApiStorageRepository _storageRepository;
 
   late final StreamSubscription<IList<TagModel>> _tagSubscription;
 

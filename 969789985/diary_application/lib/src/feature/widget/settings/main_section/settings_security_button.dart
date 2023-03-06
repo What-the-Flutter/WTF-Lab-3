@@ -18,6 +18,7 @@ class SettingsSecurityButton extends StatelessWidget {
       iconCodePoint: Icons.lock_outline.codePoint,
       buttonTitle: 'Security',
       buttonDescription: 'Protect your information',
+      isRemovable: false,
     );
   }
 }

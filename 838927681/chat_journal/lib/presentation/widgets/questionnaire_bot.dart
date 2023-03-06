@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../theme/colors.dart';
-import '../../theme/fonts.dart';
 import '../pages/settings_page/settings_cubit.dart';
 
 class QuestionnaireBotButton extends StatelessWidget {
@@ -37,8 +36,22 @@ class QuestionnaireBotButton extends StatelessWidget {
             Text(
               'Questionnaire bot',
               style: BlocProvider.of<SettingsCubit>(context).isLight()
-                  ? Fonts.questionnaireBotLightFont
-                  : Fonts.questionnaireBotDarkFont,
+                  ? context
+                      .watch<SettingsCubit>()
+                      .state
+                      .fontSize
+                      .headline4!
+                      .copyWith(
+                        color: Colors.black,
+                      )
+                  : context
+                      .watch<SettingsCubit>()
+                      .state
+                      .fontSize
+                      .headline4!
+                      .copyWith(
+                        color: Colors.white,
+                      ),
             )
           ],
         ),

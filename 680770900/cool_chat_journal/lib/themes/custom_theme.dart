@@ -27,17 +27,42 @@ class CustomTheme extends StatefulWidget {
   }
 
   @override
-  _CustomThemeState createState() => _CustomThemeState();
+  _CustomThemeState createState() => _CustomThemeState(initalThemeKey);
 }
 
 class _CustomThemeState extends State<CustomTheme> {
   late ThemeData _theme;
+  late ThemeKeys _currentKey;
 
   ThemeData get theme => _theme;
+
+  _CustomThemeState(ThemeKeys initalThemeKey) {
+    _theme = AppThemes.getThemeFromKey(initalThemeKey);
+    _currentKey = initalThemeKey;
+  }
+
+  void _setNextTheme() {
+    switch (_currentKey) {
+      case ThemeKeys.light:
+        _currentKey = ThemeKeys.dark;
+        break;
+      case ThemeKeys.dark:
+        _currentKey = ThemeKeys.light;
+        break;
+      default:
+        _currentKey = ThemeKeys.light;
+    }
+  }
+
+  void chooseNextTheme() {
+    _setNextTheme();
+    changeTheme(_currentKey);
+  }
 
   void changeTheme(ThemeKeys key) {
     setState(() {
       _theme = AppThemes.getThemeFromKey(key);
+      _currentKey = key;
     });
   }
 
@@ -45,6 +70,7 @@ class _CustomThemeState extends State<CustomTheme> {
   void initState() {
     super.initState();
     _theme = AppThemes.getThemeFromKey(widget.initalThemeKey);
+    _currentKey = widget.initalThemeKey;
   }
 
   @override

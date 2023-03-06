@@ -8,7 +8,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../../../core/data/repository/security/security_repository.dart';
-import '../../../core/domain/api/security/api_security_repository.dart';
+import '../../../core/domain/repository/security/api_security_repository.dart';
+import '../../../core/util/logger.dart';
 import '../../../core/util/typedefs.dart';
 
 part 'security_cubit.freezed.dart';
@@ -16,6 +17,8 @@ part 'security_cubit.freezed.dart';
 part 'security_state.dart';
 
 class SecurityCubit extends Cubit<SecurityState> {
+  final ApiSecurityRepository _repository;
+
   SecurityCubit({
     required ApiSecurityRepository repository,
   })  : _repository = repository,
@@ -28,9 +31,12 @@ class SecurityCubit extends Cubit<SecurityState> {
             isDeviceSupportedBiometric: repository.isDeviceSupportedBiometrics,
             availableBiometric: repository.availableBiometric,
           ),
-        );
-
-  final ApiSecurityRepository _repository;
+        ) {
+    logger(
+      'Data is ${repository.isDeviceSupportedBiometrics}',
+      'Rep Data',
+    );
+  }
 
   set securityMode(String value) {
     _repository.setSecurityMode(value);
@@ -138,14 +144,14 @@ class SecurityCubit extends Cubit<SecurityState> {
       state.passcodeSequence.join(),
     );
 
-    _logger('Passcode hash is $passcode', 'Entered_passcode');
+    logger('Passcode hash is $passcode', 'Entered_passcode');
 
-    _logger('Preferences passcode is ${_repository.passcode}', 'Set_passcode');
+    logger('Preferences passcode is ${_repository.passcode}', 'Set_passcode');
 
     if (passcode == _repository.passcode) {
       action.call();
     } else {
-      _logger('123', '32132132132');
+      logger('Incorrect passcode', 'Passcode_input');
     }
 
     emit(
@@ -155,8 +161,6 @@ class SecurityCubit extends Cubit<SecurityState> {
       ),
     );
   }
-
-  void _logger(String message, String tag) => dev.log(message, name: tag);
 
   String _sha256passcode(String passcode) {
     return sha256.convert(utf8.encode(passcode)).toString();

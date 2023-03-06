@@ -8,6 +8,7 @@ import '../../../../core/domain/models/local/message/message_model.dart';
 import '../../../../core/util/extension/datetime_extension.dart';
 import '../../../../core/util/resources/dimensions.dart';
 import '../../../cubit/chat/message_control/message_control_cubit.dart';
+import '../../theme/theme_scope.dart';
 import 'message_list_item.dart';
 
 class MessageList extends StatelessWidget {
@@ -33,30 +34,37 @@ class MessageList extends StatelessWidget {
                   useStickyGroupSeparators: true,
                   floatingHeader: true,
                   elements: state.isFavoriteMode
-                      ? messages.where((mes) => mes.isFavorite).toList()
-                      : messages.toList(),
+                          ? messages.where((mes) => mes.isFavorite).toList()
+                          : messages.toList(),
                   groupBy: (message) => DateTime(
                     message.sendDate.year,
                     message.sendDate.month,
                     message.sendDate.day,
                   ),
-                  groupHeaderBuilder: (message) => SizedBox(
-                    height: 40.0,
-                    child: Center(
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(Insets.medium),
-                          child: Text(
-                            message.sendDate.dateYMMMDFormat(),
+                  groupHeaderBuilder: (message) => ThemeScope.of(context)
+                          .state
+                          .dateBubbleVisible
+                      ? SizedBox(
+                          height: 40.0,
+                          child: Center(
+                            child: Card(
+                              elevation: 0,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(Insets.medium),
+                                child: Text(
+                                  message.sendDate.dateYMMMDFormat(),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
+                        )
+                      : const SizedBox(height: Insets.none),
                   indexedItemBuilder: (context, message, index) =>
-                      MessageListItem(message: message, index: index),
+                      MessageListItem(
+                    message: message,
+                    index: index,
+                  ),
                 ),
               ),
             ),

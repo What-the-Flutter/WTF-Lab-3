@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtager/functions.dart';
 
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/event.dart';
@@ -9,19 +10,21 @@ import '../../../domain/repositories/api_event_repository.dart';
 import 'chat_page_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final ApiEventRepository eventRepository;
-  final ApiChatRepository chatRepository;
-  late final StreamSubscription<List<Event>> eventStream;
+  final ApiEventRepository _eventRepository;
+  final ApiChatRepository _chatRepository;
+  late final StreamSubscription<List<Event>> _eventStream;
 
   ChatCubit({
-    required this.eventRepository,
-    required this.chatRepository,
-  }) : super(ChatState()) {
+    required ApiEventRepository eventRepository,
+    required ApiChatRepository chatRepository,
+  })  : _eventRepository = eventRepository,
+        _chatRepository = chatRepository,
+        super(ChatState()) {
     _initEventStream();
   }
 
-  void _initEventStream() {
-    eventStream = eventRepository.eventStream.listen((event) {
+  void _initEventStream() async {
+    _eventStream = _eventRepository.eventStream.listen((event) {
       final events = event
           .where(
             (element) => element.parentId == state.chatId,
@@ -29,17 +32,31 @@ class ChatCubit extends Cubit<ChatState> {
           .toList();
       events.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       final favorites = _getFavorites(events);
-      emit(state.copyWith(events: events, favorites: favorites));
+      final tags = <String>{};
+      for (final event in events) {
+        if (hasHashTags(event.text)) {
+          tags.addAll(extractHashTags(event.text));
+        }
+      }
+      emit(state.copyWith(events: events, favorites: favorites, tags: tags));
     });
   }
 
   Future<void> init(String id) async {
-    final events = await eventRepository.getEvents(id);
+    final events = await _eventRepository.getEvents(id);
+    final allEvents = await _eventRepository.getAllEvents();
+    final tags = <String>{};
+    for (final event in allEvents) {
+      if (hasHashTags(event.text)) {
+        tags.addAll(extractHashTags(event.text));
+      }
+    }
     final favorites = _getFavorites(events);
     favorites.sort((a, b) {
       return a.dateTime.compareTo(b.dateTime);
     });
-    emit(state.copyWith(events: events, favorites: favorites, chatId: id));
+    emit(state.copyWith(
+        events: events, favorites: favorites, chatId: id, tags: tags));
   }
 
   List<Event> _getFavorites(List<Event> events) {
@@ -60,12 +77,12 @@ class ChatCubit extends Cubit<ChatState> {
     if (event.isFavorite == true) {
       favorites.remove(event);
       event = event.copyWith(isFavorite: false);
-      eventRepository.updateEvent(event);
+      _eventRepository.updateEvent(event);
       events[allIndex] = event;
     } else {
       event = event.copyWith(isFavorite: true);
       favorites.add(event);
-      eventRepository.updateEvent(event);
+      _eventRepository.updateEvent(event);
       events[allIndex] = event;
     }
   }
@@ -103,14 +120,19 @@ class ChatCubit extends Cubit<ChatState> {
   void addEvent(Event event) async {
     final events = List<Event>.from(state.events);
     events.add(event);
-    await eventRepository.addEvent(event);
-    await chatRepository.updateLast(
-        event.parentId, event.text, event.dateTime, false);
+    await _eventRepository.addEvent(event);
+    await _chatRepository.updateLast(
+      event.parentId,
+      event.text,
+      event.dateTime,
+      false,
+    );
     emit(
       state.copyWith(
         isFavoritesMode: false,
         selectedIcon: 0,
         isSendingImage: false,
+        events: events,
       ),
     );
   }
@@ -298,10 +320,10 @@ class ChatCubit extends Cubit<ChatState> {
     var event = events[state.selectedIndex];
     event = event.copyWith(text: text);
     if (state.selectedIndex == events.length - 1) {
-      chatRepository.updateLast(
+      _chatRepository.updateLast(
           event.parentId, event.text, event.dateTime, false);
     }
-    eventRepository.updateEvent(event);
+    _eventRepository.updateEvent(event);
     emit(state.copyWith(isEditing: false));
   }
 
@@ -317,12 +339,12 @@ class ChatCubit extends Cubit<ChatState> {
     final event = state.isFavoritesMode ? favorites[index] : allEvents[index];
     if (state.selectedCount <= 1) {
       allEvents.remove(event);
-      eventRepository.deleteEvent(event);
+      _eventRepository.deleteEvent(event);
     } else {
       var i = 0;
       while (i < allEvents.length) {
         if (allEvents[i].isSelected) {
-          eventRepository.deleteEvent(allEvents[i]);
+          _eventRepository.deleteEvent(allEvents[i]);
         }
         allEvents.removeWhere((element) => element.isSelected);
         i++;
@@ -338,10 +360,10 @@ class ChatCubit extends Cubit<ChatState> {
     _selectionToFalse(allEvents);
     if (allEvents.isNotEmpty) {
       final event = allEvents.last;
-      chatRepository.updateLast(
+      _chatRepository.updateLast(
           event.parentId, event.text, event.dateTime, false);
     } else {
-      chatRepository.updateLast(
+      _chatRepository.updateLast(
           chatId, 'No events. Click to create one', null, false);
     }
     emit(
@@ -416,14 +438,14 @@ class ChatCubit extends Cubit<ChatState> {
   void _changeLastMessage() {
     if (state.selectedIndex == state.events.length - 1) {
       if (state.events.length == 1) {
-        chatRepository.updateLast(
+        _chatRepository.updateLast(
           state.chatId,
           'No events. Click to create one',
           null,
           false,
         );
       } else {
-        chatRepository.updateLast(
+        _chatRepository.updateLast(
           state.chatId,
           state.events[state.selectedIndex - 1].text,
           state.events[state.selectedIndex - 1].dateTime,
@@ -437,18 +459,18 @@ class ChatCubit extends Cubit<ChatState> {
     final events = List<Event>.from(state.events);
     if (state.selectedCount == 1) {
       final event = events[state.selectedIndex];
-      chatRepository.updateLast(id, event.text, event.dateTime, true);
+      _chatRepository.updateLast(id, event.text, event.dateTime, true);
       events.remove(event);
-      eventRepository.updateEvent(
+      _eventRepository.updateEvent(
         event.copyWith(parentId: id, isSelected: false),
       );
     } else {
       var i = 0;
       while (i < events.length) {
         if (events[i].isSelected) {
-          chatRepository.updateLast(
+          _chatRepository.updateLast(
               id, events[i].text, events[i].dateTime, true);
-          eventRepository.updateEvent(
+          _eventRepository.updateEvent(
             events[i].copyWith(
               parentId: id,
               isSelected: false,
@@ -459,14 +481,14 @@ class ChatCubit extends Cubit<ChatState> {
       }
     }
     if (events.isNotEmpty) {
-      chatRepository.updateLast(
+      _chatRepository.updateLast(
         state.chatId,
         events.last.text,
         events.last.dateTime,
         false,
       );
     } else {
-      chatRepository.updateLast(
+      _chatRepository.updateLast(
         state.chatId,
         'No events. Click to create one',
         null,
@@ -483,6 +505,20 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<List<Chat>> getChats() async {
-    return await chatRepository.getChats();
+    return await _chatRepository.getChats();
+  }
+
+  void changeAddingTag(bool value) {
+    emit(state.copyWith(isAddingTag: value));
+  }
+
+  void changeCurrentInput(String value) {
+    emit(state.copyWith(currentInput: value));
+  }
+
+  @override
+  Future<void> close() {
+    _eventStream.cancel();
+    return super.close();
   }
 }

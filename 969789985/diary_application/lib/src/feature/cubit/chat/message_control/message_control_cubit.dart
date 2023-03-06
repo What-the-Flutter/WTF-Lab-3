@@ -4,10 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/api/message/api_message_repository.dart';
-import '../../../../core/domain/api/tag/api_tag_repository.dart';
 import '../../../../core/domain/models/local/message/message_model.dart';
-import '../../../../core/domain/models/local/tag/tag_model.dart';
+import '../../../../core/domain/repository/message/api_message_repository.dart';
+import '../../../../core/domain/repository/tag/api_tag_repository.dart';
 import '../../../../core/util/typedefs.dart';
 
 part 'message_control_cubit.freezed.dart';
@@ -15,6 +14,12 @@ part 'message_control_cubit.freezed.dart';
 part 'message_control_state.dart';
 
 class MessageControlCubit extends Cubit<MessageControlState> {
+  final FId _chatId;
+
+  final ApiMessageRepository _repository;
+  final ApiTagRepository _tagRepository;
+  late final StreamSubscription<IList<MessageModel>> _subscription;
+
   MessageControlCubit({
     required ApiMessageRepository repository,
     required ApiTagRepository tagRepository,
@@ -31,9 +36,10 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             isSelectMode: false,
             isEditMode: false,
             isFavoriteMode: false,
+            selectionVisible: false,
           ),
         ) {
-    _subscription = repository.rxChatStreams.listen(
+    _subscription = repository.messagesStreamForChat.listen(
       (messages) {
         emit(
           MessageControlState.defaultMode(
@@ -46,17 +52,12 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             isSelectMode: false,
             isEditMode: false,
             isFavoriteMode: false,
+            selectionVisible: false,
           ),
         );
       },
     );
   }
-
-  final FId _chatId;
-
-  final ApiMessageRepository _repository;
-  final ApiTagRepository _tagRepository;
-  late final StreamSubscription<IList<MessageModel>> _subscription;
 
   bool _fromDismissible = false;
 
@@ -79,6 +80,7 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             isSelectMode: true,
             isEditMode: false,
             isFavoriteMode: defaultMode.isFavoriteMode,
+            selectionVisible: true,
           ),
         );
       },
@@ -113,8 +115,10 @@ class MessageControlCubit extends Cubit<MessageControlState> {
               isSelectMode: false,
               isEditMode: false,
               isFavoriteMode: manageMode.isFavoriteMode,
+              selectionVisible: true,
             ),
           );
+          _updateSelectionVisible();
         } else {
           emit(
             manageMode.copyWith(
@@ -140,8 +144,10 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             isSelectMode: false,
             isEditMode: false,
             isFavoriteMode: manageMode.isFavoriteMode,
+            selectionVisible: true,
           ),
         );
+        _updateSelectionVisible();
       },
     );
   }
@@ -197,6 +203,7 @@ class MessageControlCubit extends Cubit<MessageControlState> {
             isSelectMode: true,
             isEditMode: true,
             isFavoriteMode: defaultMode.isFavoriteMode,
+            selectionVisible: true,
           ),
         );
       },
@@ -276,5 +283,18 @@ class MessageControlCubit extends Cubit<MessageControlState> {
         .toIList();
 
     _repository.removeFromFavorites(messages);
+  }
+
+  void _updateSelectionVisible() {
+    Future.delayed(
+      const Duration(milliseconds: 200),
+      () {
+        emit(
+          state.copyWith(
+            selectionVisible: false,
+          ),
+        );
+      },
+    );
   }
 }

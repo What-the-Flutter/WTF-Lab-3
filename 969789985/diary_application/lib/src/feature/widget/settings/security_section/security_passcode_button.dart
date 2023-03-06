@@ -18,6 +18,7 @@ class SecurityPasscodeButton extends StatelessWidget {
       buttonTitle: 'Passcode',
       buttonDescription: 'Set a login passcode',
       iconCodePoint: Icons.key.codePoint,
+      isRemovable: false,
     );
   }
 }

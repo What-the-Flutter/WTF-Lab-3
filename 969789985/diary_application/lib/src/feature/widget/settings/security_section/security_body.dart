@@ -102,7 +102,7 @@ class _SecuritySwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoSwitch(
-      onChanged: context.read<SecurityCubit>().state.isDeviceSupportedBiometric
+      onChanged: context.watch<SecurityCubit>().state.isDeviceSupportedBiometric
           ? (value) {
               if (value) {
                 positiveAction.call();

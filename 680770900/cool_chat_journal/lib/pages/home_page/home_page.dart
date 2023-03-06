@@ -1,118 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../cubit/chats_cubit.dart';
 import '../../model/chat.dart';
+import '../../model/chats_state.dart';
 import '../../themes/custom_theme.dart';
-import '../../themes/themes.dart';
 import '../add_chat_page/add_chat_page.dart';
 import 'bottom_navigation.dart';
 import 'chat_card.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   final String appName;
 
   const HomePage({super.key, required this.appName});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
+  List<ChatCard> _createChatCards(
+    List<Chat> chats,
+    Map<int, bool> pinnedChats,
+  ) {
+    final chatCards = <ChatCard>[];
 
-class _HomePageState extends State<HomePage> {
-  var _theme = ThemeKeys.light;
-  final _pinnedChats = <Chat>[];
-  final _chats = <Chat>[];
+    for (var i = 0; i < chats.length; i++) {
+      final chatCard = ChatCard(
+        chatIndex: i,
+        isPinned: pinnedChats[i] ?? false,
+      );
 
-  void _addNewChat(Chat newChat) {
-    setState(() {
-      _chats.add(newChat);
-    });
-  }
-
-  void _deleteChat(Chat deletedChat) {
-    setState(() {
-      _chats.remove(deletedChat);
-    });
-  }
-
-  void _editChat(Chat oldChat, Chat newChat) {
-    final index = _chats.indexOf(oldChat);
-
-    setState(() {
-      _chats[index] = newChat;
-    });
-  }
-
-  void _pinChat(Chat chat) {
-    setState(() {
-      if (_pinnedChats.contains(chat)) {
-        _pinnedChats.remove(chat);
+      if (chatCard.isPinned == true) {
+        chatCards.insert(0, chatCard);
       } else {
-        _pinnedChats.add(chat);
+        chatCards.add(chatCard);
       }
-    });
-  }
+    }
 
-  void _changeTheme() {
-    _theme = _theme == ThemeKeys.light ? ThemeKeys.dark : ThemeKeys.light;
-    CustomTheme.instanceOf(context).changeTheme(_theme);
-  }
-
-  void _onEditChat(Chat chat) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => AddChatPage(
-                oldChat: chat,
-                onEditChat: _editChat,
-              )),
-    );
-  }
-
-  void _onAddNewChat() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => AddChatPage(
-                onAddNewChat: _addNewChat,
-              )),
-    );
+    return chatCards;
   }
 
   @override
   Widget build(BuildContext context) {
-    final unpinnedChats =
-        _chats.where((chat) => !_pinnedChats.contains(chat)).toList();
-
-    final chats = <Chat>[..._pinnedChats, ...unpinnedChats];
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => print('Click to menu'),
         ),
-        title: Text(widget.appName),
+        title: Text(appName),
         actions: [
           IconButton(
             icon: const Icon(Icons.color_lens_outlined),
-            onPressed: _changeTheme,
+            onPressed: () => CustomTheme.instanceOf(context).chooseNextTheme(),
           ),
         ],
       ),
-      body: ListView.builder(
-          itemCount: chats.length,
-          itemBuilder: (context, index) => ChatCard(
-                chat: chats[index],
-                isPinned: _pinnedChats.contains(chats[index]),
-                onPin: () => _pinChat(chats[index]),
-                onDelete: () => _deleteChat(chats[index]),
-                onEdit: () => _onEditChat(chats[index]),
-                onUpdate: () => setState(() {}),
-              )),
+      body: BlocBuilder<ChatsCubit, ChatsState>(builder: (context, state) {
+        final chatCards = _createChatCards(state.chats, state.pinnedChats);
+
+        return ListView.builder(
+          itemCount: chatCards.length,
+          itemBuilder: (context, index) => chatCards[index],
+        );
+      }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: _onAddNewChat,
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AddChatPage(),
+          ),
+        ),
       ),
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: const BottomNavigation(),
     );
   }
 }

@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/entities/event.dart';
 import '../../domain/entities/icon_map.dart';
 import '../../theme/colors.dart';
-import '../../theme/fonts.dart';
 import '../pages/chat_page/chat_page_cubit.dart';
 import '../pages/settings_page/settings_cubit.dart';
 
@@ -41,22 +41,22 @@ class ChatJournalSearch extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     if (query != '') {
-      return _showEvents();
+      return _showEvents(context);
     } else {
-      return _enterQuery();
+      return _enterQuery(context);
     }
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     if (query != '') {
-      return _showEvents();
+      return _showEvents(context);
     } else {
-      return _enterQuery();
+      return _enterQuery(context);
     }
   }
 
-  Widget _showEvents() {
+  Widget _showEvents(BuildContext context) {
     final events = chatCubit.state.events;
     final results = events
         .where(
@@ -65,11 +65,11 @@ class ChatJournalSearch extends SearchDelegate {
     if (results.isNotEmpty) {
       return _allEvents(results);
     } else {
-      return _noEvents();
+      return _noEvents(context);
     }
   }
 
-  Widget _enterQuery() {
+  Widget _enterQuery(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,7 +99,7 @@ class ChatJournalSearch extends SearchDelegate {
               ),
               Text(
                 'Please enter a search query to begin searching',
-                style: Fonts.eventFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -110,7 +110,7 @@ class ChatJournalSearch extends SearchDelegate {
     );
   }
 
-  Widget _noEvents() {
+  Widget _noEvents(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,14 +136,14 @@ class ChatJournalSearch extends SearchDelegate {
             children: [
               Text(
                 'No search results available',
-                style: Fonts.chatWithNoEventsFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
               ),
               const SizedBox(
                 height: 20,
               ),
               Text(
                 'No entries match the given search query. Please try again',
-                style: Fonts.chatWithNoEventsFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
                 textAlign: TextAlign.center,
               )
             ],
@@ -164,7 +164,7 @@ class ChatJournalSearch extends SearchDelegate {
             padding: EdgeInsets.zero,
             reverse: true,
             itemBuilder: (context, index) {
-              return _event(events, eventCount - 1 - index);
+              return _event(events, eventCount - 1 - index, context);
             },
           ),
         ),
@@ -172,7 +172,7 @@ class ChatJournalSearch extends SearchDelegate {
     );
   }
 
-  Widget _event(List<Event> events, int index) {
+  Widget _event(List<Event> events, int index, BuildContext context) {
     final eventColor = settingsCubit.isLight()
         ? ChatJournalColors.lightGreen
         : ChatJournalColors.darkGrey;
@@ -183,7 +183,7 @@ class ChatJournalSearch extends SearchDelegate {
       alignment: Alignment.centerLeft,
       child: Column(
         children: [
-          _dateSeparator(events, index),
+          _dateSeparator(events, index, context),
           Row(
             children: [
               Container(
@@ -205,8 +205,8 @@ class ChatJournalSearch extends SearchDelegate {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _typeEvent(index, events),
-                    _eventDate(index, events),
+                    _typeEvent(index, events, context),
+                    _eventDate(index, events, context),
                   ],
                 ),
               ),
@@ -220,22 +220,24 @@ class ChatJournalSearch extends SearchDelegate {
     );
   }
 
-  Widget _typeEvent(int index, List<Event> events) {
+  Widget _typeEvent(int index, List<Event> events, BuildContext context) {
     if (events[index].imagePath == '') {
       if (events[index].iconIndex == 0) {
-        return _messageEvent(index, events);
+        return _messageEvent(index, events, context);
       } else {
-        return _categoryEvent(index, events);
+        return _categoryEvent(index, events, context);
       }
     } else {
       return Image.file(File(events[index].imagePath));
     }
   }
 
-  Widget _categoryEvent(int index, List<Event> events) {
+  Widget _categoryEvent(int index, List<Event> events, BuildContext context) {
     final iconIndex = events[index].iconIndex;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: context.watch<SettingsCubit>().state.bubbleAlignment
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
@@ -253,7 +255,7 @@ class ChatJournalSearch extends SearchDelegate {
               ),
               Text(
                 ChatJournalIcons.eventIconsName[iconIndex] ?? '',
-                style: Fonts.eventFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
               ),
             ],
           ),
@@ -261,12 +263,12 @@ class ChatJournalSearch extends SearchDelegate {
         const SizedBox(
           height: 5,
         ),
-        _messageEvent(index, events),
+        _messageEvent(index, events, context),
       ],
     );
   }
 
-  Widget _dateSeparator(List<Event> events, int index) {
+  Widget _dateSeparator(List<Event> events, int index, BuildContext context) {
     final bool isOneDay;
     if (index != 0) {
       isOneDay = _isOneDay(events[index].dateTime, events[index - 1].dateTime);
@@ -298,7 +300,10 @@ class ChatJournalSearch extends SearchDelegate {
             horizontal: 10,
           ),
           constraints: const BoxConstraints(maxWidth: 300),
-          child: Text(textDate),
+          child: Text(
+            textDate,
+            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+          ),
         ),
       );
     } else {
@@ -337,18 +342,20 @@ class ChatJournalSearch extends SearchDelegate {
     return DateFormat('MMM d, y').format(date);
   }
 
-  Widget _messageEvent(int index, List<Event> events) {
+  Widget _messageEvent(int index, List<Event> events, BuildContext context) {
     return Text(
       events[index].text,
-      style: Fonts.eventFont,
+      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
       textAlign: TextAlign.left,
     );
   }
 
-  Widget _eventDate(int index, List<Event> events) {
+  Widget _eventDate(int index, List<Event> events, BuildContext context) {
     return Text(
       DateFormat('h:mm a').format(events[index].dateTime),
-      style: Fonts.eventDateFont,
+      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+            color: Colors.grey,
+          ),
       textAlign: TextAlign.left,
     );
   }

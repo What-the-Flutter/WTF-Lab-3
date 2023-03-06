@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hashtager/hashtager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -10,7 +13,6 @@ import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/event.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
-import '../../../theme/fonts.dart';
 import '../../widgets/search_delegate.dart';
 import '../chat_page/chat_page_cubit.dart';
 import '../chat_page/chat_page_state.dart';
@@ -41,7 +43,8 @@ class ChatPage extends StatelessWidget {
                 centerTitle: state.isSelecting ? false : true,
                 title: Text(
                   _appBarTitle(state, context),
-                  style: Fonts.chatPageTitle,
+                  style:
+                      context.watch<SettingsCubit>().state.fontSize.headline3!,
                 ),
                 leading: !state.isSelecting
                     ? IconButton(
@@ -143,7 +146,7 @@ class ChatPage extends StatelessWidget {
     return AlertDialog(
       title: Text(
         'Select the page you want to migrate the selected event(s) to!',
-        style: Fonts.chatWithNoEventsFont,
+        style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
       ),
       content: Container(
         padding: const EdgeInsets.all(10),
@@ -180,7 +183,7 @@ class ChatPage extends StatelessWidget {
           return ListTile(
             title: Text(
               chats[i].name,
-              style: Fonts.eventFont,
+              style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
             ),
             leading: Radio<int>(
               groupValue: state.selectedRadioIndex,
@@ -195,7 +198,7 @@ class ChatPage extends StatelessWidget {
 
   void _editEvent(ChatState state, BuildContext context) {
     if (state.events[state.selectedIndex].imagePath == '') {
-      chatCubit.changeIsEditingToValue(value: true);
+      chatCubit.changeIsEditingToValue(value: true, index: state.selectedIndex);
       _controller.text = state.events[state.selectedIndex].text;
     }
   }
@@ -244,18 +247,28 @@ class ChatPage extends StatelessWidget {
 
   Widget _chatBody(ChatState state, BuildContext context) {
     final eventCount = state.events.length;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        (eventCount != 0 && !state.isFavoritesMode) ||
-                (state.isFavoritesMode && state.favorites.isNotEmpty)
-            ? Flexible(child: _chatWithEvents(state, context))
-            : _chatWithNoEvents(state, context),
-        eventCount != 0 ? Container() : Expanded(child: Container()),
-        _conditionPanels(state, context),
-        _inputPanel(state, context),
-      ],
+    return Container(
+      decoration: context.watch<SettingsCubit>().state.backgroundImage != ''
+          ? BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: FileImage(
+                  File(context.watch<SettingsCubit>().state.backgroundImage),
+                ),
+              ),
+            )
+          : const BoxDecoration(),
+      child: Column(
+        children: [
+          (eventCount != 0 && !state.isFavoritesMode) ||
+                  (state.isFavoritesMode && state.favorites.isNotEmpty)
+              ? Flexible(child: _chatWithEvents(state, context))
+              : _chatWithNoEvents(state, context),
+          eventCount != 0 ? Container() : Expanded(child: Container()),
+          _conditionPanels(state, context),
+          _inputPanel(state, context),
+        ],
+      ),
     );
   }
 
@@ -266,7 +279,77 @@ class ChatPage extends StatelessWidget {
     if (state.isSelectingCategory) {
       return _selectCategory();
     }
+    if (state.isAddingTag) {
+      return _tagPanel(state, context);
+    }
     return Container();
+  }
+
+  Widget _tagPanel(ChatState state, BuildContext context) {
+    final tagList = state.tags
+        .toList()
+        .where(
+          (element) =>
+              element.contains(extractHashTags(state.currentInput).last),
+        )
+        .toList();
+    if (tagList.isEmpty) {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: ChatJournalColors.lightRed,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child:
+              Text('Adding Tag: ${extractHashTags(state.currentInput).last}'),
+        ),
+      );
+    }
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 50),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(5),
+        scrollDirection: Axis.horizontal,
+        itemCount: tagList.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.all(5),
+            child: _tagItem(tagList[index], context),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _tagItem(String text, BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        final index = _controller.text.lastIndexOf('#');
+        _controller.text = '${_controller.text.substring(0, index)}$text ';
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: ChatJournalColors.lightRed,
+        ),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(5),
+        child: HashTagText(
+          text: text,
+          decoratedStyle:
+              context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+                    color: Colors.blue,
+                  ),
+          basicStyle:
+              context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+                    color: context.read<SettingsCubit>().isLight()
+                        ? Colors.black
+                        : Colors.white,
+                  ),
+        ),
+      ),
+    );
   }
 
   Widget _selectCategory() {
@@ -304,7 +387,7 @@ class ChatPage extends StatelessWidget {
         ),
         Text(
           ChatJournalIcons.eventIconsName[index] ?? '',
-          style: Fonts.eventFont,
+          style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
         )
       ],
     );
@@ -380,7 +463,6 @@ class ChatPage extends StatelessWidget {
     final eventCount = state.events.length;
     return ListView.builder(
       itemCount: eventCount,
-      padding: EdgeInsets.zero,
       reverse: true,
       itemBuilder: (context, index) {
         return state.events[eventCount - 1 - index].isFavorite
@@ -398,11 +480,11 @@ class ChatPage extends StatelessWidget {
   Widget _allEvents(ChatState state, BuildContext context, List<Event> events) {
     final eventCount = events.length;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Flexible(
           child: ListView.builder(
             itemCount: eventCount,
-            padding: EdgeInsets.zero,
             reverse: true,
             itemBuilder: (context, index) {
               return _event(eventCount - 1 - index, events, state, context);
@@ -422,7 +504,7 @@ class ChatPage extends StatelessWidget {
         ? ChatJournalColors.accentLightGreen
         : ChatJournalColors.lightGrey;
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.bottomRight,
       child: Slidable(
         key: UniqueKey(),
         startActionPane: ActionPane(
@@ -471,6 +553,10 @@ class ChatPage extends StatelessWidget {
             children: [
               _dateSeparator(index, events, context),
               Row(
+                mainAxisAlignment:
+                    context.watch<SettingsCubit>().state.bubbleAlignment
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
                 children: [
                   Container(
                     margin: const EdgeInsets.symmetric(
@@ -489,7 +575,10 @@ class ChatPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                          context.watch<SettingsCubit>().state.bubbleAlignment
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
                       children: [
                         _typeEvent(index, events, state, context),
                         _eventDate(index, events, context),
@@ -545,9 +634,24 @@ class ChatPage extends StatelessWidget {
               const SizedBox(
                 width: 20,
               ),
-              Text(
-                ChatJournalIcons.eventIconsName[iconIndex] ?? '',
-                style: Fonts.eventFont,
+              HashTagText(
+                text: ChatJournalIcons.eventIconsName[iconIndex] ?? '',
+                basicStyle: context
+                    .watch<SettingsCubit>()
+                    .state
+                    .fontSize
+                    .bodyText1!
+                    .copyWith(
+                      color: context.read<SettingsCubit>().isLight()
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                decoratedStyle: context
+                    .watch<SettingsCubit>()
+                    .state
+                    .fontSize
+                    .bodyText1!
+                    .copyWith(color: Colors.blue),
               ),
             ],
           ),
@@ -570,7 +674,7 @@ class ChatPage extends StatelessWidget {
     if (!isOneDay) {
       final textDate = _getTextDate(events[index].dateTime);
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: _dateAlignment(context),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.only(
@@ -592,12 +696,26 @@ class ChatPage extends StatelessWidget {
             horizontal: 10,
           ),
           constraints: const BoxConstraints(maxWidth: 300),
-          child: Text(textDate),
+          child: Text(
+            textDate,
+            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+          ),
         ),
       );
     } else {
       return Container();
     }
+  }
+
+  Alignment _dateAlignment(BuildContext context) {
+    final state = context.watch<SettingsCubit>().state;
+    if (state.centerDate) {
+      return Alignment.center;
+    }
+    if (state.bubbleAlignment) {
+      return Alignment.centerRight;
+    }
+    return Alignment.centerLeft;
   }
 
   bool _isOneDay(DateTime a, DateTime b) {
@@ -639,9 +757,20 @@ class ChatPage extends StatelessWidget {
   }
 
   Widget _messageEvent(Event event, BuildContext context) {
-    return Text(
-      event.text,
-      style: Fonts.eventFont,
+    return HashTagText(
+      text: event.text,
+      basicStyle:
+          context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+                color: context.read<SettingsCubit>().isLight()
+                    ? Colors.black
+                    : Colors.white,
+              ),
+      decoratedStyle: context
+          .watch<SettingsCubit>()
+          .state
+          .fontSize
+          .bodyText1!
+          .copyWith(color: Colors.blue),
       textAlign: TextAlign.left,
     );
   }
@@ -649,7 +778,9 @@ class ChatPage extends StatelessWidget {
   Widget _eventDate(int index, List<Event> events, BuildContext context) {
     return Text(
       DateFormat('h:mm a').format(events[index].dateTime),
-      style: Fonts.eventDateFont,
+      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+            color: Colors.grey,
+          ),
       textAlign: TextAlign.left,
     );
   }
@@ -670,7 +801,7 @@ class ChatPage extends StatelessWidget {
             children: [
               Text(
                 _chatWithNoEventsTitle(chat.name),
-                style: Fonts.chatWithNoEventsFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -678,7 +809,7 @@ class ChatPage extends StatelessWidget {
                 state.isFavoritesMode
                     ? _chatWithNoFavoritesText()
                     : _chatWithNoEventsText(chat.name),
-                style: Fonts.chatWithNoEventsFont,
+                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -719,7 +850,7 @@ class ChatPage extends StatelessWidget {
               size: 30,
             ),
           ),
-          Expanded(child: _textField(context)),
+          Expanded(child: _textField(context, state)),
           state.isTyping || _controller.text.isNotEmpty
               ? _sendButton(state, context)
               : _sendImage(state, context),
@@ -728,10 +859,10 @@ class ChatPage extends StatelessWidget {
     );
   }
 
-  Widget _textField(BuildContext context) {
+  Widget _textField(BuildContext context, ChatState state) {
     return Focus(
       onFocusChange: chatCubit.changeIsTypingToValue,
-      child: TextField(
+      child: HashTagTextField(
         controller: _controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
@@ -740,6 +871,10 @@ class ChatPage extends StatelessWidget {
               : ChatJournalColors.lightGrey,
           filled: true,
         ),
+        onChanged: chatCubit.changeCurrentInput,
+        decoratedStyle: const TextStyle(color: Colors.blue),
+        onDetectionTyped: (text) => chatCubit.changeAddingTag(true),
+        onDetectionFinished: () => chatCubit.changeAddingTag(false),
       ),
     );
   }
