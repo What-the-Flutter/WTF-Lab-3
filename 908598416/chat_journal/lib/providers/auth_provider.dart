@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/constants.dart';
-import '../models/models.dart';
+import '../models/app_user.dart';
 
 enum Status {
   uninitialized,
@@ -87,7 +87,7 @@ class AuthProvider extends ChangeNotifier {
         } else {
           // Already sign up, just get data from firestore
           var documentSnapshot = documents[0];
-          var user = ChatUser.fromDocument(documentSnapshot);
+          var user = AppUser.fromDocument(documentSnapshot);
           // Write data to local
           await prefs.setString(FirestoreConstants.id, user.id);
           await prefs.setString(FirestoreConstants.nickname, user.nickname);

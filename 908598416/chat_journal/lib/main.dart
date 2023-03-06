@@ -9,10 +9,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/app_constants.dart';
-import 'constants/color_constants.dart';
 import 'pages/splash_page.dart';
 import 'providers/providers.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,14 +60,25 @@ class App extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp(
-        title: AppConstants.appTitle,
-        theme: ThemeData(
-            useMaterial3: true,
-            colorSchemeSeed: ColorConstants.primaryColor,
-            brightness: Brightness.dark),
-        home: SplashPage(),
-        debugShowCheckedModeBanner: false,
+      child: ChangeNotifierProvider(
+        create: (_) => ThemeProvider(),
+        child: Consumer<ThemeProvider>(
+            builder: (context, themeNotifier, child) {
+              return MaterialApp(
+                title: 'Chat journal',
+                theme: themeNotifier.isDark
+                    ? ThemeData(
+                  brightness: Brightness.dark,
+                )
+                    : ThemeData(
+                    brightness: Brightness.light,
+                    primaryColor: Colors.green,
+                    primarySwatch: Colors.green
+                ),
+                debugShowCheckedModeBanner: false,
+                home: SplashPage(),
+              );
+            }),
       ),
     );
   }
