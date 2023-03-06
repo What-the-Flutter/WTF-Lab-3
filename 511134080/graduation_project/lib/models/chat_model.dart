@@ -8,13 +8,13 @@ class ChatModel {
   final String title;
   final String lastEventTitle;
 
-  final List<EventCardModel> allCards;
+  final List<EventCardModel> cards;
 
   const ChatModel({
     required this.iconId,
     required this.title,
     required this.id,
-    required this.allCards,
+    required this.cards,
     this.lastEventTitle = 'No events. Click here to create one.',
   });
 
@@ -23,13 +23,14 @@ class ChatModel {
     int? newIconId,
     String? newTitle,
     String? newLastEventTitle,
-    List<EventCardModel>? newAllCards,
+    List<EventCardModel>? newCards,
   }) {
     return ChatModel(
-        id: newId ?? id,
-        iconId: newIconId ?? iconId,
-        title: newTitle ?? title,
-        lastEventTitle: newLastEventTitle ?? lastEventTitle,
-        allCards: newAllCards ?? allCards);
+      id: newId ?? id,
+      iconId: newIconId ?? iconId,
+      title: newTitle ?? title,
+      lastEventTitle: newLastEventTitle ?? lastEventTitle,
+      cards: newCards ?? cards,
+    );
   }
 }

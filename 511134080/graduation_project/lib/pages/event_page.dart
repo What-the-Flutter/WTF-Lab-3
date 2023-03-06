@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation_project/cubits/events_cubit.dart';
 import 'package:graduation_project/models/event_card_model.dart';
 import 'package:graduation_project/widgets/date_card.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../models/chat_model.dart';
-import '../providers/events_provider.dart';
 import '../widgets/event_card.dart';
 
 class EventPage extends StatefulWidget {
-  ChatModel chat;
+  final Key chatId;
 
-  EventPage({
+  const EventPage({
     super.key,
-    required this.chat,
+    required this.chatId,
   });
 
   @override
@@ -30,21 +30,18 @@ class _EventPageState extends State<EventPage> {
     _textFieldController.clear();
   }
 
-  Widget _createListViewItem(index) {
+  Widget _createListViewItem(index, chat) {
     final Iterable<EventCardModel> cards;
+
     if (_isShowingFavourites) {
-      cards = widget.chat.allCards
-          .where((element) => element.isFavourite)
-          .toList()
+      cards = List<EventCardModel>.from(
+              chat.cards.where((EventCardModel element) => element.isFavourite))
           .reversed;
     } else {
-      cards = widget.chat.allCards.reversed;
+      cards = chat.cards.reversed;
     }
 
     final current = cards.elementAt(index);
-    print('CURRENT');
-    print('CURRENT');
-    print(current.isFavourite);
 
     if (cards.length == 1 || index == cards.length - 1) {
       return Column(
@@ -77,39 +74,33 @@ class _EventPageState extends State<EventPage> {
         time: DateTime.now(),
         id: UniqueKey(),
       );
-      widget.chat.allCards.add(cardModel);
+      context.read<EventsCubit>().addEventCard(widget.chatId, cardModel);
       _clearTextInput();
-      Provider.of<EventsProvider>(context, listen: false)
-          .updateLastEvent(widget.chat);
     } else {
-      Provider.of<EventsProvider>(context, listen: false)
-          .editSelectedEventCard(widget.chat, title);
+      context.read<EventsCubit>().editSelectedCard(widget.chatId, title);
       _isEditingMode = false;
       _myFocusNode.unfocus();
       _clearTextInput();
     }
   }
 
-  Widget _returnEvents() {
+  Widget _returnEvents(ChatModel chat) {
     return Expanded(
       flex: 10,
       child: ListView.builder(
         itemCount: _isShowingFavourites
-            ? widget.chat.allCards
-                .where((element) => element.isFavourite)
-                .length
-            : widget.chat.allCards.length,
+            ? List<EventCardModel>.from(
+                chat.cards.where((element) => element.isFavourite)).length
+            : chat.cards.length,
         reverse: true,
         itemBuilder: (_, index) {
-          return Consumer<EventsProvider>(
-            builder: (_, __, ___) => _createListViewItem(index),
-          );
+          return _createListViewItem(index, chat);
         },
       ),
     );
   }
 
-  Widget _returnHintMessage() {
+  Widget _returnHintMessage(chat) {
     if (_isShowingFavourites) {
       return Container(
         padding: const EdgeInsets.all(24),
@@ -118,7 +109,7 @@ class _EventPageState extends State<EventPage> {
         child: Column(
           children: [
             Text(
-              'This is the page where you can track everything about "${widget.chat.title}!"\n',
+              'This is the page where you can track everything about "${chat.title}!"\n',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -144,7 +135,7 @@ class _EventPageState extends State<EventPage> {
         child: Column(
           children: [
             Text(
-              'This is the page where you can track everything about "${widget.chat.title}!"\n',
+              'This is the page where you can track everything about "${chat.title}!"\n',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -152,7 +143,7 @@ class _EventPageState extends State<EventPage> {
               ),
             ),
             Text(
-              'Add your first event to "${widget.chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
+              'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
@@ -196,14 +187,12 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  AppBar _createAppBar(BuildContext context) {
-    if (widget.chat.allCards
-        .where((element) => element.isSelected)
-        .isNotEmpty) {
+  AppBar _createAppBar(BuildContext context, ChatModel chat) {
+    if (chat.cards.where((element) => element.isSelected).isNotEmpty) {
       return AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          '${widget.chat.allCards.where((element) => element.isSelected).length}',
+          '${chat.cards.where((element) => element.isSelected).length}',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w300,
@@ -219,8 +208,7 @@ class _EventPageState extends State<EventPage> {
             Icons.close,
           ),
           onPressed: () {
-            Provider.of<EventsProvider>(context, listen: false)
-                .cancelSelectionMode(widget.chat);
+            context.read<EventsCubit>().cancelSelectionMode(widget.chatId);
             if (_isEditingMode) {
               _isEditingMode = false;
               _textFieldController.text = '';
@@ -233,19 +221,17 @@ class _EventPageState extends State<EventPage> {
             icon: const Icon(
               Icons.edit,
             ),
-            onPressed: widget.chat.allCards
-                        .where((element) => element.isSelected)
-                        .length >
-                    1
-                ? null
-                : () {
-                    _isEditingMode = true;
-                    _textFieldController.text = widget.chat.allCards
-                        .where((element) => element.isSelected)
-                        .first
-                        .title;
-                    _myFocusNode.requestFocus();
-                  },
+            onPressed:
+                chat.cards.where((element) => element.isSelected).length > 1
+                    ? null
+                    : () {
+                        _isEditingMode = true;
+                        _textFieldController.text = chat.cards
+                            .where((element) => element.isSelected)
+                            .first
+                            .title;
+                        _myFocusNode.requestFocus();
+                      },
             disabledColor: Theme.of(context).primaryColor,
           ),
           IconButton(
@@ -261,10 +247,7 @@ class _EventPageState extends State<EventPage> {
               Icons.copy,
             ),
             onPressed: () {
-              Provider.of<EventsProvider>(
-                context,
-                listen: false,
-              ).copySelectedCards(widget.chat);
+              context.read<EventsCubit>().copySelectedCards(widget.chatId);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -280,8 +263,9 @@ class _EventPageState extends State<EventPage> {
               Icons.bookmark_border_outlined,
             ),
             onPressed: () {
-              Provider.of<EventsProvider>(context, listen: false)
-                  .manageFavouritesFromSelectionMode(widget.chat);
+              context
+                  .read<EventsCubit>()
+                  .manageFavouritesFromSelectionMode(widget.chatId);
             },
           ),
           IconButton(
@@ -289,8 +273,7 @@ class _EventPageState extends State<EventPage> {
               Icons.delete,
             ),
             onPressed: () {
-              Provider.of<EventsProvider>(context, listen: false)
-                  .deleteSelectedCards(widget.chat);
+              context.read<EventsCubit>().deleteSelectedCards(widget.chatId);
             },
           ),
         ],
@@ -302,7 +285,7 @@ class _EventPageState extends State<EventPage> {
           color: Colors.white,
         ),
         title: Text(
-          widget.chat.title,
+          chat.title,
           style: const TextStyle(
             color: Colors.white,
           ),
@@ -330,18 +313,19 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventsProvider>(builder: (context, _, __) {
+    return BlocBuilder<EventsCubit, EventsState>(builder: (context, state) {
+      final chat = state.getChatById(widget.chatId);
       return Scaffold(
-        appBar: _createAppBar(context),
+        appBar: _createAppBar(context, chat),
         body: Column(
           children: [
-            widget.chat.allCards.isEmpty ||
+            chat.cards.isEmpty ||
                     _isShowingFavourites &&
-                        widget.chat.allCards
+                        chat.cards
                             .where((element) => element.isFavourite)
                             .isEmpty
-                ? _returnHintMessage()
-                : _returnEvents(),
+                ? _returnHintMessage(chat)
+                : _returnEvents(chat),
             Expanded(
               flex: 1,
               child: Align(

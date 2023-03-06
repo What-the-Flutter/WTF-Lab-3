@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/providers/events_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation_project/cubits/events_cubit.dart';
 
+import 'models/chat_model.dart';
 import 'pages/home_page.dart';
 
 class ChatJournal extends StatelessWidget {
@@ -9,8 +10,31 @@ class ChatJournal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => EventsProvider(),
+    return BlocProvider(
+      create: (_) => EventsCubit(
+        initState: EventsState(
+          chats: [
+            ChatModel(
+              iconId: 0,
+              title: 'Travel',
+              id: UniqueKey(),
+              cards: const [],
+            ),
+            ChatModel(
+              iconId: 1,
+              title: 'Family',
+              id: UniqueKey(),
+              cards: const [],
+            ),
+            ChatModel(
+              iconId: 2,
+              title: 'Sports',
+              id: UniqueKey(),
+              cards: const [],
+            ),
+          ],
+        ),
+      ),
       child: MaterialApp(
         title: 'Chat Journal',
         theme: ThemeData(
