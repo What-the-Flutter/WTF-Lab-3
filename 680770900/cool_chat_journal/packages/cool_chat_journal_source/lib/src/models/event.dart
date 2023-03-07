@@ -21,7 +21,7 @@ class Event {
       chatId: map['chatId'],
       content: map['content'],
       isImage: map['isImage'],
-      changeTime: map['changeTime'],
+      changeTime: DateTime.parse(map['changeTime']),
       category: map['category'],
     );
   } 
@@ -32,7 +32,7 @@ class Event {
       'chatId': chatId,
       'content': content,
       'isImage': isImage,
-      'changeTime': changeTime,
+      'changeTime': changeTime.toString(),
       'category': category,
     };
   }

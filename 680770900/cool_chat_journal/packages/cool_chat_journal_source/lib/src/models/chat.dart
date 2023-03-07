@@ -2,7 +2,7 @@ class Chat {
   final int id;
   final int icon;
   final String name;
-  final String createdTime;
+  final DateTime createdTime;
   final bool isPinned;
 
   const Chat({
@@ -18,7 +18,7 @@ class Chat {
       id: map['id'],
       icon: map['icon'],
       name: map['name'],
-      createdTime: map['createdTime'],
+      createdTime: DateTime.parse(map['createdTime']),
       isPinned: map['isPinned'],
     );
   }
@@ -28,7 +28,7 @@ class Chat {
       'id': id,
       'icon': icon,
       'name': name,
-      'createdTime': createdTime,
+      'createdTime': createdTime.toString(),
       'isPinned': isPinned,
     };
   }
