@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../constants/color_constants.dart';
 import '../providers/auth_provider.dart';
-import 'login_page.dart';
 import 'pages.dart';
 
 class SplashPage extends StatefulWidget {
@@ -44,7 +43,7 @@ class SplashPageState extends State<SplashPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              "images/app_icon.png",
+              'images/app_icon.png',
               width: 100,
               height: 100,
             ),

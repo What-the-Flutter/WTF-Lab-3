@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -32,15 +33,17 @@ class ChatPageState extends State<ChatPage> {
 
   File? imageFile;
   bool isLoading = false;
+  bool isEditing = false;
   String imageUrl = '';
   String chatId = '';
+  String currentMessageId = '';
 
   final TextEditingController textEditingController = TextEditingController();
   final ScrollController listScrollController = ScrollController();
   final FocusNode focusNode = FocusNode();
 
-  late ChatProvider chatProvider;
-  late AuthProvider authProvider;
+  late final ChatProvider chatProvider;
+  late final AuthProvider authProvider;
 
   @override
   void initState() {
@@ -49,7 +52,7 @@ class ChatPageState extends State<ChatPage> {
     authProvider = context.read<AuthProvider>();
 
     listScrollController.addListener(_scrollListener);
-    readLocal();
+    _readLocal();
   }
 
   void _scrollListener() {
@@ -64,7 +67,7 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
-  void readLocal() {
+  void _readLocal() {
     if (authProvider.getUserFirebaseId()?.isNotEmpty == true) {
       currentUserId = authProvider.getUserFirebaseId()!;
     } else {
@@ -82,8 +85,8 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  Future getImage() async {
-    var imagePicker = ImagePicker();
+  Future _getImage() async {
+    final imagePicker = ImagePicker();
     XFile? pickedFile;
 
     pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
@@ -93,19 +96,19 @@ class ChatPageState extends State<ChatPage> {
         setState(() {
           isLoading = true;
         });
-        uploadFile();
+        _uploadFile();
       }
     }
   }
 
-  Future uploadFile() async {
-    var fileName = DateTime.now().millisecondsSinceEpoch.toString();
+  Future _uploadFile() async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
     var uploadTask = await chatProvider.uploadFile(imageFile!, fileName);
     try {
       imageUrl = await (await uploadTask).ref.getDownloadURL();
       setState(() {
         isLoading = false;
-        onSendMessage(imageUrl, TypeMessage.image);
+        _onSendMessage(imageUrl, TypeMessage.image);
       });
     } on FirebaseException catch (e) {
       setState(() {
@@ -115,7 +118,7 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
-  void onSendMessage(String content, int type) {
+  void _onSendMessage(String content, int type) {
     if (content.trim().isNotEmpty) {
       textEditingController.clear();
       chatProvider.sendMessage(content, type, chatId, currentUserId);
@@ -129,12 +132,15 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
-  Widget buildItem(int index, DocumentSnapshot? document) {
+  Widget _item(int index, DocumentSnapshot? document) {
     if (document != null) {
-      var messageChat = MessageChat.fromDocument(document);
+      var messageChat = Message.fromDocument(document);
       if (messageChat.chatId == chatId) {
         return Row(
           children: <Widget>[
+            messageChat.isFavorite == true
+                ? const Icon(Icons.star)
+                : const Icon(Icons.star_border),
             messageChat.type == TypeMessage.text
                 // Text
                 ? Container(
@@ -240,7 +246,7 @@ class ChatPageState extends State<ChatPage> {
     return const SizedBox.shrink();
   }
 
-  Future<bool> onBackPress() {
+  Future<bool> _onBackPress() {
     chatProvider.updateDataFirestore(
       FirestoreConstants.pathUserCollection,
       currentUserId,
@@ -267,29 +273,27 @@ class ChatPageState extends State<ChatPage> {
               Column(
                 children: <Widget>[
                   // List of messages
-                  buildListMessage(),
+                  _listMessage(),
                   // Input content
-                  buildInput(),
+                  _input(),
                 ],
               ),
-
-              // Loading
-              buildLoading()
+              _loading()
             ],
           ),
-          onWillPop: onBackPress,
+          onWillPop: _onBackPress,
         ),
       ),
     );
   }
 
-  Widget buildLoading() {
+  Widget _loading() {
     return Positioned(
       child: isLoading ? LoadingView() : const SizedBox.shrink(),
     );
   }
 
-  Widget buildInput() {
+  Widget _input() {
     return Container(
       child: Row(
         children: <Widget>[
@@ -299,7 +303,7 @@ class ChatPageState extends State<ChatPage> {
               margin: const EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
                 icon: const Icon(Icons.image),
-                onPressed: getImage,
+                onPressed: _getImage,
                 color: ColorConstants.primaryColor,
               ),
             ),
@@ -307,32 +311,45 @@ class ChatPageState extends State<ChatPage> {
           ),
           // Edit text
           Flexible(
-            child: Container(
-              child: TextField(
-                onSubmitted: (value) {
-                  onSendMessage(textEditingController.text, TypeMessage.text);
-                },
-                style: const TextStyle(
-                    color: ColorConstants.primaryColor, fontSize: 15),
-                controller: textEditingController,
-                decoration: const InputDecoration.collapsed(
-                  hintText: 'Type your message...',
-                  hintStyle: TextStyle(color: ColorConstants.greyColor),
-                ),
-                focusNode: focusNode,
-                autofocus: true,
+            child: TextField(
+              onSubmitted: (value) {
+                if (!isEditing) {
+                  _onSendMessage(textEditingController.text, TypeMessage.text);
+                } else {
+                  chatProvider.updateMessage(
+                      currentUserId, chatId, currentMessageId, value);
+                  isEditing = false;
+                  textEditingController.text = '';
+                }
+              },
+              style: const TextStyle(
+                  color: ColorConstants.primaryColor, fontSize: 15),
+              controller: textEditingController,
+              decoration: const InputDecoration.collapsed(
+                hintText: 'Type your message...',
+                hintStyle: TextStyle(color: ColorConstants.greyColor),
               ),
+              focusNode: focusNode,
+              autofocus: true,
             ),
           ),
-
           // Button send message
           Material(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: IconButton(
                 icon: const Icon(Icons.send),
-                onPressed: () =>
-                    onSendMessage(textEditingController.text, TypeMessage.text),
+                onPressed: () {
+                  if (!isEditing) {
+                    _onSendMessage(
+                        textEditingController.text, TypeMessage.text);
+                  } else {
+                    chatProvider.updateMessage(currentUserId, chatId,
+                        currentMessageId, textEditingController.text);
+                    isEditing = false;
+                    textEditingController.text = '';
+                  }
+                },
                 color: ColorConstants.primaryColor,
               ),
             ),
@@ -349,7 +366,7 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget buildListMessage() {
+  Widget _listMessage() {
     return Flexible(
       child: currentUserId.isNotEmpty
           ? StreamBuilder<QuerySnapshot>(
@@ -360,8 +377,30 @@ class ChatPageState extends State<ChatPage> {
                   if (listMessage.isNotEmpty) {
                     return ListView.builder(
                       padding: const EdgeInsets.all(10),
-                      itemBuilder: (context, index) =>
-                          buildItem(index, snapshot.data?.docs[index]),
+                      itemBuilder: (context, index) {
+                        var isIos =
+                            Theme.of(context).platform == TargetPlatform.iOS;
+                        if (isIos) {
+                          return Dismissible(
+                              onDismissed: (direction) {
+                                /**
+                           * TODO: добавить логику
+                           */
+                              },
+                              key: Key(snapshot.data!.docs[index].id),
+                              child: _item(index, snapshot.data?.docs[index]));
+                        }
+                        return GestureDetector(
+                            onLongPress: () => {
+                                  _askedToLead(
+                                      snapshot.data!.docs[index].id,
+                                      snapshot.data!.docs[index].get('content'),
+                                      snapshot.data!.docs[index].get('type'),
+                                      snapshot.data!.docs[index]
+                                          .get('isFavorite'))
+                                },
+                            child: _item(index, snapshot.data?.docs[index]));
+                      },
                       itemCount: snapshot.data?.docs.length,
                       reverse: true,
                       controller: listScrollController,
@@ -385,7 +424,70 @@ class ChatPageState extends State<ChatPage> {
             ),
     );
   }
+
+  Future<void> _askedToLead(
+      String id, String text, int type, bool isFavorite) async {
+    switch (await showDialog<MessageChoice>(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: const Text('Select assignment'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, MessageChoice.update);
+                },
+                child: const Text('Update'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, MessageChoice.delete);
+                },
+                child: const Text('Delete'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, MessageChoice.copy);
+                },
+                child: const Text('Copy'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, MessageChoice.pin);
+                },
+                child: const Text('Pin'),
+              ),
+            ],
+          );
+        })) {
+      case MessageChoice.update:
+        textEditingController.text = text;
+        currentMessageId = id;
+        isEditing = true;
+        break;
+      case MessageChoice.delete:
+        chatProvider.deleteMessage(currentUserId, chatId, id);
+        break;
+      case MessageChoice.copy:
+        if (type == 0) {
+          await Clipboard.setData(ClipboardData(text: text));
+        } else if (type == 1) {
+          /**
+           * TODO: добавить реализацию копирования картинок
+           */
+        }
+        break;
+      case MessageChoice.pin:
+        chatProvider.pinMessage(currentUserId, chatId, id, isFavorite);
+        break;
+      case null:
+        // dialog dismissed
+        break;
+    }
+  }
 }
+
+enum MessageChoice { delete, update, copy, pin }
 
 class ChatPageArguments {
   final String userId;
