@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.invert_colors),
+          icon: const Icon(Icons.sunny),
           onPressed: () {},
         ),
       ],
@@ -139,15 +139,6 @@ class _HomePageState extends State<HomePage> {
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const CreatingPage()));
-            /*showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => SingleChildScrollView(
-                        child: Container(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: CreatingPage(),
-                    )));*/
           },
           elevation: 16,
           child: const Icon(

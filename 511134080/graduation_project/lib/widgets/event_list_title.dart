@@ -3,17 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/cubits/events_cubit.dart';
 import 'package:graduation_project/pages/edit_or_create_page.dart';
 import 'package:graduation_project/pages/event_page.dart';
+import 'package:intl/intl.dart';
 
 import '../constants.dart';
+import '../models/chat_model.dart';
 
 class EventListTile extends StatelessWidget {
   final dynamic chatId;
 
   const EventListTile({super.key, required this.chatId});
 
-  List<ListTile> _createOptions(BuildContext context) {
+  List<ListTile> _createOptions(BuildContext context, ChatModel chat) {
     return [
-      const ListTile(
+      ListTile(
         leading: Icon(
           Icons.info,
           color: Colors.yellow,
@@ -25,6 +27,92 @@ class EventListTile extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+        onTap: () {
+          Navigator.pop(context);
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple.shade300,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(24),
+                            ),
+                          ),
+                          child: chat.iconId == 0
+                              ? Center(
+                                  child: Text(
+                                    chat.title[0].toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                )
+                              : icons[chat.iconId],
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Text(chat.title),
+                      ],
+                    ),
+                  ),
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Created',
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        '${DateFormat('dd.MM.yyyy').format(chat.date)}',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Text(
+                        'Last event',
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        chat.cards.isNotEmpty
+                            ? '${DateFormat('dd.MM.yyyy').format(chat.cards.last.time)} at ${DateFormat('hh:mm a').format(chat.cards.last.time)}'
+                            : 'No events yet.',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'OK',
+                      ),
+                    ),
+                  ],
+                );
+              });
+        },
       ),
       const ListTile(
         leading: Icon(
@@ -84,7 +172,7 @@ class EventListTile extends StatelessWidget {
     ];
   }
 
-  void onLongPress(BuildContext context) {
+  void onLongPress(BuildContext context, ChatModel chat) {
     showModalBottomSheet(
         constraints: BoxConstraints.loose(
           const Size.fromHeight(
@@ -95,7 +183,7 @@ class EventListTile extends StatelessWidget {
         context: context,
         builder: (context) {
           return ListView(
-            children: _createOptions(context),
+            children: _createOptions(context, chat),
           );
         });
   }
@@ -145,7 +233,7 @@ class EventListTile extends StatelessWidget {
             );
           },
           onLongPress: () {
-            onLongPress(context);
+            onLongPress(context, chat);
           },
         );
       },

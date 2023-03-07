@@ -18,18 +18,21 @@ class ChatJournal extends StatelessWidget {
               iconId: 1,
               title: 'Travel',
               id: UniqueKey(),
+              date: DateTime.now(),
               cards: const [],
             ),
             ChatModel(
               iconId: 2,
               title: 'Family',
               id: UniqueKey(),
+              date: DateTime.now(),
               cards: const [],
             ),
             ChatModel(
               iconId: 3,
               title: 'Sports',
               id: UniqueKey(),
+              date: DateTime.now(),
               cards: const [],
             ),
           ],
@@ -38,7 +41,7 @@ class ChatJournal extends StatelessWidget {
       child: MaterialApp(
         title: 'Chat Journal',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorSchemeSeed: Colors.deepPurple,
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,

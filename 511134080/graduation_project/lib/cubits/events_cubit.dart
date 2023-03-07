@@ -18,7 +18,13 @@ class EventsCubit extends Cubit<EventsState> {
 
   void addChat(int iconId, String title) {
     final chat = [
-      ChatModel(iconId: iconId, title: title, id: UniqueKey(), cards: const [])
+      ChatModel(
+        iconId: iconId,
+        title: title,
+        id: UniqueKey(),
+        date: DateTime.now(),
+        cards: const [],
+      )
     ];
 
     final chats = List<ChatModel>.from(chat)..addAll(state.chats);

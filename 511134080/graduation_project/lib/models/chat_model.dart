@@ -7,6 +7,7 @@ class ChatModel {
   final int iconId;
   final String title;
   final EventCardModel? lastEvent;
+  final DateTime date;
 
   final List<EventCardModel> cards;
 
@@ -16,6 +17,7 @@ class ChatModel {
     required this.id,
     required this.cards,
     this.lastEvent,
+    required this.date,
   });
 
   ChatModel copyWith({
@@ -24,6 +26,7 @@ class ChatModel {
     String? newTitle,
     EventCardModel? newLastEvent,
     List<EventCardModel>? newCards,
+    DateTime? newDate,
   }) {
     return ChatModel(
       id: newId ?? id,
@@ -31,6 +34,7 @@ class ChatModel {
       title: newTitle ?? title,
       lastEvent: newLastEvent ?? lastEvent,
       cards: newCards ?? cards,
+      date: newDate ?? date,
     );
   }
 }
