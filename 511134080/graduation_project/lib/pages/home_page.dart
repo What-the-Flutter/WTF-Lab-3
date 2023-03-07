@@ -15,8 +15,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Widget _createListTile(int index, List<ChatModel> chats) {
+    final sortedChats =
+        List<ChatModel>.from(chats.where((element) => element.isPinned))
+          ..addAll(chats.where((element) => !element.isPinned));
     return EventListTile(
-      chatId: chats[index].id,
+      chatId: sortedChats[index].id,
     );
   }
 

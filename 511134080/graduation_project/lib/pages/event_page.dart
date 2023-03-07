@@ -156,38 +156,36 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
-  Future _onReplyChosen() async {
+  List<SimpleDialogOption> _createOptions(
+      EventsState state, BuildContext context) {
+    return [
+      for (int i = 0; i < state.chats.length; i++)
+        SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context);
+            context
+                .read<EventsCubit>()
+                .moveSelectedCards(state.getChatById(widget.chatId), i);
+          },
+          child: Text(state.chats[i].title),
+        )
+    ];
+  }
+
+  Future _onReplyChosen(state) async {
     return await showDialog(
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('Title'),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('First Option'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Second Option'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Other Option'),
-            )
-          ],
+          title: const Text(
+              'Choose the chat you want to relocate selected events:'),
+          children: _createOptions(state, context),
         );
       },
     );
   }
 
-  AppBar _createAppBar(BuildContext context, ChatModel chat) {
+  AppBar _createAppBar(BuildContext context, ChatModel chat, state) {
     if (chat.cards.where((element) => element.isSelected).isNotEmpty) {
       return AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -239,7 +237,7 @@ class _EventPageState extends State<EventPage> {
               Icons.reply,
             ),
             onPressed: () {
-              _onReplyChosen();
+              _onReplyChosen(state);
             },
           ),
           IconButton(
@@ -316,7 +314,7 @@ class _EventPageState extends State<EventPage> {
     return BlocBuilder<EventsCubit, EventsState>(builder: (context, state) {
       final chat = state.getChatById(widget.chatId);
       return Scaffold(
-        appBar: _createAppBar(context, chat),
+        appBar: _createAppBar(context, chat, state),
         body: Column(
           children: [
             chat.cards.isEmpty ||

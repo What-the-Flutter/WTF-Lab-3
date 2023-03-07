@@ -10,6 +10,7 @@ class EventsCubit extends Cubit<EventsState> {
   EventsCubit({required EventsState initState}) : super(initState);
 
   void updateChat(ChatModel oldChat, ChatModel newChat) {
+    print('UPDATE');
     final chats = state.chats;
     final index = state.chats.indexOf(oldChat);
     chats[index] = newChat;
@@ -44,6 +45,42 @@ class EventsCubit extends Cubit<EventsState> {
       newTitle: newTitle,
     );
     updateChat(chat, editedChat);
+  }
+
+  void moveSelectedCards(ChatModel chatModel, int newChatIndex) {
+    final destinationChat = state.chats[newChatIndex];
+
+    final movingCards = List<EventCardModel>.from(
+        chatModel.cards.where((element) => element.isSelected));
+
+    final withoutMovingCards = List<EventCardModel>.from(
+        chatModel.cards.where((element) => !element.isSelected));
+
+    updateChat(
+      chatModel,
+      chatModel.copyWith(
+        newCards: withoutMovingCards,
+      ),
+    );
+
+    final withMovingCards = List<EventCardModel>.from(destinationChat.cards)
+      ..addAll(movingCards);
+
+    updateChat(
+      destinationChat,
+      destinationChat.copyWith(
+        newCards: withMovingCards,
+      ),
+    );
+    cancelSelectionMode(chatModel.id);
+    cancelSelectionMode(destinationChat.id);
+  }
+
+  void togglePinState(chatId) {
+    final chat = state.getChatById(chatId);
+
+    updateChat(
+        chat, chat.copyWith(pinned: !state.getChatById(chatId).isPinned));
   }
 
   void addEventCard(chatId, EventCardModel card) {

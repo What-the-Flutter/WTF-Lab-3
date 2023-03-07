@@ -5,8 +5,10 @@ class EventsState {
 
   EventsState({required this.chats});
 
-  ChatModel getChatById(chatId) =>
-      chats[chats.indexWhere((element) => element.id == chatId)];
+  ChatModel getChatById(chatId) {
+    print('getChat');
+    return chats[chats.indexWhere((element) => element.id == chatId)];
+  }
 
   EventCardModel getLastEvent(chatId) => getChatById(chatId).cards.last;
 

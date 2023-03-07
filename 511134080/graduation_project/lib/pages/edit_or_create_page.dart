@@ -58,7 +58,17 @@ class _CreatingPageState extends State<CreatingPage> {
             });
           }
         },
-        icon: icons[index],
+        icon: index == 0 && _selectedIndex == 0 && _controller.text != ''
+            ? Center(
+                child: Text(
+                  _controller.text[0].toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              )
+            : icons[index],
         color: Colors.blue,
       ),
     );

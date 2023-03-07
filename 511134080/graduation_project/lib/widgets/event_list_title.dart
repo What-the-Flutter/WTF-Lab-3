@@ -114,7 +114,7 @@ class EventListTile extends StatelessWidget {
               });
         },
       ),
-      const ListTile(
+      ListTile(
         leading: Icon(
           Icons.attach_file,
           color: Colors.greenAccent,
@@ -126,6 +126,10 @@ class EventListTile extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+        onTap: () {
+          Navigator.pop(context);
+          context.read<EventsCubit>().togglePinState(chat.id);
+        },
       ),
       ListTile(
         leading: const Icon(
@@ -188,6 +192,43 @@ class EventListTile extends StatelessWidget {
         });
   }
 
+  Widget? _createTrailing(ChatModel chat) {
+    return chat.cards.isNotEmpty
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: chat.isPinned
+                ? [
+                    Icon(
+                      Icons.attach_file,
+                      color: Colors.deepPurple,
+                    ),
+                    Text(
+                      DateFormat('hh:mm a').format(chat.cards.last.time),
+                    ),
+                  ]
+                : [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32.0),
+                      child: Text(
+                        DateFormat('hh:mm a').format(chat.cards.last.time),
+                      ),
+                    ),
+                  ],
+          )
+        : chat.isPinned
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.attach_file,
+                    color: Colors.deepPurple,
+                  ),
+                ],
+              )
+            : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EventsCubit, EventsState>(
@@ -218,10 +259,11 @@ class EventListTile extends StatelessWidget {
                 : icons[chat.iconId],
           ),
           title: Text(chat.title),
-          subtitle: chat.lastEvent != null
-              ? Text(chat.lastEvent!.title)
+          subtitle: chat.cards.isNotEmpty
+              ? Text(chat.cards.last.title)
               : const Text('No events. Click here to create one.'),
           hoverColor: Colors.deepPurple.shade100,
+          trailing: _createTrailing(chat),
           onTap: () {
             Navigator.push(
               context,
