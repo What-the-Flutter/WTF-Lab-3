@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,9 +47,12 @@ class _BottomPanelState extends State<BottomPanel> {
       final image = await ImagePicker().pickImage(source: source);
 
       if (image != null) {
+        final imageBytes = await image.readAsBytes();
+        final base64Image = base64Encode(imageBytes);
+
         context.read<ChatCubit>().addNewEvent(
           Event(
-            content: image.path,
+            content: base64Image,
             isImage: true,
             changeTime: DateTime.now(),
             category: context.read<ChatCubit>().state.selectedCategory,

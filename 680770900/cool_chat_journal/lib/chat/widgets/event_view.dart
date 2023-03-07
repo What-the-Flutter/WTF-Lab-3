@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -58,8 +59,8 @@ class _EventViewState extends State<EventView> {
     if (widget.event.isImage) {
       eventContent = Padding(
         padding: const EdgeInsets.only(top: 8.0),
-        child: Image.file(
-          File(widget.event.content),
+        child: Image.memory(
+          base64Decode(widget.event.content),
           width: 200.0,
           height: 200.0,
         ),
