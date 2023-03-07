@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/models/chat_model.dart';
@@ -15,11 +16,34 @@ class EventsCubit extends Cubit<EventsState> {
     emit(state.copyWith(chats));
   }
 
+  void addChat(int iconId, String title) {
+    final chat = [
+      ChatModel(iconId: iconId, title: title, id: UniqueKey(), cards: const [])
+    ];
+
+    final chats = List<ChatModel>.from(chat)..addAll(state.chats);
+    emit(state.copyWith(chats));
+  }
+
+  void deleteChat(chatId) {
+    final chats = List<ChatModel>.from(state.chats)
+      ..removeWhere((element) => element.id == chatId);
+    emit(state.copyWith(chats));
+  }
+
+  void editChat(chatId, newIconId, newTitle) {
+    final chat = state.getChatById(chatId);
+    final editedChat = chat.copyWith(
+      newIconId: newIconId,
+      newTitle: newTitle,
+    );
+    updateChat(chat, editedChat);
+  }
+
   void addEventCard(chatId, EventCardModel card) {
     final chat = state.getChatById(chatId);
     final cards = List<EventCardModel>.from(chat.cards)..add(card);
-    updateChat(
-        chat, chat.copyWith(newCards: cards, newLastEventTitle: card.title));
+    updateChat(chat, chat.copyWith(newCards: cards, newLastEvent: card));
   }
 
   void editSelectedCard(chatId, newTitle) {
@@ -34,7 +58,7 @@ class EventsCubit extends Cubit<EventsState> {
         chat,
         chat.copyWith(
           newCards: cards,
-          newLastEventTitle: cards.last.title,
+          newLastEvent: cards.last,
         ));
 
     cancelSelectionMode(chatId);
@@ -77,15 +101,13 @@ class EventsCubit extends Cubit<EventsState> {
     final cards = List<EventCardModel>.from(chat.cards)
       ..removeWhere((element) => element.isSelected);
 
-    final lastEventTitle = cards.isNotEmpty
-        ? cards.last.title
-        : 'No events. Click here to create one.';
+    final lastEvent = cards.isNotEmpty ? cards.last : null;
 
     updateChat(
         chat,
         chat.copyWith(
           newCards: cards,
-          newLastEventTitle: lastEventTitle,
+          newLastEvent: lastEvent,
         ));
     cancelSelectionMode(chatId);
   }

@@ -15,19 +15,19 @@ class ChatJournal extends StatelessWidget {
         initState: EventsState(
           chats: [
             ChatModel(
-              iconId: 0,
+              iconId: 1,
               title: 'Travel',
               id: UniqueKey(),
               cards: const [],
             ),
             ChatModel(
-              iconId: 1,
+              iconId: 2,
               title: 'Family',
               id: UniqueKey(),
               cards: const [],
             ),
             ChatModel(
-              iconId: 2,
+              iconId: 3,
               title: 'Sports',
               id: UniqueKey(),
               cards: const [],

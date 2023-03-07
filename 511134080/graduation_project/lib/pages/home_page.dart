@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/cubits/events_cubit.dart';
+import 'package:graduation_project/pages/edit_or_create_page.dart';
 
 import '../models/chat_model.dart';
 import '../widgets/event_list_title.dart';
@@ -135,7 +136,19 @@ class _HomePageState extends State<HomePage> {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const CreatingPage()));
+            /*showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => SingleChildScrollView(
+                        child: Container(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: CreatingPage(),
+                    )));*/
+          },
           elevation: 16,
           child: const Icon(
             Icons.add,

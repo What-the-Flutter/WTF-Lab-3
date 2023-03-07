@@ -1,13 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/cubits/events_cubit.dart';
+import 'package:graduation_project/pages/edit_or_create_page.dart';
 import 'package:graduation_project/pages/event_page.dart';
+
+import '../constants.dart';
 
 class EventListTile extends StatelessWidget {
   final dynamic chatId;
 
   const EventListTile({super.key, required this.chatId});
+
+  List<ListTile> _createOptions(BuildContext context) {
+    return [
+      const ListTile(
+        leading: Icon(
+          Icons.info,
+          color: Colors.yellow,
+          size: 24,
+        ),
+        title: Text(
+          'Info',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      const ListTile(
+        leading: Icon(
+          Icons.attach_file,
+          color: Colors.greenAccent,
+          size: 24,
+        ),
+        title: Text(
+          'Pin/Unpin Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.edit,
+          color: Colors.cyan,
+          size: 24,
+        ),
+        title: const Text(
+          'Edit Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return BlocBuilder<EventsCubit, EventsState>(
+              builder: (context, state) {
+                return CreatingPage(
+                  isCreatingNewPage: false,
+                  editingPage: state.getChatById(chatId),
+                );
+              },
+            );
+          }));
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.delete,
+          color: Colors.redAccent,
+          size: 24,
+        ),
+        title: const Text(
+          'Delete Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          context.read<EventsCubit>().deleteChat(chatId);
+          Navigator.pop(context);
+        },
+      ),
+    ];
+  }
+
+  void onLongPress(BuildContext context) {
+    showModalBottomSheet(
+        constraints: BoxConstraints.loose(
+          const Size.fromHeight(
+            240,
+          ),
+        ),
+        backgroundColor: Colors.deepPurple.shade400,
+        context: context,
+        builder: (context) {
+          return ListView(
+            children: _createOptions(context),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +117,22 @@ class EventListTile extends StatelessWidget {
                 Radius.circular(24),
               ),
             ),
-            child: icons[chat.iconId],
+            child: chat.iconId == 0
+                ? Center(
+                    child: Text(
+                      chat.title[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
+                    ),
+                  )
+                : icons[chat.iconId],
           ),
           title: Text(chat.title),
-          subtitle: Text(chat.lastEventTitle),
+          subtitle: chat.lastEvent != null
+              ? Text(chat.lastEvent!.title)
+              : const Text('No events. Click here to create one.'),
           hoverColor: Colors.deepPurple.shade100,
           onTap: () {
             Navigator.push(
@@ -40,6 +143,9 @@ class EventListTile extends StatelessWidget {
                 ),
               ),
             );
+          },
+          onLongPress: () {
+            onLongPress(context);
           },
         );
       },

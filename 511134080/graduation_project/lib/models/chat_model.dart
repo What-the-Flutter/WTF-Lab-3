@@ -6,7 +6,7 @@ class ChatModel {
   final dynamic id;
   final int iconId;
   final String title;
-  final String lastEventTitle;
+  final EventCardModel? lastEvent;
 
   final List<EventCardModel> cards;
 
@@ -15,21 +15,21 @@ class ChatModel {
     required this.title,
     required this.id,
     required this.cards,
-    this.lastEventTitle = 'No events. Click here to create one.',
+    this.lastEvent,
   });
 
   ChatModel copyWith({
     dynamic newId,
     int? newIconId,
     String? newTitle,
-    String? newLastEventTitle,
+    EventCardModel? newLastEvent,
     List<EventCardModel>? newCards,
   }) {
     return ChatModel(
       id: newId ?? id,
       iconId: newIconId ?? iconId,
       title: newTitle ?? title,
-      lastEventTitle: newLastEventTitle ?? lastEventTitle,
+      lastEvent: newLastEvent ?? lastEvent,
       cards: newCards ?? cards,
     );
   }
