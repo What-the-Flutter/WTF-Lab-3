@@ -89,6 +89,53 @@ class _CreatingPageState extends State<CreatingPage> {
     }
   }
 
+  Widget _createTextField() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: TextField(
+          onChanged: (_) {
+            setState(() {});
+          },
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).disabledColor.withAlpha(24),
+            hintText: 'Name of the Page',
+          ),
+          controller: _controller,
+          focusNode: _focusNode,
+        ),
+      ),
+    );
+  }
+
+  FloatingActionButton _createFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        if (!_isSelectedIcon || _controller.text == '') {
+          Navigator.pop(context);
+        } else {
+          _creatingPage();
+        }
+      },
+      elevation: 16,
+      child: _controller.text != ''
+          ? const Icon(
+              Icons.done,
+              size: 32,
+            )
+          : const Icon(
+              Icons.close,
+              size: 32,
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,28 +157,7 @@ class _CreatingPageState extends State<CreatingPage> {
               ),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TextField(
-                onChanged: (_) {
-                  setState(() {});
-                },
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Theme.of(context).disabledColor.withAlpha(24),
-                  hintText: 'Name of the Page',
-                ),
-                controller: _controller,
-                focusNode: _focusNode,
-              ),
-            ),
-          ),
+          _createTextField(),
           Expanded(
             flex: 10,
             child: Padding(
@@ -150,25 +176,7 @@ class _CreatingPageState extends State<CreatingPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (!_isSelectedIcon || _controller.text == '') {
-            Navigator.pop(context);
-          } else {
-            _creatingPage();
-          }
-        },
-        elevation: 16,
-        child: _controller.text != ''
-            ? const Icon(
-                Icons.done,
-                size: 32,
-              )
-            : const Icon(
-                Icons.close,
-                size: 32,
-              ),
-      ),
+      floatingActionButton: _createFloatingActionButton(),
     );
   }
 }

@@ -160,15 +160,16 @@ class _EventPageState extends State<EventPage> {
       EventsState state, BuildContext context) {
     return [
       for (int i = 0; i < state.chats.length; i++)
-        SimpleDialogOption(
-          onPressed: () {
-            Navigator.pop(context);
-            context
-                .read<EventsCubit>()
-                .moveSelectedCards(state.getChatById(widget.chatId), i);
-          },
-          child: Text(state.chats[i].title),
-        )
+        if (state.chats[i].id != widget.chatId)
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context);
+              context
+                  .read<EventsCubit>()
+                  .moveSelectedCards(state.getChatById(widget.chatId), i);
+            },
+            child: Text(state.chats[i].title),
+          ),
     ];
   }
 
@@ -185,125 +186,133 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  AppBar _createAppBar(BuildContext context, ChatModel chat, state) {
-    if (chat.cards.where((element) => element.isSelected).isNotEmpty) {
-      return AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Text(
-          '${chat.cards.where((element) => element.isSelected).length}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w300,
-            fontSize: 24,
-          ),
-        ),
-        iconTheme: const IconThemeData(
+  AppBar _createSelectionModeAppBar(chat, state) {
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      title: Text(
+        '${chat.cards.where((element) => element.isSelected).length}',
+        style: const TextStyle(
           color: Colors.white,
-          size: 30,
+          fontWeight: FontWeight.w300,
+          fontSize: 24,
         ),
-        leading: IconButton(
+      ),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+        size: 30,
+      ),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.close,
+        ),
+        onPressed: () {
+          context.read<EventsCubit>().cancelSelectionMode(widget.chatId);
+          if (_isEditingMode) {
+            _isEditingMode = false;
+            _textFieldController.text = '';
+            _myFocusNode.unfocus();
+          }
+        },
+      ),
+      actions: [
+        IconButton(
           icon: const Icon(
-            Icons.close,
+            Icons.edit,
+          ),
+          onPressed:
+              chat.cards.where((element) => element.isSelected).length > 1
+                  ? null
+                  : () {
+                      _isEditingMode = true;
+                      _textFieldController.text = chat.cards
+                          .where((element) => element.isSelected)
+                          .first
+                          .title;
+                      _myFocusNode.requestFocus();
+                    },
+          disabledColor: Theme.of(context).primaryColor,
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.reply,
           ),
           onPressed: () {
-            context.read<EventsCubit>().cancelSelectionMode(widget.chatId);
-            if (_isEditingMode) {
-              _isEditingMode = false;
-              _textFieldController.text = '';
-              _myFocusNode.unfocus();
-            }
+            _onReplyChosen(state);
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.edit,
-            ),
-            onPressed:
-                chat.cards.where((element) => element.isSelected).length > 1
-                    ? null
-                    : () {
-                        _isEditingMode = true;
-                        _textFieldController.text = chat.cards
-                            .where((element) => element.isSelected)
-                            .first
-                            .title;
-                        _myFocusNode.requestFocus();
-                      },
-            disabledColor: Theme.of(context).primaryColor,
+        IconButton(
+          icon: const Icon(
+            Icons.copy,
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.reply,
-            ),
-            onPressed: () {
-              _onReplyChosen(state);
-            },
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.copy,
-            ),
-            onPressed: () {
-              context.read<EventsCubit>().copySelectedCards(widget.chatId);
+          onPressed: () {
+            context.read<EventsCubit>().copySelectedCards(widget.chatId);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Copied to the clipboard!',
-                  ),
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Copied to the clipboard!',
                 ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.bookmark_border_outlined,
-            ),
-            onPressed: () {
-              context
-                  .read<EventsCubit>()
-                  .manageFavouritesFromSelectionMode(widget.chatId);
-            },
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.delete,
-            ),
-            onPressed: () {
-              context.read<EventsCubit>().deleteSelectedCards(widget.chatId);
-            },
-          ),
-        ],
-      );
-    } else {
-      return AppBar(
-        centerTitle: true,
-        iconTheme: Theme.of(context).iconTheme,
-        title: Text(
-          chat.title,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+              ),
+            );
+          },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
+        IconButton(
+          icon: const Icon(
+            Icons.bookmark_border_outlined,
           ),
-          IconButton(
-            icon: _isShowingFavourites
-                ? const Icon(Icons.bookmark)
-                : const Icon(Icons.bookmark_border_outlined),
-            onPressed: () {
-              setState(() {
-                _isShowingFavourites = !_isShowingFavourites;
-              });
-            },
+          onPressed: () {
+            context
+                .read<EventsCubit>()
+                .manageFavouritesFromSelectionMode(widget.chatId);
+          },
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.delete,
           ),
-        ],
-        backgroundColor: Theme.of(context).primaryColor,
-      );
+          onPressed: () {
+            context.read<EventsCubit>().deleteSelectedCards(widget.chatId);
+          },
+        ),
+      ],
+    );
+  }
+
+  AppBar _createDefaultAppBar(chat) {
+    return AppBar(
+      centerTitle: true,
+      iconTheme: Theme.of(context).iconTheme,
+      title: Text(
+        chat.title,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: _isShowingFavourites
+              ? const Icon(Icons.bookmark)
+              : const Icon(Icons.bookmark_border_outlined),
+          onPressed: () {
+            setState(() {
+              _isShowingFavourites = !_isShowingFavourites;
+            });
+          },
+        ),
+      ],
+      backgroundColor: Theme.of(context).primaryColor,
+    );
+  }
+
+  AppBar _createAppBar(BuildContext context, ChatModel chat, state) {
+    if (chat.cards.where((element) => element.isSelected).isNotEmpty) {
+      return _createSelectionModeAppBar(chat, state);
+    } else {
+      return _createDefaultAppBar(chat);
     }
   }
 

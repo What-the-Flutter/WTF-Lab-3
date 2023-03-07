@@ -6,7 +6,6 @@ class ChatModel {
   final dynamic id;
   final int iconId;
   final String title;
-  final EventCardModel? lastEvent;
   final DateTime date;
   final bool isPinned;
 
@@ -17,7 +16,6 @@ class ChatModel {
     required this.title,
     required this.id,
     required this.cards,
-    this.lastEvent,
     required this.date,
     this.isPinned = false,
   });
@@ -34,7 +32,6 @@ class ChatModel {
       id: newId ?? id,
       iconId: newIconId ?? iconId,
       title: newTitle ?? title,
-      lastEvent: newLastEvent ?? lastEvent,
       cards: newCards ?? cards,
       date: newDate ?? date,
       isPinned: pinned ?? isPinned,
