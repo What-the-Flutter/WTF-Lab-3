@@ -7,6 +7,6 @@ abstract class ApiAuthenticateRepository {
 
   ValueStream<User?> get userStream;
 
-  Future<String> currentUserId();
+  Future<void> authenticate();
 
 }

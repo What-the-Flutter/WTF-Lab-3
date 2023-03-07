@@ -14,25 +14,21 @@ class AuthenticateRepository implements ApiAuthenticateRepository {
       FirebaseAuth.instance.authStateChanges().shareValue();
 
   @override
-  Future<String> currentUserId() async => await _authenticateOrCurrent();
-
-  FutureOr<String> _authenticateOrCurrent() async {
+  Future<void> authenticate() async {
     if (_fAuthInstance.currentUser != null) {
       logger(
         'Firebase existent user\'s id: ${_fAuthInstance.currentUser!.uid}',
         'Firebase_authentication',
       );
-      return _fAuthInstance.currentUser!.uid;
+      return;
     }
 
-    final account = await _fAuthInstance.signInAnonymously();
+    await _fAuthInstance.signInAnonymously();
 
     logger(
       'Firebase new user\'s id: ${_fAuthInstance.currentUser!.uid}',
       'Firebase_authentication',
     );
-
-    return account.user!.uid;
   }
 
   static FirebaseAuth get _fAuthInstance => FirebaseAuth.instance;

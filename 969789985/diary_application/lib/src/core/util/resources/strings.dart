@@ -1,3 +1,26 @@
+abstract class MainTitles {
+  static const mainTitles = <String>[
+    'Home',
+    'Timeline',
+    'Statistic',
+    'Settings',
+  ];
+}
+
+enum DateFilter{
+  newOnce(DateFilterSelections.newOnce),
+  oldOnce(DateFilterSelections.oldOnce);
+
+  final String dateFilter;
+
+  const DateFilter(this.dateFilter);
+}
+
+abstract class DateFilterSelections {
+  static const String newOnce = '_new_once';
+  static const String oldOnce = '_old_once';
+}
+
 abstract class AuthSelections {
   static const String noneSecurity = '_none_security';
   static const String withPasscode = '_with_password';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../general/settings_divider.dart';
 import 'setting_help_button.dart';
+import 'setting_share_button.dart';
 import 'settings_appearance_button.dart';
 import 'settings_info_button.dart';
 import 'settings_security_button.dart';
@@ -23,6 +24,7 @@ class SettingsBody extends StatelessWidget {
           const SettingsDivider(),
           const SettingsInfoButton(),
           const SettingsDivider(),
+          const SettingsShareButton(),
         ],
       ),
     );
