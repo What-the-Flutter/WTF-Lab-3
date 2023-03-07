@@ -105,7 +105,7 @@ class _EventPageState extends State<EventPage> {
       return Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColor.withAlpha(30),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
         child: Column(
           children: [
             Text(
@@ -131,7 +131,7 @@ class _EventPageState extends State<EventPage> {
       return Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColor.withAlpha(30),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
         child: Column(
           children: [
             Text(
@@ -279,9 +279,7 @@ class _EventPageState extends State<EventPage> {
     } else {
       return AppBar(
         centerTitle: true,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: Theme.of(context).iconTheme,
         title: Text(
           chat.title,
           style: const TextStyle(
@@ -336,7 +334,7 @@ class _EventPageState extends State<EventPage> {
                         onPressed: () {},
                         icon: Icon(
                           Icons.bubble_chart,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColorDark,
                         ),
                       ),
                       Expanded(
@@ -361,7 +359,7 @@ class _EventPageState extends State<EventPage> {
                         onPressed: () {},
                         icon: Icon(
                           Icons.camera_alt_rounded,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColorDark,
                         ),
                       ),
                     ],

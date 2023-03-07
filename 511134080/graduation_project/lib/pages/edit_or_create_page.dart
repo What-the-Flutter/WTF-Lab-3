@@ -21,14 +21,14 @@ class CreatingPage extends StatefulWidget {
 
 class _CreatingPageState extends State<CreatingPage> {
   var _isSelectedIcon = true;
-  var _selectedIndex;
+  late int _selectedIndex;
   final _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.isCreatingNewPage ? 0 : widget.editingPage?.iconId;
+    _selectedIndex = widget.isCreatingNewPage ? 0 : widget.editingPage!.iconId;
     if (!widget.isCreatingNewPage) _controller.text = widget.editingPage!.title;
     _focusNode.requestFocus();
   }
@@ -37,7 +37,7 @@ class _CreatingPageState extends State<CreatingPage> {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.deepPurple.shade300,
+        color: Theme.of(context).primaryColorLight,
         border: _isSelectedIcon && index == _selectedIndex
             ? Border.all(width: 3, color: Colors.deepPurple)
             : null,

@@ -16,12 +16,12 @@ class EventListTile extends StatelessWidget {
   List<ListTile> _createOptions(BuildContext context, ChatModel chat) {
     return [
       ListTile(
-        leading: Icon(
+        leading: const Icon(
           Icons.info,
           color: Colors.yellow,
           size: 24,
         ),
-        title: Text(
+        title: const Text(
           'Info',
           style: TextStyle(
             color: Colors.white,
@@ -58,7 +58,7 @@ class EventListTile extends StatelessWidget {
                                 )
                               : icons[chat.iconId],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
                         Text(chat.title),
@@ -69,22 +69,22 @@ class EventListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'Created',
                         style: TextStyle(
                           fontSize: 24,
                         ),
                       ),
                       Text(
-                        '${DateFormat('dd.MM.yyyy').format(chat.date)}',
-                        style: TextStyle(
+                        DateFormat('dd.MM.yyyy').format(chat.date),
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
-                      Text(
+                      const Text(
                         'Last event',
                         style: TextStyle(
                           fontSize: 24,
@@ -94,7 +94,7 @@ class EventListTile extends StatelessWidget {
                         chat.cards.isNotEmpty
                             ? '${DateFormat('dd.MM.yyyy').format(chat.cards.last.time)} at ${DateFormat('hh:mm a').format(chat.cards.last.time)}'
                             : 'No events yet.',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                       ),
@@ -105,7 +105,7 @@ class EventListTile extends StatelessWidget {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: Text(
+                      child: const Text(
                         'OK',
                       ),
                     ),
@@ -115,12 +115,12 @@ class EventListTile extends StatelessWidget {
         },
       ),
       ListTile(
-        leading: Icon(
+        leading: const Icon(
           Icons.attach_file,
           color: Colors.greenAccent,
           size: 24,
         ),
-        title: Text(
+        title: const Text(
           'Pin/Unpin Page',
           style: TextStyle(
             color: Colors.white,
@@ -183,7 +183,7 @@ class EventListTile extends StatelessWidget {
             240,
           ),
         ),
-        backgroundColor: Colors.deepPurple.shade400,
+        backgroundColor: Theme.of(context).primaryColorLight,
         context: context,
         builder: (context) {
           return ListView(
@@ -199,7 +199,7 @@ class EventListTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: chat.isPinned
                 ? [
-                    Icon(
+                    const Icon(
                       Icons.attach_file,
                       color: Colors.deepPurple,
                     ),
@@ -217,7 +217,7 @@ class EventListTile extends StatelessWidget {
                   ],
           )
         : chat.isPinned
-            ? Column(
+            ? const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Icon(
@@ -241,7 +241,7 @@ class EventListTile extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.deepPurple.shade300,
+              color: Theme.of(context).primaryColorLight,
               borderRadius: const BorderRadius.all(
                 Radius.circular(24),
               ),

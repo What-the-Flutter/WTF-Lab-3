@@ -10,7 +10,6 @@ class EventsCubit extends Cubit<EventsState> {
   EventsCubit({required EventsState initState}) : super(initState);
 
   void updateChat(ChatModel oldChat, ChatModel newChat) {
-    print('UPDATE');
     final chats = state.chats;
     final index = state.chats.indexOf(oldChat);
     chats[index] = newChat;

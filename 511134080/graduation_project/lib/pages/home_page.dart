@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/cubits/events_cubit.dart';
 import 'package:graduation_project/pages/edit_or_create_page.dart';
 
+import '../cubits/theme_cubit.dart';
 import '../models/chat_model.dart';
 import '../widgets/event_list_title.dart';
 
@@ -39,9 +40,21 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {},
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.sunny),
-          onPressed: () {},
+        BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, state) {
+            return IconButton(
+              icon: state.isLight
+                  ? const Icon(
+                      Icons.sunny,
+                    )
+                  : const Icon(
+                      Icons.dark_mode_outlined,
+                    ),
+              onPressed: () {
+                context.read<ThemeCubit>().toggleTheme();
+              },
+            );
+          },
         ),
       ],
     );
@@ -57,18 +70,19 @@ class _HomePageState extends State<HomePage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            tileColor: Theme.of(context).highlightColor,
-            title: const Row(
+            tileColor: Theme.of(context).hintColor,
+            title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.smart_toy_outlined,
                   size: 32,
+                  color: Colors.grey.shade800,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
-                Text(
+                const Text(
                   'Questionnaire Bot',
                   style: TextStyle(
                     fontSize: 20,

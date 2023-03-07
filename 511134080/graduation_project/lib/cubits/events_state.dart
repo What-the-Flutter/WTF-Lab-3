@@ -6,7 +6,6 @@ class EventsState {
   EventsState({required this.chats});
 
   ChatModel getChatById(chatId) {
-    print('getChat');
     return chats[chats.indexWhere((element) => element.id == chatId)];
   }
 

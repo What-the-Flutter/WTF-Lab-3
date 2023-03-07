@@ -15,7 +15,7 @@ class DateCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent.shade100,
+            color: Theme.of(context).highlightColor,
             borderRadius: const BorderRadius.only(
               topRight: Radius.circular(30),
               topLeft: Radius.circular(8),

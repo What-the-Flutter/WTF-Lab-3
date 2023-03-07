@@ -8,7 +8,7 @@ class ChatModel {
   final String title;
   final EventCardModel? lastEvent;
   final DateTime date;
-  final isPinned;
+  final bool isPinned;
 
   final List<EventCardModel> cards;
 

@@ -77,8 +77,8 @@ class EventCard extends StatelessWidget {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: cardModel.isSelected
-                  ? Theme.of(context).primaryColor.withAlpha(99)
-                  : Theme.of(context).primaryColor.withAlpha(72),
+                  ? Theme.of(context).focusColor
+                  : Theme.of(context).cardColor,
               borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(8),
                 topLeft: Radius.circular(8),
