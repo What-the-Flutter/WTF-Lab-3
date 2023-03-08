@@ -114,18 +114,21 @@ class ChatSourceClient {
     await db.execute('''
       CREATE TABLE $chatsTable (
         id INTEGER PRIMARY KEY,
-        icon TEXT NOT NULL,
+        icon INTEGER NOT NULL,
+        name TEXT NOT NULL,
         createdTime TEXT NOT NULL,
         isPinned INT NOT NULL
       )''');
 
     await db.execute('''
       CREATE TABLE $eventsTable (
-        if INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
+        chatId INTEGER NOT NULL,
         content TEXT NOT NULL,
         isImage INTEGER NOT NULL,
+        isFavorite INTEGER NOT NULL,
         changeTime TEXT NOT NULL,
-        category STRING NOT NULL, 
+        category STRING 
       )''');
   }
 } 

@@ -1,3 +1,4 @@
+import 'package:chats_repository/chats_repository.dart' show ChatsRepository;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +14,7 @@ class ChatsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatsCubit(),
+      create: (_) => ChatsCubit(context.read<ChatsRepository>()),
       child: const ChatsView(),
     );
   }
@@ -57,22 +58,42 @@ class ChatsView extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<ChatsCubit, ChatsState>(
+      body: BlocConsumer<ChatsCubit, ChatsState>(
+        listener: (_, state) {
+          if (state.status.isInitial) {
+            context.read<ChatsCubit>().fetchChats();
+          }
+        },
         builder: (_, state) {
-          final chats = state.chats;
-          return ListView.builder(
-            itemCount: chats.length,
-            itemBuilder: (context, index) => ChatCard(
-              chat: chats[index],
-              onOpenManagePanel: () => _openManagePanel(context, chats[index]),
-              onOpenChat: () => Navigator.of(context).push<void>(
-                ChatPage.route(
-                  chatsCubit: context.read<ChatsCubit>(),
-                  chat: chats[index],
+          if (state.status.isSuccess) {
+            final chats = state.chats;
+            return ListView.builder(
+              itemCount: chats.length,
+              itemBuilder: (context, index) => ChatCard(
+                chat: chats[index],
+                onOpenManagePanel: () =>
+                  _openManagePanel(context, chats[index]),
+                onOpenChat: () => Navigator.of(context).push<void>(
+                  ChatPage.route(
+                    chatsCubit: context.read<ChatsCubit>(),
+                    chat: chats[index],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          } else if (state.status.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.status.isInitial) {
+            return Center(
+              child: ElevatedButton(
+                child: const Text('Click me'),
+                onPressed: () => context.read<ChatsCubit>().fetchChats(),
+              ),
+            );
+          } else {
+            return const Center(child: Text('Ooops! Something wrong.'));
+          }
+          
         }
       ),
       floatingActionButton: FloatingActionButton(

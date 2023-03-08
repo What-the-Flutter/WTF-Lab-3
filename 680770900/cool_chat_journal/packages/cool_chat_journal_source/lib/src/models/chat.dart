@@ -19,7 +19,7 @@ class Chat {
       icon: map['icon'],
       name: map['name'],
       createdTime: DateTime.parse(map['createdTime']),
-      isPinned: map['isPinned'],
+      isPinned: map['isPinned'] != 0,
     );
   }
 
@@ -29,7 +29,7 @@ class Chat {
       'icon': icon,
       'name': name,
       'createdTime': createdTime.toString(),
-      'isPinned': isPinned,
+      'isPinned': isPinned ? 1 : 0,
     };
   }
 

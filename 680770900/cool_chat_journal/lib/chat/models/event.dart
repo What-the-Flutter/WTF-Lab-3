@@ -1,3 +1,6 @@
+import 'package:chats_repository/chats_repository.dart'
+  as repository show Event;
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +46,28 @@ class Event extends Equatable {
     this.isImage = false,
     this.category,
   });
+
+  factory Event.fromRepositoryEvent(repository.Event event) =>
+    Event(
+      id: event.id,
+      content: event.content,
+      isImage: event.isImage,
+      isFavorite: event.isFavorite,
+      changeTime: event.changeTime,
+      category: Category.values.firstWhereOrNull(
+        (e) => e.name == event.category,
+      ),
+    );
+
+  repository.Event toRepositoryEvent() =>
+    repository.Event(
+      id: id,
+      content: content,
+      isImage: isImage,
+      isFavorite: isFavorite,
+      changeTime: changeTime,
+      category: category?.name,
+    );
 
   Event copyWith({
     int? id,

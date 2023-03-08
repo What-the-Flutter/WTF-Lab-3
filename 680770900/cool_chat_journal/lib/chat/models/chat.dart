@@ -1,3 +1,5 @@
+import 'package:chats_repository/chats_repository.dart'
+  as repository show Chat;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +27,26 @@ class Chat extends Equatable {
     this.events = const <Event>[],
     this.isPinned = false,
   });
+
+  factory Chat.fromRepositoryChat(repository.Chat chat) =>
+    Chat(
+      id: chat.id,
+      icon: IconData(chat.icon, fontFamily: 'MaterialIcons'),
+      name: chat.name,
+      createdTime: chat.createdTime,
+      events: chat.events.map(Event.fromRepositoryEvent).toList(),
+      isPinned: chat.isPinned,
+    );
+
+  repository.Chat toRepositoryChat() =>
+    repository.Chat(
+      id: id,
+      icon: icon.codePoint,
+      name: name,
+      createdTime: createdTime,
+      isPinned: isPinned,
+      events: events.map((e) => e.toRepositoryEvent()).toList(),
+    );
 
   Chat copyWith({
     int? id,

@@ -5,6 +5,7 @@ class Event {
   final int id;
   final String content;
   final bool isImage;
+  final bool isFavorite;
   final DateTime changeTime;
   final String? category;
 
@@ -12,6 +13,7 @@ class Event {
     required this.id,
     required this.content,
     required this.isImage,
+    required this.isFavorite,
     required this.changeTime,
     required this.category,
   });
@@ -21,6 +23,7 @@ class Event {
       id: event.id, 
       content: event.content, 
       isImage: event.isImage, 
+      isFavorite: event.isFavorite,
       changeTime: event.changeTime, 
       category: event.category, 
     );
@@ -31,6 +34,7 @@ class Event {
       chatId: chatId,
       content: content,
       isImage: isImage,
+      isFavorite: isFavorite,
       changeTime: changeTime,
       category: category,
     ); 

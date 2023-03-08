@@ -85,7 +85,7 @@ class _BottomPanelState extends State<BottomPanel> {
 
     if (chatCubit.state.isEditMode) {
       chatCubit.toggleEditMode();
-    }
+    }   
 
     chatCubit.changeShowCategories(false);
     chatCubit.selectCategory(null);

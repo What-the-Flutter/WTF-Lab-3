@@ -10,24 +10,24 @@ class ChatsRepository {
     : _chatSourceClient = chatSourceClient ?? ChatSourceClient();
 
   Future<List<Chat>> readChats() async {
-    final chats = await _chatSourceClient.readChats();
-    final events = await _chatSourceClient.readEvents();
-
-    return chats.map(
-      (chat) =>
+    await  _chatSourceClient.init();
+    final sourceChats = await _chatSourceClient.readChats();
+    final sourceEvents = await _chatSourceClient.readEvents();
+    
+    return sourceChats.map(
+      (chat) => 
         Chat.fromSourceChat(chat)
-          ..copyWith(
-            events: events
-              .where(
-                (event) => event.chatId == chat.id,
-              )
+          .copyWith(
+            events: sourceEvents
+              .where((event) => event.chatId == chat.id)
               .map(Event.fromSourceEvent)
               .toList(),
-          )
+          ),
     ).toList();
   }
 
   Future<void> insertChat(Chat chat) async {
+    await  _chatSourceClient.init();
     final events = chat.events;
 
     await _chatSourceClient.insertChat(chat.toSourceChat());
@@ -51,19 +51,27 @@ class ChatsRepository {
   }
 
   Future<void> updateChat(Chat chat) async {
+    await  _chatSourceClient.init();
     await _chatSourceClient.updateChat(chat.toSourceChat());
 
     final events = await _chatSourceClient.readEvents();
     final chatEventsIds =
       events.where((event) => event.chatId == chat.id)
-        .map((event) => event.id);
+        .map((event) => event.id).toList();
 
     for (final event in chat.events) {
       final sourceEvent = event.toSourceEvent(chatId: chat.id);
       if (chatEventsIds.contains(event.id)) {
+        chatEventsIds.remove(event.id);
         await _chatSourceClient.updateEvent(sourceEvent);
       } else {
         await _chatSourceClient.insertEvent(sourceEvent);
+      }
+    }
+
+    if (chatEventsIds.isNotEmpty) {
+      for (final eventId in chatEventsIds) {
+        await _chatSourceClient.deleteEvent(eventId);
       }
     }
   }

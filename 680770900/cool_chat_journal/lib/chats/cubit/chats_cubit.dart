@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:chats_repository/chats_repository.dart' show ChatsRepository;
 import 'package:equatable/equatable.dart';
 
 import '../../chat/chat.dart' show Chat, Event;
@@ -6,23 +7,49 @@ import '../../chat/chat.dart' show Chat, Event;
 part 'chats_state.dart';
 
 class ChatsCubit extends Cubit<ChatsState> {
-  ChatsCubit() : super(const ChatsState());
+  final ChatsRepository _chatsRepository;
+
+  ChatsCubit(this._chatsRepository) : super(const ChatsState());
+
+  Future<void> fetchChats() async {
+    if (!state.status.isLoading) {
+      emit(state.copyWith(status: ChatsStatus.loading));
+
+      final repositoryChats = await _chatsRepository.readChats();
+      final chats = repositoryChats.map(Chat.fromRepositoryChat).toList();
+      final nextId = _findNextId(chats);
+
+      emit(
+        state.copyWith(
+          chats: chats,
+          nextId: nextId,
+          status: ChatsStatus.success,
+        ),
+      );
+    }
+  }
 
   void addNewChat(Chat chat) {
-    final chats = List<Chat>.from(state.chats)
-      ..add(chat.copyWith(id: state.nextId));
+    final newChat = chat.copyWith(id: state.nextId);
+    _chatsRepository.insertChat(newChat.toRepositoryChat());
+    
+    final chats = List<Chat>.from(state.chats)..add(newChat);
     final nextId = state.nextId + 1;
     _sortChats(chats);
     emit(state.copyWith(chats: chats, nextId: nextId));
   }
 
   void deleteChat(int chatId) {
+    _chatsRepository.deleteChat(chatId);
+
     final chats = state.chats.where((chat) => chat.id != chatId).toList();
     _sortChats(chats);
     emit(state.copyWith(chats: chats));
   }
 
   void editChat(int id, Chat newChat) {
+    _chatsRepository.updateChat(newChat.toRepositoryChat());
+
     final chats =
       state.chats.map((chat) => chat.id == id ? newChat : chat).toList();
     _sortChats(chats);
@@ -43,7 +70,7 @@ class ChatsCubit extends Cubit<ChatsState> {
     required int destinationChat,
     required List<int> eventsIds,
   }) {
-    var destinationChatNextId = _findNextId(state.chats[destinationChat]);
+    var destinationChatNextId = _findNextChatId(state.chats[destinationChat]);
     final events = state.chats[sourceChat].events
       .where(
         (event) => eventsIds.contains(event.id),
@@ -77,7 +104,19 @@ class ChatsCubit extends Cubit<ChatsState> {
     );
   }
 
-  int _findNextId(Chat chat) {
+  int _findNextId(List<Chat> chats) {
+    final int nextId;
+    if (chats.isNotEmpty) {
+      nextId = chats.reduce(
+        (current, next) => current.id > next.id ? current : next,
+      ).id + 1;
+    } else {
+      nextId = 0;
+    }
+    return nextId;
+  }
+
+  int _findNextChatId(Chat chat) {
     final int nextEventId;
     if (chat.events.isNotEmpty) {
       nextEventId = chat.events.reduce(

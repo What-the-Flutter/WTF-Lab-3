@@ -3,6 +3,7 @@ class Event {
   final int chatId;
   final String content;
   final bool isImage;
+  final bool isFavorite;
   final DateTime changeTime;
   final String? category;
 
@@ -11,6 +12,7 @@ class Event {
     required this.chatId,
     required this.content,
     required this.isImage,
+    required this.isFavorite,
     required this.changeTime,
     required this.category,
   });
@@ -20,7 +22,8 @@ class Event {
       id: map['id'],
       chatId: map['chatId'],
       content: map['content'],
-      isImage: map['isImage'],
+      isImage: map['isImage'] != 0,
+      isFavorite: map['isFavorite'] != 0,
       changeTime: DateTime.parse(map['changeTime']),
       category: map['category'],
     );
@@ -31,7 +34,8 @@ class Event {
       'id': id,
       'chatId': chatId,
       'content': content,
-      'isImage': isImage,
+      'isImage': isImage ? 1 : 0,
+      'isFavorite': isFavorite? 1 : 0,
       'changeTime': changeTime.toString(),
       'category': category,
     };
