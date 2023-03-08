@@ -4,13 +4,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/chat.dart';
 import '../../../domain/utils/utils.dart';
-import '../../../theme/theme_cubit.dart';
 import '../../widgets/home_page/archive_row.dart';
 import '../../widgets/home_page/chat_card.dart';
 import '../../widgets/home_page/popup_bottom_menu.dart';
 import '../../widgets/home_page/questionnaire_bot_row.dart';
 import '../chat/event_page.dart';
 import '../creation/add_chat_page.dart';
+import '../settings/settings_cubit.dart';
+import '../settings/settings_page.dart';
 import 'home_cubit.dart';
 import 'home_state.dart';
 
@@ -36,28 +37,13 @@ class _HomePageState extends State<HomePage> {
             child: IconButton(
               icon: const Icon(Icons.invert_colors),
               onPressed: () {
-                BlocProvider.of<ThemeCubit>(context).switchTheme();
+                BlocProvider.of<SettingsCubit>(context).changeTheme();
               },
             ),
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(child: Text('${DateTime.now()}')),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(local?.settings ?? ''),
-              onTap: () {
-                closePage(context);
-                openNewPage(context, const AddChatPage(isCategoryMode: true));
-              },
-            )
-          ],
-        ),
-      ),
+      drawer: _buildDrawer(local, context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -73,6 +59,52 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => openNewPage(context, const AddChatPage()),
         tooltip: local?.add,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Drawer _buildDrawer(AppLocalizations? local, BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(child: Text('${DateTime.now()}')),
+          const ListTile(
+            title: Text('Help spread the word'),
+            leading: Icon(Icons.card_giftcard),
+          ),
+          const ListTile(
+            title: Text('Search'),
+            leading: Icon(Icons.search),
+          ),
+          const ListTile(
+            title: Text('Notification'),
+            leading: Icon(Icons.notifications),
+          ),
+          const ListTile(
+            title: Text('Statistics'),
+            leading: Icon(Icons.analytics),
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: Text(local?.settings ?? ''),
+            onTap: () {
+              openNewPage(context, const Settings());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: Text('Category adding'),
+            onTap: () {
+              closePage(context);
+              openNewPage(context, const AddChatPage(isCategoryMode: true));
+            },
+          ),
+          const ListTile(
+            title: Text('Feedback'),
+            leading: Icon(Icons.feedback),
+          )
+        ],
       ),
     );
   }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../theme/theme_cubit.dart';
 import '../../widgets/home_page/chat_card.dart';
 import '../home/home_cubit.dart';
 import '../home/home_state.dart';
+import '../settings/settings_cubit.dart';
 
 class ArchivePage extends StatefulWidget {
   const ArchivePage({super.key});
@@ -50,7 +50,7 @@ class _ArchivePageState extends State<ArchivePage> {
   }
 
   Widget _initArchiveButton(BuildContext context, String id) {
-    final color = BlocProvider.of<ThemeCubit>(context).isDark
+    final color = BlocProvider.of<SettingsCubit>(context).isDark
         ? Colors.white
         : Colors.black;
     return IconButton(

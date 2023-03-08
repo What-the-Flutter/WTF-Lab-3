@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'menu_cubit.dart';
 import '../daily/daily_page.dart';
 import '../explore/explore_page.dart';
 import '../home/home_page.dart';
 import '../timeline/timeline_page.dart';
+import 'menu_cubit.dart';
+import 'menu_state.dart';
 
 class BottomMenu extends StatelessWidget {
   const BottomMenu({Key? key}) : super(key: key);
@@ -20,12 +21,22 @@ class BottomMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MenuCubit, int>(
+    return BlocBuilder<MenuCubit, MenuState>(
       builder: (context, pageState) {
         final local = AppLocalizations.of(context);
-        final choosePage = context.read<MenuCubit>().choosePage;
+        final cubit = context.read<MenuCubit>();
+        final choosePage = cubit.choosePage;
+
+        if (!cubit.isAuthenticated) {
+          if (cubit.tryingUnlock) {
+            return const Text('Wait...');
+          } else {
+            const Text('Not authenticated!');
+          }
+        }
+
         return Scaffold(
-          body: Center(child: _pages[pageState]),
+          body: Center(child: _pages[pageState.pageIndex]),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
@@ -46,7 +57,7 @@ class BottomMenu extends StatelessWidget {
                 label: local?.explorePage,
               ),
             ],
-            currentIndex: pageState,
+            currentIndex: pageState.pageIndex,
             onTap: choosePage,
           ),
         );

@@ -3,12 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../theme/colors.dart';
-import '../../../theme/theme_cubit.dart';
 import '../../widgets/event_page/event_box.dart';
+import '../settings/settings_cubit.dart';
 import 'search_cubit.dart';
 import 'search_state.dart';
-
-
 
 class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -46,7 +44,7 @@ class SearchPage extends StatelessWidget {
                     hintText: local?.searchFieldHint ?? '',
                     hintStyle: TextStyle(
                       fontSize: 18,
-                      color: BlocProvider.of<ThemeCubit>(context).isDark
+                      color: BlocProvider.of<SettingsCubit>(context).isDark
                           ? Colors.grey
                           : Colors.white,
                     ),

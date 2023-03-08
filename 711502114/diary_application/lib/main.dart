@@ -6,19 +6,20 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'data/provider/firebase_provider.dart';
+import 'data/provider/settings_provider.dart';
 import 'data/repository/chat_repository.dart';
 import 'data/repository/event_repository.dart';
+import 'data/repository/settings_repository.dart';
 import 'domain/utils/auth.dart';
 import 'firebase_options.dart';
 import 'l10n/l10n.dart';
 import 'presentation/pages/chat/event_cubit.dart';
 import 'presentation/pages/creation/creation_cubit.dart';
 import 'presentation/pages/home/home_cubit.dart';
-import 'presentation/pages/menu/menu.dart';
-import 'presentation/pages/menu/menu_cubit.dart';
-import 'theme/theme_cubit.dart';
-import 'theme/theme_preferences.dart';
-import 'theme/theme_state.dart';
+import 'presentation/pages/main/menu.dart';
+import 'presentation/pages/main/menu_cubit.dart';
+import 'presentation/pages/settings/settings_cubit.dart';
+import 'presentation/pages/settings/settings_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,7 @@ class ChatJournalApplication extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<EventRepository>(
-          create: (_) => EventRepository(provider: provider),
+          create: (context) => EventRepository(provider: provider),
           lazy: false,
         ),
         RepositoryProvider<ChatRepository>(
@@ -51,14 +52,27 @@ class ChatJournalApplication extends StatelessWidget {
             eventRepository: context.read<EventRepository>(),
           ),
         ),
+        RepositoryProvider<SettingsRepository>(
+          create: (context) => SettingsRepository(
+            settingsProvider: SettingsProvider(),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (_) => ThemeCubit(ThemePreferences()),
+          BlocProvider<SettingsCubit>(
+            create: (context) => SettingsCubit(
+              rep: SettingsRepository(
+                settingsProvider: SettingsProvider(),
+              ),
+            ),
             lazy: false,
           ),
-          BlocProvider(create: (_) => MenuCubit()),
+          BlocProvider<MenuCubit>(
+            create: (context) => MenuCubit(
+              rep: context.read<SettingsRepository>(),
+            ),
+          ),
           BlocProvider(
             create: (context) => HomeCubit(
               chatRepository: context.read<ChatRepository>(),
@@ -73,7 +87,7 @@ class ChatJournalApplication extends StatelessWidget {
             ),
           ),
         ],
-        child: BlocBuilder<ThemeCubit, ThemeState>(
+        child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (_, state) => MaterialApp(
             theme: state.theme,
             debugShowCheckedModeBanner: false,

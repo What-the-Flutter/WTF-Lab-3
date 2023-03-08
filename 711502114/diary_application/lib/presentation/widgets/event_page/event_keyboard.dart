@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/utils/utils.dart';
-import '../../../theme/theme_cubit.dart';
 import '../../pages/chat/event_cubit.dart';
+import '../../pages/settings/settings_cubit.dart';
 import 'attach_dialog.dart';
 import 'keyboard_icon.dart';
 
@@ -27,7 +27,7 @@ class EventKeyboard extends StatelessWidget {
     final local = AppLocalizations.of(context);
     return Container(
       width: width,
-      color: BlocProvider.of<ThemeCubit>(context).isDark
+      color: BlocProvider.of<SettingsCubit>(context).isDark
           ? const Color.fromRGBO(37, 47, 57, 1)
           : const Color.fromRGBO(77, 157, 206, 0.7),
       child: Row(
@@ -50,7 +50,7 @@ class EventKeyboard extends StatelessWidget {
                 hintText: local?.enterFieldHint ?? '',
                 hintStyle: TextStyle(
                   fontSize: 20,
-                  color: BlocProvider.of<ThemeCubit>(context).isDark
+                  color: BlocProvider.of<SettingsCubit>(context).isDark
                       ? Colors.grey
                       : Colors.white,
                 ),

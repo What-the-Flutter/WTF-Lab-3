@@ -6,7 +6,7 @@ import '../../../domain/models/chat.dart';
 import '../../../domain/utils/icons.dart';
 import '../../../domain/utils/utils.dart';
 import '../../../theme/colors.dart';
-import '../../../theme/theme_cubit.dart';
+import '../../pages/settings/settings_cubit.dart';
 
 class InfoChatDialog extends StatelessWidget {
   final Chat chat;
@@ -56,7 +56,7 @@ class InfoChatDialog extends StatelessWidget {
             Text(
               _useDateTimeFormat(context, chat.creationTime),
               style: TextStyle(
-                color: BlocProvider.of<ThemeCubit>(context).isDark
+                color: BlocProvider.of<SettingsCubit>(context).isDark
                     ? Colors.grey
                     : Colors.white,
               ),
@@ -69,7 +69,7 @@ class InfoChatDialog extends StatelessWidget {
             Text(
               _useDateTimeFormat(context, _knowLastEvent()),
               style: TextStyle(
-                color: BlocProvider.of<ThemeCubit>(context).isDark
+                color: BlocProvider.of<SettingsCubit>(context).isDark
                     ? Colors.grey
                     : Colors.white,
               ),
