@@ -1,7 +1,7 @@
 name: chats_provider
 description: A new Flutter package project.
 version: 0.0.1
-homepage:
+publish_to: 'none'
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cool_chat_journal_source:
+    path: ../cool_chat_journal_source
+  rename: ^2.1.1
 
 dev_dependencies:
   flutter_test:
