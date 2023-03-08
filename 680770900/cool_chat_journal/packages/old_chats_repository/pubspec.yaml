@@ -8,18 +8,15 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  collection: ^1.16.0
-  equatable: ^2.0.5
   flutter:
     sdk: flutter
-  uuid: ^3.0.7
+  cool_chat_journal_source:
+    path: ../cool_chat_journal_source
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  chats_api:
-    path: ../chats_api
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

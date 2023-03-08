@@ -1,41 +1,109 @@
-import 'package:cool_chat_journal_source/cool_chat_journal_source.dart'
-  as data_source show Event;
+import 'package:chats_api/chats_api.dart';
+import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
-class Event {
-  final int id;
+enum Category {
+  movie,
+  fastFood,
+  workout,
+  sports,
+  laundry,
+}
+
+extension CategoryX on Category {
+  String get title => name[0].toUpperCase() + name.substring(1);
+  IconData get icon {
+    switch (this) {
+      case Category.movie:
+        return Icons.theaters;
+      case Category.fastFood:
+        return Icons.fastfood;
+      case Category.workout:
+        return Icons.fitness_center;
+      case Category.sports:
+        return Icons.sports_basketball;
+      case Category.laundry:
+        return Icons.local_laundry_service;
+    }
+  }
+}
+
+class NullWrapper<T> {
+  final T value;
+  const NullWrapper(this.value);
+}
+
+class Event extends Equatable {
+  final String id;
+  final String chatId;
   final String content;
   final bool isImage;
   final bool isFavorite;
   final DateTime changeTime;
-  final String? category;
+  final Category? category;
 
-  const Event({
-    required this.id,
+  Event({
+    String? id,
+    required this.chatId,
     required this.content,
     required this.isImage,
     required this.isFavorite,
     required this.changeTime,
     required this.category,
-  });
+  }) : id = id ?? const Uuid().v4();
 
-  factory Event.fromSourceEvent(data_source.Event event) =>
+  factory Event.fromEventEntity(EventEntity eventEntity) =>
     Event(
-      id: event.id, 
-      content: event.content, 
-      isImage: event.isImage, 
-      isFavorite: event.isFavorite,
-      changeTime: event.changeTime, 
-      category: event.category, 
-    );
+      id: eventEntity.id,
+      chatId: eventEntity.chatId,
+      content: eventEntity.content,
+      isImage: eventEntity.isImage,
+      isFavorite: eventEntity.isFavorite,
+      changeTime: eventEntity.changeTime,
+      category: Category.values.firstWhereOrNull(
+        (e) => e.name == eventEntity.category,
+      ),
+    ); 
 
-  data_source.Event toSourceEvent({required int chatId}) =>
-    data_source.Event(
+  EventEntity toEventEntity() =>
+    EventEntity(
       id: id,
       chatId: chatId,
       content: content,
       isImage: isImage,
       isFavorite: isFavorite,
       changeTime: changeTime,
-      category: category,
-    ); 
+      category: category?.name,
+    );
+
+  Event copyWith({
+    String? id,
+    String? chatId,
+    String? content,
+    bool? isImage,
+    bool? isFavorite,
+    DateTime? changeTime,
+    NullWrapper<Category>? category,
+  }) => Event(
+    id: id ?? this.id,
+    chatId: chatId ?? this.chatId,
+    content: content ?? this.content,
+    isImage: isImage ?? this.isImage,
+    isFavorite: isFavorite ?? this.isFavorite,
+    changeTime: changeTime ?? this.changeTime,
+    category: category != null ? category.value : this.category,
+  ); 
+  
+  @override
+  List<Object?> get props => [
+    id,
+    chatId,
+    content,
+    isImage,
+    isFavorite,
+    changeTime,
+    category,
+  ];
 }

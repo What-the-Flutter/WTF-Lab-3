@@ -1,4 +1,4 @@
-name: chats_repository
+name: local_storage_chats_api
 description: A new Flutter package project.
 version: 0.0.1
 publish_to: 'none'
@@ -8,18 +8,17 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  collection: ^1.16.0
-  equatable: ^2.0.5
   flutter:
     sdk: flutter
-  uuid: ^3.0.7
+  chats_api:
+    path: ../chats_api
+  sqflite: ^2.2.5
+  path: ^1.8.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  chats_api:
-    path: ../chats_api
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

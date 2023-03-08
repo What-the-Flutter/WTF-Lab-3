@@ -1,46 +1,48 @@
-import 'package:cool_chat_journal_source/cool_chat_journal_source.dart'
-  as data_source show Chat;
+import 'package:chats_api/chats_api.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
-import 'event.dart';
+import 'models.dart';
 
-class Chat {
-  final int id;
-  final int icon;
+class Chat extends Equatable {
+  final String id;
+  final IconData icon;
   final String name;
   final DateTime createdTime;
   final bool isPinned;
   final List<Event> events;
 
-  const Chat({
-    required this.id,
+  Chat({
+    String? id,
     required this.icon,
     required this.name,
     required this.createdTime,
     required this.isPinned,
     this.events = const [],
-  });
+  }) : id = id ?? const Uuid().v4();
 
-  factory Chat.fromSourceChat(data_source.Chat chat) => 
+  factory Chat.fromChatEntity(ChatEntity chatEntity) => 
     Chat(
-      id: chat.id,
-      icon: chat.icon,
-      name: chat.name,
-      createdTime: chat.createdTime,
-      isPinned: chat.isPinned,
+      id: chatEntity.id,
+      icon: IconData(chatEntity.icon, fontFamily: 'MaterialIcons'),
+      name: chatEntity.name,
+      createdTime: chatEntity.createdTime,
+      isPinned: chatEntity.isPinned,
     );
 
-  data_source.Chat toSourceChat() =>
-    data_source.Chat(
+  ChatEntity toChatEntity() => 
+    ChatEntity(
       id: id,
-      icon: icon,
       name: name,
+      icon: icon.codePoint,
       createdTime: createdTime,
-      isPinned: isPinned
+      isPinned: isPinned,
     );
 
   Chat copyWith({
-    int? id,
-    int? icon,
+    String? id,
+    IconData? icon,
     String? name,
     DateTime? createdTime,
     bool? isPinned,
@@ -53,4 +55,14 @@ class Chat {
     isPinned: isPinned ?? this.isPinned,
     events: events ?? this.events,
   );
+  
+  @override
+  List<Object?> get props => [
+    id,
+    icon,
+    name,
+    createdTime,
+    isPinned,
+    events,
+  ];
 }

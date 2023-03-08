@@ -1,25 +1,25 @@
-name: chats_repository
+name: chats_api
 description: A new Flutter package project.
 version: 0.0.1
-publish_to: 'none'
+homepage:
 
 environment:
   sdk: '>=2.19.0-146.2.beta <3.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
-  collection: ^1.16.0
   equatable: ^2.0.5
   flutter:
     sdk: flutter
+  json_annotation: ^4.8.0
   uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  chats_api:
-    path: ../chats_api
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
