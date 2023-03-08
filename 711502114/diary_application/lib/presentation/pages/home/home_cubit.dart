@@ -1,22 +1,24 @@
 // ignore_for_file: omit_local_variable_types
 
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 
 import '../../../domain/models/chat.dart';
 import '../../../domain/models/event.dart';
-import '../../../domain/repositories/chat_repository_api.dart';
-import '../../../domain/repositories/event_repository_api.dart';
+import '../../../domain/repository/chat_repository_api.dart';
+import '../../../domain/repository/event_repository_api.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final ChatRepositoryApi chatRepository;
   final EventRepositoryApi eventRepository;
+  late final StreamSubscription<List<Chat>> chatsStream;
 
   HomeCubit({
     required this.chatRepository,
     required this.eventRepository,
-    int id = 0,
-  }) : super(HomeState(chats: [], id: id)) {
+  }) : super(HomeState(chats: [])) {
     _initState();
   }
 
@@ -24,36 +26,39 @@ class HomeCubit extends Cubit<HomeState> {
     final chats = await chatRepository.getChats();
     emit(state.copyWith(chats: chats));
 
-    if (chats.isNotEmpty) {
-      final lastId = chats.last.id;
-      emit(state.copyWith(id: lastId));
-    }
+    chatsStream = chatRepository.chatsStream.listen((chat) {
+      chat.sort((a, b) => b.creationTime.compareTo(a.creationTime));
+      emit(state.copyWith(chats: chat));
+    });
   }
 
-  void update() {
-    emit(state.copyWith(chats: state.chats));
+  void update() async {
+    final chats = await chatRepository.getChats();
+    emit(state.copyWith(chats: chats));
   }
 
   void add({required String title, required int iconNumber}) {
-    final id = state.id + 1;
+    final now = DateTime.now();
     final chat = Chat(
-      id: state.id + 1,
+      id: '',
       title: title,
       events: [],
       iconNumber: iconNumber,
-      creationTime: '${DateTime.now()}',
+      creationTime: '$now',
+      lastEvent: '',
+      lastUpdate: '$now'
     );
     state.chats.add(chat);
     chatRepository.addChat(chat);
 
-    emit(state.copyWith(chats: state.chats, id: id));
+    emit(state.copyWith(chats: state.chats));
   }
 
-  void delete(int id) async {
+  void delete(String id) async {
     final chat = state.chats.firstWhere((chat) => chat.id == id);
     state.chats.remove(chat);
 
-    final trashEvents = await eventRepository.getEvents();
+    final trashEvents = await eventRepository.getEvents(id);
     for (Event event in trashEvents) {
       if (event.chatId == chat.id) {
         eventRepository.deleteEvent(event);
@@ -64,7 +69,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  void edit(int id, {required String title, required int iconNumber}) {
+  void edit(String id, {required String title, required int iconNumber}) {
     final index = _findIndexById(id);
 
     state.chats[index] = state.chats[index].copyWith(
@@ -76,7 +81,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  void changePin(int id) {
+  void changePin(String id) {
     final index = _findIndexById(id);
 
     final isPin = state.chats[index].isPin;
@@ -96,7 +101,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  void archive(int id, [bool isArchive = true]) {
+  void archive(String id, [bool isArchive = true]) {
     final index = _findIndexById(id);
 
     state.chats[index] = state.chats[index].copyWith(isArchive: isArchive);
@@ -105,8 +110,14 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(chats: state.chats));
   }
 
-  int _findIndexById(int id) {
+  int _findIndexById(String id) {
     final chats = state.chats;
     return chats.indexOf(chats.firstWhere((chat) => chat.id == id));
+  }
+
+  @override
+  Future<void> close() {
+    chatsStream.cancel();
+    return super.close();
   }
 }

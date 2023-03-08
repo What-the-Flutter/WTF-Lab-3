@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/category.dart';
@@ -19,8 +18,6 @@ class EventBox extends StatelessWidget {
     required this.isSelected,
   }) : super(key: key);
 
-  late final Image _image;
-
   final _iconFavoriteColor = Colors.yellow;
   final _iconNonFavoriteColor = Colors.transparent;
   final _circular = const Radius.circular(25);
@@ -28,6 +25,7 @@ class EventBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final category = event.category;
+    final waitMessage = 'Wait please!';
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
       child: Column(
@@ -40,15 +38,15 @@ class EventBox extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!_isValidPath(event.photoPath))
+              if (event.photoPath?.isEmpty ?? false)
                 _messageContainer()
               else if (event.message.isEmpty)
-                _attachContainer()
+                _attachContainer() ?? Text(waitMessage)
               else
                 Column(
                   children: [
                     _messageContainer(size.width * .75, false),
-                    _attachContainer(false),
+                    _attachContainer(false) ?? Text(waitMessage),
                   ],
                 ),
               const SizedBox(width: 10),
@@ -103,7 +101,10 @@ class EventBox extends StatelessWidget {
     );
   }
 
-  Widget _attachContainer([bool isUsualAttach = true]) {
+  Widget? _attachContainer([bool isUsualAttach = true]) {
+    if (event.photoPath != null && !event.photoPath!.contains('https://')) {
+      return null;
+    }
     return Container(
       constraints: BoxConstraints(minWidth: size.width * .75),
       padding: const EdgeInsets.all(12.0),
@@ -116,22 +117,18 @@ class EventBox extends StatelessWidget {
         ),
       ),
       child: SizedBox(
-        child: _image,
+        child: CachedNetworkImage(
+          imageUrl: event.photoPath ?? '',
+          progressIndicatorBuilder: (context, url, progress) => Center(
+            child: CircularProgressIndicator(
+              value: progress.progress,
+            ),
+          ),
+        ),
         width: size.width * 0.3,
         height: size.height * 0.3,
       ),
     );
-  }
-
-  bool _isValidPath(String? path) {
-    if (path == null || path.isEmpty) return false;
-
-    try {
-      _image = Image.file(File(path));
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 
   Widget _pinCategoryLabel(Category category) {

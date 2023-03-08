@@ -2,8 +2,7 @@ import '../../../domain/models/category.dart';
 import '../../../domain/models/event.dart';
 
 class EventState {
-  final int id;
-  final int chatId;
+  final String chatId;
   final List<Event> events;
   final List<int> selectedIndexes;
 
@@ -15,7 +14,6 @@ class EventState {
   Category? category;
 
   EventState({
-    required this.id,
     required this.chatId,
     required this.events,
     required this.selectedIndexes,
@@ -26,9 +24,8 @@ class EventState {
     this.category,
   });
 
-  EventState copyWith({int? id, int? chatId, List<Event>? events}) {
+  EventState copyWith({String? chatId, List<Event>? events}) {
     return EventState(
-      id: id ?? this.id,
       chatId: chatId ?? this.chatId,
       events: events ?? this.events,
       selectedIndexes: selectedIndexes,

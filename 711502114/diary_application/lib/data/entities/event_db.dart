@@ -1,6 +1,6 @@
 class EventDB {
-  final int id;
-  final int chatId;
+  final String id;
+  final String chatId;
   final String message;
   final String creationTime;
   final int isFavorite;
@@ -17,7 +17,7 @@ class EventDB {
     required this.categoryName,
   });
 
-  Map<String, dynamic> map() {
+  Map<String, dynamic> get map {
     return {
       EventFields.id: id,
       EventFields.chatId: chatId,
@@ -27,6 +27,38 @@ class EventDB {
       EventFields.photoPath: photoPath,
       EventFields.categoryName: categoryName,
     };
+  }
+
+  EventDB copyWith({
+    String? id,
+    String? chatId,
+    String? message,
+    String? creationTime,
+    int? isFavorite,
+    String? photoPath,
+    String? categoryName,
+  }) {
+    return EventDB(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      message: message ?? this.message,
+      creationTime: creationTime ?? this.creationTime,
+      isFavorite: isFavorite ?? this.isFavorite,
+      photoPath: photoPath ?? this.photoPath,
+      categoryName: categoryName ?? this.categoryName,
+    );
+  }
+
+  static EventDB map2Json(Map<dynamic, dynamic> map) {
+    return EventDB(
+      id: map[EventFields.id] as String,
+      chatId: map[EventFields.chatId] as String,
+      message: map[EventFields.message] as String,
+      creationTime: map[EventFields.creationTime] as String,
+      isFavorite: map[EventFields.isFavorite] as int,
+      photoPath: map[EventFields.photoPath] as String,
+      categoryName: map[EventFields.categoryName] as String,
+    );
   }
 }
 

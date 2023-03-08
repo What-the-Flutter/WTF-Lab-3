@@ -7,5 +7,9 @@ abstract class EventRepositoryApi {
 
   Future<void> changeEvent(Event event);
 
-  Future<List<Event>> getEvents();
+  Future<List<Event>> getEvents(String chatId);
+
+  Stream<List<Event>> get eventStream;
+
+  Future<List<Event>> getAllEvents();
 }

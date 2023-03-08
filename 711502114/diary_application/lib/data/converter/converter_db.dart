@@ -14,6 +14,8 @@ class ConverterDB {
       creationTime: chatDB.creationTime,
       isPin: chatDB.isPin == 1,
       isArchive: chatDB.isArchive == 1,
+      lastEvent: chatDB.lastEvent,
+      lastUpdate: chatDB.lastUpdate,
     );
   }
 
@@ -25,6 +27,8 @@ class ConverterDB {
       creationTime: chat.creationTime,
       isPin: chat.isPin ? 1 : 0,
       isArchive: chat.isArchive ? 1 : 0,
+      lastEvent: chat.lastEvent,
+      lastUpdate: chat.lastUpdate,
     );
   }
 

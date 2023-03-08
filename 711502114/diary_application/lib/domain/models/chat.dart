@@ -3,13 +3,15 @@ import 'package:equatable/equatable.dart';
 import 'event.dart';
 
 class Chat extends Equatable {
-  final int id;
+  final String id;
   final String title;
   final List<Event> events;
   final int iconNumber;
   final String creationTime;
   final bool isPin;
   final bool isArchive;
+  final String lastEvent;
+  final String lastUpdate;
 
   Chat({
     required this.id,
@@ -19,14 +21,18 @@ class Chat extends Equatable {
     required this.creationTime,
     this.isPin = false,
     this.isArchive = false,
+    required this.lastEvent,
+    required this.lastUpdate,
   });
 
   Chat copyWith({
-    int? id,
+    String? id,
     String? title,
     int? iconNumber,
     bool? isPin,
     bool? isArchive,
+    String? lastEvent,
+    String? lastUpdate,
   }) {
     return Chat(
       id: id ?? this.id,
@@ -36,6 +42,8 @@ class Chat extends Equatable {
       creationTime: creationTime,
       isPin: isPin ?? this.isPin,
       isArchive: isArchive ?? this.isArchive,
+      lastEvent: lastEvent ?? this.lastEvent,
+      lastUpdate: lastUpdate ?? this.lastUpdate,
     );
   }
 
@@ -48,5 +56,7 @@ class Chat extends Equatable {
         creationTime,
         isPin,
         isArchive,
+        lastEvent,
+        lastUpdate,
       ];
 }

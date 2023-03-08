@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'domain/repositories/chat_repository.dart';
-import 'domain/repositories/event_repository.dart';
+import 'data/provider/firebase_provider.dart';
+import 'data/repository/chat_repository.dart';
+import 'data/repository/event_repository.dart';
+import 'domain/utils/auth.dart';
 import 'firebase_options.dart';
 import 'l10n/l10n.dart';
 import 'presentation/pages/chat/event_cubit.dart';
@@ -24,21 +27,29 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const ChatJournalApplication());
+  final user = await Auth().user;
+  runApp(ChatJournalApplication(user: user));
 }
 
 class ChatJournalApplication extends StatelessWidget {
-  const ChatJournalApplication({super.key});
+  const ChatJournalApplication({super.key, this.user});
+
+  final User? user;
 
   @override
   Widget build(BuildContext context) {
+    final provider = FirebaseProvider(user: user);
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<ChatRepository>(
-          create: (_) => ChatRepository(),
-        ),
         RepositoryProvider<EventRepository>(
-          create: (_) => EventRepository(),
+          create: (_) => EventRepository(provider: provider),
+          lazy: false,
+        ),
+        RepositoryProvider<ChatRepository>(
+          create: (context) => ChatRepository(
+            provider: provider,
+            eventRepository: context.read<EventRepository>(),
+          ),
         ),
       ],
       child: MultiBlocProvider(
@@ -57,6 +68,7 @@ class ChatJournalApplication extends StatelessWidget {
           BlocProvider(create: (_) => CreationCubit()),
           BlocProvider(
             create: (context) => EventCubit(
+              chatRepository: context.read<ChatRepository>(),
               eventRepository: context.read<EventRepository>(),
             ),
           ),

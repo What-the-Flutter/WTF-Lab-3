@@ -1,5 +1,7 @@
 // ignore_for_file: omit_local_variable_types
 
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,15 +9,30 @@ import 'package:flutter/services.dart';
 import '../../../domain/models/category.dart';
 import '../../../domain/models/chat.dart';
 import '../../../domain/models/event.dart';
-import '../../../domain/repositories/event_repository_api.dart';
+import '../../../domain/repository/chat_repository_api.dart';
+import '../../../domain/repository/event_repository_api.dart';
 import 'event_state.dart';
 
-
 class EventCubit extends Cubit<EventState> {
+  final ChatRepositoryApi chatRepository;
   final EventRepositoryApi eventRepository;
+  late final StreamSubscription<List<Event>> eventStream;
 
-  EventCubit({required this.eventRepository, int id = 0})
-      : super(EventState(id: id, chatId: 0, events: [], selectedIndexes: []));
+  EventCubit({
+    required this.chatRepository,
+    required this.eventRepository,
+    String id = '0',
+  }) : super(EventState(chatId: '0', events: [], selectedIndexes: [])) {
+    _initStream();
+  }
+
+  void _initStream() {
+    eventStream = eventRepository.eventStream.listen((event) {
+      final events = event.where((e) => e.chatId == state.chatId).toList();
+      events.sort((a, b) => a.creationTime.compareTo(b.creationTime));
+      emit(state.copyWith(events: events));
+    });
+  }
 
   bool get favoriteMode => state.isFavoriteMode;
 
@@ -33,15 +50,10 @@ class EventCubit extends Cubit<EventState> {
       ? events.where((e) => e.isFavorite).toList()
       : events;
 
-  void init(int chatId) async {
-    final allEvents = await eventRepository.getEvents();
+  void init(String chatId) async {
+    final allEvents = await eventRepository.getEvents(chatId);
     final events = allEvents.where((e) => e.chatId == chatId).toList();
     emit(state.copyWith(chatId: chatId, events: events));
-
-    if (allEvents.isNotEmpty) {
-      final lastId = allEvents.last.id;
-      emit(state.copyWith(id: lastId));
-    }
   }
 
   void changeFavorite() {
@@ -119,9 +131,8 @@ class EventCubit extends Cubit<EventState> {
   }
 
   void addEvent(String message, [String? path]) {
-    final id = state.id + 1;
     final event = Event(
-      id: id,
+      id: '',
       chatId: state.chatId,
       message: message,
       creationTime: DateTime.now().toString(),
@@ -133,7 +144,7 @@ class EventCubit extends Cubit<EventState> {
 
     state.category = null;
 
-    emit(state.copyWith(id: id, events: state.events));
+    emit(state.copyWith(events: state.events));
   }
 
   void handleSelecting(int index) {
@@ -209,5 +220,11 @@ class EventCubit extends Cubit<EventState> {
     state.category = category;
 
     closeCategory();
+  }
+
+  @override
+  Future<void> close() {
+    eventStream.cancel();
+    return super.close();
   }
 }

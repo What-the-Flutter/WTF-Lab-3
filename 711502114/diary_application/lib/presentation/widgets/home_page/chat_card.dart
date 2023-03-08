@@ -68,12 +68,12 @@ class ChatCard extends StatelessWidget {
     String attach,
   ) {
     String description;
-    if (chat.events.isEmpty) {
+    if (chat.lastEvent.isEmpty) {
       description = defaultDescription;
     } else {
       final descLength = 18 * countOrientationCoefficient(context);
 
-      final message = chat.events.last.message;
+      final message = chat.lastEvent;
       description = message.isNotEmpty ? fitText(message, descLength) : attach;
     }
     return Column(
@@ -93,8 +93,8 @@ class ChatCard extends StatelessWidget {
 
   Text _buildTimeText(BuildContext context) {
     String? time;
-    if (chat.events.isNotEmpty) {
-      final creationTime = chat.events.last.creationTime;
+    if (chat.lastUpdate.isNotEmpty) {
+      final creationTime = chat.lastUpdate;
       time = formatDate(context, creationTime, includeTime: true);
     }
     return Text(

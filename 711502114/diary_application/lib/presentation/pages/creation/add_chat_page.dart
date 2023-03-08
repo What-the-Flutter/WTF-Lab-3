@@ -170,7 +170,7 @@ class _AddChatPageState extends State<AddChatPage> {
         }
       } else {
         cubit.edit(
-          widget.editChat?.id ?? 0,
+          '${widget.editChat?.id}',
           title: _title,
           iconNumber: creationCubit.state.index,
         );

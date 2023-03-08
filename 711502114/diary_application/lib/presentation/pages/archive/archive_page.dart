@@ -49,7 +49,7 @@ class _ArchivePageState extends State<ArchivePage> {
     );
   }
 
-  Widget _initArchiveButton(BuildContext context, int id) {
+  Widget _initArchiveButton(BuildContext context, String id) {
     final color = BlocProvider.of<ThemeCubit>(context).isDark
         ? Colors.white
         : Colors.black;
