@@ -1,18 +1,21 @@
 import 'dart:io';
 
 import 'package:app_minimizer/app_minimizer.dart';
+import 'package:diary_application/src/feature/widget/timeline/scope/timeline_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/util/resources/themes.dart';
 import 'cubit/theme/theme_cubit.dart';
-import 'widget/chatter/scope/chatter_scope.dart';
 import 'widget/general/navigation_drawer/navigation_drawer_menu.dart';
+import 'widget/general/theme_switcher.dart';
+import 'widget/main/animated_main_title.dart';
 import 'widget/main/bottom_navigation_gnav.dart';
+import 'widget/main/clear_filter.dart';
 import 'widget/main/fab_button.dart';
+import 'widget/main/filter_action.dart';
 import 'widget/main/start_page_body.dart';
-import 'widget/timeline/scope/timeline_scope.dart';
 import 'widget/theme/theme_scope.dart';
 
 class StartScreen extends StatefulWidget {
@@ -32,31 +35,31 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChatterScope(
-      child: TimelineScope(
-        child: WillPopScope(
-          child: BlocBuilder<ThemeCubit, ThemeState>(
-            builder: (context, themeState) {
-              return Scaffold(
-                extendBody: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                appBar: AppBar(
-                  title: const Text('Home'),
-                  centerTitle: false,
-                ),
-                drawer: const NavigationDrawerMenu(),
-                floatingActionButton: const FabButton(),
-                bottomNavigationBar: const BottomNavigationGNav(),
-                body: const StartPageBody(),
-              );
-            },
-          ),
-          onWillPop: () async {
-            await _handleSystemBackButton();
-            return await true;
-          },
-        ),
+    return WillPopScope(
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          return Scaffold(
+            extendBody: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            appBar: AppBar(
+              title: const AnimatedMainTitle(),
+              centerTitle: false,
+              actions: [
+                const ClearFilter(),
+                const FilterAction(),
+                const ThemeSwitcher(),
+              ],
+            ),
+            floatingActionButton: const FabButton(),
+            bottomNavigationBar: const BottomNavigationGNav(),
+            body: const StartPageBody(),
+          );
+        },
       ),
+      onWillPop: () async {
+        await _handleSystemBackButton();
+        return await true;
+      },
     );
   }
 

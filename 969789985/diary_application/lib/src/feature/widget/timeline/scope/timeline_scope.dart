@@ -9,6 +9,7 @@ import '../../../../core/data/datasource/source/storage_source.dart';
 import '../../../../core/data/datasource/source/tag_source.dart';
 import '../../../../core/data/repository/chat/chat_repository.dart';
 import '../../../../core/data/repository/message/message_repository.dart';
+import '../../../../core/data/repository/tag/tag_repository.dart';
 import '../../../../core/domain/models/local/chat/chat_model.dart';
 import '../../../cubit/timeline/timeline_cubit.dart';
 
@@ -24,7 +25,7 @@ class TimelineScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TimelineCubit(
-        repository: MessageRepository(
+        messageRepository: MessageRepository(
           provider: RepositoryProvider.of<MessageSource>(context),
           storageProvider: RepositoryProvider.of<StorageSource>(context),
           tagProvider: RepositoryProvider.of<TagSource>(context),
@@ -32,6 +33,9 @@ class TimelineScope extends StatelessWidget {
         ),
         chatRepository: ChatRepository(
           provider: RepositoryProvider.of<ChatSource>(context),
+        ),
+        tagRepository: TagRepository(
+          provider: RepositoryProvider.of<TagSource>(context),
         ),
       ),
       child: child,

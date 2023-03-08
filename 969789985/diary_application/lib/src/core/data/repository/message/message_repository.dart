@@ -106,8 +106,9 @@ class MessageRepository implements ApiMessageRepository {
   }
 
   TagModel _tag(FId id) {
-    final firebaseTag =
-        _tagProvider.tags.value.firstWhere((tag) => tag.id == id);
+    final firebaseTag = _tagProvider.tags.value.firstWhere(
+      (tag) => tag.id == id,
+    );
 
     return _tagProvider.tag(firebaseTag);
   }

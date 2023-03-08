@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import '../domain/models/local/tag/tag_model.dart';
 
 typedef FId = String;

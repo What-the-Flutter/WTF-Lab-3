@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/util/resources/dimensions.dart';
+import '../../../cubit/theme/theme_cubit.dart';
 import '../general/settings_divider.dart';
 import 'appearance_section_elements/appearance_color_example.dart';
 import 'appearance_section_elements/appearance_colors_switcher.dart';
@@ -18,54 +20,58 @@ class AppearanceBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      children: [
-        const SizedBox(height: Insets.medium),
-        const AppearanceFontSizeSwitcher(),
-        const SizedBox(height: Insets.medium),
-        const AppearanceMessageExample(),
-        const SizedBox(height: Insets.medium),
-        const AppearanceMessageAlignment(),
-        const SizedBox(height: Insets.medium),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Insets.appConstantLarge * 1.2,
-          ),
-          child: Row(
-            children: [
-              const Text(
-                'Date bubble',
-                style: TextStyle(fontSize: FontsSize.large),
-              ),
-              const SizedBox(width: Insets.medium),
-              const AppearanceGroupHeaderSwitcher(),
-            ],
-          ),
-        ),
-        const SizedBox(height: Insets.medium),
-        const AppearanceRadiusSwitcher(),
-        const SizedBox(height: Insets.medium),
-        const AppearanceLoadImageButton(),
-        const SettingsDivider(),
-        Row(
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return ListView(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
           children: [
-            const Expanded(
-              child: AppearanceColorsSwitcher(),
+            const SizedBox(height: Insets.medium),
+            const AppearanceFontSizeSwitcher(),
+            const SizedBox(height: Insets.medium),
+            const AppearanceMessageExample(),
+            const SizedBox(height: Insets.medium),
+            const AppearanceMessageAlignment(),
+            const SizedBox(height: Insets.medium),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Insets.appConstantLarge * 1.2,
+              ),
+              child: Row(
+                children: [
+                  const Text(
+                    'Date bubble',
+                    style: TextStyle(fontSize: FontsSize.large),
+                  ),
+                  const SizedBox(width: Insets.medium),
+                  const AppearanceGroupHeaderSwitcher(),
+                ],
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(right: Insets.appConstantExtraLarge),
-              child: AppearanceColorExample(),
+            const SizedBox(height: Insets.medium),
+            const AppearanceRadiusSwitcher(),
+            const SizedBox(height: Insets.medium),
+            const AppearanceLoadImageButton(),
+            const SettingsDivider(),
+            Row(
+              children: [
+                const Expanded(
+                  child: AppearanceColorsSwitcher(),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: Insets.appConstantExtraLarge),
+                  child: AppearanceColorExample(),
+                ),
+              ],
             ),
+            const SettingsDivider(),
+            const AppearanceTagAdd(),
+            const SettingsDivider(),
+            const AppearanceDefaultValues(),
+            const SettingsDivider(),
           ],
-        ),
-        const SettingsDivider(),
-        const AppearanceTagAdd(),
-        const SettingsDivider(),
-        const AppearanceDefaultValues(),
-        const SettingsDivider(),
-      ],
+        );
+      },
     );
   }
 }

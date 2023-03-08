@@ -43,6 +43,7 @@ class TimelineBody extends StatelessWidget {
                         return true;
                       },
                       child: TimelineMessageList(
+                        isFilter: false,
                         messages: StartScreenScope.of(context)
                                 .state
                                 .hashtag

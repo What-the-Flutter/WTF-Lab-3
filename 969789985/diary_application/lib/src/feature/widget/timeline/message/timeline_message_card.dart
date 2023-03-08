@@ -9,6 +9,7 @@ import '../../../../core/util/resources/dimensions.dart';
 import '../../../../core/util/resources/icons.dart';
 import '../../../../core/util/resources/strings.dart';
 import '../../../../core/util/typedefs.dart';
+import '../../../cubit/theme/theme_cubit.dart';
 import '../../../cubit/timeline/timeline_cubit.dart';
 import '../../../page/chat/chat_page.dart';
 import '../../general/custom_dialog.dart';
@@ -29,70 +30,77 @@ class TimelineMessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TimelineCubit, TimelineState>(
-      builder: (context, state) {
-        return message.images.isEmpty
-            ? Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomPaint(
-                          foregroundPainter: Triangle(
-                            ThemeScope.of(context).state.messageAlignment ==
-                                    BubbleAlignments.start.alignment
-                                ? Color(
-                                    ThemeScope.of(context)
-                                        .state
-                                        .primaryItemColor,
-                                  )
-                                : Colors.transparent,
-                          ),
-                        ),
-                        Flexible(
-                          child: AnimatedAlign(
-                            curve: Curves.fastOutSlowIn,
-                            duration: const Duration(milliseconds: 500),
-                            alignment: _messageAlignment(context),
-                            child: Container(
-                              constraints: BoxConstraints(maxWidth: _maxWidth),
-                              margin:
-                                  const EdgeInsets.only(bottom: Insets.small),
-                              child: Material(
-                                borderRadius: _messageBorders(context),
-                                color: Color(
-                                  ThemeScope.of(context).state.primaryItemColor,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    _showPopupAction(context, state);
-                                  },
-                                  borderRadius: _messageBorders(context),
-                                  child: BaseMessageContent(
-                                    message: message,
-                                    fromChat: false,
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, tState) {
+        return BlocBuilder<TimelineCubit, TimelineState>(
+          builder: (context, state) {
+            return message.images.isEmpty
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomPaint(
+                              foregroundPainter: Triangle(
+                                ThemeScope.of(context).state.messageAlignment ==
+                                        BubbleAlignments.start.alignment
+                                    ? Color(
+                                        ThemeScope.of(context)
+                                            .state
+                                            .primaryItemColor,
+                                      )
+                                    : Colors.transparent,
+                              ),
+                            ),
+                            Flexible(
+                              child: AnimatedAlign(
+                                curve: Curves.fastOutSlowIn,
+                                duration: const Duration(milliseconds: 500),
+                                alignment: _messageAlignment(context),
+                                child: Container(
+                                  constraints:
+                                      BoxConstraints(maxWidth: _maxWidth),
+                                  margin: const EdgeInsets.only(
+                                      bottom: Insets.small),
+                                  child: Material(
+                                    borderRadius: _messageBorders(context),
+                                    color: Color(
+                                      ThemeScope.of(context)
+                                          .state
+                                          .primaryItemColor,
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        _showPopupAction(context, state);
+                                      },
+                                      borderRadius: _messageBorders(context),
+                                      child: BaseMessageContent(
+                                        message: message,
+                                        fromChat: false,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                            _triangle(context, BubbleAlignments.end),
+                          ],
                         ),
-                        _triangle(context, BubbleAlignments.end),
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                children: [
-                  const Spacer(),
-                  BaseImageShower(
-                    message: message,
-                    fromChat: false,
-                  ),
-                ],
-              );
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      const Spacer(),
+                      BaseImageShower(
+                        message: message,
+                        fromChat: false,
+                      ),
+                    ],
+                  );
+          },
+        );
       },
     );
   }
@@ -186,7 +194,7 @@ class TimelineMessageCard extends StatelessWidget {
         PopupMenuItem(
           child: _menuButton(
             context,
-            'Go to chat',
+            'To chat',
             Icons.chat,
             () {
               Navigator.push(
@@ -200,6 +208,22 @@ class TimelineMessageCard extends StatelessWidget {
                 ),
               );
             },
+          ),
+        ),
+        PopupMenuItem(
+          child: _menuButton(
+            context,
+            'Delete',
+            Icons.delete,
+            () => TimelineScope.of(context).deleteMessage(message),
+          ),
+        ),
+        PopupMenuItem(
+          child: _menuButton(
+            context,
+            'Resend',
+            Icons.repeat_sharp,
+            () {},
           ),
         ),
         PopupMenuItem(
@@ -231,7 +255,12 @@ class TimelineMessageCard extends StatelessWidget {
             children: [
               Icon(icon),
               const SizedBox(width: Insets.medium),
-              Text(text),
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: FontsSize.normal,
+                ),
+              ),
             ],
           ),
         ),
