@@ -6,30 +6,35 @@ class ChatModel {
   final dynamic id;
   final int iconId;
   final String title;
-  final String lastEventTitle;
+  final DateTime date;
+  final bool isPinned;
 
-  final List<EventCardModel> allCards;
+  final List<EventCardModel> cards;
 
   const ChatModel({
     required this.iconId,
     required this.title,
     required this.id,
-    required this.allCards,
-    this.lastEventTitle = 'No events. Click here to create one.',
+    required this.cards,
+    required this.date,
+    this.isPinned = false,
   });
 
-  ChatModel copyWith({
-    dynamic newId,
-    int? newIconId,
-    String? newTitle,
-    String? newLastEventTitle,
-    List<EventCardModel>? newAllCards,
-  }) {
+  ChatModel copyWith(
+      {dynamic newId,
+      int? newIconId,
+      String? newTitle,
+      EventCardModel? newLastEvent,
+      List<EventCardModel>? newCards,
+      DateTime? newDate,
+      bool? pinned}) {
     return ChatModel(
-        id: newId ?? id,
-        iconId: newIconId ?? iconId,
-        title: newTitle ?? title,
-        lastEventTitle: newLastEventTitle ?? lastEventTitle,
-        allCards: newAllCards ?? allCards);
+      id: newId ?? id,
+      iconId: newIconId ?? iconId,
+      title: newTitle ?? title,
+      cards: newCards ?? cards,
+      date: newDate ?? date,
+      isPinned: pinned ?? isPinned,
+    );
   }
 }

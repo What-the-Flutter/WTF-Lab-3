@@ -1,43 +1,282 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation_project/cubits/events_cubit.dart';
+import 'package:graduation_project/pages/edit_or_create_page.dart';
 import 'package:graduation_project/pages/event_page.dart';
-import 'package:graduation_project/providers/events_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
+import '../constants.dart';
 import '../models/chat_model.dart';
 
 class EventListTile extends StatelessWidget {
-  final ChatModel chat;
+  final dynamic chatId;
 
-  const EventListTile({super.key, required this.chat});
+  const EventListTile({super.key, required this.chatId});
+
+  List<ListTile> _createOptions(BuildContext context, ChatModel chat) {
+    return [
+      ListTile(
+        leading: const Icon(
+          Icons.info,
+          color: Colors.yellow,
+          size: 24,
+        ),
+        title: const Text(
+          'Info',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple.shade300,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(24),
+                            ),
+                          ),
+                          child: chat.iconId == 0
+                              ? Center(
+                                  child: Text(
+                                    chat.title[0].toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                )
+                              : icons[chat.iconId],
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Text(chat.title),
+                      ],
+                    ),
+                  ),
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Created',
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('dd.MM.yyyy').format(chat.date),
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      const Text(
+                        'Last event',
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        chat.cards.isNotEmpty
+                            ? '${DateFormat('dd.MM.yyyy').format(chat.cards.last.time)} at ${DateFormat('hh:mm a').format(chat.cards.last.time)}'
+                            : 'No events yet.',
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'OK',
+                      ),
+                    ),
+                  ],
+                );
+              });
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.attach_file,
+          color: Colors.greenAccent,
+          size: 24,
+        ),
+        title: const Text(
+          'Pin/Unpin Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          context.read<EventsCubit>().togglePinState(chat.id);
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.edit,
+          color: Colors.cyan,
+          size: 24,
+        ),
+        title: const Text(
+          'Edit Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return BlocBuilder<EventsCubit, EventsState>(
+              builder: (context, state) {
+                return CreatingPage(
+                  isCreatingNewPage: false,
+                  editingPage: state.getChatById(chatId),
+                );
+              },
+            );
+          }));
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.delete,
+          color: Colors.redAccent,
+          size: 24,
+        ),
+        title: const Text(
+          'Delete Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          context.read<EventsCubit>().deleteChat(chatId);
+          Navigator.pop(context);
+        },
+      ),
+    ];
+  }
+
+  void onLongPress(BuildContext context, ChatModel chat) {
+    showModalBottomSheet(
+        constraints: BoxConstraints.loose(
+          const Size.fromHeight(
+            240,
+          ),
+        ),
+        backgroundColor: Theme.of(context).primaryColorLight,
+        context: context,
+        builder: (context) {
+          return ListView(
+            children: _createOptions(context, chat),
+          );
+        });
+  }
+
+  Widget? _createTrailing(ChatModel chat) {
+    return chat.cards.isNotEmpty
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: chat.isPinned
+                ? [
+                    const Icon(
+                      Icons.attach_file,
+                      color: Colors.deepPurple,
+                    ),
+                    Text(
+                      DateFormat('hh:mm a').format(chat.cards.last.time),
+                    ),
+                  ]
+                : [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32.0),
+                      child: Text(
+                        DateFormat('hh:mm a').format(chat.cards.last.time),
+                      ),
+                    ),
+                  ],
+          )
+        : chat.isPinned
+            ? const Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.attach_file,
+                    color: Colors.deepPurple,
+                  ),
+                ],
+              )
+            : null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple.shade300,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(24),
-          ),
-        ),
-        child: icons[chat.iconId],
-      ),
-      title: Text(chat.title),
-      subtitle: Consumer<EventsProvider>(
-        builder: (context, provider, child) => Text(chat.lastEventTitle),
-      ),
-      hoverColor: Colors.deepPurple.shade100,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventPage(
-              chat: chat,
+    return BlocBuilder<EventsCubit, EventsState>(
+      builder: (context, state) {
+        final index = state.chats.indexWhere((element) => element.id == chatId);
+        final chat = state.chats[index];
+
+        return ListTile(
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(24),
+              ),
             ),
+            child: chat.iconId == 0
+                ? Center(
+                    child: Text(
+                      chat.title[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
+                    ),
+                  )
+                : icons[chat.iconId],
           ),
+          title: Text(chat.title),
+          subtitle: chat.cards.isNotEmpty
+              ? Text(chat.cards.last.title)
+              : const Text('No events. Click here to create one.'),
+          hoverColor: Colors.deepPurple.shade100,
+          trailing: _createTrailing(chat),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EventPage(
+                  chatId: chatId,
+                ),
+              ),
+            );
+          },
+          onLongPress: () {
+            onLongPress(context, chat);
+          },
         );
       },
     );

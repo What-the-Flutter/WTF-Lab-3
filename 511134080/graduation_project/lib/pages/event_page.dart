@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation_project/cubits/events_cubit.dart';
 import 'package:graduation_project/models/event_card_model.dart';
 import 'package:graduation_project/widgets/date_card.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../models/chat_model.dart';
-import '../providers/events_provider.dart';
 import '../widgets/event_card.dart';
 
 class EventPage extends StatefulWidget {
-  ChatModel chat;
+  final Key chatId;
 
-  EventPage({
+  const EventPage({
     super.key,
-    required this.chat,
+    required this.chatId,
   });
 
   @override
@@ -30,21 +30,18 @@ class _EventPageState extends State<EventPage> {
     _textFieldController.clear();
   }
 
-  Widget _createListViewItem(index) {
+  Widget _createListViewItem(index, chat) {
     final Iterable<EventCardModel> cards;
+
     if (_isShowingFavourites) {
-      cards = widget.chat.allCards
-          .where((element) => element.isFavourite)
-          .toList()
+      cards = List<EventCardModel>.from(
+              chat.cards.where((EventCardModel element) => element.isFavourite))
           .reversed;
     } else {
-      cards = widget.chat.allCards.reversed;
+      cards = chat.cards.reversed;
     }
 
     final current = cards.elementAt(index);
-    print('CURRENT');
-    print('CURRENT');
-    print(current.isFavourite);
 
     if (cards.length == 1 || index == cards.length - 1) {
       return Column(
@@ -77,48 +74,42 @@ class _EventPageState extends State<EventPage> {
         time: DateTime.now(),
         id: UniqueKey(),
       );
-      widget.chat.allCards.add(cardModel);
+      context.read<EventsCubit>().addEventCard(widget.chatId, cardModel);
       _clearTextInput();
-      Provider.of<EventsProvider>(context, listen: false)
-          .updateLastEvent(widget.chat);
     } else {
-      Provider.of<EventsProvider>(context, listen: false)
-          .editSelectedEventCard(widget.chat, title);
+      context.read<EventsCubit>().editSelectedCard(widget.chatId, title);
       _isEditingMode = false;
       _myFocusNode.unfocus();
       _clearTextInput();
     }
   }
 
-  Widget _returnEvents() {
+  Widget _returnEvents(ChatModel chat) {
     return Expanded(
       flex: 10,
       child: ListView.builder(
         itemCount: _isShowingFavourites
-            ? widget.chat.allCards
-                .where((element) => element.isFavourite)
-                .length
-            : widget.chat.allCards.length,
+            ? List<EventCardModel>.from(
+                chat.cards.where((element) => element.isFavourite)).length
+            : chat.cards.length,
         reverse: true,
         itemBuilder: (_, index) {
-          return Consumer<EventsProvider>(
-            builder: (_, __, ___) => _createListViewItem(index),
-          );
+          return _createListViewItem(index, chat);
         },
       ),
     );
   }
 
-  Widget _returnHintMessage() {
+  Widget _returnHintMessage(chat) {
     if (_isShowingFavourites) {
       return Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColor.withAlpha(30),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
         child: Column(
           children: [
             Text(
-              'This is the page where you can track everything about "${widget.chat.title}!"\n',
+              'This is the page where you can track everything about "${chat.title}!"\n',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -140,11 +131,11 @@ class _EventPageState extends State<EventPage> {
       return Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColor.withAlpha(30),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
         child: Column(
           children: [
             Text(
-              'This is the page where you can track everything about "${widget.chat.title}!"\n',
+              'This is the page where you can track everything about "${chat.title}!"\n',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -152,7 +143,7 @@ class _EventPageState extends State<EventPage> {
               ),
             ),
             Text(
-              'Add your first event to "${widget.chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
+              'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
@@ -165,183 +156,181 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
-  Future _onReplyChosen() async {
+  List<SimpleDialogOption> _createOptions(
+      EventsState state, BuildContext context) {
+    return [
+      for (int i = 0; i < state.chats.length; i++)
+        if (state.chats[i].id != widget.chatId)
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context);
+              context
+                  .read<EventsCubit>()
+                  .moveSelectedCards(state.getChatById(widget.chatId), i);
+            },
+            child: Text(state.chats[i].title),
+          ),
+    ];
+  }
+
+  Future _onReplyChosen(state) async {
     return await showDialog(
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('Title'),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('First Option'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Second Option'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Other Option'),
-            )
-          ],
+          title: const Text(
+              'Choose the chat you want to relocate selected events:'),
+          children: _createOptions(state, context),
         );
       },
     );
   }
 
-  AppBar _createAppBar(BuildContext context) {
-    if (widget.chat.allCards
-        .where((element) => element.isSelected)
-        .isNotEmpty) {
-      return AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Text(
-          '${widget.chat.allCards.where((element) => element.isSelected).length}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w300,
-            fontSize: 24,
-          ),
-        ),
-        iconTheme: const IconThemeData(
+  AppBar _createSelectionModeAppBar(chat, state) {
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      title: Text(
+        '${chat.cards.where((element) => element.isSelected).length}',
+        style: const TextStyle(
           color: Colors.white,
-          size: 30,
+          fontWeight: FontWeight.w300,
+          fontSize: 24,
         ),
-        leading: IconButton(
+      ),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+        size: 30,
+      ),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.close,
+        ),
+        onPressed: () {
+          context.read<EventsCubit>().cancelSelectionMode(widget.chatId);
+          if (_isEditingMode) {
+            _isEditingMode = false;
+            _textFieldController.text = '';
+            _myFocusNode.unfocus();
+          }
+        },
+      ),
+      actions: [
+        IconButton(
           icon: const Icon(
-            Icons.close,
+            Icons.edit,
+          ),
+          onPressed:
+              chat.cards.where((element) => element.isSelected).length > 1
+                  ? null
+                  : () {
+                      _isEditingMode = true;
+                      _textFieldController.text = chat.cards
+                          .where((element) => element.isSelected)
+                          .first
+                          .title;
+                      _myFocusNode.requestFocus();
+                    },
+          disabledColor: Theme.of(context).primaryColor,
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.reply,
           ),
           onPressed: () {
-            Provider.of<EventsProvider>(context, listen: false)
-                .cancelSelectionMode(widget.chat);
-            if (_isEditingMode) {
-              _isEditingMode = false;
-              _textFieldController.text = '';
-              _myFocusNode.unfocus();
-            }
+            _onReplyChosen(state);
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.edit,
-            ),
-            onPressed: widget.chat.allCards
-                        .where((element) => element.isSelected)
-                        .length >
-                    1
-                ? null
-                : () {
-                    _isEditingMode = true;
-                    _textFieldController.text = widget.chat.allCards
-                        .where((element) => element.isSelected)
-                        .first
-                        .title;
-                    _myFocusNode.requestFocus();
-                  },
-            disabledColor: Theme.of(context).primaryColor,
+        IconButton(
+          icon: const Icon(
+            Icons.copy,
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.reply,
-            ),
-            onPressed: () {
-              _onReplyChosen();
-            },
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.copy,
-            ),
-            onPressed: () {
-              Provider.of<EventsProvider>(
-                context,
-                listen: false,
-              ).copySelectedCards(widget.chat);
+          onPressed: () {
+            context.read<EventsCubit>().copySelectedCards(widget.chatId);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Copied to the clipboard!',
-                  ),
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Copied to the clipboard!',
                 ),
-              );
-            },
+              ),
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.bookmark_border_outlined,
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.bookmark_border_outlined,
-            ),
-            onPressed: () {
-              Provider.of<EventsProvider>(context, listen: false)
-                  .manageFavouritesFromSelectionMode(widget.chat);
-            },
+          onPressed: () {
+            context
+                .read<EventsCubit>()
+                .manageFavouritesFromSelectionMode(widget.chatId);
+          },
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.delete,
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.delete,
-            ),
-            onPressed: () {
-              Provider.of<EventsProvider>(context, listen: false)
-                  .deleteSelectedCards(widget.chat);
-            },
-          ),
-        ],
-      );
-    } else {
-      return AppBar(
-        centerTitle: true,
-        iconTheme: const IconThemeData(
+          onPressed: () {
+            context.read<EventsCubit>().deleteSelectedCards(widget.chatId);
+          },
+        ),
+      ],
+    );
+  }
+
+  AppBar _createDefaultAppBar(chat) {
+    return AppBar(
+      centerTitle: true,
+      iconTheme: Theme.of(context).iconTheme,
+      title: Text(
+        chat.title,
+        style: const TextStyle(
           color: Colors.white,
         ),
-        title: Text(
-          widget.chat.title,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {},
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: _isShowingFavourites
-                ? const Icon(Icons.bookmark)
-                : const Icon(Icons.bookmark_border_outlined),
-            onPressed: () {
-              setState(() {
-                _isShowingFavourites = !_isShowingFavourites;
-              });
-            },
-          ),
-        ],
-        backgroundColor: Theme.of(context).primaryColor,
-      );
+        IconButton(
+          icon: _isShowingFavourites
+              ? const Icon(Icons.bookmark)
+              : const Icon(Icons.bookmark_border_outlined),
+          onPressed: () {
+            setState(() {
+              _isShowingFavourites = !_isShowingFavourites;
+            });
+          },
+        ),
+      ],
+      backgroundColor: Theme.of(context).primaryColor,
+    );
+  }
+
+  AppBar _createAppBar(BuildContext context, ChatModel chat, state) {
+    if (chat.cards.where((element) => element.isSelected).isNotEmpty) {
+      return _createSelectionModeAppBar(chat, state);
+    } else {
+      return _createDefaultAppBar(chat);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventsProvider>(builder: (context, _, __) {
+    return BlocBuilder<EventsCubit, EventsState>(builder: (context, state) {
+      final chat = state.getChatById(widget.chatId);
       return Scaffold(
-        appBar: _createAppBar(context),
+        appBar: _createAppBar(context, chat, state),
         body: Column(
           children: [
-            widget.chat.allCards.isEmpty ||
+            chat.cards.isEmpty ||
                     _isShowingFavourites &&
-                        widget.chat.allCards
+                        chat.cards
                             .where((element) => element.isFavourite)
                             .isEmpty
-                ? _returnHintMessage()
-                : _returnEvents(),
+                ? _returnHintMessage(chat)
+                : _returnEvents(chat),
             Expanded(
               flex: 1,
               child: Align(
@@ -354,7 +343,7 @@ class _EventPageState extends State<EventPage> {
                         onPressed: () {},
                         icon: Icon(
                           Icons.bubble_chart,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColorDark,
                         ),
                       ),
                       Expanded(
@@ -379,7 +368,7 @@ class _EventPageState extends State<EventPage> {
                         onPressed: () {},
                         icon: Icon(
                           Icons.camera_alt_rounded,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColorDark,
                         ),
                       ),
                     ],
