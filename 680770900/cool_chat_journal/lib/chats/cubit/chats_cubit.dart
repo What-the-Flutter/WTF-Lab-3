@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:chats_repository/chats_repository.dart' show ChatsRepository;
+import 'package:chats_repository/chats_repository.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../chat/chat.dart' show Chat, Event;
 
 part 'chats_state.dart';
 
@@ -11,121 +9,72 @@ class ChatsCubit extends Cubit<ChatsState> {
 
   ChatsCubit(this._chatsRepository) : super(const ChatsState());
 
-  Future<void> fetchChats() async {
+  void updateChats() async {
     if (!state.status.isLoading) {
       emit(state.copyWith(status: ChatsStatus.loading));
 
-      final repositoryChats = await _chatsRepository.readChats();
-      final chats = repositoryChats.map(Chat.fromRepositoryChat).toList();
-      final nextId = _findNextId(chats);
+      final chats = await _chatsRepository.loadChats();
+
+      _sortChats(chats);
 
       emit(
-        state.copyWith(
+        state.copyWith( 
           chats: chats,
-          nextId: nextId,
           status: ChatsStatus.success,
         ),
       );
     }
   }
 
-  void addNewChat(Chat chat) {
-    final newChat = chat.copyWith(id: state.nextId);
-    _chatsRepository.insertChat(newChat.toRepositoryChat());
-    
-    final chats = List<Chat>.from(state.chats)..add(newChat);
-    final nextId = state.nextId + 1;
-    _sortChats(chats);
-    emit(state.copyWith(chats: chats, nextId: nextId));
+  void addChat(Chat chat) async {
+    await _chatsRepository.addChat(chat);
+    updateChats();
   }
 
-  void deleteChat(int chatId) {
-    _chatsRepository.deleteChat(chatId);
-
-    final chats = state.chats.where((chat) => chat.id != chatId).toList();
-    _sortChats(chats);
-    emit(state.copyWith(chats: chats));
+  void deleteChat(String chatId) async {
+    await _chatsRepository.deleteChat(chatId);
+    updateChats();
   }
 
-  void editChat(int id, Chat newChat) {
-    _chatsRepository.updateChat(newChat.toRepositoryChat());
-
-    final chats =
-      state.chats.map((chat) => chat.id == id ? newChat : chat).toList();
-    _sortChats(chats);
-    emit(state.copyWith(chats: chats));
+  void editChat(Chat chat) async {
+    await _chatsRepository.updateChat(chat);
+    updateChats();
   }
 
-  void switchChatPinning(int id) {
-    final chats = state.chats
-      .map((chat) =>
-        chat.id == id ? chat.copyWith(isPinned: !chat.isPinned) : chat,
-      ).toList();
-    _sortChats(chats);
-    emit(state.copyWith(chats: chats));
+  void switchChatPinning(String id) async {
+    final chat = state.chats.firstWhere((chat) => chat.id == id);
+    editChat(chat.copyWith(isPinned: !chat.isPinned));
   }
 
   void transferEvents({
-    required int sourceChat,
-    required int destinationChat,
-    required List<int> eventsIds,
-  }) {
-    var destinationChatNextId = _findNextChatId(state.chats[destinationChat]);
-    final events = state.chats[sourceChat].events
-      .where(
-        (event) => eventsIds.contains(event.id),
-      )
-      .map(
-        (event) {
-          final nextId = destinationChatNextId;
-          destinationChatNextId++;
+    required String sourceChatId,
+    required String destinationChatId,
+    required List<String> transferEventsIds, 
+  }) async {
+    final sourceChat =
+      state.chats.firstWhere((chat) => chat.id == sourceChatId);
+    final destinationChat =
+      state.chats.firstWhere((chat) => chat.id == destinationChatId);
+    final transferEvents = 
+      sourceChat.events.where((event) => transferEventsIds.contains(event.id));
 
-          return event.copyWith(id: nextId);
-        }
-      );
+    final newSourceChat = sourceChat.copyWith(
+      events: sourceChat.events
+        .where((event) => !transferEvents.contains(event))
+        .toList(),
+    ); 
 
-    final destinationChatEvents = 
-      List<Event>.from(state.chats[destinationChat].events)..addAll(events);
-
-    final sourceChatEvents = 
-      state.chats[sourceChat].events
-        .where(
-          (event) => !eventsIds.contains(event.id),
-        ).toList();
-
-    editChat(
-      sourceChat,
-      state.chats[sourceChat].copyWith(events: sourceChatEvents),
+    final newDestinationChat = destinationChat.copyWith(
+      events: List<Event>.from(destinationChat.events)
+        ..addAll(
+          transferEvents.map(
+            (event) => event.copyWith(chatId: destinationChatId),
+          ),
+        ),
     );
 
-    editChat(
-      destinationChat,
-      state.chats[destinationChat].copyWith(events: destinationChatEvents),
-    );
-  }
-
-  int _findNextId(List<Chat> chats) {
-    final int nextId;
-    if (chats.isNotEmpty) {
-      nextId = chats.reduce(
-        (current, next) => current.id > next.id ? current : next,
-      ).id + 1;
-    } else {
-      nextId = 0;
-    }
-    return nextId;
-  }
-
-  int _findNextChatId(Chat chat) {
-    final int nextEventId;
-    if (chat.events.isNotEmpty) {
-      nextEventId = chat.events.reduce(
-        (current, next) => current.id > next.id ? current : next,
-      ).id + 1;
-    } else {
-      nextEventId = 0;
-    }
-    return nextEventId;
+    editChat(newSourceChat);
+    editChat(newDestinationChat);
   }
 
   void _sortChats(List<Chat> chats) {

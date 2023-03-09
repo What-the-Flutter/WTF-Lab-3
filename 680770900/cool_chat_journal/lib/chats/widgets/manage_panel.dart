@@ -1,7 +1,7 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../chat/models/models.dart';
 import '../../themes/custom_theme.dart';
 
 class ManagePanelDialog extends StatelessWidget {

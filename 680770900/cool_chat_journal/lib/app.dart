@@ -1,6 +1,7 @@
 import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_storage_chats_api/local_storage_chats_api.dart';
 
 import 'chats/chats.dart';
 import 'themes/custom_theme.dart';
@@ -10,6 +11,8 @@ class CoolChatJournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) { 
+    final localStorageChatsApi = LocalStorageChatsApi();
+
     return CustomTheme(
       child: Builder(
         builder: (context) {
@@ -17,7 +20,7 @@ class CoolChatJournalApp extends StatelessWidget {
             title: 'Cool Chat Journal',
             theme: CustomTheme.of(context),
             home: RepositoryProvider.value(
-              value: ChatsRepository(),
+              value: ChatsRepository(chatsApi: localStorageChatsApi),
               child: const ChatsPage(),
             ),
           );

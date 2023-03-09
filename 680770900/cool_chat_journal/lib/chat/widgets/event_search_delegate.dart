@@ -1,6 +1,6 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 
-import '../models/models.dart';
 import 'event_view.dart';
 
 class EventSearchDelegate extends SearchDelegate {
@@ -11,15 +11,15 @@ class EventSearchDelegate extends SearchDelegate {
   });
 
   List<Event> _createEventsList() {
-    final findedNotes = <Event>[];
+    final fondedNotes = <Event>[];
 
     for (final event in events) {
       if (!event.isImage && event.content.contains(query)) {
-        findedNotes.add(event);
+        fondedNotes.add(event);
       }
     }
 
-    return findedNotes;
+    return fondedNotes;
   }
 
   Widget _createSearchResult(List<Event> result) {

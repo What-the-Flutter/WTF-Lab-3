@@ -1,4 +1,4 @@
-import 'package:chats_repository/chats_repository.dart' show ChatsRepository;
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,9 +20,14 @@ class ChatsPage extends StatelessWidget {
   }
 }
 
-class ChatsView extends StatelessWidget {
+class ChatsView extends StatefulWidget {
   const ChatsView({super.key});
 
+  @override
+  State<ChatsView> createState() => _ChatsViewState();
+}
+
+class _ChatsViewState extends State<ChatsView> {
   void _openManagePanel(BuildContext context, Chat chat) {
     final cubit = context.read<ChatsCubit>();
 
@@ -43,6 +48,12 @@ class ChatsView extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    context.read<ChatsCubit>().updateChats();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -59,9 +70,9 @@ class ChatsView extends StatelessWidget {
         ],
       ),
       body: BlocConsumer<ChatsCubit, ChatsState>(
-        listener: (_, state) {
+        listener: (context, state) {
           if (state.status.isInitial) {
-            context.read<ChatsCubit>().fetchChats();
+            context.read<ChatsCubit>().updateChats();
           }
         },
         builder: (_, state) {
@@ -83,17 +94,9 @@ class ChatsView extends StatelessWidget {
             );
           } else if (state.status.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state.status.isInitial) {
-            return Center(
-              child: ElevatedButton(
-                child: const Text('Click me'),
-                onPressed: () => context.read<ChatsCubit>().fetchChats(),
-              ),
-            );
           } else {
             return const Center(child: Text('Ooops! Something wrong.'));
           }
-          
         }
       ),
       floatingActionButton: FloatingActionButton(
@@ -109,5 +112,4 @@ class ChatsView extends StatelessWidget {
       bottomNavigationBar: const BottomNavigation(),
     );
   }
-  
 }

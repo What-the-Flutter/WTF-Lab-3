@@ -16,7 +16,7 @@ ChatEntity _$ChatEntityFromJson(Map<String, dynamic> json) => $checkedCreate(
           icon: $checkedConvert('icon', (v) => v as int),
           createdTime: $checkedConvert(
               'created_time', (v) => DateTime.parse(v as String)),
-          isPinned: $checkedConvert('is_pinned', (v) => v as bool),
+          isPinned: $checkedConvert('is_pinned', (v) => (v as int) != 0),
         );
         return val;
       },
@@ -32,5 +32,5 @@ Map<String, dynamic> _$ChatEntityToJson(ChatEntity instance) =>
       'icon': instance.icon,
       'name': instance.name,
       'created_time': instance.createdTime.toIso8601String(),
-      'is_pinned': instance.isPinned,
+      'is_pinned': instance.isPinned ? 1 : 0,
     };

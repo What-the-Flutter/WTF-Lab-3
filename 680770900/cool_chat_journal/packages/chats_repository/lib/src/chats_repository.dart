@@ -26,7 +26,7 @@ class ChatsRepository {
       .toList();
   }
 
-  Future<List<Event>> loadEvents(int chatId) async {
+  Future<List<Event>> loadEvents(String chatId) async {
     final eventsEntity = await chatsApi.loadEvents();
     return eventsEntity
       .where((event) => event.chatId == chatId)
@@ -45,16 +45,16 @@ class ChatsRepository {
     chats.add(chatEntity);
     events.addAll(eventsEntity);
 
-    chatsApi.saveChats(chats);
-    chatsApi.saveEvents(events);
+    await chatsApi.saveChats(chats);
+    await chatsApi.saveEvents(events);
   }
 
-  Future<void> deleteChat(int chatId) async {
+  Future<void> deleteChat(String chatId) async {
     final chats = await chatsApi.loadChats();
     final events = await chatsApi.loadEvents();
 
-    chatsApi.saveChats(chats.where((chat) => chat.id != chatId));
-    chatsApi.saveEvents(events.where((event) => event.chatId != chatId));
+    await chatsApi.saveChats(chats.where((chat) => chat.id != chatId));
+    await chatsApi.saveEvents(events.where((event) => event.chatId != chatId));
   }
 
   Future<void> updateChat(Chat chat) async {
@@ -71,8 +71,8 @@ class ChatsRepository {
       .toList();
     events.addAll(chat.events.map((event) => event.toEventEntity()));
 
-    chatsApi.saveChats(chats);
-    chatsApi.saveEvents(events);
+    await chatsApi.saveChats(chats);
+    await chatsApi.saveEvents(events);
   }
 
 }

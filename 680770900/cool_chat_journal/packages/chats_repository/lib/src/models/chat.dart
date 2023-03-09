@@ -6,6 +6,14 @@ import 'package:uuid/uuid.dart';
 import 'models.dart';
 
 class Chat extends Equatable {
+  static final empty = Chat(
+    id: '-',
+    icon: Icons.abc,
+    name: '-',
+    createdTime: DateTime(0),
+    isPinned: false,
+  );
+
   final String id;
   final IconData icon;
   final String name;

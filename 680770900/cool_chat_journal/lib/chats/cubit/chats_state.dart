@@ -10,26 +10,22 @@ extension ChatsStatusX on ChatsStatus {
 }
 
 class ChatsState extends Equatable {
-  final int nextId;
   final List<Chat> chats;
   final ChatsStatus status;
 
   const ChatsState({
-    this.nextId = 0,
     this.chats = const [],
     this.status = ChatsStatus.initial,
   });
 
   ChatsState copyWith({
-    int? nextId,
     List<Chat>? chats,
     ChatsStatus? status,
   }) => ChatsState(
-    nextId: nextId ?? this.nextId,
     chats: chats ?? this.chats,
     status: status ?? this.status,
   );
 
   @override
-  List<Object> get props => [nextId, chats, status];
+  List<Object> get props => [chats, status];
 }

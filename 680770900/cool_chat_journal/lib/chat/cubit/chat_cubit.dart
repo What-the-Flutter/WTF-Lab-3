@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:chats_repository/chats_repository.dart';
 import 'package:equatable/equatable.dart';
 
-import '../models/models.dart';
 
 part 'chat_state.dart';
 
@@ -10,17 +10,15 @@ class ChatCubit extends Cubit<ChatState> {
 
   void addNewEvent(Event event) {
     final events = List<Event>.from(state.chat.events)
-      ..add(event.copyWith(id: state.nextEventId));
-    final nextEventId = state.nextEventId + 1;
+      ..add(event);
     emit(
       state.copyWith(
         chat: state.chat.copyWith(events: events),
-        nextEventId: nextEventId,
       ),
     );
   }
 
-  void deleteEvent(int eventId) {
+  void deleteEvent(String eventId) {
     final events = state.chat.events.where(
       (event) => event.id != eventId,
     ).toList();
@@ -44,7 +42,7 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void editEvent(int id, Event newEvent) {
+  void editEvent(String id, Event newEvent) {
     final events = state.chat.events
       .map<Event>(
         (event) => event.id == id ? newEvent : event,
@@ -57,7 +55,7 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void switchEventFavorite(int eventId) {
+  void switchEventFavorite(String eventId) {
     final events = state.chat.events.map(
       (event) => 
         event.id == eventId
@@ -87,8 +85,8 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void switchSelectStatus(int eventId)  {
-    final selectedEventsIds = List<int>.from(state.selectedEventsIds);
+  void switchSelectStatus(String eventId)  {
+    final selectedEventsIds = List<String>.from(state.selectedEventsIds);
 
     if (selectedEventsIds.contains(eventId)) {
       selectedEventsIds.remove(eventId);
@@ -131,20 +129,10 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void updateChat(Chat chat) {
-    final int nextEventId;
-    if (chat.events.isNotEmpty) {
-      nextEventId = chat.events.reduce(
-        (current, next) => current.id > next.id ? current : next,
-      ).id + 1;
-    } else {
-      nextEventId = 0;
-    }
-
+  void createChat(Chat chat) {
     emit(
       state.copyWith(
         chat: chat,
-        nextEventId: nextEventId,
       ),
     );
   }

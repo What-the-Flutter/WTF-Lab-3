@@ -9,11 +9,7 @@ class LocalStorageChatsApi implements ChatsApi {
   static const chatsTable = 'Chats';
   static const eventsTable = 'Events';
 
-  late Future<Database> _database;
-
-  LocalStorageChatsApi() {
-    _init();
-  }
+  Future<Database>? _database;
 
   Future<void> _init() async {
     _database = openDatabase(
@@ -26,28 +22,33 @@ class LocalStorageChatsApi implements ChatsApi {
   void _onCreate(Database db, int newVersion) async {
     await db.execute('''
       CREATE TABLE $chatsTable (
-        id INTEGER PRIMARY KEY,
-        icon INTEGER NOT NULL,
+        id TEXT PRIMARY KEY NOT NULL,
         name TEXT NOT NULL,
-        createdTime TEXT NOT NULL,
-        isPinned INT NOT NULL
+        icon INTEGER NOT NULL,
+        created_time TEXT NOT NULL,
+        is_pinned INTEGER NOT NULL
       )''');
 
     await db.execute('''
       CREATE TABLE $eventsTable (
-        id INTEGER PRIMARY KEY,
-        chatId INTEGER NOT NULL,
+        id TEXT PRIMARY KEY,
+        chat_id TEXT NOT NULL,
         content TEXT NOT NULL,
-        isImage INTEGER NOT NULL,
-        isFavorite INTEGER NOT NULL,
-        changeTime TEXT NOT NULL,
+        is_image INTEGER NOT NULL,
+        is_favorite INTEGER NOT NULL,
+        change_time TEXT NOT NULL,
         category STRING 
       )''');
   }
   
   @override
   Future<List<ChatEntity>> loadChats() async {
-    final db = await _database;
+    if (_database == null) {
+      await _init();
+    }
+
+    final db = await _database!; 
+
     final jsonMap = await db.query(chatsTable);
     return List.generate(
       jsonMap.length,
@@ -57,17 +58,29 @@ class LocalStorageChatsApi implements ChatsApi {
   
   @override
   Future<void> saveChats(Iterable<ChatEntity> chats) async {
-    final db = await _database;
+    if (_database == null) {
+      await _init();
+    }
+
+    final db = await _database!;
     final jsonMap = chats.map((chat) => chat.toJson());
     await db.delete(chatsTable);
     for (final chat in jsonMap) {
-      await db.insert(chatsTable, chat);
+      await db.insert(
+        chatsTable,
+        chat,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     }
   }
   
   @override
   Future<List<EventEntity>> loadEvents() async {
-    final db = await _database;
+    if (_database == null) {
+      await _init();
+    }
+
+    final db = await _database!;
     final jsonMap = await db.query(eventsTable);
     return List.generate(
       jsonMap.length,
@@ -77,11 +90,19 @@ class LocalStorageChatsApi implements ChatsApi {
   
   @override
   Future<void> saveEvents(Iterable<EventEntity> events) async {
-    final db = await _database;
-    final jsonMap = events.map((event) => event.toJson());
+    if (_database == null) {
+      await _init();
+    }
+
+    final db = await _database!;
+    final jsonMap = events. map((event) => event.toJson());
     await db.delete(eventsTable);
     for (final event in jsonMap) {
-      await db.insert(eventsTable, event);
+      await db.insert(
+        eventsTable,
+        event,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     }
   }
   

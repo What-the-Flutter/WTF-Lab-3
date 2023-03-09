@@ -1,9 +1,8 @@
 import 'dart:convert';
 
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../models/models.dart';
 
 class EventView extends StatefulWidget {
   final Event event;

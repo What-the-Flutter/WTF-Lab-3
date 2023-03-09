@@ -1,7 +1,7 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../../themes/custom_theme.dart';
-import '../models/models.dart';
 
 class DeleteDialog extends StatelessWidget {
   final int countSelectedEvents;
@@ -59,7 +59,7 @@ class TransferDialog extends StatefulWidget {
 }
 
 class _TransferDialogState extends State<TransferDialog> {
-  int? _selectedChat;
+  String? _selectedChat;
 
   @override
   Widget build(BuildContext context) {

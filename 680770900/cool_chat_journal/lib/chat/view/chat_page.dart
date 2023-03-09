@@ -1,10 +1,10 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../chats/chats.dart';
 import '../cubit/chat_cubit.dart';
-import '../models/models.dart';
 import '../widgets/widgets.dart';
 
 class ChatPage extends StatelessWidget {
@@ -63,7 +63,7 @@ class _ChatViewState extends State<ChatView> {
     ).isNotEmpty;
   }
 
-  void _onTap(BuildContext context, int eventId) {
+  void _onTap(BuildContext context, String eventId) {
     final chatCubit = context.read<ChatCubit>();
     if (chatCubit.state.selectedEventsIds.isNotEmpty) {
       _onLongPress(context, eventId);
@@ -72,7 +72,7 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
-  void _onLongPress(BuildContext context, int eventId) {
+  void _onLongPress(BuildContext context, String eventId) {
     context.read<ChatCubit>().switchSelectStatus(eventId);
   }
 
@@ -125,7 +125,7 @@ class _ChatViewState extends State<ChatView> {
     final chatsCubit = context.read<ChatsCubit>();
     final chatCubit = context.read<ChatCubit>();
 
-    final newChatId = await showDialog<int>(
+    final newChatId = await showDialog<String>(
       context: context,
       builder: (context) => 
         TransferDialog(
@@ -136,9 +136,9 @@ class _ChatViewState extends State<ChatView> {
     );
     if (newChatId != null) {
       chatsCubit.transferEvents(
-        sourceChat: widget.chat.id,
-        destinationChat: newChatId,
-        eventsIds: chatCubit.state.selectedEventsIds,
+        sourceChatId: widget.chat.id,
+        destinationChatId: newChatId,
+        transferEventsIds: chatCubit.state.selectedEventsIds,
       );
       chatCubit.deleteSelectedEvents();
     }
@@ -303,7 +303,6 @@ class _ChatViewState extends State<ChatView> {
         previous.chat.events != current.chat.events,
       listener: (context, state) {
         context.read<ChatsCubit>().editChat(
-          widget.chat.id,
           widget.chat.copyWith(events: state.chat.events),
         );
       },
@@ -374,7 +373,7 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
 
-    context.read<ChatCubit>().updateChat(widget.chat);
+    context.read<ChatCubit>().createChat(widget.chat);
   }
 
   @override

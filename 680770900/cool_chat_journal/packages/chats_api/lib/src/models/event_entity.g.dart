@@ -14,8 +14,8 @@ EventEntity _$EventEntityFromJson(Map<String, dynamic> json) => $checkedCreate(
           id: $checkedConvert('id', (v) => v as String),
           chatId: $checkedConvert('chat_id', (v) => v as String),
           content: $checkedConvert('content', (v) => v as String),
-          isImage: $checkedConvert('is_image', (v) => v as bool),
-          isFavorite: $checkedConvert('is_favorite', (v) => v as bool),
+          isImage: $checkedConvert('is_image', (v) => (v as int) != 0),
+          isFavorite: $checkedConvert('is_favorite', (v) => (v as int) != 0),
           changeTime: $checkedConvert(
               'change_time', (v) => DateTime.parse(v as String)),
           category: $checkedConvert('category', (v) => v as String?),
@@ -35,8 +35,8 @@ Map<String, dynamic> _$EventEntityToJson(EventEntity instance) =>
       'id': instance.id,
       'chat_id': instance.chatId,
       'content': instance.content,
-      'is_image': instance.isImage,
-      'is_favorite': instance.isFavorite,
+      'is_image': instance.isImage ? 1 : 0,
+      'is_favorite': instance.isFavorite ? 1 : 0,
       'change_time': instance.changeTime.toIso8601String(),
       'category': instance.category,
     };

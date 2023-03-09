@@ -1,7 +1,7 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../chat/chat.dart';
 import '../../chats/chats.dart';
 import '../cubit/chat_editor_cubit.dart';
 import '../widgets/chat_icons.dart';
@@ -54,17 +54,18 @@ class ChatEditorView extends StatelessWidget {
       final chatsCubit = context.read<ChatsCubit>();
       final iconIndex = context.read<ChatEditorCubit>().state.iconIndex;
       final chat = Chat(
-        id: sourceChat?.id ?? 0,
+        id: sourceChat?.id,
         icon: ChatIcons.icons[iconIndex],
         name: title,
         events: sourceChat?.events ?? <Event>[],
         createdTime: sourceChat?.createdTime ?? DateTime.now(),
+        isPinned: false,
       );
 
       if (sourceChat != null) {
-        chatsCubit.editChat(sourceChat!.id, chat);
+        chatsCubit.editChat(chat);
       } else {
-        chatsCubit.addNewChat(chat);
+        chatsCubit.addChat(chat);
       }
     }
       

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../cubit/chat_cubit.dart';
-import '../models/models.dart';
 
 class BottomPanel extends StatefulWidget {
   final Chat chat;
@@ -52,8 +52,10 @@ class _BottomPanelState extends State<BottomPanel> {
 
         context.read<ChatCubit>().addNewEvent(
           Event(
+            chatId: widget.chat.id,
             content: base64Image,
             isImage: true,
+            isFavorite: false,
             changeTime: DateTime.now(),
             category: context.read<ChatCubit>().state.selectedCategory,
           ),
@@ -68,17 +70,28 @@ class _BottomPanelState extends State<BottomPanel> {
     if (sourceEvent == null) {
       chatCubit.addNewEvent(
         Event(
+          chatId: widget.chat.id,
           content: _textController.text,
+          isImage: false,
+          isFavorite: false,
           changeTime: DateTime.now(),
-          category: chatCubit.state.selectedCategory,
+          category: context.read<ChatCubit>().state.selectedCategory,
         ),
       );
     } else {
+      final NullWrapper<Category>? selectedCategory;
+      if (chatCubit.state.selectedCategory != null) {
+        selectedCategory =
+          NullWrapper<Category>(chatCubit.state.selectedCategory!);
+      } else {
+        selectedCategory = null;
+      }
+
       chatCubit.editEvent(
         sourceEvent.id,
         sourceEvent.copyWith(
           content: _textController.text,
-          category: chatCubit.state.selectedCategory,
+          category: selectedCategory,
         ),
       );
     }
