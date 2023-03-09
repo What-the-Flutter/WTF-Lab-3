@@ -38,7 +38,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async {
-    var isLoggedIn = await googleSignIn.isSignedIn();
+    final isLoggedIn = await googleSignIn.isSignedIn();
     if (isLoggedIn &&
         prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
       return true;
@@ -51,46 +51,43 @@ class AuthProvider extends ChangeNotifier {
     _status = Status.authenticating;
     notifyListeners();
 
-    var googleUser = await googleSignIn.signIn();
-    if (googleUser != null) {
-      GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+    final _googleUser = await googleSignIn.signIn();
+    if (_googleUser != null) {
+      GoogleSignInAuthentication? _googleAuth =
+          await _googleUser.authentication;
+      final AuthCredential _credential = GoogleAuthProvider.credential(
+        accessToken: _googleAuth.accessToken,
+        idToken: _googleAuth.idToken,
       );
 
-      var firebaseUser =
-          (await firebaseAuth.signInWithCredential(credential)).user;
+      final _firebaseUser =
+          (await firebaseAuth.signInWithCredential(_credential)).user;
 
-      if (firebaseUser != null) {
-        final QuerySnapshot result = await firebaseFirestore
+      if (_firebaseUser != null) {
+        final QuerySnapshot _result = await firebaseFirestore
             .collection(FirestoreConstants.pathUserCollection)
-            .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+            .where(FirestoreConstants.id, isEqualTo: _firebaseUser.uid)
             .get();
-        final List<DocumentSnapshot> documents = result.docs;
-        if (documents.isEmpty) {
-          // Writing data to server because here is a new user
+        final List<DocumentSnapshot> _documents = _result.docs;
+        if (_documents.isEmpty) {
           firebaseFirestore
               .collection(FirestoreConstants.pathUserCollection)
-              .doc(firebaseUser.uid)
+              .doc(_firebaseUser.uid)
               .set({
-            FirestoreConstants.nickname: firebaseUser.displayName,
-            FirestoreConstants.id: firebaseUser.uid,
+            FirestoreConstants.nickname: _firebaseUser.displayName,
+            FirestoreConstants.id: _firebaseUser.uid,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
           });
 
-          // Write data to local storage
-          User? currentUser = firebaseUser;
-          await prefs.setString(FirestoreConstants.id, currentUser.uid);
+          User? _currentUser = _firebaseUser;
+          await prefs.setString(FirestoreConstants.id, _currentUser.uid);
           await prefs.setString(
-              FirestoreConstants.nickname, currentUser.displayName ?? '');
+              FirestoreConstants.nickname, _currentUser.displayName ?? '');
         } else {
-          // Already sign up, just get data from firestore
-          var documentSnapshot = documents[0];
-          var user = AppUser.fromDocument(documentSnapshot);
-          // Write data to local
-          await prefs.setString(FirestoreConstants.id, user.id);
-          await prefs.setString(FirestoreConstants.nickname, user.nickname);
+          final _documentSnapshot = _documents[0];
+          final _user = AppUser.fromDocument(_documentSnapshot);
+          await prefs.setString(FirestoreConstants.id, _user.id);
+          await prefs.setString(FirestoreConstants.nickname, _user.nickname);
         }
         _status = Status.authenticated;
         notifyListeners();

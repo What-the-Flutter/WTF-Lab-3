@@ -32,4 +32,5 @@ class Chat {
     final String creationDate = doc.get(FirestoreConstants.creationDate);
     return Chat(chatId: doc.id, userId: userId, name: name, isPinned: isPinned, creationDate: creationDate);
   }
+
 }

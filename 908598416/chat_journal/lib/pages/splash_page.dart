@@ -9,20 +9,20 @@ class SplashPage extends StatefulWidget {
   SplashPage({Key? key}) : super(key: key);
 
   @override
-  SplashPageState createState() => SplashPageState();
+  _SplashPageState createState() => _SplashPageState();
 }
 
-class SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), checkSignedIn);
+    Future.delayed(const Duration(seconds: 1), _checkSignedIn);
   }
 
-  void checkSignedIn() async {
-    var authProvider = context.read<AuthProvider>();
-    var isLoggedIn = await authProvider.isLoggedIn();
-    if (isLoggedIn) {
+  void _checkSignedIn() async {
+    final _authProvider = context.read<AuthProvider>();
+    final _isLoggedIn = await _authProvider.isLoggedIn();
+    if (_isLoggedIn) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

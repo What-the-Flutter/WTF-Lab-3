@@ -7,14 +7,14 @@ class Message {
   final String timestamp;
   final String content;
   final int type;
-  final bool isFavorite;
+  final bool isPinned;
 
   Message({
     required this.chatId,
     required this.timestamp,
     required this.content,
     required this.type,
-    required this.isFavorite
+    required this.isPinned
   });
 
   Map<String, dynamic> toJson() {
@@ -23,7 +23,7 @@ class Message {
       FirestoreConstants.timestamp: timestamp,
       FirestoreConstants.content: content,
       FirestoreConstants.type: type,
-      FirestoreConstants.isFavorite: isFavorite
+      FirestoreConstants.isPinned: isPinned
     };
   }
 
@@ -32,7 +32,7 @@ class Message {
     final String timestamp = doc.get(FirestoreConstants.timestamp);
     final String content = doc.get(FirestoreConstants.content);
     final int type = doc.get(FirestoreConstants.type);
-    final bool isFavorite = doc.get(FirestoreConstants.isFavorite);
-    return Message(chatId: chatId, timestamp: timestamp, content: content, type: type, isFavorite: isFavorite);
+    final bool isPinned = doc.get(FirestoreConstants.isPinned);
+    return Message(chatId: chatId, timestamp: timestamp, content: content, type: type, isPinned: isPinned);
   }
 }

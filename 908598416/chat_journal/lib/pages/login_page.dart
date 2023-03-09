@@ -12,14 +12,14 @@ class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
 
   @override
-  LoginPageState createState() => LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(context);
-    switch (authProvider.status) {
+    final _authProvider = Provider.of<AuthProvider>(context);
+    switch (_authProvider.status) {
       case Status.authenticateError:
         Fluttertoast.showToast(msg: 'Sign in fail');
         break;
@@ -45,7 +45,7 @@ class LoginPageState extends State<LoginPage> {
             Center(
               child: TextButton(
                 onPressed: () async {
-                  authProvider.handleSignIn().then((isSuccess) {
+                  _authProvider.handleSignIn().then((isSuccess) {
                     if (isSuccess) {
                       Navigator.pushReplacement(
                         context,
@@ -56,7 +56,7 @@ class LoginPageState extends State<LoginPage> {
                     }
                   }).catchError((error, stackTrace) {
                     Fluttertoast.showToast(msg: error.toString());
-                    authProvider.handleException();
+                    _authProvider.handleException();
                   });
                 },
                 child: const Text(
@@ -81,7 +81,7 @@ class LoginPageState extends State<LoginPage> {
             ),
             // Loading
             Positioned(
-              child: authProvider.status == Status.authenticating
+              child: _authProvider.status == Status.authenticating
                   ? LoadingView()
                   : const SizedBox.shrink(),
             ),

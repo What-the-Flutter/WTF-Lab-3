@@ -16,29 +16,29 @@ class _BottomNavigationState extends State<BottomNavigation> {
     });
   }
 
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle _optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   static List<Widget> get _widgetOptions => <Widget>[
-    const Text(
-      'Home',
-      style: optionStyle,
-    ),
-    const Text(
-      'Daily',
-      style: optionStyle,
-    ),
-    const Text(
-      'Timeline',
-      style: optionStyle,
-    ),
-    const Text(
-      'Explore',
-      style: optionStyle,
-    ),
-  ];
+        const Text(
+          'Home',
+          style: _optionStyle,
+        ),
+        const Text(
+          'Daily',
+          style: _optionStyle,
+        ),
+        const Text(
+          'Timeline',
+          style: _optionStyle,
+        ),
+        const Text(
+          'Explore',
+          style: _optionStyle,
+        ),
+      ];
 
-  List<Widget> getWidgetOptions() {
+  List<Widget> _getWidgetOptions() {
     return _widgetOptions;
   }
 

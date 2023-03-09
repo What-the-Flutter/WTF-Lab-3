@@ -10,10 +10,9 @@ class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
     _isDark = false;
     _preferences = ThemePreference();
-    getPreferences();
+    _getPreferences();
   }
 
-//Switching the themes
   set isDark(bool value) {
     _isDark = value;
     _preferences.setTheme(value);
@@ -28,7 +27,7 @@ class ThemeProvider extends ChangeNotifier {
     }
   }
 
-  void getPreferences() async {
+  void _getPreferences() async {
     _isDark = await _preferences.getTheme();
     notifyListeners();
   }

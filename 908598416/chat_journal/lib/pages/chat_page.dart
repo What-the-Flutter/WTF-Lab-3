@@ -25,42 +25,41 @@ class ChatPage extends StatefulWidget {
 }
 
 class ChatPageState extends State<ChatPage> {
-  late String currentUserId;
-
-  List<QueryDocumentSnapshot> listMessage = [];
+  List<QueryDocumentSnapshot> _messages = [];
   int _limit = 20;
   final int _limitIncrement = 20;
 
-  File? imageFile;
-  bool isLoading = false;
-  bool isEditing = false;
-  String imageUrl = '';
-  String chatId = '';
-  String currentMessageId = '';
+  File? _imageFile;
+  bool _isLoading = false;
+  bool _isEditing = false;
+  String _imageUrl = '';
+  String _chatId = '';
+  String _currentMessageId = '';
+  late String _currentUserId;
 
-  final TextEditingController textEditingController = TextEditingController();
-  final ScrollController listScrollController = ScrollController();
-  final FocusNode focusNode = FocusNode();
+  final TextEditingController _textEditingController = TextEditingController();
+  final ScrollController _listScrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
-  late final ChatProvider chatProvider;
-  late final AuthProvider authProvider;
+  late final ChatProvider _chatProvider;
+  late final AuthProvider _authProvider;
 
   @override
   void initState() {
     super.initState();
-    chatProvider = context.read<ChatProvider>();
-    authProvider = context.read<AuthProvider>();
+    _chatProvider = context.read<ChatProvider>();
+    _authProvider = context.read<AuthProvider>();
 
-    listScrollController.addListener(_scrollListener);
+    _listScrollController.addListener(_scrollListener);
     _readLocal();
   }
 
   void _scrollListener() {
-    if (!listScrollController.hasClients) return;
-    if (listScrollController.offset >=
-            listScrollController.position.maxScrollExtent &&
-        !listScrollController.position.outOfRange &&
-        _limit <= listMessage.length) {
+    if (!_listScrollController.hasClients) return;
+    if (_listScrollController.offset >=
+            _listScrollController.position.maxScrollExtent &&
+        !_listScrollController.position.outOfRange &&
+        _limit <= _messages.length) {
       setState(() {
         _limit += _limitIncrement;
       });
@@ -68,20 +67,20 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void _readLocal() {
-    if (authProvider.getUserFirebaseId()?.isNotEmpty == true) {
-      currentUserId = authProvider.getUserFirebaseId()!;
+    if (_authProvider.getUserFirebaseId()?.isNotEmpty == true) {
+      _currentUserId = _authProvider.getUserFirebaseId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginPage()),
         (route) => false,
       );
     }
-    chatId = widget.arguments.chatId;
+    _chatId = widget.arguments.chatId;
 
-    chatProvider.updateDataFirestore(
+    _chatProvider.updateDataFirestore(
       FirestoreConstants.pathUserCollection,
-      currentUserId,
-      {FirestoreConstants.chatId: chatId},
+      _currentUserId,
+      {FirestoreConstants.chatId: _chatId},
     );
   }
 
@@ -91,10 +90,10 @@ class ChatPageState extends State<ChatPage> {
 
     pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-      if (imageFile != null) {
+      _imageFile = File(pickedFile.path);
+      if (_imageFile != null) {
         setState(() {
-          isLoading = true;
+          _isLoading = true;
         });
         _uploadFile();
       }
@@ -102,17 +101,17 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Future _uploadFile() async {
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    var uploadTask = await chatProvider.uploadFile(imageFile!, fileName);
+    final _fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final _uploadTask = await _chatProvider.uploadFile(_imageFile!, _fileName);
     try {
-      imageUrl = await (await uploadTask).ref.getDownloadURL();
+      _imageUrl = await (await _uploadTask).ref.getDownloadURL();
       setState(() {
-        isLoading = false;
-        _onSendMessage(imageUrl, TypeMessage.image);
+        _isLoading = false;
+        _onSendMessage(_imageUrl, TypeMessage.image);
       });
     } on FirebaseException catch (e) {
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
       Fluttertoast.showToast(msg: e.message ?? e.toString());
     }
@@ -120,10 +119,10 @@ class ChatPageState extends State<ChatPage> {
 
   void _onSendMessage(String content, int type) {
     if (content.trim().isNotEmpty) {
-      textEditingController.clear();
-      chatProvider.sendMessage(content, type, chatId, currentUserId);
-      if (listScrollController.hasClients) {
-        listScrollController.animateTo(0,
+      _textEditingController.clear();
+      _chatProvider.sendMessage(content, type, _chatId, _currentUserId);
+      if (_listScrollController.hasClients) {
+        _listScrollController.animateTo(0,
             duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     } else {
@@ -132,124 +131,117 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
-  Widget _item(int index, DocumentSnapshot? document) {
-    if (document != null) {
-      var messageChat = Message.fromDocument(document);
-      if (messageChat.chatId == chatId) {
-        return Row(
-          children: <Widget>[
-            messageChat.isFavorite == true
-                ? const Icon(Icons.star)
-                : const Icon(Icons.star_border),
-            messageChat.type == TypeMessage.text
-                // Text
-                ? Container(
-                    child: Text(
-                      messageChat.content,
-                      style:
-                          const TextStyle(color: ColorConstants.primaryColor),
-                    ),
-                    padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    width: 200,
-                    decoration: BoxDecoration(
-                        color: ColorConstants.greyColor2,
-                        borderRadius: BorderRadius.circular(8)),
-                    margin: const EdgeInsets.only(bottom: 20, right: 10),
-                  )
-                : messageChat.type == TypeMessage.image
-                    // Image
-                    ? Container(
-                        child: OutlinedButton(
-                          child: Material(
-                            child: Image.network(
-                              messageChat.content,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
-                                  decoration: const BoxDecoration(
-                                    color: ColorConstants.greyColor2,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8),
-                                    ),
-                                  ),
-                                  width: 200,
-                                  height: 200,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: ColorConstants.themeColor,
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, object, stackTrace) {
-                                return Material(
-                                  child: Image.asset(
-                                    'images/img_not_available.jpeg',
-                                    width: 200,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: const BorderRadius.all(
+  Widget _item(int _index, Message message) {
+    if (message.chatId == _chatId) {
+      return Row(
+        children: <Widget>[
+          message.isPinned == true
+              ? const Icon(Icons.star)
+              : const Icon(Icons.star_border),
+          message.type == TypeMessage.text
+              // Text
+              ? Container(
+                  child: Text(
+                    message.content,
+                    style: const TextStyle(color: ColorConstants.primaryColor),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  width: 200,
+                  decoration: BoxDecoration(
+                      color: ColorConstants.greyColor2,
+                      borderRadius: BorderRadius.circular(8)),
+                  margin: const EdgeInsets.only(bottom: 20, right: 10),
+                )
+              : message.type == TypeMessage.image
+                  // Image
+                  ? Container(
+                      child: OutlinedButton(
+                        child: Material(
+                          child: Image.network(
+                            message.content,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  color: ColorConstants.greyColor2,
+                                  borderRadius: BorderRadius.all(
                                     Radius.circular(8),
                                   ),
-                                  clipBehavior: Clip.hardEdge,
-                                );
-                              },
-                              width: 200,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8)),
-                            clipBehavior: Clip.hardEdge,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FullPhotoPage(
-                                  url: messageChat.content,
                                 ),
+                                width: 200,
+                                height: 200,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: ColorConstants.themeColor,
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, object, stackTrace) {
+                              return Material(
+                                child: Image.asset(
+                                  'images/img_not_available.jpeg',
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                              );
+                            },
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
+                          clipBehavior: Clip.hardEdge,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FullPhotoPage(
+                                url: message.content,
                               ),
-                            );
-                          },
-                          style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                  const EdgeInsets.all(0))),
-                        ),
-                        margin: const EdgeInsets.only(bottom: 20, right: 10),
-                      )
-                    // Sticker
-                    : Container(
-                        child: Image.asset(
-                          'images/${messageChat.content}.gif',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        margin: const EdgeInsets.only(bottom: 20, right: 10),
+                            ),
+                          );
+                        },
+                        style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.all(0))),
                       ),
-          ],
-          mainAxisAlignment: MainAxisAlignment.end,
-        );
-      }
+                      margin: const EdgeInsets.only(bottom: 20, right: 10),
+                    )
+                  // Sticker
+                  : Container(
+                      child: Image.asset(
+                        'images/${message.content}.gif',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 20, right: 10),
+                    ),
+        ],
+        mainAxisAlignment: MainAxisAlignment.end,
+      );
     }
     return const SizedBox.shrink();
   }
 
   Future<bool> _onBackPress() {
-    chatProvider.updateDataFirestore(
+    _chatProvider.updateDataFirestore(
       FirestoreConstants.pathUserCollection,
-      currentUserId,
+      _currentUserId,
       {FirestoreConstants.chatId: null},
     );
     Navigator.pop(context);
@@ -289,7 +281,7 @@ class ChatPageState extends State<ChatPage> {
 
   Widget _loading() {
     return Positioned(
-      child: isLoading ? LoadingView() : const SizedBox.shrink(),
+      child: _isLoading ? LoadingView() : const SizedBox.shrink(),
     );
   }
 
@@ -313,23 +305,23 @@ class ChatPageState extends State<ChatPage> {
           Flexible(
             child: TextField(
               onSubmitted: (value) {
-                if (!isEditing) {
-                  _onSendMessage(textEditingController.text, TypeMessage.text);
+                if (!_isEditing) {
+                  _onSendMessage(_textEditingController.text, TypeMessage.text);
                 } else {
-                  chatProvider.updateMessage(
-                      currentUserId, chatId, currentMessageId, value);
-                  isEditing = false;
-                  textEditingController.text = '';
+                  _chatProvider.updateMessage(
+                      _currentUserId, _chatId, _currentMessageId, value);
+                  _isEditing = false;
+                  _textEditingController.text = '';
                 }
               },
               style: const TextStyle(
                   color: ColorConstants.primaryColor, fontSize: 15),
-              controller: textEditingController,
+              controller: _textEditingController,
               decoration: const InputDecoration.collapsed(
                 hintText: 'Type your message...',
                 hintStyle: TextStyle(color: ColorConstants.greyColor),
               ),
-              focusNode: focusNode,
+              focusNode: _focusNode,
               autofocus: true,
             ),
           ),
@@ -340,14 +332,14 @@ class ChatPageState extends State<ChatPage> {
               child: IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () {
-                  if (!isEditing) {
+                  if (!_isEditing) {
                     _onSendMessage(
-                        textEditingController.text, TypeMessage.text);
+                        _textEditingController.text, TypeMessage.text);
                   } else {
-                    chatProvider.updateMessage(currentUserId, chatId,
-                        currentMessageId, textEditingController.text);
-                    isEditing = false;
-                    textEditingController.text = '';
+                    _chatProvider.updateMessage(_currentUserId, _chatId,
+                        _currentMessageId, _textEditingController.text);
+                    _isEditing = false;
+                    _textEditingController.text = '';
                   }
                 },
                 color: ColorConstants.primaryColor,
@@ -368,42 +360,32 @@ class ChatPageState extends State<ChatPage> {
 
   Widget _listMessage() {
     return Flexible(
-      child: currentUserId.isNotEmpty
+      child: _currentUserId.isNotEmpty
           ? StreamBuilder<QuerySnapshot>(
-              stream: chatProvider.getChatStream(currentUserId, chatId, _limit),
+              stream:
+                  _chatProvider.getChatStream(_currentUserId, _chatId, _limit),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  listMessage = snapshot.data!.docs;
-                  if (listMessage.isNotEmpty) {
+                  if (snapshot.data!.docs.isNotEmpty) {
+                    final _messages = <Message>[];
+                    final docs = snapshot.data!.docs;
+                    for (var doc in docs) {
+                      _messages.add(Message.fromDocument(doc));
+                    }
+                    _messages.sort(_chatProvider.compare);
+
                     return ListView.builder(
                       padding: const EdgeInsets.all(10),
-                      itemBuilder: (context, index) {
-                        var isIos =
+                      itemBuilder: (context, _index) {
+                        final _isIos =
                             Theme.of(context).platform == TargetPlatform.iOS;
-                        if (isIos) {
-                          return Dismissible(
-                              onDismissed: (direction) {
-                                /**
-                           * TODO: добавить логику
-                           */
-                              },
-                              key: Key(snapshot.data!.docs[index].id),
-                              child: _item(index, snapshot.data?.docs[index]));
-                        }
-                        return GestureDetector(
-                            onLongPress: () => {
-                                  _askedToLead(
-                                      snapshot.data!.docs[index].id,
-                                      snapshot.data!.docs[index].get('content'),
-                                      snapshot.data!.docs[index].get('type'),
-                                      snapshot.data!.docs[index]
-                                          .get('isFavorite'))
-                                },
-                            child: _item(index, snapshot.data?.docs[index]));
+                        return _isIos
+                            ? _ios(_messages, _index)
+                            : _android(docs, _messages, _index);
                       },
                       itemCount: snapshot.data?.docs.length,
                       reverse: true,
-                      controller: listScrollController,
+                      controller: _listScrollController,
                     );
                   } else {
                     return const Center(child: Text('No message here yet...'));
@@ -425,9 +407,37 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
+  GestureDetector _android(List<QueryDocumentSnapshot<Object?>> docs,
+      List<Message> messages, int _index) {
+    return GestureDetector(
+        onLongPress: () => {
+              _askedToLead(
+                  docs[_index].id,
+                  messages[_index].content,
+                  messages[_index].type,
+                  messages[_index].isPinned)
+            },
+        child: _item(_index, messages[_index]));
+  }
+
+  Dismissible _ios(List<Message> messages, int _index) {
+    return Dismissible(
+        onDismissed: (direction) {
+          /**
+           * TODO: добавить логику
+           */
+        },
+        key: Key(messages[_index].chatId),
+        child: _item(_index, messages[_index]));
+  }
+
   Future<void> _askedToLead(
-      String id, String text, int type, bool isFavorite) async {
-    switch (await showDialog<MessageChoice>(
+    final String _id,
+    final String _text,
+    final int _type,
+    final bool _isPinned,
+  ) async {
+    switch (await showDialog<_MessageChoice>(
         context: context,
         builder: (context) {
           return SimpleDialog(
@@ -435,50 +445,50 @@ class ChatPageState extends State<ChatPage> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, MessageChoice.update);
+                  Navigator.pop(context, _MessageChoice.update);
                 },
                 child: const Text('Update'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, MessageChoice.delete);
+                  Navigator.pop(context, _MessageChoice.delete);
                 },
                 child: const Text('Delete'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, MessageChoice.copy);
+                  Navigator.pop(context, _MessageChoice.copy);
                 },
                 child: const Text('Copy'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, MessageChoice.pin);
+                  Navigator.pop(context, _MessageChoice.pin);
                 },
-                child: const Text('Pin'),
+                child: _isPinned ? const Text('Unpin') : const Text('Pin'),
               ),
             ],
           );
         })) {
-      case MessageChoice.update:
-        textEditingController.text = text;
-        currentMessageId = id;
-        isEditing = true;
+      case _MessageChoice.update:
+        _textEditingController.text = _text;
+        _currentMessageId = _id;
+        _isEditing = true;
         break;
-      case MessageChoice.delete:
-        chatProvider.deleteMessage(currentUserId, chatId, id);
+      case _MessageChoice.delete:
+        _chatProvider.deleteMessage(_currentUserId, _chatId, _id);
         break;
-      case MessageChoice.copy:
-        if (type == 0) {
-          await Clipboard.setData(ClipboardData(text: text));
-        } else if (type == 1) {
+      case _MessageChoice.copy:
+        if (_type == 0) {
+          await Clipboard.setData(ClipboardData(text: _text));
+        } else if (_type == 1) {
           /**
            * TODO: добавить реализацию копирования картинок
            */
         }
         break;
-      case MessageChoice.pin:
-        chatProvider.pinMessage(currentUserId, chatId, id, isFavorite);
+      case _MessageChoice.pin:
+        _chatProvider.pinMessage(_currentUserId, _chatId, _id, _isPinned);
         break;
       case null:
         // dialog dismissed
@@ -487,7 +497,7 @@ class ChatPageState extends State<ChatPage> {
   }
 }
 
-enum MessageChoice { delete, update, copy, pin }
+enum _MessageChoice { delete, update, copy, pin }
 
 class ChatPageArguments {
   final String userId;

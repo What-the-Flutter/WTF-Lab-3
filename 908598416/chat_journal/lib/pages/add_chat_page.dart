@@ -9,37 +9,41 @@ class AddChat extends StatefulWidget {
   final bool isEdited;
   final String currentChatId;
   final String chatName;
-  AddChat({required this.isEdited, required this.currentChatId, required this.chatName});
+
+  AddChat(
+      {required this.isEdited,
+      required this.currentChatId,
+      required this.chatName});
 
   @override
   State<AddChat> createState() => _AddChat();
 }
 
 class _AddChat extends State<AddChat> {
-  late AuthProvider authProvider;
-  late TextEditingController _chatNameController;
-  late ChatProvider chatProvider;
-  late String currentUserId;
+  late final AuthProvider _authProvider;
+  late final TextEditingController _chatNameController;
+  late final ChatProvider _chatProvider;
+  late final String _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    authProvider = context.read<AuthProvider>();
-    chatProvider = context.read<ChatProvider>();
-    currentUserId = authProvider.getUserFirebaseId()!;
+    _authProvider = context.read<AuthProvider>();
+    _chatProvider = context.read<ChatProvider>();
+    _currentUserId = _authProvider.getUserFirebaseId()!;
     _chatNameController = TextEditingController();
     _chatNameController.text = widget.chatName;
   }
 
-  void addChat() {
-    var name = _chatNameController.text.toString();
-    chatProvider.addChat(name, currentUserId);
+  void _addChat() {
+    final _name = _chatNameController.text.toString();
+    _chatProvider.addChat(_name, _currentUserId);
     Navigator.pop(context);
   }
 
-  void editChat() {
-    var name = _chatNameController.text.toString();
-    chatProvider.updateChat(currentUserId, widget.currentChatId, name);
+  void _editChat() {
+    final _name = _chatNameController.text.toString();
+    _chatProvider.updateChat(_currentUserId, widget.currentChatId, _name);
     Navigator.pop(context);
   }
 
@@ -90,9 +94,8 @@ class _AddChat extends State<AddChat> {
                 ),
               ),
             ),
-
             ElevatedButton.icon(
-                onPressed: ()=>{ widget.isEdited ? editChat() : addChat()},
+                onPressed: () => widget.isEdited ? _editChat() : _addChat(),
                 label: const Text('add chat'),
                 icon: const Icon(Icons.add))
           ],

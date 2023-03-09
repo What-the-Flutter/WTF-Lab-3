@@ -18,14 +18,10 @@ class ChatProvider {
       required this.prefs,
       required this.firebaseStorage});
 
-  String? getPref(String key) {
-    return prefs.getString(key);
-  }
-
   UploadTask uploadFile(File image, String fileName) {
-    var reference = firebaseStorage.ref().child(fileName);
-    var uploadTask = reference.putFile(image);
-    return uploadTask;
+    final _reference = firebaseStorage.ref().child(fileName);
+    final _uploadTask = _reference.putFile(image);
+    return _uploadTask;
   }
 
   Future<void> updateDataFirestore(String collectionPath, String docPath,
@@ -38,33 +34,33 @@ class ChatProvider {
 
   Future<void> updateMessage(
       String currentUserId, String chatId, String id, String text) async {
-    DocumentReference documentReferencer = firebaseFirestore
+    final DocumentReference documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(currentUserId)
         .collection(chatId)
         .doc(id);
 
-    var data = <String, dynamic>{'content': text};
+    final _data = <String, dynamic>{'content': text};
 
     await documentReferencer
-        .update(data)
+        .update(_data)
         .whenComplete(() => print('Сообщение успешно обновлено'))
         .catchError(print);
   }
 
   Future<void> pinMessage(
-      String currentUserId, String chatId, String id, bool isFavorite) async {
-    DocumentReference documentReferencer = firebaseFirestore
+      String currentUserId, String chatId, String id, bool isPinned) async {
+    final DocumentReference _documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(currentUserId)
         .collection(chatId)
         .doc(id);
 
-    var data = <String, dynamic>{'isFavorite': !isFavorite};
+    final _data = <String, dynamic>{FirestoreConstants.isPinned: !isPinned};
 
-    await documentReferencer
-        .update(data)
-        .whenComplete(() => print(isFavorite
+    await _documentReferencer
+        .update(_data)
+        .whenComplete(() => print(isPinned
             ? 'Сообщение успешно откреплено'
             : 'Сообщение успешно закреплено'))
         .catchError(print);
@@ -72,13 +68,13 @@ class ChatProvider {
 
   Future<void> deleteMessage(
       String currentUserId, String chatId, String id) async {
-    DocumentReference documentReferencer = firebaseFirestore
+    final DocumentReference _documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(currentUserId)
         .collection(chatId)
         .doc(id);
 
-    await documentReferencer
+    await _documentReferencer
         .delete()
         .whenComplete(() => print('сообщение удалено!'))
         .catchError(print);
@@ -97,37 +93,37 @@ class ChatProvider {
 
   void sendMessage(
       String content, int type, String chatId, String currentUserId) {
-    DocumentReference documentReference = firebaseFirestore
+    final DocumentReference _documentReference = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(currentUserId)
         .collection(chatId)
         .doc(DateTime.now().millisecondsSinceEpoch.toString());
 
-    var messageChat = Message(
+    final _messageChat = Message(
         chatId: chatId,
         timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
         content: content,
         type: type,
-        isFavorite: false);
+        isPinned: false);
 
     FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(
-        documentReference,
-        messageChat.toJson(),
+        _documentReference,
+        _messageChat.toJson(),
       );
     });
   }
 
   void addChat(String name, String currentUserId) {
-    var chatId = name.hashCode.toString();
-    DocumentReference documentReference = firebaseFirestore
+    final _chatId = name.hashCode.toString();
+    final DocumentReference _documentReference = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(currentUserId)
         .collection(currentUserId)
-        .doc(chatId);
+        .doc(_chatId);
 
-    final chat = Chat(
-        chatId: chatId,
+    final _chat = Chat(
+        chatId: _chatId,
         name: name,
         userId: currentUserId,
         isPinned: false,
@@ -135,68 +131,68 @@ class ChatProvider {
 
     FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(
-        documentReference,
-        chat.toJson(),
+        _documentReference,
+        _chat.toJson(),
       );
     });
   }
 
   Future<void> deleteChat(String currentUserId, String chatId) async {
-    DocumentReference chat = firebaseFirestore
+    final DocumentReference _chat = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(currentUserId)
         .collection(currentUserId)
         .doc(chatId);
 
-    var messages = firebaseFirestore
+    final _messages = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(currentUserId)
         .collection(chatId);
 
-    await chat
+    await _chat
         .delete()
         .whenComplete(() => print('Чат удален!'))
         .catchError(print);
 
-    await messages.get().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.docs) {
-        ds.reference.delete();
+    await _messages.get().then((snapshot) {
+      for (final DocumentSnapshot _ds in snapshot.docs) {
+        _ds.reference.delete();
       }
     });
   }
 
   Future<void> updateChat(
       String currentUserId, String chatId, String text) async {
-    DocumentReference documentReferencer = firebaseFirestore
+    final DocumentReference _documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(currentUserId)
         .collection(currentUserId)
         .doc(chatId);
 
-    var data = <String, dynamic>{'name': text};
+    final _data = <String, dynamic>{'name': text};
 
-    await documentReferencer
-        .update(data)
+    await _documentReferencer
+        .update(_data)
         .whenComplete(() => print('Чат успешно обновлен'))
         .catchError(print);
   }
 
   Future<void> pinChat(String currentUserId, String chatId) async {
-    late bool isPinned;
-    DocumentReference documentReferencer = firebaseFirestore
+    late final bool isPinned;
+    DocumentReference _documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(currentUserId)
         .collection(currentUserId)
         .doc(chatId);
 
-    await documentReferencer
+    await _documentReferencer
         .get()
         .then((value) => {isPinned = value.get('isPinned')});
 
-    var data = <String, dynamic>{'isPinned': !isPinned};
+    final _data = <String, dynamic>{'isPinned': !isPinned};
 
-    await documentReferencer
-        .update(data)
+    await _documentReferencer
+        .update(_data)
         .whenComplete(() =>
             print(isPinned ? 'Чат успешно откреплен' : 'Чат успешно закреплен'))
         .catchError(print);
@@ -204,7 +200,7 @@ class ChatProvider {
 
   Future<void> getInfo(
       BuildContext context, String userId, String chatId) async {
-    var createdAt = '';
+    late var _createdAt = '';
     await firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(userId)
@@ -212,7 +208,7 @@ class ChatProvider {
         .doc(chatId)
         .get()
         .then(
-            (value) => createdAt = value.get(FirestoreConstants.creationDate));
+            (value) => _createdAt = value.get(FirestoreConstants.creationDate));
 
     return showDialog<void>(
         context: context,
@@ -222,11 +218,26 @@ class ChatProvider {
             children: [
               Align(
                 alignment: Alignment.center,
-                child: Text('it was created at: $createdAt'),
+                child: Text('it was created at: $_createdAt'),
               )
             ],
           );
         });
+  }
+
+  int compare(dynamic a, dynamic b) {
+    if(a.isPinned){
+      if(b.isPinned){
+        return 0;
+      }
+      else {
+        return -1;
+      }
+    }
+    else if(b.isPinned){
+      return 1;
+    }
+    return 0;
   }
 }
 

@@ -14,8 +14,6 @@ import '/constants/constants.dart';
 import '/providers/providers.dart';
 import '/utils/utils.dart';
 import '../models/models.dart';
-import '../providers/theme_provider.dart';
-import '../widgets/bottom_navigation.dart';
 import '../widgets/widgets.dart';
 import 'add_chat_page.dart';
 import 'chat_page.dart';
@@ -31,24 +29,24 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   HomePageState({Key? key});
 
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  final ScrollController listScrollController = ScrollController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final ScrollController _listScrollController = ScrollController();
 
   int _limit = 20;
   final int _limitIncrement = 20;
-  bool isLoading = false;
+  final bool _isLoading = false;
 
-  late final AuthProvider authProvider;
-  late final String currentUserId;
-  late final HomeProvider homeProvider;
-  late final ChatProvider chatProvider;
-  late final ThemeProvider themeProvider;
-  final Debouncer searchDebouncer = Debouncer(milliseconds: 300);
-  final StreamController<bool> btnClearController = StreamController<bool>();
-  final TextEditingController searchBarTec = TextEditingController();
+  late final AuthProvider _authProvider;
+  late final String _currentUserId;
+  late final HomeProvider _homeProvider;
+  late final ChatProvider _chatProvider;
+  late final ThemeProvider _themeProvider;
+  final Debouncer _searchDebouncer = Debouncer(milliseconds: 300);
+  final StreamController<bool> _btnClearController = StreamController<bool>();
+  final TextEditingController _searchBarTec = TextEditingController();
 
   final List<PopupChoices> _choices = <PopupChoices>[
     PopupChoices(title: 'Log out', icon: Icons.exit_to_app),
@@ -58,13 +56,13 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    authProvider = context.read<AuthProvider>();
-    homeProvider = context.read<HomeProvider>();
-    chatProvider = context.read<ChatProvider>();
-    themeProvider = context.read<ThemeProvider>();
+    _authProvider = context.read<AuthProvider>();
+    _homeProvider = context.read<HomeProvider>();
+    _chatProvider = context.read<ChatProvider>();
+    _themeProvider = context.read<ThemeProvider>();
 
-    if (authProvider.getUserFirebaseId()?.isNotEmpty == true) {
-      currentUserId = authProvider.getUserFirebaseId()!;
+    if (_authProvider.getUserFirebaseId()?.isNotEmpty == true) {
+      _currentUserId = _authProvider.getUserFirebaseId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -73,18 +71,97 @@ class HomePageState extends State<HomePage> {
     }
     _registerNotification();
     _configLocalNotification();
-    listScrollController.addListener(_scrollListener);
+    _listScrollController.addListener(_scrollListener);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(builder: (context, themeNotifier, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            AppConstants.homeTitle,
+            style: TextStyle(color: ColorConstants.primaryColor),
+          ),
+          centerTitle: true,
+          actions: <Widget>[_popupMenu()],
+        ),
+        bottomNavigationBar: BottomNavigation(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _addListItem,
+          tooltip: 'Add new chat',
+          child: const Icon(Icons.add),
+        ),
+        body: SafeArea(
+          child: WillPopScope(
+            child: Stack(
+              children: <Widget>[
+                // List
+                Column(
+                  children: [
+                    Expanded(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: _homeProvider.getStreamFireStore(
+                            FirestoreConstants.pathChatsCollection,
+                            _limit,
+                            _currentUserId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if ((snapshot.data?.docs.length ?? 0) > 0) {
+                              final chats = <Chat>[];
+                              for (var doc in snapshot.data!.docs) {
+                                final _chat = Chat.fromDocument(doc);
+                                chats.add(_chat);
+                              }
+                              chats.sort(_chatProvider.compare);
+
+                              return ListView.builder(
+                                padding: const EdgeInsets.all(10),
+                                itemBuilder: (context, index) =>
+                                    _item(context, chats[index]),
+                                itemCount: snapshot.data?.docs.length,
+                                controller: _listScrollController,
+                              );
+                            } else {
+                              return const Center(
+                                child: Text('No chats'),
+                              );
+                            }
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: ColorConstants.themeColor,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Loading
+                Positioned(
+                  child: _isLoading ? LoadingView() : const SizedBox.shrink(),
+                )
+              ],
+            ),
+            onWillPop: _onBackPress,
+          ),
+        ),
+      );
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    btnClearController.close();
-    authProvider.dispose();
+    _btnClearController.close();
+    _authProvider.dispose();
   }
 
   void _registerNotification() {
-    firebaseMessaging.requestPermission();
+    _firebaseMessaging.requestPermission();
 
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage: $message');
@@ -94,11 +171,11 @@ class HomePageState extends State<HomePage> {
       return;
     });
 
-    firebaseMessaging.getToken().then((token) {
+    _firebaseMessaging.getToken().then((token) {
       print('push token: $token');
       if (token != null) {
-        homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
-            currentUserId, {'pushToken': token});
+        _homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
+            _currentUserId, {'pushToken': token});
       }
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
@@ -106,18 +183,19 @@ class HomePageState extends State<HomePage> {
   }
 
   void _configLocalNotification() {
-    var initializationSettingsAndroid =
+    final _initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = const IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    final _initializationSettingsIOS = const IOSInitializationSettings();
+    final _initializationSettings = InitializationSettings(
+        android: _initializationSettingsAndroid,
+        iOS: _initializationSettingsIOS);
+    _flutterLocalNotificationsPlugin.initialize(_initializationSettings);
   }
 
   void _scrollListener() {
-    if (listScrollController.offset >=
-            listScrollController.position.maxScrollExtent &&
-        !listScrollController.position.outOfRange) {
+    if (_listScrollController.offset >=
+            _listScrollController.position.maxScrollExtent &&
+        !_listScrollController.position.outOfRange) {
       setState(() {
         _limit += _limitIncrement;
       });
@@ -134,20 +212,20 @@ class HomePageState extends State<HomePage> {
   }
 
   void _showNotification(RemoteNotification remoteNotification) async {
-    var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
+    final _iOSPlatformChannelSpecifics = const IOSNotificationDetails();
+    final _platformChannelSpecifics = NotificationDetails(
         android: const AndroidNotificationDetails(
             'channel id', 'channel name', 'channel description',
             importance: Importance.max),
-        iOS: iOSPlatformChannelSpecifics);
+        iOS: _iOSPlatformChannelSpecifics);
 
     print(remoteNotification);
 
-    await flutterLocalNotificationsPlugin.show(
+    await _flutterLocalNotificationsPlugin.show(
       0,
       remoteNotification.title,
       remoteNotification.body,
-      platformChannelSpecifics,
+      _platformChannelSpecifics,
       payload: null,
     );
   }
@@ -274,83 +352,11 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> _handleSignOut() async {
-    authProvider.handleSignOut();
+    _authProvider.handleSignOut();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginPage()),
       (route) => false,
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, themeNotifier, child) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            AppConstants.homeTitle,
-            style: TextStyle(color: ColorConstants.primaryColor),
-          ),
-          centerTitle: true,
-          actions: <Widget>[_popupMenu()],
-        ),
-        bottomNavigationBar: BottomNavigation(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _addListItem,
-          tooltip: 'Add new chat',
-          child: const Icon(Icons.add),
-        ),
-        body: SafeArea(
-          child: WillPopScope(
-            child: Stack(
-              children: <Widget>[
-                // List
-                Column(
-                  children: [
-                    Expanded(
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: homeProvider.getStreamFireStore(
-                            FirestoreConstants.pathChatsCollection,
-                            _limit,
-                            currentUserId),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if ((snapshot.data?.docs.length ?? 0) > 0) {
-                              return ListView.builder(
-                                padding: const EdgeInsets.all(10),
-                                itemBuilder: (context, index) =>
-                                    _item(context, snapshot.data?.docs[index]),
-                                itemCount: snapshot.data?.docs.length,
-                                controller: listScrollController,
-                              );
-                            } else {
-                              return const Center(
-                                child: Text('No chats'),
-                              );
-                            }
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: ColorConstants.themeColor,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Loading
-                Positioned(
-                  child: isLoading ? LoadingView() : const SizedBox.shrink(),
-                )
-              ],
-            ),
-            onWillPop: _onBackPress,
-          ),
-        ),
-      );
-    });
   }
 
   Widget _popupMenu() {
@@ -380,158 +386,159 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _item(BuildContext context, DocumentSnapshot? document) {
-    if (document != null) {
-      var userChat = Chat.fromDocument(document);
-      {
-        var isIos = Theme.of(context).platform == TargetPlatform.iOS;
-        if (isIos) {
-          return Dismissible(
-              key: Key(document.id),
-              child: Container(
-                child: TextButton(
-                  child: Row(
-                    children: <Widget>[
-                      const Material(
-                        child: Icon(
-                          Icons.circle,
-                          size: 50,
-                          color: ColorConstants.greyColor,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(25)),
-                        clipBehavior: Clip.hardEdge,
-                      ),
-                      Flexible(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                child: Text(userChat.name,
-                                    maxLines: 3,
-                                    style: const TextStyle(
-                                        color: ColorConstants.primaryColor,
-                                        fontSize: AppConstants.fontSize),
-                                    softWrap: true),
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-                              ),
-                            ],
-                          ),
-                          margin: const EdgeInsets.only(left: 20),
-                        ),
-                      ),
-                    ],
-                  ),
-                  onPressed: () {
-                    if (Utilities.isKeyboardShowing()) {
-                      Utilities.closeKeyboard(context);
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatPage(
-                          arguments: ChatPageArguments(
-                            userId: userChat.userId,
-                            chatId: userChat.chatId,
-                            chatName: userChat.name,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        ColorConstants.greyColor2),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                  ),
-                ),
-                margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-              ));
-        } else {
-          return GestureDetector(
-              onLongPress: () => {_askedToLead(userChat)},
-              child: Container(
-                child: TextButton(
-                  child: Row(
-                    children: <Widget>[
-                      const Material(
-                        child: Icon(
-                          Icons.circle,
-                          size: 50,
-                          color: ColorConstants.greyColor,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(25)),
-                        clipBehavior: Clip.hardEdge,
-                      ),
-                      Flexible(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                child: Text(userChat.name,
-                                    maxLines: 3,
-                                    style: const TextStyle(
-                                        color: ColorConstants.primaryColor,
-                                        fontSize: AppConstants.fontSize),
-                                    softWrap: true),
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-                              ),
-                            ],
-                          ),
-                          margin: const EdgeInsets.only(left: 20),
-                        ),
-                      ),
-                      userChat.isPinned
-                          ? const Icon(
-                              Icons.star,
-                              size: 36,
-                            )
-                          : const Icon(Icons.star_border, size: 36),
-                    ],
-                  ),
-                  onPressed: () {
-                    if (Utilities.isKeyboardShowing()) {
-                      Utilities.closeKeyboard(context);
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatPage(
-                          arguments: ChatPageArguments(
-                            userId: userChat.userId,
-                            chatId: userChat.chatId,
-                            chatName: userChat.name,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        ColorConstants.greyColor2),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                  ),
-                ),
-                margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-              ));
-        }
-      }
+  Widget _item(BuildContext context, Chat chat) {
+    final _isIos = Theme.of(context).platform == TargetPlatform.iOS;
+    if (_isIos) {
+      return _ios(chat, context);
     } else {
-      return const SizedBox.shrink();
+      return _android(chat, context);
     }
   }
 
-  void _askedToLead(Chat userChat) async {
-    switch (await showDialog<ChatChoice>(
+  GestureDetector _android(Chat _userChat, BuildContext context) {
+    return GestureDetector(
+        onLongPress: () => {_askedToLead(_userChat)},
+        child: Container(
+          child: TextButton(
+            child: Row(
+              children: <Widget>[
+                const Material(
+                  child: Icon(
+                    Icons.circle,
+                    size: 50,
+                    color: ColorConstants.greyColor,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  clipBehavior: Clip.hardEdge,
+                ),
+                Flexible(
+                  child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text(_userChat.name,
+                              maxLines: 3,
+                              style: const TextStyle(
+                                  color: ColorConstants.primaryColor,
+                                  fontSize: AppConstants.fontSize),
+                              softWrap: true),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                      ],
+                    ),
+                    margin: const EdgeInsets.only(left: 20),
+                  ),
+                ),
+                _userChat.isPinned
+                    ? const Icon(
+                        Icons.star,
+                        size: 36,
+                      )
+                    : const Icon(Icons.star_border, size: 36),
+              ],
+            ),
+            onPressed: () {
+              if (Utilities.isKeyboardShowing()) {
+                Utilities.closeKeyboard(context);
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    arguments: ChatPageArguments(
+                      userId: _userChat.userId,
+                      chatId: _userChat.chatId,
+                      chatName: _userChat.name,
+                    ),
+                  ),
+                ),
+              );
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+          ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        ));
+  }
+
+  Dismissible _ios(Chat _chat, BuildContext context) {
+    return Dismissible(
+        key: Key(_chat.chatId),
+        child: Container(
+          child: TextButton(
+            child: Row(
+              children: <Widget>[
+                const Material(
+                  child: Icon(
+                    Icons.circle,
+                    size: 50,
+                    color: ColorConstants.greyColor,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  clipBehavior: Clip.hardEdge,
+                ),
+                Flexible(
+                  child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text(_chat.name,
+                              maxLines: 3,
+                              style: const TextStyle(
+                                  color: ColorConstants.primaryColor,
+                                  fontSize: AppConstants.fontSize),
+                              softWrap: true),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+                        ),
+                      ],
+                    ),
+                    margin: const EdgeInsets.only(left: 20),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () {
+              if (Utilities.isKeyboardShowing()) {
+                Utilities.closeKeyboard(context);
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    arguments: ChatPageArguments(
+                      userId: _chat.userId,
+                      chatId: _chat.chatId,
+                      chatName: _chat.name,
+                    ),
+                  ),
+                ),
+              );
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(ColorConstants.greyColor2),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+          ),
+          margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        ));
+  }
+
+  void _askedToLead(Chat chat) async {
+    switch (await showDialog<_ChatChoice>(
         context: context,
         builder: (context) {
           return SimpleDialog(
@@ -539,61 +546,55 @@ class HomePageState extends State<HomePage> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, ChatChoice.info);
+                  Navigator.pop(context, _ChatChoice.info);
                 },
                 child: const Text('Info'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, ChatChoice.edit);
+                  Navigator.pop(context, _ChatChoice.edit);
                 },
                 child: const Text('Edit'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, ChatChoice.delete);
+                  Navigator.pop(context, _ChatChoice.delete);
                 },
                 child: const Text('Delete'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, ChatChoice.pin);
+                  Navigator.pop(context, _ChatChoice.pin);
                 },
-                child:
-                    userChat.isPinned ? const Text('Unpin') : const Text('Pin'),
+                child: chat.isPinned ? const Text('Unpin') : const Text('Pin'),
               ),
             ],
           );
         })) {
-      case ChatChoice.delete:
-        chatProvider.deleteChat(currentUserId, userChat.chatId);
+      case _ChatChoice.delete:
+        _chatProvider.deleteChat(_currentUserId, chat.chatId);
         break;
-      case ChatChoice.pin:
-        chatProvider.pinChat(currentUserId, userChat.chatId);
+      case _ChatChoice.pin:
+        _chatProvider.pinChat(_currentUserId, chat.chatId);
         break;
-      case ChatChoice.edit:
-        _editListItem(
-          userChat.chatId,
-          userChat.name
-        );
+      case _ChatChoice.edit:
+        _editListItem(chat.chatId, chat.name);
         break;
-      case ChatChoice.info:
-        //Navigator.pop(context);
-        try{
-          chatProvider.getInfo(context, currentUserId ,userChat.chatId);
-        }catch(e){
+      case _ChatChoice.info:
+        try {
+          _chatProvider.getInfo(context, _currentUserId, chat.chatId);
+        } catch (e) {
           print(e);
         }
         break;
       case null:
-        // dialog dismissed
         break;
     }
   }
 
   void _changeTheme() {
-    themeProvider.switchTheme();
+    _themeProvider.switchTheme();
   }
 }
 
-enum ChatChoice { delete, edit, pin, info }
+enum _ChatChoice { delete, edit, pin, info }
