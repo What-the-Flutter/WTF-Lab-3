@@ -4,35 +4,43 @@ import '../../../domain/entities/chat.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState());
+  HomeCubit() : super(HomeState()) {
+    loadChats();
+  }
 
-  void addChat({required Chat chat}) {
-    state.chats.add(chat);
-    emit(HomeState(chats: state.chats));
+  Future<void> addChat({required Chat chat}) async {
+    await state.chatRepository.insertChat(chat);
+    emit(HomeState(chats: await state.chatRepository.getChats()));
   }
 
   void editChat({
-    required Chat oldChat,
     required Chat editedChat,
-  }) {
-    state.chats[state.chats.indexOf(oldChat)] = editedChat;
-    emit(HomeState(chats: state.chats));
+  }) async {
+    state.chatRepository.changeChat(editedChat);
+    emit(HomeState(chats: await state.chatRepository.getChats()));
   }
 
-  void deleteChat({required Chat chat}) {
-    state.chats.removeAt(state.chats.indexOf(chat));
-    emit(HomeState(chats: state.chats));
+  void deleteChat({required Chat chat}) async{
+    state.chatRepository.deleteChat(chat);
+    emit(HomeState(chats: await state.chatRepository.getChats()));
   }
 
-  void pinChat({required Chat chat}) {
-    state.chats[state.chats.indexOf(chat)] =
-        state.chats[state.chats.indexOf(chat)].copyWith(
-      isPinned: !state.chats[state.chats.indexOf(chat)].isPinned,
-    );
-    emit(HomeState(chats: state.chats));
+  void pinChat({required Chat chat}) async{
+    state.chatRepository.changeChat(chat);
+    emit(HomeState(chats: await state.chatRepository.getChats()));
   }
 
-  List<Chat> getChats(){
+  Future<void> loadChats() async {
+    var chats = await state.chatRepository.getChats();
+    state.chats.addAll(chats);
+    emit(HomeState(chats: chats));
+  }
+
+  List<Chat> getChats() {
     return state.chats;
+  }
+
+  Chat getChat(int index){
+    return state.chats[index];
   }
 }

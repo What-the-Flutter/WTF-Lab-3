@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/providers/events_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation_project/cubits/events_cubit.dart';
+import 'package:graduation_project/pages/edit_or_create_page.dart';
 
+import '../cubits/theme_cubit.dart';
 import '../models/chat_model.dart';
 import '../widgets/event_list_title.dart';
 
@@ -13,17 +15,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final List<ChatModel> chats;
-
-  @override
-  void initState() {
-    super.initState();
-    chats = Provider.of<EventsProvider>(context, listen: false).chats;
-  }
-
-  Widget _createListTile(int index) {
+  Widget _createListTile(int index, List<ChatModel> chats) {
+    final sortedChats =
+        List<ChatModel>.from(chats.where((element) => element.isPinned))
+          ..addAll(chats.where((element) => !element.isPinned));
     return EventListTile(
-      chat: chats[index],
+      chatId: sortedChats[index].id,
     );
   }
 
@@ -43,9 +40,21 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {},
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.invert_colors),
-          onPressed: () {},
+        BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, state) {
+            return IconButton(
+              icon: state.isLight
+                  ? const Icon(
+                      Icons.sunny,
+                    )
+                  : const Icon(
+                      Icons.dark_mode_outlined,
+                    ),
+              onPressed: () {
+                context.read<ThemeCubit>().toggleTheme();
+              },
+            );
+          },
         ),
       ],
     );
@@ -61,18 +70,19 @@ class _HomePageState extends State<HomePage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            tileColor: Theme.of(context).highlightColor,
-            title: const Row(
+            tileColor: Theme.of(context).hintColor,
+            title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.smart_toy_outlined,
                   size: 32,
+                  color: Colors.grey.shade800,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
-                Text(
+                const Text(
                   'Questionnaire Bot',
                   style: TextStyle(
                     fontSize: 20,
@@ -84,18 +94,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         Expanded(
-          child: ListView.separated(
-            itemCount: chats.length,
-            itemBuilder: (_, index) {
-              return Consumer<EventsProvider>(
-                builder: (_, __, ___) => Material(
-                  child: _createListTile(index),
-                ),
-              );
-            },
-            separatorBuilder: (_, __) {
-              return const Divider(
-                thickness: 2,
+          child: BlocBuilder<EventsCubit, EventsState>(
+            builder: (_, state) {
+              return ListView.separated(
+                itemCount: state.chats.length,
+                itemBuilder: (_, index) {
+                  return _createListTile(index, state.chats);
+                },
+                separatorBuilder: (_, __) {
+                  return const Divider(
+                    thickness: 2,
+                  );
+                },
               );
             },
           ),
@@ -143,7 +153,10 @@ class _HomePageState extends State<HomePage> {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const CreatingPage()));
+          },
           elevation: 16,
           child: const Icon(
             Icons.add,

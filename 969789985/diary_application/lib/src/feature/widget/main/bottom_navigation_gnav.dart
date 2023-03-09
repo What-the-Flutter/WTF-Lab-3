@@ -36,14 +36,14 @@ class BottomNavigationGNav extends StatelessWidget {
               tabBackgroundColor: Theme.of(context).primaryColor,
               tabs: const [
                 GButton(icon: Icons.home_filled, text: 'Home'),
-                GButton(icon: Icons.my_library_books_outlined, text: 'Daily'),
-                GButton(icon: Icons.timeline, text: 'Timeline'),
-                GButton(icon: Icons.explore, text: 'Explore')
+                GButton(icon: Icons.view_timeline, text: 'Timeline'),
+                GButton(icon: Icons.graphic_eq, text: 'Statistic'),
+                GButton(icon: Icons.settings, text: 'Settings'),
               ],
               onTabChange: (index) {
                 StartScreenScope.of(context).pageIndex = index;
                 StartScreenScope.of(context).hashtag = '';
-                if(index == 0) {
+                if (index == 0) {
                   StartScreenScope.of(context).fabVisible = true;
                 } else {
                   StartScreenScope.of(context).fabVisible = false;

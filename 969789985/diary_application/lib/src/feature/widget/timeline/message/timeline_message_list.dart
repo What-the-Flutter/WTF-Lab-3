@@ -11,10 +11,12 @@ import 'timeline_message_list_item.dart';
 
 class TimelineMessageList extends StatelessWidget {
   final IList<MessageModel> messages;
+  final bool isFilter;
 
   const TimelineMessageList({
     super.key,
     required this.messages,
+    required this.isFilter,
   });
 
   @override
@@ -54,23 +56,30 @@ class TimelineMessageList extends StatelessWidget {
                         )
                       : const SizedBox(height: Insets.none),
               indexedItemBuilder: (context, message, index) {
-                if (index == 0) {
-                  return Column(
-                    children: [
-                      TimelineMessageListItem(
-                        message: message,
-                        index: index,
-                      ),
-                      Container(
-                        height: Insets.superDuperUltraMegaExtraLarge,
-                      ),
-                    ],
-                  );
-                } else {
+                if (isFilter) {
                   return TimelineMessageListItem(
                     message: message,
                     index: index,
                   );
+                } else {
+                  if (index == 0) {
+                    return Column(
+                      children: [
+                        TimelineMessageListItem(
+                          message: message,
+                          index: index,
+                        ),
+                        Container(
+                          height: Insets.superDuperUltraMegaExtraLarge,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return TimelineMessageListItem(
+                      message: message,
+                      index: index,
+                    );
+                  }
                 }
               },
             ),

@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class Event {
-  final DateTime _createTime = DateTime.now();
-  final DateFormat formatter = DateFormat('Hm');
+  final int? id;
+  final int chatId;
+  final DateTime createTime;
   final String? textData;
   final File? imageData;
   final IconData? category;
@@ -13,23 +13,26 @@ class Event {
   final bool isFavorite;
 
   Event({
+    required this.chatId,
     this.textData,
     this.imageData,
     this.category,
+    this.id,
     createTime,
     isDone,
     isFavorite,
   })  : isDone = isDone ?? false,
-        isFavorite = isFavorite ?? false;
+        isFavorite = isFavorite ?? false,createTime = (createTime != null) ? createTime : DateTime.now();
 
-  String get createTime => formatter.format(_createTime);
 
   Event copyWith({String? textMessage, bool? isDone, bool? isFavorite}) {
     return Event(
+      id: id,
+      chatId: chatId,
       textData: textMessage ?? textData,
       imageData: imageData,
       category: category,
-      createTime: _createTime,
+      createTime: createTime,
       isDone: isDone ?? this.isDone,
       isFavorite: isFavorite ?? this.isFavorite,
     );

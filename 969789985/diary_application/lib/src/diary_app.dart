@@ -12,10 +12,12 @@ import 'feature/cubit/diary_application_observer.dart';
 import 'feature/cubit/f_authenticate/f_authenticate_cubit.dart';
 import 'feature/cubit/theme/theme_cubit.dart';
 import 'feature/page/safety/safety_page.dart';
+import 'feature/widget/chatter/scope/chatter_scope.dart';
 import 'feature/widget/f_authenticate/f_auth_scope.dart';
 import 'feature/widget/main/scope/main_scope.dart';
 import 'feature/widget/settings/security_section/scope/security_scope.dart';
 import 'feature/widget/theme/theme_scope.dart';
+import 'feature/widget/timeline/scope/timeline_scope.dart';
 
 class DiaryApp extends StatelessWidget {
   const DiaryApp({super.key});
@@ -26,16 +28,20 @@ class DiaryApp extends StatelessWidget {
       child: ThemeScope(
         child: SecurityScope(
           child: StartScreenScope(
-            child: BlocBuilder<ThemeCubit, ThemeState>(
-              builder: (context, state) {
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  theme: state.isDarkMode
-                      ? Themes.getThemeFromKey(ThemeKeys.dark)
-                      : Themes.getThemeFromKey(ThemeKeys.light),
-                  home: const SafetyPage(),
-                );
-              },
+            child: ChatterScope(
+              child: TimelineScope(
+                child: BlocBuilder<ThemeCubit, ThemeState>(
+                  builder: (context, state) {
+                    return MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      theme: state.isDarkMode
+                          ? Themes.getThemeFromKey(ThemeKeys.dark)
+                          : Themes.getThemeFromKey(ThemeKeys.light),
+                      home: const SafetyPage(),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ),
@@ -44,7 +50,7 @@ class DiaryApp extends StatelessWidget {
   }
 }
 
-class _InitSource extends StatefulWidget {
+class _InitSource extends StatelessWidget {
   final Widget child;
 
   const _InitSource({
@@ -52,11 +58,6 @@ class _InitSource extends StatefulWidget {
     required this.child,
   });
 
-  @override
-  State<_InitSource> createState() => _InitSourceState();
-}
-
-class _InitSourceState extends State<_InitSource> {
   @override
   Widget build(BuildContext context) {
     return FAuthScope(
@@ -95,7 +96,7 @@ class _InitSourceState extends State<_InitSource> {
                     ),
                   ),
                 ],
-                child: widget.child,
+                child: child,
               );
             },
           );

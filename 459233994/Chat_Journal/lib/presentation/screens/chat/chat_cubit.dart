@@ -5,48 +5,66 @@ import '../../../domain/entities/event.dart';
 import 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  ChatCubit() : super(ChatNotLoaded());
+  ChatCubit() : super(ChatState(isLoaded: false));
 
   void loadChat(Chat chat) async {
     await Future<void>.delayed(const Duration(milliseconds: 50));
-    emit(ChatLoaded(chat: chat, isFavorite: false));
+    var events = await state.eventRepository.getEvents(chat.id!);
+    chat.events.clear();
+    chat.events.addAll(events);
+    emit(
+      state.copyWith(
+        chat: chat,
+        isFavorite: false,
+        isSearched: false,
+        isLoaded: true,
+      ),
+    );
   }
 
-  void updateChat(){
-    var state = this.state;
-    if (state is ChatLoaded) {
-      emit(ChatLoaded(chat: state.chat, isFavorite: state.isFavorite));
-    }
+  void updateChat() async {
+    var events = await state.eventRepository.getEvents(state.chat!.id!);
+    state.chat?.events.clear();
+    state.chat?.events.addAll(events);
+    emit(state.copyWith());
+  }
+
+  void editEvent({required Event editedEvent}) {
+    state.eventRepository.changeEvent(editedEvent);
+    updateChat();
+  }
+
+  void deleteEvent({required Event event}){
+    state.eventRepository.deleteEvent(event);
+    updateChat();
   }
 
   void changeFavoriteState() {
-    var state = this.state;
-    if (state is ChatLoaded) {
-      state.isFavorite
-          ? emit(state.copyWith(isFavorite: false))
-          : emit(state.copyWith(isFavorite: true));
-    }
+    state.isFavorite == true
+        ? emit(state.copyWith(isFavorite: false))
+        : emit(state.copyWith(isFavorite: true));
   }
 
-  void addEventToChat(Event event) {
-    var state = this.state;
-    if (state is ChatLoaded) {
-      state.chat.events.add(event);
-      emit(
-        ChatLoaded(
-          chat: state.chat,
-          isFavorite: state.isFavorite,
-        ),
-      );
-    }
+  void changeSearchedState() {
+    state.isSearched == true
+        ? emit(state.copyWith(isSearched: false))
+        : emit(state.copyWith(isSearched: true));
+  }
+
+  void addEventToChat(Event event) async {
+    await state.eventRepository.insertEvent(event);
+    updateChat();
   }
 
   List<Event> getEvents() {
-    var state = this.state;
-    if (state is ChatLoaded) {
-      return state.chat.events;
-    } else {
-      throw 'chat is empty';
-    }
+    return state.chat!.events;
+  }
+
+  Event getEventById(int id) {
+    return state.chat!.events.firstWhere((element) => element.id == id);
+  }
+
+  Event getEventByIndex(int index){
+    return state.chat!.events[index];
   }
 }

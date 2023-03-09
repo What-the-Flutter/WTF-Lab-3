@@ -10,4 +10,7 @@ class FirestoreConstants {
   static const chatId = 'chatId';
   static const name = 'name';
   static const icon = 'icon';
+  static const isFavorite = 'isFavorite';
+  static const isPinned = 'isPinned';
+  static const creationDate = 'creationDate';
 }

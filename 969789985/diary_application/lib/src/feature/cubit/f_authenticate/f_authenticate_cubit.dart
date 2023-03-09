@@ -20,12 +20,12 @@ class FAuthenticateCubit extends Cubit<FAuthenticateState> {
           const FAuthenticateState.unauthenticated(),
         ) {
     _subscription = _repository.userStream.listen(
-      (user) {
+      (user) async {
         if (user == null) {
           emit(
             const FAuthenticateState.unauthenticated(),
           );
-          _repository.currentUserId();
+          _repository.authenticate();
         } else {
           emit(
             FAuthenticateState.authenticate(currentUserId: user.uid),
@@ -36,4 +36,11 @@ class FAuthenticateCubit extends Cubit<FAuthenticateState> {
   }
 
   late final StreamSubscription<User?> _subscription;
+
+  @override
+  Future<void> close() {
+    _subscription.cancel();
+
+    return super.close();
+  }
 }

@@ -20,7 +20,6 @@ class NavigationDrawerMenu extends StatelessWidget {
       backgroundColor: Color(context.watch<ThemeCubit>().state.primaryItemColor),
       elevation: 0,
       children: [
-        const SizedBox(height: Insets.extraLarge),
         Padding(
           padding: const EdgeInsets.only(
             left: Insets.large,
@@ -51,8 +50,6 @@ class NavigationDrawerMenu extends StatelessWidget {
             ),
           ),
         ),
-        const DrawerSearchButton(),
-        const DrawerNotificationButton(),
         const DrawerSettingsButton(),
         const DrawerShareButton(),
       ],

@@ -17,8 +17,9 @@ class HomeProvider {
       String pathCollection, int limit, String userId) {
     return firebaseFirestore
         .collection(pathCollection)
+        .doc(userId)
+        .collection(userId)
         .limit(limit)
-        //.where(FirestoreConstants.id, isEqualTo: userId)
         .snapshots();
   }
 }

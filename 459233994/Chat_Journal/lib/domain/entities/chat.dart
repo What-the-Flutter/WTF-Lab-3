@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'event.dart';
 
 class Chat {
+  final int? id;
   final String name;
-  final DateTime _createTime = DateTime.now();
-  final DateFormat formatter = DateFormat('yMd');
+  final DateTime createTime;
   final IconData pageIcon;
   final bool isPinned;
   final List<Event> events = <Event>[];
@@ -16,16 +15,19 @@ class Chat {
     required this.pageIcon,
     pinnedState,
     events,
-  }) : isPinned = pinnedState ?? false;
-
-  String get createTime => formatter.format(_createTime);
+    createTime,
+    this.id,
+  })  : isPinned = pinnedState ?? false,
+        createTime = (createTime != null) ? createTime : DateTime.now();
 
   Chat copyWith({String? name, IconData? pageIcon, bool? isPinned}) {
     return Chat(
+      id: id,
       name: name ?? this.name,
       pageIcon: pageIcon ?? this.pageIcon,
       pinnedState: isPinned ?? this.isPinned,
       events: events,
+      createTime: createTime,
     );
   }
 }
