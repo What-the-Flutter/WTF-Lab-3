@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/color_constants.dart';
+import '../constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../providers/chat_provider.dart';
 
@@ -24,6 +26,7 @@ class _AddChat extends State<AddChat> {
   late final TextEditingController _chatNameController;
   late final ChatProvider _chatProvider;
   late final String _currentUserId;
+  late int _selectedIcon = 0;
 
   @override
   void initState() {
@@ -37,13 +40,14 @@ class _AddChat extends State<AddChat> {
 
   void _addChat() {
     final _name = _chatNameController.text.toString();
-    _chatProvider.addChat(_name, _currentUserId);
+    _chatProvider.addChat(_name, _currentUserId, _selectedIcon);
     Navigator.pop(context);
   }
 
   void _editChat() {
     final _name = _chatNameController.text.toString();
-    _chatProvider.updateChat(_currentUserId, widget.currentChatId, _name);
+    _chatProvider.updateChat(
+        _currentUserId, widget.currentChatId, _name, _selectedIcon);
     Navigator.pop(context);
   }
 
@@ -94,10 +98,37 @@ class _AddChat extends State<AddChat> {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.center,
+              child: Icon(
+                icons[_selectedIcon],
+                size: 40,
+              ),
+            ),
             ElevatedButton.icon(
                 onPressed: () => widget.isEdited ? _editChat() : _addChat(),
                 label: const Text('add chat'),
-                icon: const Icon(Icons.add))
+                icon: const Icon(Icons.add)),
+            Expanded(
+              child: GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6, crossAxisSpacing: 5, mainAxisSpacing: 5),
+                itemCount: icons.length,
+                itemBuilder: (context, index) {
+                  var item = icons.elementAt(index);
+                  return IconButton(
+                    icon: Icon(item, size: 50),
+                    onPressed: () {
+                      setState(() {
+                        _selectedIcon = index;
+                      });
+                    },
+                  );
+                },
+                physics: const ScrollPhysics(),
+              ),
+            )
           ],
         ),
       ),

@@ -114,7 +114,7 @@ class ChatProvider {
     });
   }
 
-  void addChat(String name, String currentUserId) {
+  void addChat(String name, String currentUserId, int iconIndex) {
     final _chatId = name.hashCode.toString();
     final DocumentReference _documentReference = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
@@ -123,11 +123,13 @@ class ChatProvider {
         .doc(_chatId);
 
     final _chat = Chat(
-        chatId: _chatId,
-        name: name,
-        userId: currentUserId,
-        isPinned: false,
-        creationDate: DateTime.now().toLocal().toString());
+      chatId: _chatId,
+      name: name,
+      userId: currentUserId,
+      isPinned: false,
+      creationDate: DateTime.now().toLocal().toString(),
+      iconIndex: iconIndex,
+    );
 
     FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(
@@ -162,14 +164,14 @@ class ChatProvider {
   }
 
   Future<void> updateChat(
-      String currentUserId, String chatId, String text) async {
+      String currentUserId, String chatId, String name, int iconIndex) async {
     final DocumentReference _documentReferencer = firebaseFirestore
         .collection(FirestoreConstants.pathChatsCollection)
         .doc(currentUserId)
         .collection(currentUserId)
         .doc(chatId);
 
-    final _data = <String, dynamic>{'name': text};
+    final _data = <String, dynamic>{FirestoreConstants.name : name, FirestoreConstants.iconIndex: iconIndex };
 
     await _documentReferencer
         .update(_data)
@@ -226,15 +228,13 @@ class ChatProvider {
   }
 
   int compare(dynamic a, dynamic b) {
-    if(a.isPinned){
-      if(b.isPinned){
+    if (a.isPinned) {
+      if (b.isPinned) {
         return 0;
-      }
-      else {
+      } else {
         return -1;
       }
-    }
-    else if(b.isPinned){
+    } else if (b.isPinned) {
       return 1;
     }
     return 0;

@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/icons.dart';
 import '/constants/app_constants.dart';
 import '/constants/constants.dart';
 import '/providers/providers.dart';
@@ -402,13 +403,13 @@ class HomePageState extends State<HomePage> {
           child: TextButton(
             child: Row(
               children: <Widget>[
-                const Material(
+                Material(
                   child: Icon(
-                    Icons.circle,
+                    icons[_userChat.iconIndex],
                     size: 50,
                     color: ColorConstants.greyColor,
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  borderRadius: const BorderRadius.all(Radius.circular(25)),
                   clipBehavior: Clip.hardEdge,
                 ),
                 Flexible(

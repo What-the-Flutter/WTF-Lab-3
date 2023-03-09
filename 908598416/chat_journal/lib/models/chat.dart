@@ -7,13 +7,15 @@ class Chat {
   final String name;
   final bool isPinned;
   final String creationDate;
+  final int iconIndex;
 
   Chat(
       {required this.chatId,
       required this.name,
       required this.userId,
       required this.isPinned,
-      required this.creationDate});
+      required this.creationDate,
+      required this.iconIndex});
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,7 +23,8 @@ class Chat {
       FirestoreConstants.name: name,
       FirestoreConstants.id: userId,
       FirestoreConstants.isPinned: isPinned,
-      FirestoreConstants.creationDate: creationDate
+      FirestoreConstants.creationDate: creationDate,
+      FirestoreConstants.iconIndex: iconIndex
     };
   }
 
@@ -30,7 +33,8 @@ class Chat {
     final String userId = doc.get(FirestoreConstants.id);
     final bool isPinned = doc.get(FirestoreConstants.isPinned);
     final String creationDate = doc.get(FirestoreConstants.creationDate);
-    return Chat(chatId: doc.id, userId: userId, name: name, isPinned: isPinned, creationDate: creationDate);
+    final int iconIndex = doc.get(FirestoreConstants.iconIndex);
+    return Chat(chatId: doc.id, userId: userId, name: name, isPinned: isPinned, creationDate: creationDate, iconIndex: iconIndex);
   }
 
 }
