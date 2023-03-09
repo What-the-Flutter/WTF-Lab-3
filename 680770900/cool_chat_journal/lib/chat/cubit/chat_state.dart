@@ -44,11 +44,11 @@ class ChatState extends Equatable {
 
   @override
   List<Object?> get props => [
-    chat,
-    isEditMode,
-    isFavoriteMode,
-    selectedEventsIds,
-    showCategories,
-    selectedCategory,
-  ];
+        chat,
+        isEditMode,
+        isFavoriteMode,
+        selectedEventsIds,
+        showCategories,
+        selectedCategory,
+      ];
 }

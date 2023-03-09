@@ -45,7 +45,7 @@ class ManagePanelDialog extends StatelessWidget {
   void _switchChatPinning(BuildContext context) {
     Navigator.pop(context);
     onSwitchChatPinning?.call();
-  } 
+  }
 
   void _archiveChat(BuildContext context) {
     Navigator.pop(context);

@@ -45,38 +45,38 @@ class Category extends Equatable {
   }) : id = id ?? const Uuid().v4();
 
   factory Category.fromCategoryEntity(CategoryEntity categoryEntity) =>
-    Category(
-      id: categoryEntity.id,
-      title: categoryEntity.title,
-      icon: IconData(categoryEntity.icon, fontFamily: 'MaterialIcons'),
-      isCustom: categoryEntity.isCustom,
-    ); 
+      Category(
+        id: categoryEntity.id,
+        title: categoryEntity.title,
+        icon: IconData(categoryEntity.icon, fontFamily: 'MaterialIcons'),
+        isCustom: categoryEntity.isCustom,
+      );
 
-  CategoryEntity toCategoryEntity() =>
-    CategoryEntity(
-      id: id,
-      title: title,
-      icon: icon.codePoint,
-      isCustom: isCustom,
-    );
+  CategoryEntity toCategoryEntity() => CategoryEntity(
+        id: id,
+        title: title,
+        icon: icon.codePoint,
+        isCustom: isCustom,
+      );
 
   Category copyWith({
     String? id,
     String? title,
     IconData? icon,
     bool? isCustom,
-  }) => Category(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    icon: icon ?? this.icon,
-    isCustom: isCustom ?? this.isCustom,
-  ); 
-  
+  }) =>
+      Category(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        icon: icon ?? this.icon,
+        isCustom: isCustom ?? this.isCustom,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    title,
-    icon,
-    isCustom,
-  ];
+        id,
+        title,
+        icon,
+        isCustom,
+      ];
 }

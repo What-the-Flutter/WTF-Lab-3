@@ -9,7 +9,6 @@ class EventView extends StatefulWidget {
   final bool isSelected;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
-  
 
   const EventView({
     super.key,
@@ -25,7 +24,7 @@ class EventView extends StatefulWidget {
 
 class _EventViewState extends State<EventView> {
   final _dateFormat = DateFormat('hh:mm');
-  
+
   Widget _createEventSubtitle() {
     return UnconstrainedBox(
       child: Row(
@@ -51,7 +50,7 @@ class _EventViewState extends State<EventView> {
       ),
     );
   }
-  
+
   Widget _createEventContent() {
     final Widget eventContent;
     if (widget.event.isImage) {

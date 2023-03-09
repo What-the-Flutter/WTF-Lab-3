@@ -10,7 +10,7 @@ import '../widgets/widgets.dart';
 
 class ChatsPage extends StatelessWidget {
   const ChatsPage({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -70,46 +70,41 @@ class _ChatsViewState extends State<ChatsView> {
           ),
         ],
       ),
-      body: BlocConsumer<ChatsCubit, ChatsState>(
-        listener: (context, state) {
-          if (state.status.isInitial) {
-            context.read<ChatsCubit>().updateChats();
-          }
-        },
-        builder: (_, state) {
-          if (state.status.isSuccess) {
-            final chats = state.chats;
-            return ListView.builder(
-              itemCount: chats.length,
-              itemBuilder: (context, index) => ChatCard(
-                chat: chats[index],
-                onOpenManagePanel: () =>
-                  _openManagePanel(context, chats[index]),
-                onOpenChat: () => Navigator.of(context).push<void>(
-                  ChatPage.route(
-                    chatsCubit: context.read<ChatsCubit>(),
-                    chat: chats[index],
-                  ),
+      body: BlocConsumer<ChatsCubit, ChatsState>(listener: (context, state) {
+        if (state.status.isInitial) {
+          context.read<ChatsCubit>().updateChats();
+        }
+      }, builder: (_, state) {
+        if (state.status.isSuccess) {
+          final chats = state.chats;
+          return ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (context, index) => ChatCard(
+              chat: chats[index],
+              onOpenManagePanel: () => _openManagePanel(context, chats[index]),
+              onOpenChat: () => Navigator.of(context).push<void>(
+                ChatPage.route(
+                  chatsCubit: context.read<ChatsCubit>(),
+                  chat: chats[index],
                 ),
               ),
-            );
-          } else if (state.status.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            return const Center(child: Text('Ooops! Something wrong.'));
-          }
-        }
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push<void>(
-            ChatEditorPage.route(
-              chatsCubit: context.read<ChatsCubit>(),
             ),
           );
+        } else if (state.status.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else {
+          return const Center(child: Text('Ooops! Something wrong.'));
         }
-      ),
+      }),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.of(context).push<void>(
+              ChatEditorPage.route(
+                chatsCubit: context.read<ChatsCubit>(),
+              ),
+            );
+          }),
       bottomNavigationBar: const BottomNavigation(),
     );
   }

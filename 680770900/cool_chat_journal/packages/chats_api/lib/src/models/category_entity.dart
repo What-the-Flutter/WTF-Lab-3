@@ -20,7 +20,7 @@ class CategoryEntity extends Equatable {
   });
 
   factory CategoryEntity.fromJson(JsonMap json) =>
-    _$CategoryEntityFromJson(json);  
+      _$CategoryEntityFromJson(json);
 
   JsonMap toJson() => _$CategoryEntityToJson(this);
 
@@ -29,18 +29,19 @@ class CategoryEntity extends Equatable {
     String? title,
     int? icon,
     bool? isCustom,
-  }) => CategoryEntity(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    icon: icon ?? this.icon,
-    isCustom: isCustom ?? this.isCustom,
-  );
-  
+  }) =>
+      CategoryEntity(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        icon: icon ?? this.icon,
+        isCustom: isCustom ?? this.isCustom,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    icon, 
-    title,
-    isCustom,
-  ];
+        id,
+        icon,
+        title,
+        isCustom,
+      ];
 }

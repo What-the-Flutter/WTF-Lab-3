@@ -28,26 +28,24 @@ class Event extends Equatable {
     this.category,
   }) : id = id ?? const Uuid().v4();
 
-  factory Event.fromEventEntity(EventEntity eventEntity) =>
-    Event(
-      id: eventEntity.id,
-      chatId: eventEntity.chatId,
-      content: eventEntity.content,
-      isImage: eventEntity.isImage,
-      isFavorite: eventEntity.isFavorite,
-      changeTime: eventEntity.changeTime,
-    ); 
+  factory Event.fromEventEntity(EventEntity eventEntity) => Event(
+        id: eventEntity.id,
+        chatId: eventEntity.chatId,
+        content: eventEntity.content,
+        isImage: eventEntity.isImage,
+        isFavorite: eventEntity.isFavorite,
+        changeTime: eventEntity.changeTime,
+      );
 
-  EventEntity toEventEntity() =>
-    EventEntity(
-      id: id,
-      chatId: chatId,
-      content: content,
-      isImage: isImage,
-      isFavorite: isFavorite,
-      changeTime: changeTime,
-      category: category?.id,
-    );
+  EventEntity toEventEntity() => EventEntity(
+        id: id,
+        chatId: chatId,
+        content: content,
+        isImage: isImage,
+        isFavorite: isFavorite,
+        changeTime: changeTime,
+        category: category?.id,
+      );
 
   Event copyWith({
     String? id,
@@ -57,24 +55,25 @@ class Event extends Equatable {
     bool? isFavorite,
     DateTime? changeTime,
     NullWrapper<Category?>? category,
-  }) => Event(
-    id: id ?? this.id,
-    chatId: chatId ?? this.chatId,
-    content: content ?? this.content,
-    isImage: isImage ?? this.isImage,
-    isFavorite: isFavorite ?? this.isFavorite,
-    changeTime: changeTime ?? this.changeTime,
-    category: category != null ? category.value : this.category,
-  ); 
-  
+  }) =>
+      Event(
+        id: id ?? this.id,
+        chatId: chatId ?? this.chatId,
+        content: content ?? this.content,
+        isImage: isImage ?? this.isImage,
+        isFavorite: isFavorite ?? this.isFavorite,
+        changeTime: changeTime ?? this.changeTime,
+        category: category != null ? category.value : this.category,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    chatId,
-    content,
-    isImage,
-    isFavorite,
-    changeTime,
-    category,
-  ];
+        id,
+        chatId,
+        content,
+        isImage,
+        isFavorite,
+        changeTime,
+        category,
+      ];
 }

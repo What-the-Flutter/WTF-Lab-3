@@ -58,9 +58,11 @@ class _ChatViewState extends State<ChatView> {
     final events = chatState.chat.events;
     final selectedEvents = chatState.selectedEventsIds;
 
-    return events.where(
-      (event) => selectedEvents.contains(event.id) && event.isImage,
-    ).isNotEmpty;
+    return events
+        .where(
+          (event) => selectedEvents.contains(event.id) && event.isImage,
+        )
+        .isNotEmpty;
   }
 
   void _onTap(BuildContext context, String eventId) {
@@ -81,7 +83,7 @@ class _ChatViewState extends State<ChatView> {
     final value = await showModalBottomSheet<bool>(
       context: context,
       builder: (context) =>
-        DeleteDialog(chatCubit.state.selectedEventsIds.length),
+          DeleteDialog(chatCubit.state.selectedEventsIds.length),
     );
 
     if (value == true) {
@@ -127,12 +129,12 @@ class _ChatViewState extends State<ChatView> {
 
     final newChatId = await showDialog<String>(
       context: context,
-      builder: (context) => 
-        TransferDialog(
-          chats: chatsCubit.state.chats.where(
-            (chat) => chat.id != widget.chat.id,
-          ).toList()
-        ),
+      builder: (context) => TransferDialog(
+          chats: chatsCubit.state.chats
+              .where(
+                (chat) => chat.id != widget.chat.id,
+              )
+              .toList()),
     );
     if (newChatId != null) {
       chatsCubit.transferEvents(
@@ -232,7 +234,7 @@ class _ChatViewState extends State<ChatView> {
 
   List<Widget> _createActionsForSelectionMode(BuildContext context) {
     final selectedEventsCount =
-      context.read<ChatCubit>().state.selectedEventsIds.length;
+        context.read<ChatCubit>().state.selectedEventsIds.length;
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.reply),
@@ -276,7 +278,6 @@ class _ChatViewState extends State<ChatView> {
         Expanded(
           child: _createEventsView(),
         ),
-
         BottomPanel(
           chat: widget.chat,
           sourceEvent: selectedEvent,
@@ -286,7 +287,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   List<Event> _generateEventsList(ChatState state) {
-    final events = state.chat.events; 
+    final events = state.chat.events;
     final List<Event> favorites;
     if (state.isFavoriteMode) {
       favorites = events.where((event) => event.isFavorite).toList();
@@ -300,11 +301,11 @@ class _ChatViewState extends State<ChatView> {
   Widget _createEventsView() {
     return BlocConsumer<ChatCubit, ChatState>(
       listenWhen: (previous, current) =>
-        previous.chat.events != current.chat.events,
+          previous.chat.events != current.chat.events,
       listener: (context, state) {
         context.read<ChatsCubit>().editChat(
-          widget.chat.copyWith(events: state.chat.events),
-        );
+              widget.chat.copyWith(events: state.chat.events),
+            );
       },
       builder: (context, state) {
         final events = _generateEventsList(state);
@@ -334,7 +335,7 @@ class _ChatViewState extends State<ChatView> {
                   child: EventView(
                     event: event,
                     isSelected:
-                      chatCubit.state.selectedEventsIds.contains(event.id),
+                        chatCubit.state.selectedEventsIds.contains(event.id),
                     onTap: () => _onTap(context, event.id),
                     onLongPress: () => _onLongPress(context, event.id),
                   ),
@@ -378,17 +379,15 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: _createAppBarLeading(context),
-            title: _createAppBarTitle(context),
-            actions: _createActions(context),
-          ),
-          body: _createScaffoldBody(context),
-        );
-      }
-    );
+    return BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: _createAppBarLeading(context),
+          title: _createAppBarTitle(context),
+          actions: _createActions(context),
+        ),
+        body: _createScaffoldBody(context),
+      );
+    });
   }
 }

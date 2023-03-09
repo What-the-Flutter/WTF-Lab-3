@@ -21,7 +21,7 @@ class ChatEntity extends Equatable {
     required this.isPinned,
   });
 
-  factory ChatEntity.fromJson(JsonMap json) => _$ChatEntityFromJson(json);  
+  factory ChatEntity.fromJson(JsonMap json) => _$ChatEntityFromJson(json);
 
   JsonMap toJson() => _$ChatEntityToJson(this);
 
@@ -31,20 +31,21 @@ class ChatEntity extends Equatable {
     String? name,
     DateTime? createdTime,
     bool? isPinned,
-  }) => ChatEntity(
-    id: id ?? this.id,
-    icon: icon ?? this.icon,
-    name: name ?? this.name,
-    createdTime: createdTime ?? this.createdTime,
-    isPinned: isPinned ?? this.isPinned,
-  );
-  
+  }) =>
+      ChatEntity(
+        id: id ?? this.id,
+        icon: icon ?? this.icon,
+        name: name ?? this.name,
+        createdTime: createdTime ?? this.createdTime,
+        isPinned: isPinned ?? this.isPinned,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    icon, 
-    name,
-    createdTime,
-    isPinned,
-  ];
+        id,
+        icon,
+        name,
+        createdTime,
+        isPinned,
+      ];
 }

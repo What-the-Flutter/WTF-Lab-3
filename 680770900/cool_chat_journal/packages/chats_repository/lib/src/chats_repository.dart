@@ -14,41 +14,33 @@ class ChatsRepository {
     final chatsEntity = await chatsApi.loadChats();
     final events = await loadEvents();
     return chatsEntity
-      .map(
-        (chat) => Chat
-          .fromChatEntity(chat)
-          .copyWith(
-            events: events
-              .where((event) => event.chatId == chat.id)
-              .toList(),
+        .map(
+          (chat) => Chat.fromChatEntity(chat).copyWith(
+            events: events.where((event) => event.chatId == chat.id).toList(),
           ),
-      )
-      .toList();
+        )
+        .toList();
   }
 
   Future<List<Event>> loadEvents() async {
     final eventsEntity = await chatsApi.loadEvents();
     final categoriesEntity = await chatsApi.loadCategories();
 
-    return eventsEntity
-      .map((event) {
-        final categoryEntity = categoriesEntity
+    return eventsEntity.map((event) {
+      final categoryEntity = categoriesEntity
           .firstWhereOrNull((category) => category.id == event.category);
 
-        final NullWrapper<Category?>? category;
-        if (categoryEntity != null) {
-          category = NullWrapper<Category?>(
-            Category.fromCategoryEntity(categoryEntity)
-          );
-        } else {
-          category = null;
-        }
-
-        return Event.fromEventEntity(event).copyWith(category: category);
+      final NullWrapper<Category?>? category;
+      if (categoryEntity != null) {
+        category =
+            NullWrapper<Category?>(Category.fromCategoryEntity(categoryEntity));
+      } else {
+        category = null;
       }
-      )
-      .toList();
-  } 
+
+      return Event.fromEventEntity(event).copyWith(category: category);
+    }).toList();
+  }
 
   Future<List<Category>> loadCategories() async {
     final categoriesEntity = await chatsApi.loadCategories();
@@ -78,13 +70,12 @@ class ChatsRepository {
     final categories = await chatsApi.loadCategories();
     await chatsApi.saveCategories(
       categories.where((category) => category.id != categoryId),
-    ); 
+    );
   }
 
   Future<void> addChat(Chat chat) async {
     final chatEntity = chat.toChatEntity();
-    final eventsEntity = chat.events
-      .map((event) => event.toEventEntity());
+    final eventsEntity = chat.events.map((event) => event.toEventEntity());
 
     final chats = await chatsApi.loadChats();
     final events = await chatsApi.loadEvents();
@@ -108,18 +99,14 @@ class ChatsRepository {
     final chatsEntity = await chatsApi.loadChats();
     final eventsEntity = await chatsApi.loadEvents();
 
-    final chats = chatsEntity
-      .where((e) => e.id != chat.id)
-      .toList();
+    final chats = chatsEntity.where((e) => e.id != chat.id).toList();
     chats.add(chat.toChatEntity());
 
-    final events = eventsEntity
-      .where((event) => event.chatId != chat.id)
-      .toList();
+    final events =
+        eventsEntity.where((event) => event.chatId != chat.id).toList();
     events.addAll(chat.events.map((event) => event.toEventEntity()));
 
     await chatsApi.saveChats(chats);
     await chatsApi.saveEvents(events);
   }
-
 }

@@ -25,7 +25,7 @@ class ThemeSaver {
     if (name == ThemeKeys.ugly.name) return ThemeKeys.ugly;
 
     return defaultTheme;
-  } 
+  }
 
   void deleteInfo() async {
     final prefs = await _prefs;

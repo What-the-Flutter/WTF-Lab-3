@@ -27,7 +27,7 @@ class EventEntity extends Equatable {
     required this.category,
   });
 
-  factory EventEntity.fromJson(JsonMap json) => _$EventEntityFromJson(json);  
+  factory EventEntity.fromJson(JsonMap json) => _$EventEntityFromJson(json);
 
   JsonMap toJson() => _$EventEntityToJson(this);
 
@@ -39,24 +39,25 @@ class EventEntity extends Equatable {
     bool? isFavorite,
     DateTime? changeTime,
     String? category,
-  }) => EventEntity(
-    id: id ?? this.id,
-    chatId: chatId ?? this.chatId,
-    content: content ?? this.content,
-    isImage: isImage ?? this.isImage,
-    isFavorite: isFavorite ?? this.isFavorite,
-    changeTime: changeTime ?? this.changeTime,
-    category: category ?? this.category,
-  );
-  
+  }) =>
+      EventEntity(
+        id: id ?? this.id,
+        chatId: chatId ?? this.chatId,
+        content: content ?? this.content,
+        isImage: isImage ?? this.isImage,
+        isFavorite: isFavorite ?? this.isFavorite,
+        changeTime: changeTime ?? this.changeTime,
+        category: category ?? this.category,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    chatId,
-    content,
-    isImage,
-    isFavorite,
-    changeTime,
-    category,
-  ];
+        id,
+        chatId,
+        content,
+        isImage,
+        isFavorite,
+        changeTime,
+        category,
+      ];
 }

@@ -52,15 +52,15 @@ class _BottomPanelState extends State<BottomPanel> {
         final base64Image = base64Encode(imageBytes);
 
         context.read<ChatCubit>().addNewEvent(
-          Event(
-            chatId: widget.chat.id,
-            content: base64Image,
-            isImage: true,
-            isFavorite: false,
-            changeTime: DateTime.now(),
-            category: context.read<ChatCubit>().state.selectedCategory,
-          ),
-        );
+              Event(
+                chatId: widget.chat.id,
+                content: base64Image,
+                isImage: true,
+                isFavorite: false,
+                changeTime: DateTime.now(),
+                category: context.read<ChatCubit>().state.selectedCategory,
+              ),
+            );
       }
     }
   }
@@ -83,7 +83,7 @@ class _BottomPanelState extends State<BottomPanel> {
       final NullWrapper<Category>? selectedCategory;
       if (chatCubit.state.selectedCategory != null) {
         selectedCategory =
-          NullWrapper<Category>(chatCubit.state.selectedCategory!);
+            NullWrapper<Category>(chatCubit.state.selectedCategory!);
       } else {
         selectedCategory = null;
       }
@@ -99,7 +99,7 @@ class _BottomPanelState extends State<BottomPanel> {
 
     if (chatCubit.state.isEditMode) {
       chatCubit.toggleEditMode();
-    }   
+    }
 
     chatCubit.changeShowCategories(false);
     chatCubit.selectCategory(null);
@@ -185,7 +185,7 @@ class _BottomPanelState extends State<BottomPanel> {
               itemBuilder: (context, index) => InkWell(
                 onTap: () {
                   context.read<ChatCubit>().changeShowCategories(false);
-                  context.read<ChatCubit>().selectCategory(categories[index]);   
+                  context.read<ChatCubit>().selectCategory(categories[index]);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),

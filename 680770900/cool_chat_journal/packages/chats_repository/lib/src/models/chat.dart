@@ -30,23 +30,21 @@ class Chat extends Equatable {
     this.events = const [],
   }) : id = id ?? const Uuid().v4();
 
-  factory Chat.fromChatEntity(ChatEntity chatEntity) => 
-    Chat(
-      id: chatEntity.id,
-      icon: IconData(chatEntity.icon, fontFamily: 'MaterialIcons'),
-      name: chatEntity.name,
-      createdTime: chatEntity.createdTime,
-      isPinned: chatEntity.isPinned,
-    );
+  factory Chat.fromChatEntity(ChatEntity chatEntity) => Chat(
+        id: chatEntity.id,
+        icon: IconData(chatEntity.icon, fontFamily: 'MaterialIcons'),
+        name: chatEntity.name,
+        createdTime: chatEntity.createdTime,
+        isPinned: chatEntity.isPinned,
+      );
 
-  ChatEntity toChatEntity() => 
-    ChatEntity(
-      id: id,
-      name: name,
-      icon: icon.codePoint,
-      createdTime: createdTime,
-      isPinned: isPinned,
-    );
+  ChatEntity toChatEntity() => ChatEntity(
+        id: id,
+        name: name,
+        icon: icon.codePoint,
+        createdTime: createdTime,
+        isPinned: isPinned,
+      );
 
   Chat copyWith({
     String? id,
@@ -55,22 +53,23 @@ class Chat extends Equatable {
     DateTime? createdTime,
     bool? isPinned,
     List<Event>? events,
-  }) => Chat(
-    id: id ?? this.id,
-    icon: icon ?? this.icon,
-    name: name ?? this.name,
-    createdTime: createdTime ?? this.createdTime,
-    isPinned: isPinned ?? this.isPinned,
-    events: events ?? this.events,
-  );
-  
+  }) =>
+      Chat(
+        id: id ?? this.id,
+        icon: icon ?? this.icon,
+        name: name ?? this.name,
+        createdTime: createdTime ?? this.createdTime,
+        isPinned: isPinned ?? this.isPinned,
+        events: events ?? this.events,
+      );
+
   @override
   List<Object?> get props => [
-    id,
-    icon,
-    name,
-    createdTime,
-    isPinned,
-    events,
-  ];
+        id,
+        icon,
+        name,
+        createdTime,
+        isPinned,
+        events,
+      ];
 }

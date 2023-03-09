@@ -27,12 +27,13 @@ class ChatsState extends Equatable {
     StateStatus? status,
     List<Category>? categories,
     StateStatus? categoriesStatus,
-  }) => ChatsState(
-    chats: chats ?? this.chats,
-    status: status ?? this.status,
-    categories: categories ?? this.categories,
-    categoriesStatus: categoriesStatus ?? this.categoriesStatus,
-  );
+  }) =>
+      ChatsState(
+        chats: chats ?? this.chats,
+        status: status ?? this.status,
+        categories: categories ?? this.categories,
+        categoriesStatus: categoriesStatus ?? this.categoriesStatus,
+      );
 
   @override
   List<Object> get props => [chats, status, categories, categoriesStatus];

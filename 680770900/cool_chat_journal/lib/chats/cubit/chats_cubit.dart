@@ -18,7 +18,7 @@ class ChatsCubit extends Cubit<ChatsState> {
       _sortChats(chats);
 
       emit(
-        state.copyWith( 
+        state.copyWith(
           chats: chats,
           status: StateStatus.success,
         ),
@@ -29,9 +29,9 @@ class ChatsCubit extends Cubit<ChatsState> {
   void updateCategories() async {
     if (!state.categoriesStatus.isLoading) {
       emit(state.copyWith(categoriesStatus: StateStatus.loading));
-      
+
       final categories = await _chatsRepository.loadCategories();
-      
+
       emit(
         state.copyWith(
           categories: categories,
@@ -64,20 +64,20 @@ class ChatsCubit extends Cubit<ChatsState> {
   void transferEvents({
     required String sourceChatId,
     required String destinationChatId,
-    required List<String> transferEventsIds, 
+    required List<String> transferEventsIds,
   }) async {
     final sourceChat =
-      state.chats.firstWhere((chat) => chat.id == sourceChatId);
+        state.chats.firstWhere((chat) => chat.id == sourceChatId);
     final destinationChat =
-      state.chats.firstWhere((chat) => chat.id == destinationChatId);
-    final transferEvents = 
-      sourceChat.events.where((event) => transferEventsIds.contains(event.id));
+        state.chats.firstWhere((chat) => chat.id == destinationChatId);
+    final transferEvents = sourceChat.events
+        .where((event) => transferEventsIds.contains(event.id));
 
     final newSourceChat = sourceChat.copyWith(
       events: sourceChat.events
-        .where((event) => !transferEvents.contains(event))
-        .toList(),
-    ); 
+          .where((event) => !transferEvents.contains(event))
+          .toList(),
+    );
 
     final newDestinationChat = destinationChat.copyWith(
       events: List<Event>.from(destinationChat.events)

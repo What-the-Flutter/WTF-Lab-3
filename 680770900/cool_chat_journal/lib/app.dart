@@ -10,22 +10,20 @@ class CoolChatJournalApp extends StatelessWidget {
   const CoolChatJournalApp({super.key});
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     final localStorageChatsApi = LocalStorageChatsApi();
 
     return CustomTheme(
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
-            title: 'Cool Chat Journal',
-            theme: CustomTheme.of(context),
-            home: RepositoryProvider.value(
-              value: ChatsRepository(chatsApi: localStorageChatsApi),
-              child: const ChatsPage(),
-            ),
-          );
-        }
-      ),
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          title: 'Cool Chat Journal',
+          theme: CustomTheme.of(context),
+          home: RepositoryProvider.value(
+            value: ChatsRepository(chatsApi: localStorageChatsApi),
+            child: const ChatsPage(),
+          ),
+        );
+      }),
     );
   }
 }

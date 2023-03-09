@@ -47,7 +47,7 @@ class ChatEditorView extends StatelessWidget {
     super.key,
     this.sourceChat,
   });
-  
+
   void _saveChat(BuildContext context) {
     final title = context.read<ChatEditorCubit>().state.title;
     if (title.isNotEmpty) {
@@ -68,7 +68,7 @@ class ChatEditorView extends StatelessWidget {
         chatsCubit.addChat(chat);
       }
     }
-      
+
     Navigator.pop(context);
   }
 
@@ -111,7 +111,7 @@ class ChatEditorView extends StatelessWidget {
           ),
         ),
         onChanged: (value) =>
-          context.read<ChatEditorCubit>().changeTitle(value),
+            context.read<ChatEditorCubit>().changeTitle(value),
       ),
     );
   }
@@ -125,18 +125,17 @@ class ChatEditorView extends StatelessWidget {
         itemCount: icons.length,
         itemBuilder: (_, index) {
           return BlocBuilder<ChatEditorCubit, ChatEditorState>(
-            buildWhen: (previous, current) =>
-                previous.iconIndex != current.iconIndex,
-            builder: (context, state) {
-              return IconView(
-                icon: icons[index],
-                isSelected: index == state.iconIndex,
-                size: 80,
-                onTap: () =>
-                  context.read<ChatEditorCubit>().selectIcon(index),
-              );
-            }
-          );
+              buildWhen: (previous, current) =>
+                  previous.iconIndex != current.iconIndex,
+              builder: (context, state) {
+                return IconView(
+                  icon: icons[index],
+                  isSelected: index == state.iconIndex,
+                  size: 80,
+                  onTap: () =>
+                      context.read<ChatEditorCubit>().selectIcon(index),
+                );
+              });
         },
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
@@ -148,9 +147,9 @@ class ChatEditorView extends StatelessWidget {
   Widget _createFloatingActionButton(BuildContext context) {
     return BlocBuilder<ChatEditorCubit, ChatEditorState>(
       buildWhen: (prev, curr) =>
-        (prev.title.isEmpty && curr.title.isNotEmpty) ||
-        (prev.title.isNotEmpty && curr.title.isEmpty) ||
-        (prev.title.isNotEmpty && prev.iconIndex != curr.iconIndex),
+          (prev.title.isEmpty && curr.title.isNotEmpty) ||
+          (prev.title.isNotEmpty && curr.title.isEmpty) ||
+          (prev.title.isNotEmpty && prev.iconIndex != curr.iconIndex),
       builder: (context, state) {
         final icon = state.title.isNotEmpty ? Icons.done : Icons.close;
         return FloatingActionButton(

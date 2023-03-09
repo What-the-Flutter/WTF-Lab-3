@@ -68,14 +68,12 @@ class _CustomThemeState extends State<CustomTheme> {
   void initState() {
     super.initState();
 
-    _saver.read().then(
-      (theme) {
-        setState(() {
-          _theme = AppThemes.getThemeFromKey(theme);
-          _currentKey = theme;  
-        });
-      }
-    );    
+    _saver.read().then((theme) {
+      setState(() {
+        _theme = AppThemes.getThemeFromKey(theme);
+        _currentKey = theme;
+      });
+    });
   }
 
   @override

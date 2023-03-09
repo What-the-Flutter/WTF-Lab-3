@@ -16,7 +16,7 @@ class LocalStorageChatsApi implements ChatsApi {
     _database = openDatabase(
       join(await getDatabasesPath(), databasePath),
       onCreate: _onCreate,
-      version: version, 
+      version: version,
     );
   }
 
@@ -49,14 +49,14 @@ class LocalStorageChatsApi implements ChatsApi {
         is_custom INTEGER NOT NULL
       )''');
   }
-  
+
   @override
   Future<List<ChatEntity>> loadChats() async {
     if (_database == null) {
       await _init();
     }
 
-    final db = await _database!; 
+    final db = await _database!;
 
     final jsonMap = await db.query(chatsTable);
     return List.generate(
@@ -64,7 +64,7 @@ class LocalStorageChatsApi implements ChatsApi {
       (i) => ChatEntity.fromJson(jsonMap[i]),
     );
   }
-  
+
   @override
   Future<void> saveChats(Iterable<ChatEntity> chats) async {
     if (_database == null) {
@@ -82,7 +82,7 @@ class LocalStorageChatsApi implements ChatsApi {
       );
     }
   }
-  
+
   @override
   Future<List<EventEntity>> loadEvents() async {
     if (_database == null) {
@@ -96,7 +96,7 @@ class LocalStorageChatsApi implements ChatsApi {
       (i) => EventEntity.fromJson(jsonMap[i]),
     );
   }
-  
+
   @override
   Future<void> saveEvents(Iterable<EventEntity> events) async {
     if (_database == null) {
@@ -114,7 +114,7 @@ class LocalStorageChatsApi implements ChatsApi {
       );
     }
   }
-  
+
   @override
   Future<List<CategoryEntity>> loadCategories() async {
     if (_database == null) {
@@ -128,10 +128,10 @@ class LocalStorageChatsApi implements ChatsApi {
       (i) => CategoryEntity.fromJson(jsonMap[i]),
     );
   }
-  
+
   @override
   Future<void> saveCategories(Iterable<CategoryEntity> categories) async {
-     if (_database == null) {
+    if (_database == null) {
       await _init();
     }
 
@@ -146,5 +146,4 @@ class LocalStorageChatsApi implements ChatsApi {
       );
     }
   }
-  
 }
