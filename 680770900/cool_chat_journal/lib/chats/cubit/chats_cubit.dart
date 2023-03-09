@@ -11,7 +11,7 @@ class ChatsCubit extends Cubit<ChatsState> {
 
   void updateChats() async {
     if (!state.status.isLoading) {
-      emit(state.copyWith(status: ChatsStatus.loading));
+      emit(state.copyWith(status: StateStatus.loading));
 
       final chats = await _chatsRepository.loadChats();
 
@@ -20,7 +20,22 @@ class ChatsCubit extends Cubit<ChatsState> {
       emit(
         state.copyWith( 
           chats: chats,
-          status: ChatsStatus.success,
+          status: StateStatus.success,
+        ),
+      );
+    }
+  }
+
+  void updateCategories() async {
+    if (!state.categoriesStatus.isLoading) {
+      emit(state.copyWith(categoriesStatus: StateStatus.loading));
+      
+      final categories = await _chatsRepository.loadCategories();
+      
+      emit(
+        state.copyWith(
+          categories: categories,
+          categoriesStatus: StateStatus.initial,
         ),
       );
     }

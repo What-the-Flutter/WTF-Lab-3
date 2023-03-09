@@ -1,4 +1,5 @@
 import 'package:chats_api/chats_api.dart';
+import 'package:collection/collection.dart';
 
 import 'models/models.dart';
 
@@ -11,8 +12,7 @@ class ChatsRepository {
 
   Future<List<Chat>> loadChats() async {
     final chatsEntity = await chatsApi.loadChats();
-    final eventsEntity = await chatsApi.loadEvents();
-    final events = eventsEntity.map(Event.fromEventEntity);
+    final events = await loadEvents();
     return chatsEntity
       .map(
         (chat) => Chat
@@ -26,13 +26,60 @@ class ChatsRepository {
       .toList();
   }
 
-  Future<List<Event>> loadEvents(String chatId) async {
+  Future<List<Event>> loadEvents() async {
     final eventsEntity = await chatsApi.loadEvents();
+    final categoriesEntity = await chatsApi.loadCategories();
+
     return eventsEntity
-      .where((event) => event.chatId == chatId)
-      .map(Event.fromEventEntity)
+      .map((event) {
+        final categoryEntity = categoriesEntity
+          .firstWhereOrNull((category) => category.id == event.category);
+
+        final NullWrapper<Category?>? category;
+        if (categoryEntity != null) {
+          category = NullWrapper<Category?>(
+            Category.fromCategoryEntity(categoryEntity)
+          );
+        } else {
+          category = null;
+        }
+
+        return Event.fromEventEntity(event).copyWith(category: category);
+      }
+      )
       .toList();
   } 
+
+  Future<List<Category>> loadCategories() async {
+    final categoriesEntity = await chatsApi.loadCategories();
+
+    if (categoriesEntity.isEmpty) {
+      await saveBasicCategories();
+      return Category.basic;
+    } else {
+      return categoriesEntity.map(Category.fromCategoryEntity).toList();
+    }
+  }
+
+  Future<void> saveBasicCategories() async {
+    await chatsApi.saveCategories(
+      Category.basic.map((category) => category.toCategoryEntity()),
+    );
+  }
+
+  Future<void> addCategory(Category category) async {
+    final categoryEntity = category.toCategoryEntity();
+    final categories = await chatsApi.loadCategories();
+    categories.add(categoryEntity);
+    await chatsApi.saveCategories(categories);
+  }
+
+  Future<void> deleteCategory(String categoryId) async {
+    final categories = await chatsApi.loadCategories();
+    await chatsApi.saveCategories(
+      categories.where((category) => category.id != categoryId),
+    ); 
+  }
 
   Future<void> addChat(Chat chat) async {
     final chatEntity = chat.toChatEntity();

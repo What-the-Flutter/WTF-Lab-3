@@ -4,6 +4,7 @@ import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../chats/cubit/chats_cubit.dart';
 import '../cubit/chat_cubit.dart';
 
 class BottomPanel extends StatefulWidget {
@@ -155,7 +156,7 @@ class _BottomPanelState extends State<BottomPanel> {
   }
 
   Widget _createCategoriesList() {
-    final categories = Category.values;
+    final categories = context.read<ChatsCubit>().state.categories;
     return SizedBox(
       height: 65,
       child: Row(

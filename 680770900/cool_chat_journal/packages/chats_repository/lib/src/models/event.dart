@@ -1,34 +1,8 @@
 import 'package:chats_api/chats_api.dart';
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-enum Category {
-  movie,
-  fastFood,
-  workout,
-  sports,
-  laundry,
-}
-
-extension CategoryX on Category {
-  String get title => name[0].toUpperCase() + name.substring(1);
-  IconData get icon {
-    switch (this) {
-      case Category.movie:
-        return Icons.theaters;
-      case Category.fastFood:
-        return Icons.fastfood;
-      case Category.workout:
-        return Icons.fitness_center;
-      case Category.sports:
-        return Icons.sports_basketball;
-      case Category.laundry:
-        return Icons.local_laundry_service;
-    }
-  }
-}
+import 'models.dart';
 
 class NullWrapper<T> {
   final T value;
@@ -51,7 +25,7 @@ class Event extends Equatable {
     required this.isImage,
     required this.isFavorite,
     required this.changeTime,
-    required this.category,
+    this.category,
   }) : id = id ?? const Uuid().v4();
 
   factory Event.fromEventEntity(EventEntity eventEntity) =>
@@ -62,9 +36,6 @@ class Event extends Equatable {
       isImage: eventEntity.isImage,
       isFavorite: eventEntity.isFavorite,
       changeTime: eventEntity.changeTime,
-      category: Category.values.firstWhereOrNull(
-        (e) => e.name == eventEntity.category,
-      ),
     ); 
 
   EventEntity toEventEntity() =>
@@ -75,7 +46,7 @@ class Event extends Equatable {
       isImage: isImage,
       isFavorite: isFavorite,
       changeTime: changeTime,
-      category: category?.name,
+      category: category?.id,
     );
 
   Event copyWith({
@@ -85,7 +56,7 @@ class Event extends Equatable {
     bool? isImage,
     bool? isFavorite,
     DateTime? changeTime,
-    NullWrapper<Category>? category,
+    NullWrapper<Category?>? category,
   }) => Event(
     id: id ?? this.id,
     chatId: chatId ?? this.chatId,

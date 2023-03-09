@@ -14,7 +14,7 @@ class ChatState extends Equatable {
   final bool showCategories;
   final Category? selectedCategory;
 
-  ChatState({
+  const ChatState({
     required this.chat,
     this.isEditMode = false,
     this.isFavoriteMode = false,
@@ -44,11 +44,11 @@ class ChatState extends Equatable {
 
   @override
   List<Object?> get props => [
-        chat,
-        isEditMode,
-        isFavoriteMode,
-        selectedEventsIds,
-        showCategories,
-        selectedCategory
-      ];
+    chat,
+    isEditMode,
+    isFavoriteMode,
+    selectedEventsIds,
+    showCategories,
+    selectedCategory,
+  ];
 }

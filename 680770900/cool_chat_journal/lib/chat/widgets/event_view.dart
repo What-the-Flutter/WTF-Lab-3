@@ -88,7 +88,7 @@ class _EventViewState extends State<EventView> {
                   children: [
                     Icon(widget.event.category!.icon),
                     const SizedBox(width: 10),
-                    Text(widget.event.category!.name),
+                    Text(widget.event.category!.title),
                   ],
                 ),
               ),

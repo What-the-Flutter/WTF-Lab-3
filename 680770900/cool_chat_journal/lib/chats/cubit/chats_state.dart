@@ -1,31 +1,39 @@
 part of 'chats_cubit.dart';
 
-enum ChatsStatus { initial, loading, success, failure }
+enum StateStatus { initial, loading, success, failure }
 
-extension ChatsStatusX on ChatsStatus {
-  bool get isInitial => this == ChatsStatus.initial;
-  bool get isLoading => this == ChatsStatus.loading;
-  bool get isSuccess => this == ChatsStatus.success;
-  bool get isFailure => this == ChatsStatus.failure;
+extension ChatsStatusX on StateStatus {
+  bool get isInitial => this == StateStatus.initial;
+  bool get isLoading => this == StateStatus.loading;
+  bool get isSuccess => this == StateStatus.success;
+  bool get isFailure => this == StateStatus.failure;
 }
 
 class ChatsState extends Equatable {
   final List<Chat> chats;
-  final ChatsStatus status;
+  final StateStatus status;
+  final List<Category> categories;
+  final StateStatus categoriesStatus;
 
   const ChatsState({
     this.chats = const [],
-    this.status = ChatsStatus.initial,
+    this.categories = const [],
+    this.status = StateStatus.initial,
+    this.categoriesStatus = StateStatus.initial,
   });
 
   ChatsState copyWith({
     List<Chat>? chats,
-    ChatsStatus? status,
+    StateStatus? status,
+    List<Category>? categories,
+    StateStatus? categoriesStatus,
   }) => ChatsState(
     chats: chats ?? this.chats,
     status: status ?? this.status,
+    categories: categories ?? this.categories,
+    categoriesStatus: categoriesStatus ?? this.categoriesStatus,
   );
 
   @override
-  List<Object> get props => [chats, status];
+  List<Object> get props => [chats, status, categories, categoriesStatus];
 }

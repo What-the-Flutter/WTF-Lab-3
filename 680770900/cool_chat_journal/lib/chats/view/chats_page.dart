@@ -51,6 +51,7 @@ class _ChatsViewState extends State<ChatsView> {
   void initState() {
     super.initState();
     context.read<ChatsCubit>().updateChats();
+    context.read<ChatsCubit>().updateCategories();
   }
 
   @override
