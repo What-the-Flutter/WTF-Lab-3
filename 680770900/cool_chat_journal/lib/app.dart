@@ -1,9 +1,9 @@
+import 'package:chats_repository/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_storage_chats_api/local_storage_chats_api.dart';
 
-import 'cubit/chats_cubit.dart';
-import 'model/chats_state.dart';
-import 'pages/home_page/home_page.dart';
+import 'chats/chats.dart';
 import 'themes/custom_theme.dart';
 
 class CoolChatJournalApp extends StatelessWidget {
@@ -11,21 +11,19 @@ class CoolChatJournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localStorageChatsApi = LocalStorageChatsApi();
+
     return CustomTheme(
-      child: Builder(
-        builder: (context) {
-          return BlocProvider(
-            create: (_) => ChatsCubit(
-              initialState: const ChatsState(),
-            ),
-            child: MaterialApp(
-              title: 'Cool Chat Journal',
-              theme: CustomTheme.of(context),
-              home: const HomePage(appName: 'Cool Chat Journal'),
-            ),
-          );
-        },
-      ),
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          title: 'Cool Chat Journal',
+          theme: CustomTheme.of(context),
+          home: RepositoryProvider.value(
+            value: ChatsRepository(chatsApi: localStorageChatsApi),
+            child: const ChatsPage(),
+          ),
+        );
+      }),
     );
   }
 }
