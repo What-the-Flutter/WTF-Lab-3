@@ -7,7 +7,8 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({required HomeState initState}) : super(initState);
 
   void updateChats(ChatModel newChat) {
-    final index = state.chats.indexWhere((element) => element.id == newChat.id);
+    final index =
+        state.chats.indexWhere((ChatModel chat) => chat.id == newChat.id);
     if (index != -1) {
       final chats = state.chats;
       chats[index] = newChat;
@@ -30,13 +31,12 @@ class HomeCubit extends Cubit<HomeState> {
 
   void deleteChat(chatId) {
     final chats = List<ChatModel>.from(state.chats)
-      ..removeWhere((element) => element.id == chatId);
+      ..removeWhere((ChatModel chat) => chat.id == chatId);
     emit(state.copyWith(newChats: chats));
   }
 
   void togglePinState(chatId) {
-    final chat =
-        state.chats.where((ChatModel element) => element.id == chatId).first;
+    final chat = state.chats.where((ChatModel chat) => chat.id == chatId).first;
 
     updateChats(
       chat.copyWith(

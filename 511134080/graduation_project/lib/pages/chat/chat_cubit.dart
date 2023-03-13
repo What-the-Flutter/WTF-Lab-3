@@ -18,7 +18,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void init(chatId) {
     final chat = homeCubit.state.chats
-        .where((ChatModel element) => element.id == chatId)
+        .where((ChatModel chatModel) => chatModel.id == chatId)
         .first;
 
     emit(
@@ -53,15 +53,17 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void editSelectedCard(newTitle) {
+  void editSelectedCard(newTitle, int newCategory) {
     final chat = state.chat;
     final cards = List<EventCardModel>.from(chat.cards);
-    final selectedCard = cards.where((element) => element.isSelected).first;
+    final selectedCard =
+        cards.where((EventCardModel card) => card.isSelected).first;
 
     final index = cards.indexOf(selectedCard);
     cards[index] = selectedCard.copyWith(
       newTitle: newTitle,
       isSelected: false,
+      newCategory: newCategory,
     );
 
     updateChat(
@@ -97,7 +99,8 @@ class ChatCubit extends Cubit<ChatState> {
     String text = '';
     final chat = state.chat;
 
-    for (final card in chat.cards.where((element) => element.isSelected)) {
+    for (final card in chat.cards
+        .where((EventCardModel cardModel) => cardModel.isSelected)) {
       text += '${card.title}\n';
     }
 
@@ -113,7 +116,7 @@ class ChatCubit extends Cubit<ChatState> {
     final chat = state.chat;
 
     final cards = List<EventCardModel>.from(chat.cards)
-      ..removeWhere((element) => element.isSelected);
+      ..removeWhere((EventCardModel cardModel) => cardModel.isSelected);
 
     final lastEvent = cards.isNotEmpty ? cards.last : null;
 
@@ -149,7 +152,10 @@ class ChatCubit extends Cubit<ChatState> {
     final index = chat.cards.indexOf(cardModel);
     final cards = List<EventCardModel>.from(chat.cards);
 
-    if (cards.where((element) => element.isSelected).length == 1 &&
+    if (cards
+                .where((EventCardModel cardModel) => cardModel.isSelected)
+                .length ==
+            1 &&
         cardModel.isSelected) {
       cancelSelectionMode();
     } else {

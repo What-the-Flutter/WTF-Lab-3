@@ -27,7 +27,7 @@ class _ChatPageState extends State<ChatPage> {
   final _textFieldController = TextEditingController();
   var _isEditingMode = false;
   var _isChoosingCategory = false;
-  var _categoryIcon = Icons.bubble_chart;
+  var _categoryIcon = categoryIcons[0];
 
   final FocusNode _myFocusNode = FocusNode();
 
@@ -70,14 +70,14 @@ class _ChatPageState extends State<ChatPage> {
         title: title,
         time: DateTime.now(),
         id: UniqueKey(),
-        categoryIndex: categoryIcons.contains(_categoryIcon)
-            ? categoryIcons.indexOf(_categoryIcon)
-            : null,
+        categoryIndex: categoryIcons.indexOf(_categoryIcon),
       );
       context.read<ChatCubit>().addEventCard(cardModel);
       _clearTextInput();
+      _categoryIcon = categoryIcons[0];
     } else {
-      context.read<ChatCubit>().editSelectedCard(title);
+      final index = categoryIcons.indexOf(_categoryIcon);
+      context.read<ChatCubit>().editSelectedCard(title, index);
       _isEditingMode = false;
       _myFocusNode.unfocus();
       _clearTextInput();
@@ -159,6 +159,80 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  IconButton _createCloseButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.close,
+      ),
+      onPressed: () {
+        context.read<ChatCubit>().cancelSelectionMode();
+        if (_isEditingMode) {
+          _isEditingMode = false;
+          _textFieldController.text = '';
+          _categoryIcon = categoryIcons[0];
+          _myFocusNode.unfocus();
+        }
+      },
+    );
+  }
+
+  IconButton _createEditButton(ChatModel chat) {
+    return IconButton(
+      icon: const Icon(
+        Icons.edit,
+      ),
+      onPressed: onEditButtonPressed(chat),
+      disabledColor: Theme.of(context).primaryColor,
+    );
+  }
+
+  onEditButtonPressed(ChatModel chat) {
+    return List<EventCardModel>.from(chat.cards
+                    .where((EventCardModel cardModel) => cardModel.isSelected))
+                .length >
+            1
+        ? null
+        : () {
+            _isEditingMode = true;
+            final card = chat.cards
+                .where((EventCardModel card) => card.isSelected)
+                .first;
+            _textFieldController.text = card.title;
+
+            setState(
+              () {
+                _categoryIcon = categoryIcons[card.categoryIndex];
+              },
+            );
+
+            _myFocusNode.requestFocus();
+          };
+  }
+
+  IconButton _createReplyButton(state) {
+    return IconButton(
+      icon: const Icon(
+        Icons.reply,
+      ),
+      onPressed: () {
+        _onReplyChosen(state);
+      },
+    );
+  }
+
+  Future _onReplyChosen(HomeState state) async {
+    return await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text(
+              'Choose the chat you want to relocate selected events:'),
+          children: _createOptions(state, context),
+        );
+      },
+    );
+  }
+
   List<SimpleDialogOption> _createOptions(
     HomeState state,
     BuildContext context,
@@ -176,35 +250,51 @@ class _ChatPageState extends State<ChatPage> {
     ];
   }
 
-  Future _onReplyChosen(HomeState state) async {
-    return await showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: const Text(
-              'Choose the chat you want to relocate selected events:'),
-          children: _createOptions(state, context),
+  IconButton _createCopyButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.copy,
+      ),
+      onPressed: () {
+        context.read<ChatCubit>().copySelectedCards();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Copied to the clipboard!',
+            ),
+          ),
         );
       },
     );
   }
 
-  onEditButtonPressed(ChatModel chat) {
-    return List<EventCardModel>.from(chat.cards
-                .where((EventCardModel element) => element.isSelected)).length >
-            1
-        ? null
-        : () {
-            _isEditingMode = true;
-            _textFieldController.text =
-                chat.cards.where((element) => element.isSelected).first.title;
-            _myFocusNode.requestFocus();
-          };
+  IconButton _createBookMarkButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.bookmark_border_outlined,
+      ),
+      onPressed: () {
+        context.read<ChatCubit>().manageFavouritesFromSelectionMode();
+      },
+    );
+  }
+
+  IconButton _createDeleteButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.delete,
+      ),
+      onPressed: () {
+        context.read<ChatCubit>().deleteSelectedCards();
+      },
+    );
   }
 
   AppBar _createSelectionModeAppBar(chat, HomeState state) {
-    final length =
-        chat.cards.where((EventCardModel element) => element.isSelected).length;
+    final length = chat.cards
+        .where((EventCardModel cardModel) => cardModel.isSelected)
+        .length;
 
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
@@ -220,67 +310,13 @@ class _ChatPageState extends State<ChatPage> {
         color: Colors.white,
         size: 30,
       ),
-      leading: IconButton(
-        icon: const Icon(
-          Icons.close,
-        ),
-        onPressed: () {
-          context.read<ChatCubit>().cancelSelectionMode();
-          if (_isEditingMode) {
-            _isEditingMode = false;
-            _textFieldController.text = '';
-            _myFocusNode.unfocus();
-          }
-        },
-      ),
+      leading: _createCloseButton(),
       actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.edit,
-          ),
-          onPressed: onEditButtonPressed(chat),
-          disabledColor: Theme.of(context).primaryColor,
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.reply,
-          ),
-          onPressed: () {
-            _onReplyChosen(state);
-          },
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.copy,
-          ),
-          onPressed: () {
-            context.read<ChatCubit>().copySelectedCards();
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Copied to the clipboard!',
-                ),
-              ),
-            );
-          },
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.bookmark_border_outlined,
-          ),
-          onPressed: () {
-            context.read<ChatCubit>().manageFavouritesFromSelectionMode();
-          },
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.delete,
-          ),
-          onPressed: () {
-            context.read<ChatCubit>().deleteSelectedCards();
-          },
-        ),
+        _createEditButton(chat),
+        _createReplyButton(state),
+        _createCopyButton(),
+        _createBookMarkButton(),
+        _createDeleteButton(),
       ],
     );
   }
@@ -323,8 +359,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   AppBar _createAppBar(BuildContext context, ChatModel chat, HomeState state) {
-    if (List<EventCardModel>.from(
-        chat.cards.where((element) => element.isSelected)).isNotEmpty) {
+    if (List<EventCardModel>.from(chat.cards
+            .where((EventCardModel cardModel) => cardModel.isSelected))
+        .isNotEmpty) {
       return _createSelectionModeAppBar(chat, state);
     } else {
       return _createDefaultAppBar(chat);
@@ -337,48 +374,115 @@ class _ChatPageState extends State<ChatPage> {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: ListView.builder(
-          itemCount: categoryIcons.length,
+          itemCount: categoryIcons.length - 1,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(96)),
-                      color: index == 0
-                          ? Theme.of(context).canvasColor
-                          : Theme.of(context).hoverColor,
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(96)),
+                        color: index == 0
+                            ? Theme.of(context).canvasColor
+                            : Theme.of(context).hoverColor,
+                      ),
+                      child: Icon(
+                        categoryIcons[index + 1],
+                        size: 32,
+                        color: index == 0 ? Colors.red : Colors.white,
+                      ),
                     ),
-                    child: Icon(
-                      categoryIcons[index],
-                      size: 32,
-                      color: index == 0 ? Colors.red : Colors.white,
-                    ),
+                    onTap: () {
+                      setState(() {
+                        if (index != 0) {
+                          _categoryIcon = categoryIcons[index + 1];
+                        } else {
+                          _categoryIcon = categoryIcons[0];
+                        }
+                        _isChoosingCategory = false;
+                      });
+                    },
                   ),
-                  onTap: () {
-                    setState(() {
-                      if (index != 0) {
-                        _categoryIcon = categoryIcons[index];
-                      } else {
-                        _categoryIcon = Icons.bubble_chart;
-                      }
-                      _isChoosingCategory = false;
-                    });
-                  },
-                ),
-                Text(
-                  categoryTitle[index],
-                ),
-              ],
+                  Text(
+                    categoryTitle[index + 1],
+                  ),
+                ],
+              ),
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _createBottomBar() {
+    return SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(
+                    () {
+                      _isChoosingCategory = !_isChoosingCategory;
+                    },
+                  );
+                },
+                icon: Icon(
+                  _categoryIcon,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+              Expanded(
+                child: _createTextField(),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.camera_alt_rounded,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextField _createTextField() {
+    return TextField(
+      controller: _textFieldController,
+      focusNode: _myFocusNode,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        hintText: 'Enter event',
+        filled: true,
+        fillColor: Theme.of(context).disabledColor.withAlpha(24),
+      ),
+      onSubmitted: (String? value) {
+        if (value != '') {
+          _onEnterEvent(value!);
+        }
+      },
+      onTap: () {
+        setState(
+          () {
+            _isChoosingCategory = false;
+          },
+        );
+      },
     );
   }
 
@@ -390,7 +494,9 @@ class _ChatPageState extends State<ChatPage> {
         final chat = state.chat;
         final shouldShowMessage = chat.cards.isEmpty ||
             chat.isShowingFavourites &&
-                chat.cards.where((element) => element.isFavourite).isEmpty;
+                chat.cards
+                    .where((EventCardModel cardModel) => cardModel.isFavourite)
+                    .isEmpty;
 
         return Scaffold(
           appBar: _createAppBar(context, chat, context.read<HomeCubit>().state),
@@ -400,67 +506,8 @@ class _ChatPageState extends State<ChatPage> {
               shouldShowMessage
                   ? _returnHintMessage(chat)
                   : _returnEvents(state),
-              Container(
-                child: _isChoosingCategory ? _createCategoriesChoice() : null,
-              ),
-              Expanded(
-                flex: 1,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            setState(
-                              () {
-                                _isChoosingCategory = !_isChoosingCategory;
-                              },
-                            );
-                          },
-                          icon: Icon(
-                            _categoryIcon,
-                            color: Theme.of(context).primaryColorDark,
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: _textFieldController,
-                            focusNode: _myFocusNode,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              hintText: 'Enter event',
-                              filled: true,
-                              fillColor:
-                                  Theme.of(context).disabledColor.withAlpha(24),
-                            ),
-                            onSubmitted: (String? value) {
-                              if (value != '') {
-                                _onEnterEvent(value!);
-                              }
-                            },
-                            onTap: () {
-                              setState(
-                                () {
-                                  _isChoosingCategory = false;
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.camera_alt_rounded,
-                            color: Theme.of(context).primaryColorDark,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              _isChoosingCategory ? _createCategoriesChoice() : Container(),
+              _createBottomBar(),
             ],
           ),
         );

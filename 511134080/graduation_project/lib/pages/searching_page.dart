@@ -99,21 +99,20 @@ class _SearchingPageState extends State<SearchingPage> {
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
         color: Theme.of(context).primaryColorDark.withAlpha(30),
-        child: const Column(
+        child: Column(
           children: [
-            Text(
-              'This is the page where you can search events!\n',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+            Icon(
+              Icons.search,
+              size: 64,
+              color: Theme.of(context).dividerColor,
             ),
-            Text(
-              '??? You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
+            const SizedBox(
+              height: 16,
+            ),
+            const Text(
+              'Please enter a search query to begin searching',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontWeight: FontWeight.w400,
                 fontSize: 16,
               ),
             )
@@ -128,7 +127,7 @@ class _SearchingPageState extends State<SearchingPage> {
         child: const Column(
           children: [
             Text(
-              'Not found!\n',
+              'No search results available\n',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
@@ -136,7 +135,7 @@ class _SearchingPageState extends State<SearchingPage> {
               ),
             ),
             Text(
-              'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
+              'No entries match the given search query. Please try again.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
@@ -163,7 +162,7 @@ class _SearchingPageState extends State<SearchingPage> {
         ? []
         : List<EventCardModel>.from(
             widget.cards.reversed.where(
-              (EventCardModel card) => card.title.startsWith(input),
+              (EventCardModel card) => card.title.contains(input),
             ),
           );
 

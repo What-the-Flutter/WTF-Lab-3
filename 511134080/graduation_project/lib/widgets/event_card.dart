@@ -26,6 +26,7 @@ class EventCard extends StatelessWidget {
           height: 5,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.check_circle,
@@ -90,13 +91,13 @@ class EventCard extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  child: cardModel.categoryIndex != null
+                  child: cardModel.categoryIndex != 0
                       ? Row(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
-                                categoryIcons[cardModel.categoryIndex!],
+                                categoryIcons[cardModel.categoryIndex],
                                 size: 32,
                                 color: Theme.of(context).primaryColorLight,
                               ),
@@ -104,7 +105,7 @@ class EventCard extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                categoryTitle[cardModel.categoryIndex!],
+                                categoryTitle[cardModel.categoryIndex],
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,

@@ -16,9 +16,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Widget _createListTile(int index, List<ChatModel> chats) {
-    final sortedChats =
-        List<ChatModel>.from(chats.where((element) => element.isPinned))
-          ..addAll(chats.where((element) => !element.isPinned));
+    final sortedChats = List<ChatModel>.from(
+        chats.where((ChatModel chatModel) => chatModel.isPinned))
+      ..addAll(chats.where((ChatModel chatModel) => !chatModel.isPinned));
     return EventListTile(
       chatId: sortedChats[index].id,
     );
@@ -60,6 +60,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _createBotButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.smart_toy_outlined,
+          size: 32,
+          color: Colors.grey.shade800,
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        const Text(
+          'Questionnaire Bot',
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _createBody() {
     return Column(
       children: [
@@ -71,25 +93,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(16),
             ),
             tileColor: Theme.of(context).hintColor,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.smart_toy_outlined,
-                  size: 32,
-                  color: Colors.grey.shade800,
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                const Text(
-                  'Questionnaire Bot',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ],
-            ),
+            title: _createBotButton(),
             visualDensity: const VisualDensity(vertical: 3),
           ),
         ),

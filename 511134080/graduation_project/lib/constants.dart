@@ -166,6 +166,7 @@ const icons = [
 ];
 
 const categoryIcons = [
+  Icons.bubble_chart,
   Icons.cancel,
   Icons.local_movies,
   Icons.fastfood,
@@ -176,6 +177,7 @@ const categoryIcons = [
 ];
 
 const categoryTitle = [
+  '',
   'Cancel',
   'Movie',
   'FastFood',
