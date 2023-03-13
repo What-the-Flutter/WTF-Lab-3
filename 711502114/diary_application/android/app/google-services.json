@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "664437079551",
+    "project_id": "chat-journal-328e1",
+    "storage_bucket": "chat-journal-328e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664437079551:android:83059572885c3276b23bca",
+        "android_client_info": {
+          "package_name": "com.company.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "664437079551-knltsujel79t4njoed456rf1u4bn13vc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlXf9lwzaPZCzvX6E4nouMetKDNIJL5Vw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "664437079551-knltsujel79t4njoed456rf1u4bn13vc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664437079551:android:339fbfa80557f5b3b23bca",
+        "android_client_info": {
+          "package_name": "com.example.diary_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "664437079551-knltsujel79t4njoed456rf1u4bn13vc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlXf9lwzaPZCzvX6E4nouMetKDNIJL5Vw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "664437079551-knltsujel79t4njoed456rf1u4bn13vc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
