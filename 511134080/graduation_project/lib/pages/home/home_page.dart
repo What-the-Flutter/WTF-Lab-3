@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/pages/home/home_cubit.dart';
 import 'package:graduation_project/pages/managing_page/managing_page.dart';
 
-import '../../cubits/theme_cubit.dart';
 import '../../models/chat_model.dart';
+import '../../theme/theme_cubit.dart';
 import '../../widgets/event_list_title.dart';
 
 class HomePage extends StatefulWidget {

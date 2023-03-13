@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/cubits/theme_cubit.dart';
 import 'package:graduation_project/pages/chat/chat_cubit.dart';
 import 'package:graduation_project/pages/home/home_cubit.dart';
 import 'package:graduation_project/pages/managing_page/managing_page_cubit.dart';
+import 'package:graduation_project/theme/theme_cubit.dart';
 
 import 'constants.dart';
 import 'pages/home/home_page.dart';
