@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/cubits/events_cubit.dart';
+import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/models/event_card_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../pages/chat/chat_cubit.dart';
 
 class EventCard extends StatelessWidget {
   final EventCardModel cardModel;
@@ -59,14 +61,14 @@ class EventCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (!cardModel.isSelectionMode) {
-          context.read<EventsCubit>().manageFavouriteEventCard(cardModel);
+          context.read<ChatCubit>().manageFavouriteEventCard(cardModel);
         } else {
-          context.read<EventsCubit>().manageSelectedEvent(cardModel);
+          context.read<ChatCubit>().manageSelectedEvent(cardModel);
         }
       },
       onLongPress: () {
         if (!cardModel.isSelectionMode) {
-          context.read<EventsCubit>().turnOnSelectionMode(cardModel);
+          context.read<ChatCubit>().turnOnSelectionMode(cardModel);
         }
       },
       child: Row(
@@ -85,7 +87,37 @@ class EventCard extends StatelessWidget {
                 bottomRight: Radius.circular(8),
               ),
             ),
-            child: _createEventCardContent(context),
+            child: Column(
+              children: [
+                Container(
+                  child: cardModel.categoryIndex != null
+                      ? Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                categoryIcons[cardModel.categoryIndex!],
+                                size: 32,
+                                color: Theme.of(context).primaryColorLight,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                categoryTitle[cardModel.categoryIndex!],
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : null,
+                ),
+                _createEventCardContent(context),
+              ],
+            ),
           ),
         ],
       ),

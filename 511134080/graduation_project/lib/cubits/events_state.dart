@@ -11,7 +11,7 @@ class EventsState {
 
   EventCardModel getLastEvent(chatId) => getChatById(chatId).cards.last;
 
-  EventsState copyWith(List<ChatModel>? newChats) {
+  EventsState copyWith({List<ChatModel>? newChats}) {
     return EventsState(chats: newChats ?? chats);
   }
 }

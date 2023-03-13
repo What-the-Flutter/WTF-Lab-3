@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/cubits/events_cubit.dart';
-import 'package:graduation_project/pages/edit_or_create_page.dart';
+import 'package:graduation_project/pages/home/home_cubit.dart';
+import 'package:graduation_project/pages/managing_page/managing_page.dart';
 
-import '../cubits/theme_cubit.dart';
-import '../models/chat_model.dart';
-import '../widgets/event_list_title.dart';
+import '../../cubits/theme_cubit.dart';
+import '../../models/chat_model.dart';
+import '../../widgets/event_list_title.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         Expanded(
-          child: BlocBuilder<EventsCubit, EventsState>(
+          child: BlocBuilder<HomeCubit, HomeState>(
             builder: (_, state) {
               return ListView.separated(
                 itemCount: state.chats.length,
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const CreatingPage()));
+                MaterialPageRoute(builder: (context) => const ManagingPage()));
           },
           elevation: 16,
           child: const Icon(

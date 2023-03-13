@@ -13,7 +13,7 @@ class EventsCubit extends Cubit<EventsState> {
     final chats = state.chats;
     final index = state.chats.indexOf(oldChat);
     chats[index] = newChat;
-    emit(state.copyWith(chats));
+    emit(state.copyWith(newChats: chats));
   }
 
   void addChat(int iconId, String title) {
@@ -28,13 +28,13 @@ class EventsCubit extends Cubit<EventsState> {
     ];
 
     final chats = List<ChatModel>.from(chat)..addAll(state.chats);
-    emit(state.copyWith(chats));
+    emit(state.copyWith(newChats: chats));
   }
 
   void deleteChat(chatId) {
     final chats = List<ChatModel>.from(state.chats)
       ..removeWhere((element) => element.id == chatId);
-    emit(state.copyWith(chats));
+    emit(state.copyWith(newChats: chats));
   }
 
   void editChat(chatId, newIconId, newTitle) {
@@ -79,13 +79,20 @@ class EventsCubit extends Cubit<EventsState> {
     final chat = state.getChatById(chatId);
 
     updateChat(
-        chat, chat.copyWith(pinned: !state.getChatById(chatId).isPinned));
+      chat,
+      chat.copyWith(
+        pinned: !state.getChatById(chatId).isPinned,
+      ),
+    );
   }
 
   void addEventCard(chatId, EventCardModel card) {
     final chat = state.getChatById(chatId);
     final cards = List<EventCardModel>.from(chat.cards)..add(card);
-    updateChat(chat, chat.copyWith(newCards: cards, newLastEvent: card));
+    updateChat(
+      chat,
+      chat.copyWith(newCards: cards, newLastEvent: card),
+    );
   }
 
   void editSelectedCard(chatId, newTitle) {
@@ -94,14 +101,18 @@ class EventsCubit extends Cubit<EventsState> {
     final selectedCard = cards.where((element) => element.isSelected).first;
 
     final index = cards.indexOf(selectedCard);
-    cards[index] = selectedCard.copyWith(newTitle: newTitle, isSelected: false);
+    cards[index] = selectedCard.copyWith(
+      newTitle: newTitle,
+      isSelected: false,
+    );
 
     updateChat(
-        chat,
-        chat.copyWith(
-          newCards: cards,
-          newLastEvent: cards.last,
-        ));
+      chat,
+      chat.copyWith(
+        newCards: cards,
+        newLastEvent: cards.last,
+      ),
+    );
 
     cancelSelectionMode(chatId);
   }
@@ -119,10 +130,11 @@ class EventsCubit extends Cubit<EventsState> {
     }
 
     updateChat(
-        chat,
-        chat.copyWith(
-          newCards: cards,
-        ));
+      chat,
+      chat.copyWith(
+        newCards: cards,
+      ),
+    );
   }
 
   Future<void> copySelectedCards(chatId) async {
@@ -134,7 +146,11 @@ class EventsCubit extends Cubit<EventsState> {
     }
 
     cancelSelectionMode(chatId);
-    await Clipboard.setData(ClipboardData(text: text));
+    await Clipboard.setData(
+      ClipboardData(
+        text: text,
+      ),
+    );
   }
 
   void deleteSelectedCards(chatId) {
@@ -167,7 +183,10 @@ class EventsCubit extends Cubit<EventsState> {
         );
       }
     }
-    updateChat(chat, chat.copyWith(newCards: cards));
+    updateChat(
+      chat,
+      chat.copyWith(newCards: cards),
+    );
     cancelSelectionMode(chatId);
   }
 
@@ -184,19 +203,12 @@ class EventsCubit extends Cubit<EventsState> {
       cancelSelectionMode(chat.id);
     } else {
       cards[index] = cardModel.copyWith(isSelected: !cardModel.isSelected);
-      updateChat(chat, chat.copyWith(newCards: cards));
+      updateChat(
+        chat,
+        chat.copyWith(newCards: cards),
+      );
     }
   }
-
-  /*void updateLastEvent(ChatModel chat) {
-    if (chat.cards.isNotEmpty) {
-      chat = chat.copyWith(newLastEventTitle: chat.cards.last.title);
-    } else {
-      chat = chat.copyWith(
-          newLastEventTitle: 'No events. Click here to create one');
-    }
-    notifyListeners();
-  }*/
 
   void manageFavouriteEventCard(EventCardModel cardModel) {
     final chatIndex =
@@ -207,14 +219,16 @@ class EventsCubit extends Cubit<EventsState> {
     final cards = List<EventCardModel>.from(chat.cards);
     cards[index] = cardModel.copyWith(isFavourite: !cardModel.isFavourite);
 
-    updateChat(chat, chat.copyWith(newCards: cards));
+    updateChat(
+      chat,
+      chat.copyWith(newCards: cards),
+    );
   }
 
   void turnOnSelectionMode(EventCardModel cardModel) {
     final chatIndex =
         state.chats.indexWhere((element) => element.cards.contains(cardModel));
     final chat = state.chats[chatIndex];
-
     final index = chat.cards.indexOf(cardModel);
     final cards = List<EventCardModel>.from(chat.cards);
     cards[index] = cardModel.copyWith(isSelected: true);
@@ -226,9 +240,10 @@ class EventsCubit extends Cubit<EventsState> {
     }
 
     updateChat(
-        chat,
-        chat.copyWith(
-          newCards: cards,
-        ));
+      chat,
+      chat.copyWith(
+        newCards: cards,
+      ),
+    );
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/cubits/events_cubit.dart';
 import 'package:graduation_project/models/chat_model.dart';
+import 'package:graduation_project/pages/managing_page/managing_page_cubit.dart';
 
-import '../constants.dart';
+import '../../constants.dart';
 
-class CreatingPage extends StatefulWidget {
-  const CreatingPage({
+class ManagingPage extends StatefulWidget {
+  const ManagingPage({
     Key? key,
     this.isCreatingNewPage = true,
     this.editingPage,
@@ -16,10 +16,10 @@ class CreatingPage extends StatefulWidget {
   final ChatModel? editingPage;
 
   @override
-  State<CreatingPage> createState() => _CreatingPageState();
+  State<ManagingPage> createState() => _ManagingPageState();
 }
 
-class _CreatingPageState extends State<CreatingPage> {
+class _ManagingPageState extends State<ManagingPage> {
   var _isSelectedIcon = true;
   late int _selectedIndex;
   final _controller = TextEditingController();
@@ -77,11 +77,13 @@ class _CreatingPageState extends State<CreatingPage> {
   void _creatingPage() {
     if (_controller.text != '') {
       if (widget.isCreatingNewPage) {
-        context.read<EventsCubit>().addChat(_selectedIndex, _controller.text);
+        context
+            .read<ManagingPageCubit>()
+            .addChat(_selectedIndex, _controller.text);
         Navigator.pop(context);
       } else {
         context
-            .read<EventsCubit>()
+            .read<ManagingPageCubit>()
             .editChat(widget.editingPage?.id, _selectedIndex, _controller.text);
         Navigator.pop(context);
         Navigator.pop(context);
