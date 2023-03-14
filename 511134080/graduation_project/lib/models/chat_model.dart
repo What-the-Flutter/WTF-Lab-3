@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:graduation_project/models/event_card_model.dart';
+
+import 'event_card_model.dart';
 
 @immutable
 class ChatModel {

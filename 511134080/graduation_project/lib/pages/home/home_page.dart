@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/pages/home/home_cubit.dart';
-import 'package:graduation_project/pages/managing_page/managing_page.dart';
 
 import '../../models/chat_model.dart';
 import '../../theme/theme_cubit.dart';
 import '../../widgets/event_list_title.dart';
+import '../managing_page/managing_page.dart';
+import 'home_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,9 +16,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Widget _createListTile(int index, List<ChatModel> chats) {
-    final sortedChats = List<ChatModel>.from(
-        chats.where((ChatModel chatModel) => chatModel.isPinned))
-      ..addAll(chats.where((ChatModel chatModel) => !chatModel.isPinned));
+    final sortedChats =
+        List<ChatModel>.from(chats.where((chatModel) => chatModel.isPinned))
+          ..addAll(chats.where((chatModel) => !chatModel.isPinned));
     return EventListTile(
       chatId: sortedChats[index].id,
     );
@@ -157,9 +157,14 @@ class _HomePageState extends State<HomePage> {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const ManagingPage()));
+          onPressed: () async {
+            final chat = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ManagingPage(),
+              ),
+            );
+            context.read<HomeCubit>().updateChats(chat);
           },
           elevation: 16,
           child: const Icon(

@@ -2,57 +2,95 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat_model.dart';
-import '../home/home_cubit.dart';
 
 part 'managing_page_state.dart';
 
 class ManagingPageCubit extends Cubit<ManagingPageState> {
-  final HomeCubit homeCubit;
   ManagingPageCubit({
-    required this.homeCubit,
     required ManagingPageState initState,
   }) : super(initState);
 
-  void addChat(int iconId, String title) {
-    final chat = [
-      ChatModel(
-        iconId: iconId,
-        title: title,
-        id: UniqueKey(),
-        date: DateTime.now(),
-        cards: const [],
-      )
-    ];
+  void initState(ChatModel? chat) {
+    if (chat == null) {
+      emit(
+        state.copyWith(
+          index: 0,
+          creatingPage: true,
+          newInputText: '',
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          index: chat.iconId,
+          creatingPage: false,
+          newInputText: chat.title,
+          newTitle: 'Edit the Page \'${chat.title}\'',
+        ),
+      );
+    }
+  }
 
-    final chats = List<ChatModel>.from(chat)..addAll(state.chats);
+  void updateSelectedIcon(int index) {
+    emit(
+      state.copyWith(index: index),
+    );
+  }
+
+  void updateInput(String input) {
+    emit(
+      state.copyWith(
+        newInputText: input,
+      ),
+    );
+  }
+
+  void manageChat(dynamic chatId, String title) {
+    if (state._isCreatingPage) {
+      addChat(title);
+    } else {
+      editChat(chatId, title);
+    }
+  }
+
+  void addChat(String title) {
+    final chat = ChatModel(
+      iconId: state._selectedIndex,
+      title: title,
+      id: UniqueKey(),
+      date: DateTime.now(),
+      cards: const [],
+    );
+
+    final chats = List<ChatModel>.from([chat])..addAll(state._chats);
 
     emit(
       state.copyWith(
         newChats: chats,
       ),
     );
-    homeCubit.updateChats(chat.first);
+
+    state._resultPage = chat;
   }
 
-  void editChat(chatId, newIconId, newTitle) {
-    final chat = state.chats
-        .where((ChatModel chatModel) => chatModel.id == chatId)
-        .first;
+  void editChat(dynamic chatId, String newTitle) {
+    final chat =
+        state._chats.where((chatModel) => chatModel.id == chatId).first;
 
     final editedChat = chat.copyWith(
-      newIconId: newIconId,
+      newIconId: state._selectedIndex,
       newTitle: newTitle,
     );
 
     updateChat(editedChat);
-    homeCubit.updateChats(editedChat);
+    state._resultPage = editedChat;
   }
 
   void updateChat(ChatModel editedChat) {
     final index =
-        state.chats.indexWhere((element) => element.id == editedChat.id);
+        state._chats.indexWhere((element) => element.id == editedChat.id);
 
-    final chats = state.chats;
+    final chats = state._chats;
     chats[index] = editedChat;
 
     emit(

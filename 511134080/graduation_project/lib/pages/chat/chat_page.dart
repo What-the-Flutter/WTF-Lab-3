@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/constants.dart';
-import 'package:graduation_project/models/event_card_model.dart';
-import 'package:graduation_project/pages/home/home_cubit.dart';
-import 'package:graduation_project/pages/searching_page.dart';
-import 'package:graduation_project/widgets/date_card.dart';
 import 'package:intl/intl.dart';
 
+import '../../constants.dart';
 import '../../models/chat_model.dart';
+import '../../models/event_card_model.dart';
+import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
+import '../home/home_cubit.dart';
+import '../searching_page/searching_page.dart';
 import 'chat_cubit.dart';
 
 class ChatPage extends StatefulWidget {
-  final Key chatId;
+  final Key _chatId;
 
   const ChatPage({
     super.key,
-    required this.chatId,
-  });
+    required Key chatId,
+  }) : _chatId = chatId;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -25,10 +25,6 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _textFieldController = TextEditingController();
-  var _isEditingMode = false;
-  var _isChoosingCategory = false;
-  var _categoryIcon = categoryIcons[0];
-
   final FocusNode _myFocusNode = FocusNode();
 
   void _clearTextInput() {
@@ -36,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _createListViewItem(index, ChatState state) {
-    final List<EventCardModel> cards = state.cards;
+    final cards = state.cards;
 
     final current = cards.elementAt(index);
 
@@ -64,24 +60,10 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _onEnterEvent(String title) {
-    if (!_isEditingMode) {
-      final cardModel = EventCardModel(
-        title: title,
-        time: DateTime.now(),
-        id: UniqueKey(),
-        categoryIndex: categoryIcons.indexOf(_categoryIcon),
-      );
-      context.read<ChatCubit>().addEventCard(cardModel);
-      _clearTextInput();
-      _categoryIcon = categoryIcons[0];
-    } else {
-      final index = categoryIcons.indexOf(_categoryIcon);
-      context.read<ChatCubit>().editSelectedCard(title, index);
-      _isEditingMode = false;
-      _myFocusNode.unfocus();
-      _clearTextInput();
-    }
+  void _onEnterEvent(String title, ChatState state) {
+    context.read<ChatCubit>().onEnterSubmitted(title);
+    _myFocusNode.unfocus();
+    _clearTextInput();
   }
 
   Widget _returnEvents(ChatState state) {
@@ -97,66 +79,36 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _returnHintMessage(ChatModel chat) {
-    if (chat.isShowingFavourites) {
-      return Expanded(
-        flex: 9,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          color: Theme.of(context).primaryColorDark.withAlpha(30),
-          child: Column(
-            children: [
-              Text(
-                'This is the page where you can track everything about "${chat.title}!"\n',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
+  Widget _returnHintMessage(ChatModel chat, ChatState state) {
+    final messages = state.hintMessages;
+    return Expanded(
+      flex: 9,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.all(16),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        child: Column(
+          children: [
+            Text(
+              messages[0],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
               ),
-              const Text(
-                'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Expanded(
-        flex: 9,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          color: Theme.of(context).primaryColorDark.withAlpha(30),
-          child: Column(
-            children: [
-              Text(
-                'This is the page where you can track everything about "${chat.title}!"\n',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
+            ),
+            Text(
+              messages[1],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
               ),
-              Text(
-                'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 
   IconButton _createCloseButton() {
@@ -166,12 +118,10 @@ class _ChatPageState extends State<ChatPage> {
       ),
       onPressed: () {
         context.read<ChatCubit>().cancelSelectionMode();
-        if (_isEditingMode) {
-          _isEditingMode = false;
-          _textFieldController.text = '';
-          _categoryIcon = categoryIcons[0];
-          _myFocusNode.unfocus();
-        }
+        context.read<ChatCubit>().toggleEditingMode();
+        _textFieldController.text = '';
+        context.read<ChatCubit>().changeCategoryIcon(0);
+        _myFocusNode.unfocus();
       },
     );
   }
@@ -186,25 +136,21 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  onEditButtonPressed(ChatModel chat) {
-    return List<EventCardModel>.from(chat.cards
-                    .where((EventCardModel cardModel) => cardModel.isSelected))
-                .length >
-            1
+  Null Function()? onEditButtonPressed(ChatModel chat) {
+    final selectedLength = List<EventCardModel>.from(chat.cards
+        .where((EventCardModel cardModel) => cardModel.isSelected)).length;
+    return selectedLength > 1
         ? null
         : () {
-            _isEditingMode = true;
+            context.read<ChatCubit>().toggleEditingMode(
+                  editingMode: true,
+                );
             final card = chat.cards
                 .where((EventCardModel card) => card.isSelected)
                 .first;
             _textFieldController.text = card.title;
 
-            setState(
-              () {
-                _categoryIcon = categoryIcons[card.categoryIndex];
-              },
-            );
-
+            context.read<ChatCubit>().changeCategoryIcon(card.categoryIndex);
             _myFocusNode.requestFocus();
           };
   }
@@ -239,7 +185,7 @@ class _ChatPageState extends State<ChatPage> {
   ) {
     return [
       for (int i = 0; i < state.chats.length; i++)
-        if (state.chats[i].id != widget.chatId)
+        if (state.chats[i].id != widget._chatId)
           SimpleDialogOption(
             onPressed: () {
               Navigator.pop(context);
@@ -331,6 +277,14 @@ class _ChatPageState extends State<ChatPage> {
           color: Colors.white,
         ),
       ),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back,
+        ),
+        onPressed: () {
+          Navigator.pop(context, context.read<ChatCubit>().state.chat);
+        },
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -359,9 +313,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   AppBar _createAppBar(BuildContext context, ChatModel chat, HomeState state) {
-    if (List<EventCardModel>.from(chat.cards
-            .where((EventCardModel cardModel) => cardModel.isSelected))
-        .isNotEmpty) {
+    final isSelectionMode = List<EventCardModel>.from(chat.cards
+        .where((EventCardModel cardModel) => cardModel.isSelected)).isNotEmpty;
+    if (isSelectionMode) {
       return _createSelectionModeAppBar(chat, state);
     } else {
       return _createDefaultAppBar(chat);
@@ -401,14 +355,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     onTap: () {
-                      setState(() {
-                        if (index != 0) {
-                          _categoryIcon = categoryIcons[index + 1];
-                        } else {
-                          _categoryIcon = categoryIcons[0];
-                        }
-                        _isChoosingCategory = false;
-                      });
+                      context.read<ChatCubit>().changeCategoryIcon(index + 1);
+                      context.read<ChatCubit>().toggleChoosingCategory();
                     },
                   ),
                   Text(
@@ -423,7 +371,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createBottomBar() {
+  Widget _createBottomBar(ChatState state) {
     return SingleChildScrollView(
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -433,19 +381,17 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               IconButton(
                 onPressed: () {
-                  setState(
-                    () {
-                      _isChoosingCategory = !_isChoosingCategory;
-                    },
-                  );
+                  context.read<ChatCubit>().toggleChoosingCategory(
+                        choosingCategory: !state.isChoosingCategory,
+                      );
                 },
                 icon: Icon(
-                  _categoryIcon,
+                  categoryIcons[state.categoryIconIndex],
                   color: Theme.of(context).primaryColorDark,
                 ),
               ),
               Expanded(
-                child: _createTextField(),
+                child: _createTextField(state),
               ),
               IconButton(
                 onPressed: () {},
@@ -461,7 +407,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  TextField _createTextField() {
+  TextField _createTextField(ChatState state) {
     return TextField(
       controller: _textFieldController,
       focusNode: _myFocusNode,
@@ -471,24 +417,25 @@ class _ChatPageState extends State<ChatPage> {
         filled: true,
         fillColor: Theme.of(context).disabledColor.withAlpha(24),
       ),
-      onSubmitted: (String? value) {
-        if (value != '') {
-          _onEnterEvent(value!);
-        }
+      onSubmitted: (value) {
+        _onEnterEvent(value, state);
       },
       onTap: () {
-        setState(
-          () {
-            _isChoosingCategory = false;
-          },
-        );
+        context.read<ChatCubit>().toggleChoosingCategory();
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    context.read<ChatCubit>().init(widget.chatId);
+    final chat = context
+        .read<HomeCubit>()
+        .state
+        .chats
+        .where((ChatModel chatModel) => chatModel.id == widget._chatId)
+        .first;
+
+    context.read<ChatCubit>().init(chat);
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         final chat = state.chat;
@@ -504,10 +451,12 @@ class _ChatPageState extends State<ChatPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               shouldShowMessage
-                  ? _returnHintMessage(chat)
+                  ? _returnHintMessage(chat, state)
                   : _returnEvents(state),
-              _isChoosingCategory ? _createCategoriesChoice() : Container(),
-              _createBottomBar(),
+              state.isChoosingCategory
+                  ? _createCategoriesChoice()
+                  : Container(),
+              _createBottomBar(state),
             ],
           ),
         );

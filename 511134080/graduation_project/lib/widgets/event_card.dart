@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/constants.dart';
-import 'package:graduation_project/models/event_card_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../constants.dart';
+import '../models/event_card_model.dart';
 import '../pages/chat/chat_cubit.dart';
 
 class EventCard extends StatelessWidget {
-  final EventCardModel cardModel;
+  final EventCardModel _cardModel;
 
   const EventCard({
-    required this.cardModel,
+    required EventCardModel cardModel,
     required Key key,
-  }) : super(key: key);
+  })  : _cardModel = cardModel,
+        super(key: key);
 
   Widget _createEventCardContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          cardModel.title,
+          _cardModel.title,
           style: const TextStyle(),
         ),
         const SizedBox(
@@ -31,7 +32,7 @@ class EventCard extends StatelessWidget {
             Icon(
               Icons.check_circle,
               size: 16,
-              color: cardModel.isSelected
+              color: _cardModel.isSelected
                   ? Colors.black38
                   : Theme.of(context).primaryColor.withAlpha(0),
             ),
@@ -39,7 +40,7 @@ class EventCard extends StatelessWidget {
               width: 5,
             ),
             Text(
-              DateFormat('hh:mm a').format(cardModel.time),
+              DateFormat('hh:mm a').format(_cardModel.time),
             ),
             const SizedBox(
               width: 5,
@@ -47,7 +48,7 @@ class EventCard extends StatelessWidget {
             Icon(
               Icons.bookmark,
               size: 16,
-              color: cardModel.isFavourite
+              color: _cardModel.isFavourite
                   ? Colors.black38
                   : Theme.of(context).primaryColor.withAlpha(0),
             ),
@@ -61,15 +62,15 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (!cardModel.isSelectionMode) {
-          context.read<ChatCubit>().manageFavouriteEventCard(cardModel);
+        if (!_cardModel.isSelectionMode) {
+          context.read<ChatCubit>().manageFavouriteEventCard(_cardModel);
         } else {
-          context.read<ChatCubit>().manageSelectedEvent(cardModel);
+          context.read<ChatCubit>().manageSelectedEvent(_cardModel);
         }
       },
       onLongPress: () {
-        if (!cardModel.isSelectionMode) {
-          context.read<ChatCubit>().turnOnSelectionMode(cardModel);
+        if (!_cardModel.isSelectionMode) {
+          context.read<ChatCubit>().turnOnSelectionMode(_cardModel);
         }
       },
       child: Row(
@@ -79,7 +80,7 @@ class EventCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: cardModel.isSelected
+              color: _cardModel.isSelected
                   ? Theme.of(context).focusColor
                   : Theme.of(context).cardColor,
               borderRadius: const BorderRadius.only(
@@ -91,13 +92,13 @@ class EventCard extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  child: cardModel.categoryIndex != 0
+                  child: _cardModel.categoryIndex != 0
                       ? Row(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
-                                categoryIcons[cardModel.categoryIndex],
+                                categoryIcons[_cardModel.categoryIndex],
                                 size: 32,
                                 color: Theme.of(context).primaryColorLight,
                               ),
@@ -105,7 +106,7 @@ class EventCard extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                categoryTitle[cardModel.categoryIndex],
+                                categoryTitle[_cardModel.categoryIndex],
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,

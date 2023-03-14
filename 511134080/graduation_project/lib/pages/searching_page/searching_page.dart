@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project/models/event_card_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../widgets/date_card.dart';
-import '../widgets/event_card.dart';
+import '../../models/event_card_model.dart';
+import '../../widgets/date_card.dart';
+import '../../widgets/event_card.dart';
+import 'searching_page_cubit.dart';
 
-class SearchingPage extends StatefulWidget {
-  final List<EventCardModel> cards;
-  const SearchingPage({required this.cards, Key? key}) : super(key: key);
+class SearchingPage extends StatelessWidget {
+  final List<EventCardModel> _cards;
+  SearchingPage({required cards, Key? key})
+      : _cards = cards,
+        super(key: key);
 
-  @override
-  State<SearchingPage> createState() => _SearchingPageState();
-}
-
-class _SearchingPageState extends State<SearchingPage> {
   final _focusNode = FocusNode();
-  final _controller = TextEditingController();
-  String input = '';
 
-  @override
-  void initState() {
-    _focusNode.requestFocus();
-    super.initState();
-  }
+  final _controller = TextEditingController();
 
   Widget _createListViewItem(index, cards) {
     final current = cards.elementAt(index);
@@ -51,7 +44,7 @@ class _SearchingPageState extends State<SearchingPage> {
     }
   }
 
-  AppBar _createAppBar() {
+  AppBar _createAppBar(BuildContext context, SearchingPageState state) {
     return AppBar(
       iconTheme: Theme.of(context).iconTheme,
       backgroundColor: Theme.of(context).primaryColor,
@@ -66,23 +59,15 @@ class _SearchingPageState extends State<SearchingPage> {
           fillColor: Theme.of(context).primaryColorLight,
         ),
         onChanged: (value) {
-          setState(
-            () {
-              input = value;
-            },
-          );
+          context.read<SearchingPageCubit>().updateInput(value);
         },
       ),
-      actions: input != ''
+      actions: state.input != ''
           ? [
               IconButton(
                 onPressed: () {
-                  setState(
-                    () {
-                      input = '';
-                      _controller.text = '';
-                    },
-                  );
+                  context.read<SearchingPageCubit>().updateInput('');
+                  _controller.text = '';
                 },
                 icon: const Icon(
                   Icons.cancel,
@@ -93,8 +78,8 @@ class _SearchingPageState extends State<SearchingPage> {
     );
   }
 
-  Widget _createHintMessage() {
-    if (input == '') {
+  Widget _createHintMessage(BuildContext context, SearchingPageState state) {
+    if (state.input == '') {
       return Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
@@ -158,19 +143,23 @@ class _SearchingPageState extends State<SearchingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<EventCardModel> foundCards = input == ''
-        ? []
-        : List<EventCardModel>.from(
-            widget.cards.reversed.where(
-              (EventCardModel card) => card.title.contains(input),
-            ),
-          );
-
-    return Scaffold(
-      appBar: _createAppBar(),
-      body: foundCards.isEmpty
-          ? _createHintMessage()
-          : _createListViewBuilder(foundCards),
+    _focusNode.requestFocus();
+    return BlocBuilder<SearchingPageCubit, SearchingPageState>(
+      builder: (context, state) {
+        final foundCards = state.input == ''
+            ? <EventCardModel>[]
+            : List<EventCardModel>.from(
+                _cards.reversed.where(
+                  (card) => card.title.contains(state.input),
+                ),
+              );
+        return Scaffold(
+          appBar: _createAppBar(context, state),
+          body: foundCards.isEmpty
+              ? _createHintMessage(context, state)
+              : _createListViewBuilder(foundCards),
+        );
+      },
     );
   }
 }

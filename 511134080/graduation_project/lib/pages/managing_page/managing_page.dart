@@ -1,45 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/models/chat_model.dart';
-import 'package:graduation_project/pages/managing_page/managing_page_cubit.dart';
 
 import '../../constants.dart';
+import '../../models/chat_model.dart';
+import 'managing_page_cubit.dart';
 
-class ManagingPage extends StatefulWidget {
-  const ManagingPage({
-    Key? key,
-    this.isCreatingNewPage = true,
-    this.editingPage,
-  }) : super(key: key);
+class ManagingPage extends StatelessWidget {
+  final ChatModel? _editingPage;
 
-  final bool isCreatingNewPage;
-  final ChatModel? editingPage;
-
-  @override
-  State<ManagingPage> createState() => _ManagingPageState();
-}
-
-class _ManagingPageState extends State<ManagingPage> {
-  var _isSelectedIcon = true;
-  late int _selectedIndex;
   final _controller = TextEditingController();
+
   final FocusNode _focusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.isCreatingNewPage ? 0 : widget.editingPage!.iconId;
-    if (!widget.isCreatingNewPage) _controller.text = widget.editingPage!.title;
-    _focusNode.requestFocus();
-  }
+  ManagingPage({
+    Key? key,
+    ChatModel? editingPage,
+  })  : _editingPage = editingPage,
+        super(key: key);
 
-  Widget _createIconButton(index) {
+  Widget _createIconButton(
+      BuildContext context, int index, ManagingPageState state) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorLight,
-        border: _isSelectedIcon && index == _selectedIndex
-            ? Border.all(width: 3, color: Colors.deepPurple)
+        border: index == state.selectedIndex
+            ? Border.all(
+                width: 3,
+                color: Theme.of(context).primaryColorDark,
+              )
             : null,
         borderRadius: const BorderRadius.all(
           Radius.circular(100),
@@ -47,21 +36,12 @@ class _ManagingPageState extends State<ManagingPage> {
       ),
       child: IconButton(
         onPressed: () {
-          if (!_isSelectedIcon) {
-            setState(() {
-              _selectedIndex = index;
-              _isSelectedIcon = true;
-            });
-          } else {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }
+          context.read<ManagingPageCubit>().updateSelectedIcon(index);
         },
-        icon: index == 0 && _selectedIndex == 0 && _controller.text != ''
+        icon: index == 0 && _controller.text != ''
             ? Center(
                 child: Text(
-                  _controller.text[0].toUpperCase(),
+                  state.inputText[0].toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -74,30 +54,21 @@ class _ManagingPageState extends State<ManagingPage> {
     );
   }
 
-  void _creatingPage() {
-    if (_controller.text != '') {
-      if (widget.isCreatingNewPage) {
-        context
-            .read<ManagingPageCubit>()
-            .addChat(_selectedIndex, _controller.text);
-        Navigator.pop(context);
-      } else {
-        context
-            .read<ManagingPageCubit>()
-            .editChat(widget.editingPage?.id, _selectedIndex, _controller.text);
-        Navigator.pop(context);
-        Navigator.pop(context);
-      }
-    }
+  void _managingPage(BuildContext context) {
+    context
+        .read<ManagingPageCubit>()
+        .manageChat(_editingPage?.id, _controller.text);
+
+    Navigator.pop(context, context.read<ManagingPageCubit>().state.resultPage);
   }
 
-  Widget _createTextField() {
+  Widget _createTextField(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(
-          onChanged: (_) {
-            setState(() {});
+          onChanged: (value) {
+            context.read<ManagingPageCubit>().updateInput(value);
           },
           decoration: InputDecoration(
             border: const OutlineInputBorder(
@@ -116,13 +87,13 @@ class _ManagingPageState extends State<ManagingPage> {
     );
   }
 
-  FloatingActionButton _createFloatingActionButton() {
+  FloatingActionButton _createFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        if (!_isSelectedIcon || _controller.text == '') {
+        if (_controller.text == '') {
           Navigator.pop(context);
         } else {
-          _creatingPage();
+          _managingPage(context);
         }
       },
       elevation: 16,
@@ -140,45 +111,58 @@ class _ManagingPageState extends State<ManagingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SizedBox(
-            height: 64,
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                widget.isCreatingNewPage
-                    ? 'Create a new Page'
-                    : 'Edit the Page \'${widget.editingPage?.title}\'',
-                style: const TextStyle(
-                  fontSize: 24,
+    context.read<ManagingPageCubit>().initState(_editingPage);
+    _controller.text = context.read<ManagingPageCubit>().state.inputText;
+    _focusNode.requestFocus();
+
+    return BlocBuilder<ManagingPageCubit, ManagingPageState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const SizedBox(
+                height: 64,
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    state.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          _createTextField(),
-          Expanded(
-            flex: 10,
-            child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24),
-              child: GridView.builder(
-                shrinkWrap: true,
-                itemCount: icons.length,
-                itemBuilder: (_, index) {
-                  return _createIconButton(index);
-                },
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4),
+              _createTextField(context),
+              Expanded(
+                flex: 10,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,
+                    bottom: 24,
+                  ),
+                  child: SingleChildScrollView(
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: icons.length,
+                      itemBuilder: (_, index) {
+                        return _createIconButton(context, index, state);
+                      },
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: _createFloatingActionButton(),
+          floatingActionButton: _createFloatingActionButton(context),
+        );
+      },
     );
   }
 }

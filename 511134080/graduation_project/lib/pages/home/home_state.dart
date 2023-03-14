@@ -1,10 +1,12 @@
 part of 'home_cubit.dart';
 
 class HomeState {
-  final List<ChatModel> chats;
+  final List<ChatModel> _chats;
 
-  HomeState({required this.chats});
+  HomeState({required List<ChatModel> chats}) : _chats = chats;
+
+  List<ChatModel> get chats => _chats;
 
   HomeState copyWith({List<ChatModel>? newChats}) =>
-      HomeState(chats: newChats ?? chats);
+      HomeState(chats: newChats ?? _chats);
 }
