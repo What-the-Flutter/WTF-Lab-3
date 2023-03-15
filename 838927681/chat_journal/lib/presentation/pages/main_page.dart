@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../theme/colors.dart';
+import '../../theme/themes.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import '../widgets/theme_button.dart';
 import 'home_page/home.dart';
@@ -12,11 +13,11 @@ import 'main_page/app_state.dart';
 import 'settings_page/settings.dart';
 import 'settings_page/settings_cubit.dart';
 import 'settings_page/settings_state.dart';
+import 'timeline_page/timeline_page.dart';
 
 class ChatJournal extends StatelessWidget {
   final SettingsState settingsState;
   final AppState appState;
-  final title = 'Home';
 
   ChatJournal({required this.settingsState, super.key, required this.appState});
 
@@ -25,14 +26,27 @@ class ChatJournal extends StatelessWidget {
     return _mainPage(context);
   }
 
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
+
   Widget _mainPage(BuildContext context) {
+    final appState = context.watch<AppCubit>().state;
     final isAuthenticated = appState.isAuthenticated;
     if (isAuthenticated) {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            title,
-            style: settingsState.fontSize.headline1!,
+            appState.title,
+            style: textTheme(context).headline1!,
           ),
           centerTitle: true,
           actions: const [
@@ -40,10 +54,9 @@ class ChatJournal extends StatelessWidget {
           ],
         ),
         drawer: _drawer(settingsState, context),
-        body: HomePage(
-          settingsState: settingsState,
-        ),
-        bottomNavigationBar: const BottomNavigation(),
+        body: _currentPage(context),
+        bottomNavigationBar:
+            BottomNavigation(onTap: context.read<AppCubit>().changePageIndex),
       );
     } else {
       if (appState.tryingUnlock) {
@@ -51,6 +64,32 @@ class ChatJournal extends StatelessWidget {
       } else {
         return _notAuthenticated(context);
       }
+    }
+  }
+
+  Widget _currentPage(BuildContext context) {
+    final homeTitle = 'Home';
+    final timelineTitle = 'Timeline';
+    switch (context.watch<AppCubit>().state.pageIndex) {
+      case 0:
+        {
+          context.read<AppCubit>().changeTitle(homeTitle);
+          return HomePage(
+            settingsState: settingsState,
+          );
+        }
+      case 2:
+        {
+          context.read<AppCubit>().changeTitle(timelineTitle);
+          return TimelinePage();
+        }
+      default:
+        {
+          context.read<AppCubit>().changeTitle(homeTitle);
+          return HomePage(
+            settingsState: settingsState,
+          );
+        }
     }
   }
 
@@ -97,7 +136,7 @@ class ChatJournal extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: BlocProvider.of<SettingsCubit>(context).isLight()
+              color: context.watch<SettingsCubit>().state.isLightTheme
                   ? ChatJournalColors.green
                   : ChatJournalColors.black,
             ),
@@ -105,16 +144,16 @@ class ChatJournal extends StatelessWidget {
               alignment: Alignment.bottomLeft,
               child: Text(
                 DateFormat('MMM d, y').format(DateTime.now()),
-                style: settingsState.fontSize.headline2!.copyWith(
-                  color: Colors.white,
-                ),
+                style: textTheme(context).headline2!.copyWith(
+                      color: Colors.white,
+                    ),
               ),
             ),
           ),
           ListTile(
             title: Text(
               'Help spread the word',
-              style: settingsState.fontSize.bodyText1!,
+              style: textTheme(context).bodyText1!,
             ),
             leading: const Icon(Icons.card_giftcard),
             onTap: () async {
@@ -128,20 +167,19 @@ class ChatJournal extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Search', style: settingsState.fontSize.bodyText1!),
+            title: Text('Search', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.search),
           ),
           ListTile(
-            title:
-                Text('Notifications', style: settingsState.fontSize.bodyText1!),
+            title: Text('Notifications', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.notifications),
           ),
           ListTile(
-            title: Text('Statistics', style: settingsState.fontSize.bodyText1!),
+            title: Text('Statistics', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.analytics),
           ),
           ListTile(
-            title: Text('Settings', style: settingsState.fontSize.bodyText1!),
+            title: Text('Settings', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.settings),
             onTap: () {
               Navigator.of(context).push(
@@ -152,7 +190,7 @@ class ChatJournal extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Feedback', style: settingsState.fontSize.bodyText1!),
+            title: Text('Feedback', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.feedback),
           )
         ],

@@ -65,7 +65,8 @@ class DefaultFirebaseOptions {
     projectId: 'chat-journal-dd397',
     databaseURL: 'https://chat-journal-dd397-default-rtdb.firebaseio.com',
     storageBucket: 'chat-journal-dd397.appspot.com',
-    iosClientId: '242098993773-n83ea2gqekff74f7vr5366nhqj6oqrda.apps.googleusercontent.com',
+    iosClientId:
+        '242098993773-n83ea2gqekff74f7vr5366nhqj6oqrda.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatJournal',
   );
 }

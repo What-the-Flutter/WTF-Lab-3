@@ -5,26 +5,33 @@ import 'package:hashtager/functions.dart';
 
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/event.dart';
+import '../../../domain/entities/tag.dart';
 import '../../../domain/repositories/api_chat_repository.dart';
 import '../../../domain/repositories/api_event_repository.dart';
+import '../../../domain/repositories/api_tag_repository.dart';
 import 'chat_page_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final ApiEventRepository _eventRepository;
   final ApiChatRepository _chatRepository;
+  final ApiTagRepository _tagRepository;
   late final StreamSubscription<List<Event>> _eventStream;
+  late final StreamSubscription<List<Tag>> _tagStream;
 
   ChatCubit({
     required ApiEventRepository eventRepository,
     required ApiChatRepository chatRepository,
+    required ApiTagRepository tagRepository,
   })  : _eventRepository = eventRepository,
         _chatRepository = chatRepository,
+        _tagRepository = tagRepository,
         super(ChatState()) {
     _initEventStream();
   }
 
   void _initEventStream() async {
     _eventStream = _eventRepository.eventStream.listen((event) {
+      print('eventsStream');
       final events = event
           .where(
             (element) => element.parentId == state.chatId,
@@ -32,29 +39,22 @@ class ChatCubit extends Cubit<ChatState> {
           .toList();
       events.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       final favorites = _getFavorites(events);
-      final tags = <String>{};
-      for (final event in events) {
-        if (hasHashTags(event.text)) {
-          tags.addAll(extractHashTags(event.text));
-        }
-      }
-      emit(state.copyWith(events: events, favorites: favorites, tags: tags));
+      emit(state.copyWith(events: events, favorites: favorites));
+    });
+    _tagStream = _tagRepository.tagsStream.listen((event) {
+      print('tagsStream');
+      final tags = event.toList();
+      emit(state.copyWith(tags: tags));
     });
   }
 
   Future<void> init(String id) async {
     final events = await _eventRepository.getEvents(id);
-    final allEvents = await _eventRepository.getAllEvents();
-    final tags = <String>{};
-    for (final event in allEvents) {
-      if (hasHashTags(event.text)) {
-        tags.addAll(extractHashTags(event.text));
-      }
-    }
     final favorites = _getFavorites(events);
     favorites.sort((a, b) {
       return a.dateTime.compareTo(b.dateTime);
     });
+    final tags = await _tagRepository.getTags();
     emit(state.copyWith(
         events: events, favorites: favorites, chatId: id, tags: tags));
   }
@@ -120,6 +120,11 @@ class ChatCubit extends Cubit<ChatState> {
   void addEvent(Event event) async {
     final events = List<Event>.from(state.events);
     events.add(event);
+    if (hasHashTags(event.text)) {
+      for (final tag in extractHashTags(event.text)) {
+        await _tagRepository.addTag(Tag(id: '', text: tag));
+      }
+    }
     await _eventRepository.addEvent(event);
     await _chatRepository.updateLast(
       event.parentId,
@@ -324,6 +329,12 @@ class ChatCubit extends Cubit<ChatState> {
           event.parentId, event.text, event.dateTime, false);
     }
     _eventRepository.updateEvent(event);
+    if (hasHashTags(event.text)) {
+      for (final tagText in extractHashTags(event.text)) {
+        _tagRepository.updateTag(
+            state.tags.firstWhere((element) => element.text == tagText));
+      }
+    }
     emit(state.copyWith(isEditing: false));
   }
 
@@ -340,11 +351,19 @@ class ChatCubit extends Cubit<ChatState> {
     if (state.selectedCount <= 1) {
       allEvents.remove(event);
       _eventRepository.deleteEvent(event);
+      for (final tagText in extractHashTags(event.text)) {
+        _tagRepository.removeTag(
+            state.tags.firstWhere((element) => element.text == tagText));
+      }
     } else {
       var i = 0;
       while (i < allEvents.length) {
         if (allEvents[i].isSelected) {
           _eventRepository.deleteEvent(allEvents[i]);
+          for (final tagText in extractHashTags(event.text)) {
+            _tagRepository.removeTag(
+                state.tags.firstWhere((element) => element.text == tagText));
+          }
         }
         allEvents.removeWhere((element) => element.isSelected);
         i++;
@@ -519,6 +538,21 @@ class ChatCubit extends Cubit<ChatState> {
   @override
   Future<void> close() {
     _eventStream.cancel();
+    _tagStream.cancel();
     return super.close();
+  }
+
+  Future<List<Tag>> getTags() async {
+    return await _tagRepository.getTags();
+  }
+
+  void addOrRemoveSearchTag(Tag tag) {
+    final searchTags = List<String>.from(state.searchTags);
+    if (searchTags.contains(tag.text)) {
+      searchTags.remove(tag.text);
+    } else {
+      searchTags.add(tag.text);
+    }
+    emit(state.copyWith(searchTags: searchTags));
   }
 }

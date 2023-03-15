@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/db_chat.dart';
 import '../models/db_event.dart';
+import '../models/db_tag.dart';
 import '../repository/api_provider/api_data_provider.dart';
 
 class FirebaseProvider extends ApiDataProvider {
@@ -16,6 +17,7 @@ class FirebaseProvider extends ApiDataProvider {
   final User? _user;
   late final Stream<DatabaseEvent> _dbEventStream;
   late final Stream<DatabaseEvent> _dbChatStream;
+  late final Stream<DatabaseEvent> _dbTagStream;
 
   FirebaseProvider({required User? user})
       : _ref = FirebaseDatabase.instance.ref(user?.uid ?? ''),
@@ -27,6 +29,7 @@ class FirebaseProvider extends ApiDataProvider {
   void _init() {
     _dbEventStream = _ref.child('events').onValue;
     _dbChatStream = _ref.child('chats').onValue;
+    _dbTagStream = _ref.child('tags').onValue;
   }
 
   @override
@@ -56,6 +59,19 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
+  Stream<List<DBTag>> get tagsStream =>
+      _dbEventStream.map<List<DBTag>>(_transformToListTags);
+
+  List<DBTag> _transformToListTags(DatabaseEvent data) {
+    final result = <DBTag>[];
+    for (final dbTag in data.snapshot.children) {
+      final map = dbTag.value as Map<dynamic, dynamic>;
+      result.add(DBTag.fromJson(map));
+    }
+    return result;
+  }
+
+  @override
   Future<String> addChat(DBChat chat) async {
     final ref = _ref.child('chats').push();
     await ref.set(chat.copyWith(id: ref.key!).toMap());
@@ -79,6 +95,13 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
+  Future<String> addTag(DBTag tag) async {
+    final ref = _ref.child('tags').push();
+    await ref.set(tag.copyWith(id: ref.key!).toMap());
+    return ref.key!;
+  }
+
+  @override
   Future<List<DBChat>> get chats async {
     final result = <DBChat>[];
     final dbChats = await _ref.child('chats').once();
@@ -90,14 +113,12 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
-  Future<void> deleteChat(DBChat chat) async {
-    await _ref.child('chats/${chat.id}').remove();
-  }
+  Future<void> deleteChat(DBChat chat) =>
+      _ref.child('chats/${chat.id}').remove();
 
   @override
-  Future<void> deleteEvent(DBEvent event) async {
-    await _ref.child('events/${event.id}').remove();
-  }
+  Future<void> deleteEvent(DBEvent event) =>
+      _ref.child('events/${event.id}').remove();
 
   @override
   Future<List<DBEvent>> get events async {
@@ -111,6 +132,20 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
+  Future<List<DBTag>> get tags async {
+    final result = <DBTag>[];
+    final dbTags = await _ref.child('tags').once();
+    for (final dbTag in dbTags.snapshot.children) {
+      final map = dbTag.value as Map<dynamic, dynamic>;
+      result.add(DBTag.fromJson(map));
+    }
+    return result;
+  }
+
+  @override
+  Future<void> deleteTag(DBTag tag) => _ref.child('tags/${tag.id}').remove();
+
+  @override
   Future<DBChat> getChat(String id) async {
     final dbChat =
         await _ref.child('chats').orderByChild('id').equalTo(id).once();
@@ -119,12 +154,14 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
-  Future<void> updateChat(DBChat chat) async {
-    await _ref.child('chats/${chat.id}').update(chat.toMap());
-  }
+  Future<void> updateChat(DBChat chat) =>
+      _ref.child('chats/${chat.id}').update(chat.toMap());
 
   @override
-  Future<void> updateEvent(DBEvent event) async {
-    await _ref.child('events/${event.id}').update(event.toMap());
-  }
+  Future<void> updateEvent(DBEvent event) =>
+      _ref.child('events/${event.id}').update(event.toMap());
+
+  @override
+  Future<void> updateTag(DBTag tag) =>
+      _ref.child('tags/${tag.id}').update(tag.toMap());
 }

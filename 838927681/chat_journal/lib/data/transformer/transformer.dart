@@ -1,7 +1,9 @@
 import '../../domain/entities/chat.dart';
 import '../../domain/entities/event.dart';
+import '../../domain/entities/tag.dart';
 import '../models/db_chat.dart';
 import '../models/db_event.dart';
+import '../models/db_tag.dart';
 
 class Transformer {
   static Chat dbChatToEntity(DBChat dbChat) {
@@ -48,6 +50,20 @@ class Transformer {
       creationDate: chat.creationDate.toString(),
       lastDate: chat.lastDate.toString(),
       lastMessage: chat.lastMessage,
+    );
+  }
+
+  static Tag dbTagToEntity(DBTag dbTag) {
+    return Tag(
+      id: dbTag.id,
+      text: dbTag.text,
+    );
+  }
+
+  static DBTag tagToModel(Tag tag) {
+    return DBTag(
+      id: tag.id,
+      text: tag.text,
     );
   }
 }

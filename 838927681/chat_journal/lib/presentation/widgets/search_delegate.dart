@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/event.dart';
 import '../../domain/entities/icon_map.dart';
+import '../../domain/entities/tag.dart';
 import '../../theme/colors.dart';
+import '../../theme/themes.dart';
 import '../pages/chat_page/chat_page_cubit.dart';
 import '../pages/settings_page/settings_cubit.dart';
 
@@ -15,6 +17,18 @@ class ChatJournalSearch extends SearchDelegate {
   final SettingsCubit settingsCubit;
 
   ChatJournalSearch({required this.chatCubit, required this.settingsCubit});
+
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -40,8 +54,13 @@ class ChatJournalSearch extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    if (query != '') {
-      return _showEvents(context);
+    if (query != '' || context.watch<ChatCubit>().state.searchTags.isNotEmpty) {
+      return Column(
+        children: [
+          _tagsPanel(context),
+          Expanded(child: _showEvents(context)),
+        ],
+      );
     } else {
       return _enterQuery(context);
     }
@@ -49,19 +68,74 @@ class ChatJournalSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    if (query != '') {
-      return _showEvents(context);
+    if (query != '' || context.watch<ChatCubit>().state.searchTags.isNotEmpty) {
+      return Column(
+        children: [
+          _tagsPanel(context),
+          Expanded(child: _showEvents(context)),
+        ],
+      );
     } else {
       return _enterQuery(context);
     }
   }
 
+  Widget _tagsPanel(BuildContext context) {
+    final tags = context.watch<ChatCubit>().state.tags;
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      constraints: const BoxConstraints(maxHeight: 50),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: tags.length,
+        itemBuilder: (context, index) {
+          return _tagItem(context, tags[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _tagItem(BuildContext context, Tag tag) {
+    return GestureDetector(
+      onTap: () => context.read<ChatCubit>().addOrRemoveSearchTag(tag),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: context.watch<ChatCubit>().state.searchTags.contains(tag.text)
+              ? ChatJournalColors.lightRed
+              : ChatJournalColors.lightGreen,
+        ),
+        child: Row(
+          children: [
+            context.watch<ChatCubit>().state.searchTags.contains(tag.text)
+                ? const Icon(Icons.done)
+                : Container(),
+            Text(
+              tag.text,
+              style: textTheme(context).bodyText1,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _showEvents(BuildContext context) {
     final events = chatCubit.state.events;
-    final results = events
-        .where(
-            (event) => event.text.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+    var results = <Event>[];
+    if (query != '') {
+      results = events
+          .where(
+              (event) => event.text.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+    for (final tag in context.watch<ChatCubit>().state.searchTags) {
+      results.addAll(events.where((element) => element.text.contains(tag)));
+    }
     if (results.isNotEmpty) {
       return _allEvents(results);
     } else {
@@ -71,9 +145,10 @@ class ChatJournalSearch extends SearchDelegate {
 
   Widget _enterQuery(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        _tagsPanel(context),
         Container(
           margin: const EdgeInsets.symmetric(
             vertical: 20,
@@ -84,7 +159,7 @@ class ChatJournalSearch extends SearchDelegate {
             vertical: 30,
           ),
           decoration: BoxDecoration(
-            color: settingsCubit.isLight()
+            color: context.watch<SettingsCubit>().state.isLightTheme
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(10),
@@ -99,7 +174,7 @@ class ChatJournalSearch extends SearchDelegate {
               ),
               Text(
                 'Please enter a search query to begin searching',
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
+                style: textTheme(context).bodyText2!,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -125,7 +200,7 @@ class ChatJournalSearch extends SearchDelegate {
             horizontal: 20,
           ),
           decoration: BoxDecoration(
-            color: settingsCubit.isLight()
+            color: context.watch<SettingsCubit>().state.isLightTheme
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(10),
@@ -136,14 +211,14 @@ class ChatJournalSearch extends SearchDelegate {
             children: [
               Text(
                 'No search results available',
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
+                style: textTheme(context).bodyText2!,
               ),
               const SizedBox(
                 height: 20,
               ),
               Text(
                 'No entries match the given search query. Please try again',
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
+                style: textTheme(context).bodyText2!,
                 textAlign: TextAlign.center,
               )
             ],
@@ -173,10 +248,10 @@ class ChatJournalSearch extends SearchDelegate {
   }
 
   Widget _event(List<Event> events, int index, BuildContext context) {
-    final eventColor = settingsCubit.isLight()
+    final eventColor = context.watch<SettingsCubit>().state.isLightTheme
         ? ChatJournalColors.lightGreen
         : ChatJournalColors.darkGrey;
-    final selectedEventColor = settingsCubit.isLight()
+    final selectedEventColor = context.watch<SettingsCubit>().state.isLightTheme
         ? ChatJournalColors.accentLightGreen
         : ChatJournalColors.lightGrey;
     return Align(
@@ -255,7 +330,7 @@ class ChatJournalSearch extends SearchDelegate {
               ),
               Text(
                 ChatJournalIcons.eventIconsName[iconIndex] ?? '',
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+                style: textTheme(context).bodyText1!,
               ),
             ],
           ),
@@ -287,7 +362,7 @@ class ChatJournalSearch extends SearchDelegate {
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            color: settingsCubit.isLight()
+            color: context.watch<SettingsCubit>().state.isLightTheme
                 ? ChatJournalColors.lightRed
                 : ChatJournalColors.lightGrey,
           ),
@@ -302,7 +377,7 @@ class ChatJournalSearch extends SearchDelegate {
           constraints: const BoxConstraints(maxWidth: 300),
           child: Text(
             textDate,
-            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
         ),
       );
@@ -345,7 +420,7 @@ class ChatJournalSearch extends SearchDelegate {
   Widget _messageEvent(int index, List<Event> events, BuildContext context) {
     return Text(
       events[index].text,
-      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+      style: textTheme(context).bodyText1!,
       textAlign: TextAlign.left,
     );
   }
@@ -353,7 +428,7 @@ class ChatJournalSearch extends SearchDelegate {
   Widget _eventDate(int index, List<Event> events, BuildContext context) {
     return Text(
       DateFormat('h:mm a').format(events[index].dateTime),
-      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+      style: textTheme(context).bodyText1!.copyWith(
             color: Colors.grey,
           ),
       textAlign: TextAlign.left,

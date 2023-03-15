@@ -6,6 +6,7 @@ class AppState extends Equatable {
   final int pageIndex;
   final String title;
   final bool tryingUnlock;
+
   const AppState({
     this.isAuthenticated = false,
     this.pageIndex = 0,

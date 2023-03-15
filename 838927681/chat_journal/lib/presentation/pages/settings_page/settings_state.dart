@@ -1,16 +1,15 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 class SettingsState extends Equatable {
-  final ThemeData theme;
+  final bool isLightTheme;
   final bool isLocked;
   final bool bubbleAlignment;
   final String backgroundImage;
   final bool centerDate;
-  final TextTheme fontSize;
+  final int fontSize;
 
   const SettingsState({
-    required this.theme,
+    required this.isLightTheme,
     required this.isLocked,
     required this.backgroundImage,
     required this.bubbleAlignment,
@@ -19,15 +18,15 @@ class SettingsState extends Equatable {
   });
 
   SettingsState copyWith({
-    ThemeData? theme,
+    bool? isLightTheme,
     bool? isLocked,
     bool? bubbleAlignment,
     String? backgroundImage,
     bool? centerDate,
-    TextTheme? fontSize,
+    int? fontSize,
   }) {
     return SettingsState(
-      theme: theme ?? this.theme,
+      isLightTheme: isLightTheme ?? this.isLightTheme,
       isLocked: isLocked ?? this.isLocked,
       backgroundImage: backgroundImage ?? this.backgroundImage,
       bubbleAlignment: bubbleAlignment ?? this.bubbleAlignment,
@@ -38,7 +37,7 @@ class SettingsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        theme,
+        isLightTheme,
         isLocked,
         backgroundImage,
         bubbleAlignment,
