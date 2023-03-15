@@ -165,6 +165,28 @@ const icons = [
   ),
 ];
 
+const categoryIcons = [
+  Icons.bubble_chart,
+  Icons.cancel,
+  Icons.local_movies,
+  Icons.fastfood,
+  Icons.fitness_center,
+  Icons.directions_run,
+  Icons.sports_basketball_rounded,
+  Icons.local_laundry_service,
+];
+
+const categoryTitle = [
+  '',
+  'Cancel',
+  'Movie',
+  'FastFood',
+  'Workout',
+  'Running',
+  'Sports',
+  'Laundry',
+];
+
 final chats = [
   ChatModel(
     iconId: 1,

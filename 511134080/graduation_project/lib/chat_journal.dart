@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/cubits/events_cubit.dart';
-import 'package:graduation_project/cubits/theme_cubit.dart';
 
 import 'constants.dart';
-import 'pages/home_page.dart';
+import 'pages/chat/chat_cubit.dart';
+import 'pages/home/home_cubit.dart';
+import 'pages/home/home_page.dart';
+import 'pages/managing_page/managing_page_cubit.dart';
+import 'pages/searching_page/searching_page_cubit.dart';
+import 'theme/theme_cubit.dart';
 
 class ChatJournal extends StatelessWidget {
   const ChatJournal({super.key});
@@ -14,8 +17,18 @@ class ChatJournal extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => EventsCubit(
-            initState: EventsState(
+          create: (_) => HomeCubit(
+            initState: HomeState(chats: chats),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ChatCubit(
+            homeCubit: context.read<HomeCubit>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ManagingPageCubit(
+            initState: ManagingPageState(
               chats: chats,
             ),
           ),
@@ -23,9 +36,12 @@ class ChatJournal extends StatelessWidget {
         BlocProvider(
           create: (_) => ThemeCubit(),
         ),
+        BlocProvider(
+          create: (_) => SearchingPageCubit(),
+        ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, state) {
+        builder: (_, state) {
           return MaterialApp(
             title: 'Chat Journal',
             theme: state.theme,
