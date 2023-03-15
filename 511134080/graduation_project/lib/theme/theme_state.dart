@@ -17,6 +17,7 @@ class ThemeState {
     cardColor: Colors.deepPurple.withAlpha(72),
     primaryColorLight: Colors.deepPurple.shade300,
     primaryColorDark: Colors.deepPurple,
+    hoverColor: Colors.deepPurple,
   );
 
   final _darkTheme = ThemeData(
@@ -27,6 +28,7 @@ class ThemeState {
     cardColor: Colors.deepPurple.withAlpha(72),
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
+    hoverColor: Colors.grey[850],
   );
 
   ThemeData get theme => isLight ? _lightTheme : _darkTheme;

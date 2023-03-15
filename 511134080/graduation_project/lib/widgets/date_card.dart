@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DateCard extends StatelessWidget {
-  final DateTime date;
+  final DateTime _date;
 
-  const DateCard({required this.date, Key? key}) : super(key: key);
+  const DateCard({required DateTime date, Key? key})
+      : _date = date,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class DateCard extends StatelessWidget {
             ),
           ),
           child: Text(
-            DateFormat('dd.MM.yyyy').format(date),
+            DateFormat('dd.MM.yyyy').format(_date),
             style: const TextStyle(),
           ),
         ),

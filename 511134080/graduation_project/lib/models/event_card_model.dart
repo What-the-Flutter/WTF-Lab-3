@@ -8,6 +8,8 @@ class EventCardModel {
   final bool isSelected;
   final bool isSelectionMode;
 
+  final int categoryIndex;
+
   final dynamic id;
 
   const EventCardModel({
@@ -17,6 +19,7 @@ class EventCardModel {
     this.isFavourite = false,
     this.isSelected = false,
     this.isSelectionMode = false,
+    this.categoryIndex = 0,
   });
 
   EventCardModel copyWith({
@@ -26,6 +29,7 @@ class EventCardModel {
     bool? isFavourite,
     bool? isSelected,
     bool? isSelectionMode,
+    int? newCategory,
   }) {
     return EventCardModel(
       title: newTitle ?? title,
@@ -34,6 +38,7 @@ class EventCardModel {
       isFavourite: isFavourite ?? this.isFavourite,
       isSelected: isSelected ?? this.isSelected,
       isSelectionMode: isSelectionMode ?? this.isSelectionMode,
+      categoryIndex: newCategory ?? categoryIndex,
     );
   }
 }
