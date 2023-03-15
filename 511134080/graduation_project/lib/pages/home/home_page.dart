@@ -150,6 +150,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<HomeCubit>().loadChats();
     return Scaffold(
       appBar: _createAppBar(),
       body: _createBody(),

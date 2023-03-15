@@ -2,8 +2,9 @@ part of 'home_cubit.dart';
 
 class HomeState {
   final List<Chat> _chats;
+  final chatRepository = ChatRepository();
 
-  HomeState({required List<Chat> chats}) : _chats = chats;
+  HomeState({List<Chat> chats = const []}) : _chats = chats;
 
   List<Chat> get chats => _chats;
 

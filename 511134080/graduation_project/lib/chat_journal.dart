@@ -17,14 +17,12 @@ class ChatJournal extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => HomeCubit(
-            initState: HomeState(chats: chats),
-          ),
+          create: (_) => HomeCubit(),
         ),
         BlocProvider(
           create: (context) => ChatCubit(
-            homeCubit: context.read<HomeCubit>(),
-          ),
+              /*  homeCubit: context.read<HomeCubit>(),*/
+              ),
         ),
         BlocProvider(
           create: (context) => ManagingPageCubit(

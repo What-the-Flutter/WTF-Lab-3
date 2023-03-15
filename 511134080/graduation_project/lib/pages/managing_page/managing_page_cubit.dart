@@ -59,7 +59,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
       title: title,
       id: UniqueKey().toString(),
       date: DateTime.now(),
-      cards: const [],
+      /*cards: const [],*/
     );
 
     final chats = List<Chat>.from([chat])..addAll(state._chats);

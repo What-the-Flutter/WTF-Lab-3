@@ -25,7 +25,7 @@ class SearchingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DateCard(date: current.time),
-          EventCard(cardModel: current, key: current.id),
+          EventCard(cardModel: current, key: UniqueKey()),
         ],
       );
     } else {
@@ -36,11 +36,11 @@ class SearchingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DateCard(date: current.time),
-            EventCard(cardModel: current, key: current.id),
+            EventCard(cardModel: current, key: UniqueKey()),
           ],
         );
       }
-      return EventCard(cardModel: current, key: current.id);
+      return EventCard(cardModel: current, key: UniqueKey());
     }
   }
 

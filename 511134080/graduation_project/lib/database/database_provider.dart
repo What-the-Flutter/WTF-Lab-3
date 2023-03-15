@@ -20,7 +20,7 @@ class DatabaseProvider {
     var documentsDirectory = await getApplicationDocumentsDirectory();
     var path = join(documentsDirectory.path, 'chat_journal.db');
 
-    var database = await openDatabase(path, onCreate: initDatabase);
+    var database = await openDatabase(path, version: 1, onCreate: initDatabase);
     return database;
   }
 
@@ -28,13 +28,13 @@ class DatabaseProvider {
     await database.execute('''
       CREATE TABLE $eventTable (
         id TEXT PRIMARY KEY NOT NULL,
-        chat_id TEXT PRIMARY KEY NOT NULL,
+        chat_id TEXT NOT NULL,
         title TEXT NOT NULL,
         time TEXT NOT NULL,
         category_index INTEGER NOT NULL,
         is_favourite INTEGER NOT NULL,
         is_selected INTEGER NOT NULL,
-        is_selection_mode INTEGER NOT NULL,
+        is_selection_mode INTEGER NOT NULL
       )
     ''');
 
@@ -45,7 +45,7 @@ class DatabaseProvider {
         date TEXT NOT NULL,
         icon_id INTEGER NOT NULL,
         is_pinned INTEGER NOT NULL,
-        is_showing_favourites INTEGER NOT NULL,
+        is_showing_favourites INTEGER NOT NULL
       )
     ''');
   }

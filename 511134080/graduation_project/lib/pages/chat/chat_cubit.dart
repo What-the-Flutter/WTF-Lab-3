@@ -1,25 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
 import '../../models/event.dart';
-import '../home/home_cubit.dart';
+import '../../repositories/event_repository.dart';
 
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final HomeCubit homeCubit;
+  ChatCubit() : super(ChatState());
 
-  ChatCubit({
-    required this.homeCubit,
-  }) : super(ChatState());
-
-  void init(Chat chat) {
+  Future<void> init(Chat chat) async {
+    final cards = await state.eventsRepository.receiveAllChatEvents(chat.id);
     emit(
       state.copyWith(
+        newCards: cards,
         newChat: chat,
       ),
     );
@@ -44,18 +40,14 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void updateChat(Chat updatedChat) {
+  Future<void> toggleFavourites() async {
+    final updatedChat = state._chat.copyWith(
+      showingFavourites: !state._chat.isShowingFavourites,
+    );
     emit(
       state.copyWith(
         newChat: updatedChat,
       ),
-    );
-  }
-
-  void toggleFavourites() {
-    final chat = state._chat;
-    updateChat(
-      chat.copyWith(showingFavourites: !chat.isShowingFavourites),
     );
   }
 
@@ -78,7 +70,7 @@ class ChatCubit extends Cubit<ChatState> {
           categoryIndex: state._categoryIconIndex,
         );
 
-        addEventCard(cardModel);
+        addEvent(cardModel);
       }
     } else {
       editSelectedCard(title, state._categoryIconIndex);
@@ -92,51 +84,55 @@ class ChatCubit extends Cubit<ChatState> {
     changeCategoryIcon(0);
   }
 
-  void addEventCard(Event card) {
-    final chat = state._chat;
-    final cards = List<Event>.from(chat.cards)..add(card);
-
-    updateChat(
-      chat.copyWith(newCards: cards, newLastEvent: card),
+  Future<void> addEvent(Event event) async {
+    await state.eventsRepository.insertEvent(event);
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+    emit(
+      state.copyWith(
+        newCards: cards,
+      ),
     );
   }
 
-  void editSelectedCard(String newTitle, int newCategory) {
-    final chat = state._chat;
-    final cards = List<Event>.from(chat.cards);
-    final selectedCard = cards.where((Event card) => card.isSelected).first;
+  Future<void> editSelectedCard(String newTitle, int newCategory) async {
+    final selectedEvent =
+        state._cards.where((Event card) => card.isSelected).first;
 
-    final index = cards.indexOf(selectedCard);
-    cards[index] = selectedCard.copyWith(
-      newTitle: newTitle,
-      isSelected: false,
-      newCategory: newCategory,
+    await state.eventsRepository.updateEvent(
+      selectedEvent.copyWith(
+        newTitle: newTitle,
+        newCategory: newCategory,
+      ),
     );
 
-    updateChat(
-      chat.copyWith(
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+
+    emit(
+      state.copyWith(
         newCards: cards,
-        newLastEvent: cards.last,
       ),
     );
 
     cancelSelectionMode();
   }
 
-  void cancelSelectionMode() {
-    final chat = state._chat;
-
-    final cards = List<Event>.from(chat.cards);
-
-    for (var i = 0; i < cards.length; i++) {
-      cards[i] = cards[i].copyWith(
-        isSelectionMode: false,
-        isSelected: false,
+  Future<void> cancelSelectionMode() async {
+    for (final event in state._cards) {
+      await state.eventsRepository.updateEvent(
+        event.copyWith(
+          isSelectionMode: false,
+          isSelected: false,
+        ),
       );
     }
 
-    updateChat(
-      chat.copyWith(
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+
+    emit(
+      state.copyWith(
         newCards: cards,
       ),
     );
@@ -144,14 +140,14 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> copySelectedCards() async {
     var text = '';
-    final chat = state._chat;
 
-    for (final card
-        in chat.cards.where((Event cardModel) => cardModel.isSelected)) {
+    final cards = state._cards.where((Event cardModel) => cardModel.isSelected);
+    for (final card in cards) {
       text += '${card.title}\n';
     }
 
     cancelSelectionMode();
+
     await Clipboard.setData(
       ClipboardData(
         text: text,
@@ -159,18 +155,23 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void deleteSelectedCards() {
-    final chat = state._chat;
+  Future<void> deleteSelectedCards() async {
+    final selectedCards =
+        state._cards.where((Event cardModel) => cardModel.isSelected);
 
-    final cards = List<Event>.from(chat.cards)
-      ..removeWhere((Event cardModel) => cardModel.isSelected);
+    for (final card in selectedCards) {
+      await state.eventsRepository.deleteEventById(card.id);
+    }
 
-    final lastEvent = cards.isNotEmpty ? cards.last : null;
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
 
-    updateChat(chat.copyWith(
-      newCards: cards,
-      newLastEvent: lastEvent,
-    ));
+    emit(
+      state.copyWith(
+        newCards: cards,
+      ),
+    );
+
     cancelSelectionMode();
   }
 
@@ -182,88 +183,112 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
+  Future<void> manageFavouriteEventCard(Event cardModel) async {
+    final index = state._cards.indexOf(cardModel);
+
+    await state.eventsRepository.updateEvent(
+      state._cards[index].copyWith(
+        isFavourite: !cardModel.isFavourite,
+      ),
+    );
+
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+
+    emit(
+      state.copyWith(
+        newCards: cards,
+      ),
+    );
+  }
+
+  Future<void> manageSelectedEvent(Event event) async {
+    final selectedLength =
+        state._cards.where((Event cardModel) => cardModel.isSelected).length;
+
+    if (selectedLength == 1 && event.isSelected) {
+      cancelSelectionMode();
+    } else {
+      await state.eventsRepository.updateEvent(
+        event.copyWith(
+          isSelected: !event.isSelected,
+        ),
+      );
+      final cards =
+          await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+      emit(
+        state.copyWith(
+          newCards: cards,
+        ),
+      );
+    }
+  }
+
+  Future<void> manageFavouritesFromSelectionMode() async {
+    for (final event in state._cards) {
+      if (event.isSelected) {
+        await state.eventsRepository.updateEvent(
+          event.copyWith(
+            isFavourite: !event.isFavourite,
+            isSelected: false,
+            isSelectionMode: false,
+          ),
+        );
+      } else {
+        await state.eventsRepository.updateEvent(
+          event.copyWith(
+            isSelected: false,
+            isSelectionMode: false,
+          ),
+        );
+      }
+    }
+
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
+
+    emit(
+      state.copyWith(
+        newCards: cards,
+      ),
+    );
+  }
+
   void manageLongPress(Event cardModel) {
     if (!cardModel.isSelectionMode) {
       turnOnSelectionMode(cardModel);
     }
   }
 
-  void manageFavouritesFromSelectionMode() {
-    final chat = state._chat;
-
-    final cards = List<Event>.from(chat.cards);
-
-    for (var i = 0; i < cards.length; i++) {
-      if (cards[i].isSelected) {
-        cards[i] = cards[i].copyWith(
-          isFavourite: !cards[i].isFavourite,
-          isSelected: false,
+  Future<void> turnOnSelectionMode(Event cardModel) async {
+    for (final event in state._cards) {
+      if (event.id == cardModel.id) {
+        await state.eventsRepository.updateEvent(
+          event.copyWith(
+            isSelectionMode: true,
+            isSelected: true,
+          ),
+        );
+      } else {
+        await state.eventsRepository.updateEvent(
+          event.copyWith(
+            isSelectionMode: true,
+          ),
         );
       }
     }
-    updateChat(
-      chat.copyWith(
-        newCards: cards,
-      ),
-    );
-    cancelSelectionMode();
-  }
 
-  void manageSelectedEvent(Event cardModel) {
-    final chat = state._chat;
+    final cards =
+        await state.eventsRepository.receiveAllChatEvents(state._chat.id);
 
-    final index = chat.cards.indexOf(cardModel);
-    final cards = List<Event>.from(chat.cards);
-
-    final selectedLength =
-        cards.where((Event cardModel) => cardModel.isSelected).length;
-
-    if (selectedLength == 1 && cardModel.isSelected) {
-      cancelSelectionMode();
-    } else {
-      cards[index] = cardModel.copyWith(isSelected: !cardModel.isSelected);
-      updateChat(
-        chat.copyWith(newCards: cards),
-      );
-    }
-  }
-
-  void manageFavouriteEventCard(Event cardModel) {
-    final chat = state._chat;
-
-    final index = chat.cards.indexOf(cardModel);
-    final cards = List<Event>.from(chat.cards);
-    cards[index] = cardModel.copyWith(
-      isFavourite: !cardModel.isFavourite,
-    );
-
-    updateChat(
-      chat.copyWith(newCards: cards),
-    );
-  }
-
-  void turnOnSelectionMode(Event cardModel) {
-    final chat = state._chat;
-    final index = chat.cards.indexOf(cardModel);
-    final cards = List<Event>.from(chat.cards);
-    cards[index] = cardModel.copyWith(
-      isSelected: true,
-    );
-
-    for (var i = 0; i < cards.length; i++) {
-      cards[i] = cards[i].copyWith(
-        isSelectionMode: true,
-      );
-    }
-
-    updateChat(
-      chat.copyWith(
+    emit(
+      state.copyWith(
         newCards: cards,
       ),
     );
   }
 
-  void moveSelectedCards(int newChatIndex) {
+  /* TODO void moveSelectedCards(int newChatIndex) {
     final chat = state._chat;
     final destinationChat = homeCubit.state.chats[newChatIndex];
 
@@ -291,18 +316,5 @@ class ChatCubit extends Cubit<ChatState> {
         isSelected: false,
         isSelectionMode: false,
       );
-    }
-
-    updateChat(
-      chat.copyWith(
-        newCards: withoutMovingCards,
-      ),
-    );
-
-    homeCubit.updateChats(
-      destinationChat.copyWith(
-        newCards: withMovingCards,
-      ),
-    );
-  }
+    }*/
 }

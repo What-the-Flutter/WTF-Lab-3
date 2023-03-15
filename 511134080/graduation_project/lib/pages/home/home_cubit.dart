@@ -1,26 +1,38 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
+import '../../repositories/chat_repository.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({required HomeState initState}) : super(initState);
+  HomeCubit() : super(HomeState()) {
+    loadChats();
+  }
 
-  void updateChats(Chat newChat) {
+  Future<void> loadChats() async {
+    var chats = await state.chatRepository.receiveAllChats();
+    emit(
+      state.copyWith(
+        newChats: chats,
+      ),
+    );
+  }
+
+  Future<void> updateChats(Chat newChat) async {
     final index = state._chats.indexWhere((Chat chat) => chat.id == newChat.id);
 
     if (index != -1) {
-      final chats = state._chats;
-      chats[index] = newChat;
+      await state.chatRepository.updateChat(newChat);
+      final chats = await state.chatRepository.receiveAllChats();
       emit(
         state.copyWith(
           newChats: chats,
         ),
       );
     } else {
-      final chats = List<Chat>.from([newChat])..addAll(state._chats);
-
+      await state.chatRepository.insertChat(newChat);
+      final chats = await state.chatRepository.receiveAllChats();
       emit(
         state.copyWith(
           newChats: chats,
@@ -29,18 +41,28 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void deleteChat(dynamic chatId) {
-    final chats = List<Chat>.from(state._chats)
-      ..removeWhere((Chat chat) => chat.id == chatId);
-    emit(state.copyWith(newChats: chats));
+  Future<void> deleteChat(String chatId) async {
+    await state.chatRepository.deleteChatById(chatId);
+    var chats = await state.chatRepository.receiveAllChats();
+    emit(
+      state.copyWith(
+        newChats: chats,
+      ),
+    );
   }
 
-  void togglePinState(dynamic chatId) {
+  Future<void> togglePinState(String chatId) async {
     final chat = state._chats.where((Chat chat) => chat.id == chatId).first;
 
-    updateChats(
+    await state.chatRepository.updateChat(
       chat.copyWith(
         pinned: !chat.isPinned,
+      ),
+    );
+    var chats = await state.chatRepository.receiveAllChats();
+    emit(
+      state.copyWith(
+        newChats: chats,
       ),
     );
   }

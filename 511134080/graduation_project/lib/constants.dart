@@ -193,20 +193,17 @@ final chats = [
     title: 'Travel',
     id: UniqueKey().toString(),
     date: DateTime.now(),
-    cards: const [],
   ),
   Chat(
     iconId: 2,
     title: 'Family',
     id: UniqueKey().toString(),
     date: DateTime.now(),
-    cards: const [],
   ),
   Chat(
     iconId: 3,
     title: 'Sports',
     id: UniqueKey().toString(),
     date: DateTime.now(),
-    cards: const [],
   ),
 ];

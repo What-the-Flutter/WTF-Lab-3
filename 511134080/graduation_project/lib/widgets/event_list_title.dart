@@ -4,16 +4,19 @@ import 'package:intl/intl.dart';
 
 import '../constants.dart';
 import '../models/chat.dart';
+import '../models/event.dart';
+import '../pages/chat/chat_cubit.dart';
 import '../pages/chat/chat_page.dart';
 import '../pages/home/home_cubit.dart';
 import '../pages/managing_page/managing_page.dart';
 
 class EventListTile extends StatelessWidget {
-  final dynamic _chatId;
+  final String _chatId;
 
   const EventListTile({super.key, required chatId}) : _chatId = chatId;
 
-  ListTile _createInfoOption(BuildContext context, Chat chat) {
+  ListTile _createInfoOption(
+      BuildContext context, Chat chat, Event? lastEvent) {
     return ListTile(
       leading: const Icon(
         Icons.info,
@@ -31,19 +34,20 @@ class EventListTile extends StatelessWidget {
         showDialog(
           context: context,
           builder: (context) {
-            return _createAlertDialog(context, chat);
+            return _createAlertDialog(context, chat, lastEvent);
           },
         );
       },
     );
   }
 
-  AlertDialog _createAlertDialog(BuildContext context, Chat chat) {
+  AlertDialog _createAlertDialog(
+      BuildContext context, Chat chat, Event? lastEvent) {
     return AlertDialog(
       title: Center(
         child: _createAlertDialogTitle(chat),
       ),
-      content: _createAlertDialogContent(chat),
+      content: _createAlertDialogContent(chat, lastEvent),
       actions: [
         TextButton(
           onPressed: () {
@@ -90,7 +94,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget _createAlertDialogContent(Chat chat) {
+  Widget _createAlertDialogContent(Chat chat, Event? lastEvent) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -117,8 +121,8 @@ class EventListTile extends StatelessWidget {
           ),
         ),
         Text(
-          chat.cards.isNotEmpty
-              ? '${DateFormat('dd.MM.yyyy').format(chat.cards.last.time)} at ${DateFormat('hh:mm a').format(chat.cards.last.time)}'
+          lastEvent != null
+              ? '${DateFormat('dd.MM.yyyy').format(lastEvent.time)} at ${DateFormat('hh:mm a').format(lastEvent.time)}'
               : 'No events yet.',
           style: const TextStyle(
             fontSize: 18,
@@ -205,16 +209,17 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  List<ListTile> _createOptions(BuildContext context, Chat chat) {
+  List<ListTile> _createOptions(
+      BuildContext context, Chat chat, Event? lastEvent) {
     return [
-      _createInfoOption(context, chat),
+      _createInfoOption(context, chat, lastEvent),
       _createPinOption(context, chat),
       _createEditOption(context),
       _createDeleteOption(context),
     ];
   }
 
-  void onLongPress(BuildContext context, Chat chat) {
+  void onLongPress(BuildContext context, Chat chat, Event? lastEvent) {
     showModalBottomSheet(
       constraints: BoxConstraints.loose(
         const Size.fromHeight(
@@ -225,14 +230,14 @@ class EventListTile extends StatelessWidget {
       context: context,
       builder: (context) {
         return ListView(
-          children: _createOptions(context, chat),
+          children: _createOptions(context, chat, lastEvent),
         );
       },
     );
   }
 
-  Widget? _createTrailing(Chat chat) {
-    if (chat.cards.isNotEmpty) {
+  Widget? _createTrailing(Chat chat, Event? lastEvent) {
+    if (lastEvent != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,14 +248,14 @@ class EventListTile extends StatelessWidget {
                   color: Colors.deepPurple,
                 ),
                 Text(
-                  DateFormat('hh:mm a').format(chat.cards.last.time),
+                  DateFormat('hh:mm a').format(lastEvent.time),
                 ),
               ]
             : [
                 Padding(
                   padding: const EdgeInsets.only(top: 32.0),
                   child: Text(
-                    DateFormat('hh:mm a').format(chat.cards.last.time),
+                    DateFormat('hh:mm a').format(lastEvent.time),
                   ),
                 ),
               ],
@@ -277,6 +282,10 @@ class EventListTile extends StatelessWidget {
             state.chats.indexWhere((element) => element.id == _chatId);
         final chat = state.chats[index];
 
+        context.read<ChatCubit>().init(chat);
+        final cards = context.read<ChatCubit>().state.allCards;
+        final lastEvent = cards.isNotEmpty ? cards.last : null;
+
         return ListTile(
           leading: Container(
             width: 48,
@@ -300,11 +309,11 @@ class EventListTile extends StatelessWidget {
                 : icons[chat.iconId],
           ),
           title: Text(chat.title),
-          subtitle: chat.cards.isNotEmpty
-              ? Text(chat.cards.last.title)
+          subtitle: lastEvent != null
+              ? Text(lastEvent!.title)
               : const Text('No events. Click here to create one.'),
           hoverColor: Colors.deepPurple.shade100,
-          trailing: _createTrailing(chat),
+          trailing: _createTrailing(chat, lastEvent),
           onTap: () async {
             final updatedChat = await Navigator.push(
               context,
@@ -318,7 +327,7 @@ class EventListTile extends StatelessWidget {
             context.read<HomeCubit>().updateChats(updatedChat);
           },
           onLongPress: () {
-            onLongPress(context, chat);
+            onLongPress(context, chat, lastEvent);
           },
         );
       },
