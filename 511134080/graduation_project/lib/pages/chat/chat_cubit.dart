@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
-import '../../models/event_card_model.dart';
+import '../../models/chat.dart';
+import '../../models/event.dart';
 import '../home/home_cubit.dart';
 
 part 'chat_state.dart';
@@ -17,7 +17,7 @@ class ChatCubit extends Cubit<ChatState> {
     required this.homeCubit,
   }) : super(ChatState());
 
-  void init(ChatModel chat) {
+  void init(Chat chat) {
     emit(
       state.copyWith(
         newChat: chat,
@@ -44,7 +44,7 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void updateChat(ChatModel updatedChat) {
+  void updateChat(Chat updatedChat) {
     emit(
       state.copyWith(
         newChat: updatedChat,
@@ -70,10 +70,11 @@ class ChatCubit extends Cubit<ChatState> {
   void onEnterSubmitted(String title) {
     if (!state._isEditingMode) {
       if (title != '' || state._categoryIconIndex != 0) {
-        final cardModel = EventCardModel(
+        final cardModel = Event(
+          chatId: state.chat.id,
           title: title,
           time: DateTime.now(),
-          id: UniqueKey(),
+          id: UniqueKey().toString(),
           categoryIndex: state._categoryIconIndex,
         );
 
@@ -91,9 +92,9 @@ class ChatCubit extends Cubit<ChatState> {
     changeCategoryIcon(0);
   }
 
-  void addEventCard(EventCardModel card) {
+  void addEventCard(Event card) {
     final chat = state._chat;
-    final cards = List<EventCardModel>.from(chat.cards)..add(card);
+    final cards = List<Event>.from(chat.cards)..add(card);
 
     updateChat(
       chat.copyWith(newCards: cards, newLastEvent: card),
@@ -102,9 +103,8 @@ class ChatCubit extends Cubit<ChatState> {
 
   void editSelectedCard(String newTitle, int newCategory) {
     final chat = state._chat;
-    final cards = List<EventCardModel>.from(chat.cards);
-    final selectedCard =
-        cards.where((EventCardModel card) => card.isSelected).first;
+    final cards = List<Event>.from(chat.cards);
+    final selectedCard = cards.where((Event card) => card.isSelected).first;
 
     final index = cards.indexOf(selectedCard);
     cards[index] = selectedCard.copyWith(
@@ -126,7 +126,7 @@ class ChatCubit extends Cubit<ChatState> {
   void cancelSelectionMode() {
     final chat = state._chat;
 
-    final cards = List<EventCardModel>.from(chat.cards);
+    final cards = List<Event>.from(chat.cards);
 
     for (var i = 0; i < cards.length; i++) {
       cards[i] = cards[i].copyWith(
@@ -146,8 +146,8 @@ class ChatCubit extends Cubit<ChatState> {
     var text = '';
     final chat = state._chat;
 
-    for (final card in chat.cards
-        .where((EventCardModel cardModel) => cardModel.isSelected)) {
+    for (final card
+        in chat.cards.where((Event cardModel) => cardModel.isSelected)) {
       text += '${card.title}\n';
     }
 
@@ -162,8 +162,8 @@ class ChatCubit extends Cubit<ChatState> {
   void deleteSelectedCards() {
     final chat = state._chat;
 
-    final cards = List<EventCardModel>.from(chat.cards)
-      ..removeWhere((EventCardModel cardModel) => cardModel.isSelected);
+    final cards = List<Event>.from(chat.cards)
+      ..removeWhere((Event cardModel) => cardModel.isSelected);
 
     final lastEvent = cards.isNotEmpty ? cards.last : null;
 
@@ -174,7 +174,7 @@ class ChatCubit extends Cubit<ChatState> {
     cancelSelectionMode();
   }
 
-  void manageTapEvent(EventCardModel cardModel) {
+  void manageTapEvent(Event cardModel) {
     if (!cardModel.isSelectionMode) {
       manageFavouriteEventCard(cardModel);
     } else {
@@ -182,7 +182,7 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void manageLongPress(EventCardModel cardModel) {
+  void manageLongPress(Event cardModel) {
     if (!cardModel.isSelectionMode) {
       turnOnSelectionMode(cardModel);
     }
@@ -191,7 +191,7 @@ class ChatCubit extends Cubit<ChatState> {
   void manageFavouritesFromSelectionMode() {
     final chat = state._chat;
 
-    final cards = List<EventCardModel>.from(chat.cards);
+    final cards = List<Event>.from(chat.cards);
 
     for (var i = 0; i < cards.length; i++) {
       if (cards[i].isSelected) {
@@ -209,14 +209,14 @@ class ChatCubit extends Cubit<ChatState> {
     cancelSelectionMode();
   }
 
-  void manageSelectedEvent(EventCardModel cardModel) {
+  void manageSelectedEvent(Event cardModel) {
     final chat = state._chat;
 
     final index = chat.cards.indexOf(cardModel);
-    final cards = List<EventCardModel>.from(chat.cards);
+    final cards = List<Event>.from(chat.cards);
 
     final selectedLength =
-        cards.where((EventCardModel cardModel) => cardModel.isSelected).length;
+        cards.where((Event cardModel) => cardModel.isSelected).length;
 
     if (selectedLength == 1 && cardModel.isSelected) {
       cancelSelectionMode();
@@ -228,11 +228,11 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void manageFavouriteEventCard(EventCardModel cardModel) {
+  void manageFavouriteEventCard(Event cardModel) {
     final chat = state._chat;
 
     final index = chat.cards.indexOf(cardModel);
-    final cards = List<EventCardModel>.from(chat.cards);
+    final cards = List<Event>.from(chat.cards);
     cards[index] = cardModel.copyWith(
       isFavourite: !cardModel.isFavourite,
     );
@@ -242,10 +242,10 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void turnOnSelectionMode(EventCardModel cardModel) {
+  void turnOnSelectionMode(Event cardModel) {
     final chat = state._chat;
     final index = chat.cards.indexOf(cardModel);
-    final cards = List<EventCardModel>.from(chat.cards);
+    final cards = List<Event>.from(chat.cards);
     cards[index] = cardModel.copyWith(
       isSelected: true,
     );
@@ -268,15 +268,15 @@ class ChatCubit extends Cubit<ChatState> {
     final destinationChat = homeCubit.state.chats[newChatIndex];
 
     final cards = chat.cards;
-    final movingCards = List<EventCardModel>.from(
-      cards.where((EventCardModel card) => card.isSelected),
+    final movingCards = List<Event>.from(
+      cards.where((Event card) => card.isSelected),
     );
 
-    final withoutMovingCards = List<EventCardModel>.from(
-      cards.where((EventCardModel card) => !card.isSelected),
+    final withoutMovingCards = List<Event>.from(
+      cards.where((Event card) => !card.isSelected),
     );
 
-    final withMovingCards = List<EventCardModel>.from(destinationChat.cards)
+    final withMovingCards = List<Event>.from(destinationChat.cards)
       ..addAll(movingCards);
 
     for (var i = 0; i < withoutMovingCards.length; i++) {

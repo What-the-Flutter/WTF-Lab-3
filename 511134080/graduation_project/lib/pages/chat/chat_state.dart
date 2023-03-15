@@ -1,17 +1,17 @@
 part of 'chat_cubit.dart';
 
 class ChatState {
-  final ChatModel _chat;
+  final Chat _chat;
   final int _categoryIconIndex;
   final bool _isChoosingCategory;
   final bool _isEditingMode;
   late final List<String> _hintMessages;
 
   ChatState({
-    ChatModel chat = const ChatModel(
+    Chat chat = const Chat(
       iconId: 0,
       title: '',
-      id: 0,
+      id: '0',
       cards: [],
       date: null,
     ),
@@ -30,11 +30,11 @@ class ChatState {
     ];
   }
 
-  List<EventCardModel> get cards => _chat.isShowingFavourites
-      ? List<EventCardModel>.from(
+  List<Event> get cards => _chat.isShowingFavourites
+      ? List<Event>.from(
           _chat.cards.reversed.where((card) => card.isFavourite),
         )
-      : List<EventCardModel>.from(_chat.cards.reversed);
+      : List<Event>.from(_chat.cards.reversed);
 
   int get cardsLength => _chat.isShowingFavourites
       ? _chat.cards.where((card) => card.isFavourite).length
@@ -48,10 +48,10 @@ class ChatState {
 
   int get categoryIconIndex => _categoryIconIndex;
 
-  ChatModel get chat => _chat;
+  Chat get chat => _chat;
 
   ChatState copyWith({
-    ChatModel? newChat,
+    Chat? newChat,
     int? newCategoryIconIndex,
     bool? choosingCategory,
     bool? editingMode,

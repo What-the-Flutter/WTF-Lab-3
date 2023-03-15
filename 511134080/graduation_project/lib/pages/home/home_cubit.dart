@@ -1,15 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({required HomeState initState}) : super(initState);
 
-  void updateChats(ChatModel newChat) {
-    final index =
-        state._chats.indexWhere((ChatModel chat) => chat.id == newChat.id);
+  void updateChats(Chat newChat) {
+    final index = state._chats.indexWhere((Chat chat) => chat.id == newChat.id);
+
     if (index != -1) {
       final chats = state._chats;
       chats[index] = newChat;
@@ -19,7 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } else {
-      final chats = List<ChatModel>.from([newChat])..addAll(state._chats);
+      final chats = List<Chat>.from([newChat])..addAll(state._chats);
 
       emit(
         state.copyWith(
@@ -30,14 +30,13 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void deleteChat(dynamic chatId) {
-    final chats = List<ChatModel>.from(state._chats)
-      ..removeWhere((ChatModel chat) => chat.id == chatId);
+    final chats = List<Chat>.from(state._chats)
+      ..removeWhere((Chat chat) => chat.id == chatId);
     emit(state.copyWith(newChats: chats));
   }
 
   void togglePinState(dynamic chatId) {
-    final chat =
-        state._chats.where((ChatModel chat) => chat.id == chatId).first;
+    final chat = state._chats.where((Chat chat) => chat.id == chatId).first;
 
     updateChats(
       chat.copyWith(

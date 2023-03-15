@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../constants.dart';
-import '../models/chat_model.dart';
+import '../models/chat.dart';
 import '../pages/chat/chat_page.dart';
 import '../pages/home/home_cubit.dart';
 import '../pages/managing_page/managing_page.dart';
@@ -13,7 +13,7 @@ class EventListTile extends StatelessWidget {
 
   const EventListTile({super.key, required chatId}) : _chatId = chatId;
 
-  ListTile _createInfoOption(BuildContext context, ChatModel chat) {
+  ListTile _createInfoOption(BuildContext context, Chat chat) {
     return ListTile(
       leading: const Icon(
         Icons.info,
@@ -38,7 +38,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  AlertDialog _createAlertDialog(BuildContext context, ChatModel chat) {
+  AlertDialog _createAlertDialog(BuildContext context, Chat chat) {
     return AlertDialog(
       title: Center(
         child: _createAlertDialogTitle(chat),
@@ -57,7 +57,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget _createAlertDialogTitle(ChatModel chat) {
+  Widget _createAlertDialogTitle(Chat chat) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -90,7 +90,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget _createAlertDialogContent(ChatModel chat) {
+  Widget _createAlertDialogContent(Chat chat) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -128,7 +128,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  ListTile _createPinOption(BuildContext context, ChatModel chat) {
+  ListTile _createPinOption(BuildContext context, Chat chat) {
     return ListTile(
       leading: const Icon(
         Icons.attach_file,
@@ -162,14 +162,14 @@ class EventListTile extends StatelessWidget {
         ),
       ),
       onTap: () async {
-        ChatModel editedChat = await Navigator.push(
+        Chat editedChat = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
               return BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
                   final chat = state.chats
-                      .where((ChatModel chat) => chat.id == _chatId)
+                      .where((Chat chat) => chat.id == _chatId)
                       .first;
                   return ManagingPage(
                     editingPage: chat,
@@ -205,7 +205,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  List<ListTile> _createOptions(BuildContext context, ChatModel chat) {
+  List<ListTile> _createOptions(BuildContext context, Chat chat) {
     return [
       _createInfoOption(context, chat),
       _createPinOption(context, chat),
@@ -214,7 +214,7 @@ class EventListTile extends StatelessWidget {
     ];
   }
 
-  void onLongPress(BuildContext context, ChatModel chat) {
+  void onLongPress(BuildContext context, Chat chat) {
     showModalBottomSheet(
       constraints: BoxConstraints.loose(
         const Size.fromHeight(
@@ -231,7 +231,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget? _createTrailing(ChatModel chat) {
+  Widget? _createTrailing(Chat chat) {
     if (chat.cards.isNotEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,

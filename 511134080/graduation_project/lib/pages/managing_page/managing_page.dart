@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../constants.dart';
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
 import 'managing_page_cubit.dart';
 
 class ManagingPage extends StatelessWidget {
-  final ChatModel? _editingPage;
+  final Chat? _editingPage;
 
   final _controller = TextEditingController();
 
@@ -14,7 +14,7 @@ class ManagingPage extends StatelessWidget {
 
   ManagingPage({
     Key? key,
-    ChatModel? editingPage,
+    Chat? editingPage,
   })  : _editingPage = editingPage,
         super(key: key);
 

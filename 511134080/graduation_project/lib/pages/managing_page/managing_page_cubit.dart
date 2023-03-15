@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
 
 part 'managing_page_state.dart';
 
@@ -10,7 +10,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     required ManagingPageState initState,
   }) : super(initState);
 
-  void initState(ChatModel? chat) {
+  void initState(Chat? chat) {
     if (chat == null) {
       emit(
         state.copyWith(
@@ -54,15 +54,15 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
   }
 
   void addChat(String title) {
-    final chat = ChatModel(
+    final chat = Chat(
       iconId: state._selectedIndex,
       title: title,
-      id: UniqueKey(),
+      id: UniqueKey().toString(),
       date: DateTime.now(),
       cards: const [],
     );
 
-    final chats = List<ChatModel>.from([chat])..addAll(state._chats);
+    final chats = List<Chat>.from([chat])..addAll(state._chats);
 
     emit(
       state.copyWith(
@@ -86,7 +86,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     state._resultPage = editedChat;
   }
 
-  void updateChat(ChatModel editedChat) {
+  void updateChat(Chat editedChat) {
     final index =
         state._chats.indexWhere((element) => element.id == editedChat.id);
 

@@ -3,14 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
-import '../models/event_card_model.dart';
+import '../models/event.dart';
 import '../pages/chat/chat_cubit.dart';
 
 class EventCard extends StatelessWidget {
-  final EventCardModel _cardModel;
+  final Event _cardModel;
 
   const EventCard({
-    required EventCardModel cardModel,
+    required Event cardModel,
     required Key key,
   })  : _cardModel = cardModel,
         super(key: key);

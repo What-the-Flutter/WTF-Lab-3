@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/event_card_model.dart';
+import '../../models/event.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
 import 'searching_page_cubit.dart';
 
 class SearchingPage extends StatelessWidget {
-  final List<EventCardModel> _cards;
+  final List<Event> _cards;
   SearchingPage({required cards, Key? key})
       : _cards = cards,
         super(key: key);
@@ -133,7 +133,7 @@ class SearchingPage extends StatelessWidget {
     }
   }
 
-  Widget _createListViewBuilder(List<EventCardModel> cards) {
+  Widget _createListViewBuilder(List<Event> cards) {
     return ListView.builder(
       reverse: true,
       itemCount: cards.length,
@@ -147,8 +147,8 @@ class SearchingPage extends StatelessWidget {
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
       builder: (context, state) {
         final foundCards = state.input == ''
-            ? <EventCardModel>[]
-            : List<EventCardModel>.from(
+            ? <Event>[]
+            : List<Event>.from(
                 _cards.reversed.where(
                   (card) => card.title.contains(state.input),
                 ),

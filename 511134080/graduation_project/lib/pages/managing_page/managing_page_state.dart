@@ -1,15 +1,15 @@
 part of 'managing_page_cubit.dart';
 
 class ManagingPageState {
-  final List<ChatModel> _chats;
+  final List<Chat> _chats;
   final int _selectedIndex;
   final bool _isCreatingPage;
   final String _inputText;
   final String _title;
-  late final ChatModel _resultPage;
+  late final Chat _resultPage;
 
   ManagingPageState({
-    required List<ChatModel> chats,
+    required List<Chat> chats,
     int selectedIndex = 0,
     bool isCreatingPage = true,
     String inputText = '',
@@ -20,7 +20,7 @@ class ManagingPageState {
         _selectedIndex = selectedIndex,
         _chats = chats;
 
-  ChatModel get resultPage => _resultPage;
+  Chat get resultPage => _resultPage;
 
   int get selectedIndex => _selectedIndex;
 
@@ -29,7 +29,7 @@ class ManagingPageState {
   String get title => _title;
 
   ManagingPageState copyWith({
-    List<ChatModel>? newChats,
+    List<Chat>? newChats,
     int? index,
     bool? creatingPage,
     String? newInputText,

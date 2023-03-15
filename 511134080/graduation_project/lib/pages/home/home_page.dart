@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
 import '../../theme/theme_cubit.dart';
 import '../../widgets/event_list_title.dart';
 import '../managing_page/managing_page.dart';
@@ -15,9 +15,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget _createListTile(int index, List<ChatModel> chats) {
+  Widget _createListTile(int index, List<Chat> chats) {
     final sortedChats =
-        List<ChatModel>.from(chats.where((chatModel) => chatModel.isPinned))
+        List<Chat>.from(chats.where((chatModel) => chatModel.isPinned))
           ..addAll(chats.where((chatModel) => !chatModel.isPinned));
     return EventListTile(
       chatId: sortedChats[index].id,
