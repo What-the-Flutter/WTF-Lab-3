@@ -46,7 +46,7 @@ class Chat {
   }
 
   factory Chat.fromDatabaseMap(Map<String, dynamic> data) => Chat(
-        iconId: int.parse(data['icon_id']),
+        iconId: data['icon_id'],
         title: data['title'],
         id: data['id'],
         //TODO cards???
@@ -57,7 +57,7 @@ class Chat {
       );
 
   Map<String, dynamic> toDatabaseMap() => {
-        'icon_id': iconId.toString(),
+        'icon_id': iconId,
         'title': title,
         'id': id,
         'date': date.toString(),
