@@ -59,7 +59,7 @@ class ManagingPage extends StatelessWidget {
         .read<ManagingPageCubit>()
         .manageChat(_editingPage?.id, _controller.text);
 
-    Navigator.pop(context, context.read<ManagingPageCubit>().state.resultPage);
+    Navigator.pop(context);
   }
 
   Widget _createTextField(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
+import '../../repositories/chat_repository.dart';
 
 part 'managing_page_state.dart';
 
@@ -53,50 +54,25 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     }
   }
 
-  void addChat(String title) {
+  Future<void> addChat(String title) async {
     final chat = Chat(
       iconId: state._selectedIndex,
       title: title,
       id: UniqueKey().toString(),
       date: DateTime.now(),
-      /*cards: const [],*/
     );
 
-    final chats = List<Chat>.from([chat])..addAll(state._chats);
-
-    emit(
-      state.copyWith(
-        newChats: chats,
-      ),
-    );
-
-    state._resultPage = chat;
+    await state.chatsRepository.insertChat(chat);
   }
 
-  void editChat(dynamic chatId, String newTitle) {
-    final chat =
-        state._chats.where((chatModel) => chatModel.id == chatId).first;
+  Future<void> editChat(dynamic chatId, String newTitle) async {
+    final chats = await state.chatsRepository.receiveAllChats();
+    final chat = chats.where((chatModel) => chatModel.id == chatId).first;
 
     final editedChat = chat.copyWith(
       newIconId: state._selectedIndex,
       newTitle: newTitle,
     );
-
-    updateChat(editedChat);
-    state._resultPage = editedChat;
-  }
-
-  void updateChat(Chat editedChat) {
-    final index =
-        state._chats.indexWhere((element) => element.id == editedChat.id);
-
-    final chats = state._chats;
-    chats[index] = editedChat;
-
-    emit(
-      state.copyWith(
-        newChats: chats,
-      ),
-    );
+    await state.chatsRepository.updateChat(editedChat);
   }
 }

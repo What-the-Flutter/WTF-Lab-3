@@ -150,7 +150,7 @@ class SearchingPage extends StatelessWidget {
             ? <Event>[]
             : List<Event>.from(
                 _cards.reversed.where(
-                  (card) => card.title.contains(state.input),
+                  (Event event) => event.title.contains(state.input),
                 ),
               );
         return Scaffold(

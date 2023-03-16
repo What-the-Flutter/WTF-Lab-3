@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'constants.dart';
 import 'pages/chat/chat_cubit.dart';
 import 'pages/home/home_cubit.dart';
 import 'pages/home/home_page.dart';
@@ -20,15 +19,11 @@ class ChatJournal extends StatelessWidget {
           create: (_) => HomeCubit(),
         ),
         BlocProvider(
-          create: (context) => ChatCubit(
-              /*  homeCubit: context.read<HomeCubit>(),*/
-              ),
+          create: (context) => ChatCubit(),
         ),
         BlocProvider(
           create: (context) => ManagingPageCubit(
-            initState: ManagingPageState(
-              chats: chats,
-            ),
+            initState: ManagingPageState(),
           ),
         ),
         BlocProvider(

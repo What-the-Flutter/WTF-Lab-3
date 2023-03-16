@@ -65,7 +65,6 @@ class EventCard extends StatelessWidget {
         context.read<ChatCubit>().manageTapEvent(_cardModel);
       },
       onLongPress: () {
-        print('on long press');
         context.read<ChatCubit>().manageLongPress(_cardModel);
       },
       child: Row(

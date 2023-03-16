@@ -32,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _createListViewItem(index, ChatState state) {
-    final cards = state.cards;
+    final cards = state.events;
 
     final current = cards.elementAt(index);
 
@@ -79,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
     return Expanded(
       flex: 10,
       child: ListView.builder(
-        itemCount: state.cardsLength,
+        itemCount: state.eventsLength,
         reverse: true,
         itemBuilder: (_, index) {
           return _createListViewItem(index, state);
@@ -135,30 +135,29 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createEditButton(ChatState state) {
+  IconButton _createEditButton(Chat chat) {
     return IconButton(
       icon: const Icon(
         Icons.edit,
       ),
-      onPressed: onEditButtonPressed(state),
+      onPressed: onEditButtonPressed(chat),
       disabledColor: Theme.of(context).primaryColor,
     );
   }
 
-  Null Function()? onEditButtonPressed(ChatState state) {
+  Null Function()? onEditButtonPressed(Chat chat) {
     final selectedLength = List<Event>.from(
-        state.cards.where((Event cardModel) => cardModel.isSelected)).length;
+        chat.events.where((Event cardModel) => cardModel.isSelected)).length;
     return selectedLength > 1
         ? null
         : () {
             context.read<ChatCubit>().toggleEditingMode(
                   editingMode: true,
                 );
-            final card =
-                state.allCards.where((Event card) => card.isSelected).first;
-            _textFieldController.text = card.title;
+            final event = chat.events.where((Event e) => e.isSelected).first;
+            _textFieldController.text = event.title;
 
-            context.read<ChatCubit>().changeCategoryIcon(card.categoryIndex);
+            context.read<ChatCubit>().changeCategoryIcon(event.categoryIndex);
             _myFocusNode.requestFocus();
           };
   }
@@ -192,14 +191,14 @@ class _ChatPageState extends State<ChatPage> {
     BuildContext context,
   ) {
     return [
-      for (int i = 0; i < state.chats.length; i++)
-        if (state.chats[i].id != widget._chatId)
+      for (final chat in state.chats)
+        if (chat.id != widget._chatId)
           SimpleDialogOption(
             onPressed: () {
               Navigator.pop(context);
-              //TODO context.read<ChatCubit>().moveSelectedCards(i);
+              context.read<ChatCubit>().moveSelectedCards(chat);
             },
-            child: Text(state.chats[i].title),
+            child: Text(chat.title),
           ),
     ];
   }
@@ -245,11 +244,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createSelectionModeAppBar(
-      Chat chat, HomeState state, ChatState chatState) {
-    final length = chatState.allCards
-        .where((Event cardModel) => cardModel.isSelected)
-        .length;
+  AppBar _createSelectionModeAppBar(Chat chat, HomeState state) {
+    final length =
+        chat.events.where((Event cardModel) => cardModel.isSelected).length;
 
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
@@ -267,7 +264,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
       leading: _createCloseButton(),
       actions: [
-        _createEditButton(chatState),
+        _createEditButton(chat),
         _createReplyButton(state),
         _createCopyButton(),
         _createBookMarkButton(),
@@ -276,7 +273,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createDefaultAppBar(Chat chat, ChatState state) {
+  AppBar _createDefaultAppBar(Chat chat) {
     return AppBar(
       centerTitle: true,
       iconTheme: Theme.of(context).iconTheme,
@@ -302,7 +299,7 @@ class _ChatPageState extends State<ChatPage> {
               context,
               MaterialPageRoute(
                 builder: (_) => SearchingPage(
-                  cards: state.allCards,
+                  cards: chat.events,
                 ),
               ),
             );
@@ -321,15 +318,14 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createAppBar(
-      BuildContext context, Chat chat, HomeState state, ChatState chatState) {
+  AppBar _createAppBar(BuildContext context, Chat chat, HomeState state) {
     final isSelectionMode = List<Event>.from(
-            chatState.allCards.where((Event cardModel) => cardModel.isSelected))
+            chat.events.where((Event cardModel) => cardModel.isSelected))
         .isNotEmpty;
     if (isSelectionMode) {
-      return _createSelectionModeAppBar(chat, state, chatState);
+      return _createSelectionModeAppBar(chat, state);
     } else {
-      return _createDefaultAppBar(chat, chatState);
+      return _createDefaultAppBar(chat);
     }
   }
 
@@ -450,15 +446,14 @@ class _ChatPageState extends State<ChatPage> {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         final chat = state.chat;
-        final shouldShowMessage = state.allCards.isEmpty ||
+        final shouldShowMessage = chat.events.isEmpty ||
             chat.isShowingFavourites &&
-                state.allCards
+                chat.events
                     .where((Event cardModel) => cardModel.isFavourite)
                     .isEmpty;
 
         return Scaffold(
-          appBar: _createAppBar(
-              context, chat, context.read<HomeCubit>().state, state),
+          appBar: _createAppBar(context, chat, context.read<HomeCubit>().state),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
