@@ -6,7 +6,6 @@ class Event {
   final DateTime time;
   final bool isFavourite;
   final bool isSelected;
-  /*final bool isSelectionMode;*/
 
   final int categoryIndex;
 

@@ -49,7 +49,6 @@ class ManagingPage extends StatelessWidget {
                 ),
               )
             : icons[index],
-        color: Colors.blue,
       ),
     );
   }
@@ -143,17 +142,15 @@ class ManagingPage extends StatelessWidget {
                     right: 16.0,
                     bottom: 24,
                   ),
-                  child: SingleChildScrollView(
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: icons.length,
-                      itemBuilder: (_, index) {
-                        return _createIconButton(context, index, state);
-                      },
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                      ),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: icons.length,
+                    itemBuilder: (_, index) {
+                      return _createIconButton(context, index, state);
+                    },
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
                     ),
                   ),
                 ),

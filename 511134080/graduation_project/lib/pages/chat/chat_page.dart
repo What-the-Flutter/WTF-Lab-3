@@ -140,12 +140,12 @@ class _ChatPageState extends State<ChatPage> {
       icon: const Icon(
         Icons.edit,
       ),
-      onPressed: onEditButtonPressed(chat),
+      onPressed: _onEditButtonPressed(chat),
       disabledColor: Theme.of(context).primaryColor,
     );
   }
 
-  Null Function()? onEditButtonPressed(Chat chat) {
+  Null Function()? _onEditButtonPressed(Chat chat) {
     final selectedLength = List<Event>.from(
         chat.events.where((Event cardModel) => cardModel.isSelected)).length;
     return selectedLength > 1
@@ -178,9 +178,20 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text(
-              'Choose the chat you want to relocate selected events:'),
-          children: _createOptions(state, context),
+          title: Text(
+            state.chats.length > 1
+                ? 'Choose the chat you want to relocate selected events:'
+                : 'Error!',
+            textAlign: TextAlign.center,
+          ),
+          children: state.chats.length > 1
+              ? _createOptions(state, context)
+              : [
+                  const Text(
+                    'There is only one chat. Create a new one to move your events!',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
         );
       },
     );
@@ -444,11 +455,10 @@ class _ChatPageState extends State<ChatPage> {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         final chat = state.chat;
+        final favourites = chat.events.where((Event e) => e.isFavourite);
+
         final shouldShowMessage = chat.events.isEmpty ||
-            chat.isShowingFavourites &&
-                chat.events
-                    .where((Event cardModel) => cardModel.isFavourite)
-                    .isEmpty;
+            chat.isShowingFavourites && favourites.isEmpty;
 
         return Scaffold(
           appBar: _createAppBar(context, chat, context.read<HomeCubit>().state),

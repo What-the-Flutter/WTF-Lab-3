@@ -214,7 +214,7 @@ class EventListTile extends StatelessWidget {
     ];
   }
 
-  void onLongPress(BuildContext context, Chat chat) {
+  void _onLongPress(BuildContext context, Chat chat) {
     showModalBottomSheet(
       constraints: BoxConstraints.loose(
         const Size.fromHeight(
@@ -317,7 +317,7 @@ class EventListTile extends StatelessWidget {
             context.read<HomeCubit>().updateChats(updatedChat);
           },
           onLongPress: () {
-            onLongPress(context, chat);
+            _onLongPress(context, chat);
           },
         );
       },
