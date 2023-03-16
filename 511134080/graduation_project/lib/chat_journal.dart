@@ -34,7 +34,8 @@ class ChatJournal extends StatelessWidget {
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (_, state) {
+        builder: (context, state) {
+          //context.read<ThemeCubit>().init();
           return MaterialApp(
             title: 'Chat Journal',
             theme: state.theme,

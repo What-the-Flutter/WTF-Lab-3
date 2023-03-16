@@ -62,6 +62,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
       date: DateTime.now(),
     );
 
+    state._chat = chat;
     await state.chatsRepository.insertChat(chat);
   }
 
@@ -73,6 +74,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
       newIconId: state._selectedIndex,
       newTitle: newTitle,
     );
+    state._chat = editedChat;
     await state.chatsRepository.updateChat(editedChat);
   }
 }

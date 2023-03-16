@@ -5,6 +5,7 @@ class ManagingPageState {
   final bool _isCreatingPage;
   final String _inputText;
   final String _title;
+  late final Chat _chat;
 
   final chatsRepository = ChatRepository();
 
@@ -23,6 +24,8 @@ class ManagingPageState {
   String get inputText => _inputText;
 
   String get title => _title;
+
+  Chat get chat => _chat;
 
   ManagingPageState copyWith({
     int? index,

@@ -191,15 +191,14 @@ class ChatCubit extends Cubit<ChatState> {
 
   void manageTapEvent(Event event) {
     if (!event.isSelectionMode) {
-      manageFavouriteEventCard(event);
+      manageFavouriteEvent(event);
     } else {
       manageSelectedEvent(event);
     }
   }
 
-  Future<void> manageFavouriteEventCard(Event event) async {
+  Future<void> manageFavouriteEvent(Event event) async {
     final index = state._chat.events.indexOf(event);
-
     await state.eventsRepository.updateEvent(
       state._chat.events[index].copyWith(
         isFavourite: !event.isFavourite,

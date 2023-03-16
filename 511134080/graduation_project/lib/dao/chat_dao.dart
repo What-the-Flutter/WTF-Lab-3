@@ -1,3 +1,5 @@
+import 'package:sqflite/sqflite.dart';
+
 import '../database/database_provider.dart';
 import '../models/chat.dart';
 
@@ -12,7 +14,11 @@ class ChatDao {
 
   Future<int> createChat(Chat chat) async {
     final db = await dbProvider.database;
-    var result = await db.insert(chatTable, chat.toDatabaseMap());
+    var result = await db.insert(
+      chatTable,
+      chat.toDatabaseMap(),
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
     return result;
   }
 
