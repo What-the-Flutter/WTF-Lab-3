@@ -54,8 +54,8 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  void _managingPage(BuildContext context) {
-    context
+  Future<void> _managingPage(BuildContext context) async {
+    await context
         .read<ManagingPageCubit>()
         .manageChat(_editingPage?.id, _controller.text);
 

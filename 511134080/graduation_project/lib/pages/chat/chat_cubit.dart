@@ -71,8 +71,7 @@ class ChatCubit extends Cubit<ChatState> {
           categoryIndex: state._categoryIconIndex,
         );
 
-        if (state._chat.events.isNotEmpty &&
-            state._chat.events[0].isSelectionMode) {
+        if (state._isSelectionMode) {
           cancelSelectionMode();
         }
         addEvent(event);
@@ -131,7 +130,6 @@ class ChatCubit extends Cubit<ChatState> {
     for (final event in state._chat.events) {
       await state.eventsRepository.updateEvent(
         event.copyWith(
-          isSelectionMode: false,
           isSelected: false,
         ),
       );
@@ -145,6 +143,7 @@ class ChatCubit extends Cubit<ChatState> {
         newChat: state._chat.copyWith(
           newEvents: events,
         ),
+        selectionMode: false,
       ),
     );
   }
@@ -190,7 +189,7 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void manageTapEvent(Event event) {
-    if (!event.isSelectionMode) {
+    if (!state._isSelectionMode) {
       manageFavouriteEvent(event);
     } else {
       manageSelectedEvent(event);
@@ -249,14 +248,12 @@ class ChatCubit extends Cubit<ChatState> {
           event.copyWith(
             isFavourite: !event.isFavourite,
             isSelected: false,
-            isSelectionMode: false,
           ),
         );
       } else {
         await state.eventsRepository.updateEvent(
           event.copyWith(
             isSelected: false,
-            isSelectionMode: false,
           ),
         );
       }
@@ -270,33 +267,23 @@ class ChatCubit extends Cubit<ChatState> {
         newChat: state._chat.copyWith(
           newEvents: events,
         ),
+        selectionMode: false,
       ),
     );
   }
 
   void manageLongPress(Event event) {
-    if (!event.isSelectionMode) {
+    if (!state._isSelectionMode) {
       turnOnSelectionMode(event);
     }
   }
 
   Future<void> turnOnSelectionMode(Event selectedEvent) async {
-    for (final event in state._chat.events) {
-      if (event.id == selectedEvent.id) {
-        await state.eventsRepository.updateEvent(
-          event.copyWith(
-            isSelectionMode: true,
-            isSelected: true,
-          ),
-        );
-      } else {
-        await state.eventsRepository.updateEvent(
-          event.copyWith(
-            isSelectionMode: true,
-          ),
-        );
-      }
-    }
+    await state.eventsRepository.updateEvent(
+      selectedEvent.copyWith(
+        isSelected: true,
+      ),
+    );
 
     final events =
         await state.eventsRepository.receiveAllChatEvents(state._chat.id);
@@ -306,6 +293,7 @@ class ChatCubit extends Cubit<ChatState> {
         newChat: state._chat.copyWith(
           newEvents: events,
         ),
+        selectionMode: true,
       ),
     );
   }
@@ -319,7 +307,6 @@ class ChatCubit extends Cubit<ChatState> {
         event.copyWith(
           newChatId: destinationChat.id,
           isSelected: false,
-          isSelectionMode: false,
         ),
       );
     }
@@ -332,6 +319,7 @@ class ChatCubit extends Cubit<ChatState> {
         newChat: state._chat.copyWith(
           newEvents: events,
         ),
+        selectionMode: false,
       ),
     );
   }

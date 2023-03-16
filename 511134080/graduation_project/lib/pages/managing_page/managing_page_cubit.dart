@@ -46,11 +46,11 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     );
   }
 
-  void manageChat(dynamic chatId, String title) {
+  Future<void> manageChat(dynamic chatId, String title) async {
     if (state._isCreatingPage) {
-      addChat(title);
+      await addChat(title);
     } else {
-      editChat(chatId, title);
+      await editChat(chatId, title);
     }
   }
 

@@ -5,6 +5,7 @@ class ChatState {
   final int _categoryIconIndex;
   final bool _isChoosingCategory;
   final bool _isEditingMode;
+  final bool _isSelectionMode;
 
   final eventsRepository = EventRepository();
 
@@ -20,10 +21,12 @@ class ChatState {
     int categoryIconIndex = 0,
     bool isChoosingCategory = false,
     bool isEditingMode = false,
+    bool isSelectionMode = false,
   })  : _chat = chat,
         _categoryIconIndex = categoryIconIndex,
         _isChoosingCategory = isChoosingCategory,
-        _isEditingMode = isEditingMode {
+        _isEditingMode = isEditingMode,
+        _isSelectionMode = isSelectionMode {
     _hintMessages = [
       'This is the page where you can track everything about "${_chat.title}"!\n',
       'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
@@ -47,6 +50,7 @@ class ChatState {
       : [_hintMessages[2], _hintMessages[3]];
 
   bool get isChoosingCategory => _isChoosingCategory;
+  bool get isSelectionMode => _isSelectionMode;
 
   int get categoryIconIndex => _categoryIconIndex;
 
@@ -57,11 +61,13 @@ class ChatState {
     int? newCategoryIconIndex,
     bool? choosingCategory,
     bool? editingMode,
+    bool? selectionMode,
   }) =>
       ChatState(
         chat: newChat ?? _chat,
         categoryIconIndex: newCategoryIconIndex ?? _categoryIconIndex,
         isChoosingCategory: choosingCategory ?? _isChoosingCategory,
         isEditingMode: editingMode ?? _isEditingMode,
+        isSelectionMode: selectionMode ?? _isSelectionMode,
       );
 }

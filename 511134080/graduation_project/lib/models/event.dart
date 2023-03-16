@@ -6,7 +6,7 @@ class Event {
   final DateTime time;
   final bool isFavourite;
   final bool isSelected;
-  final bool isSelectionMode;
+  /*final bool isSelectionMode;*/
 
   final int categoryIndex;
 
@@ -20,7 +20,6 @@ class Event {
     required this.chatId,
     this.isFavourite = false,
     this.isSelected = false,
-    this.isSelectionMode = false,
     this.categoryIndex = 0,
   });
 
@@ -31,7 +30,6 @@ class Event {
     dynamic newChatId,
     bool? isFavourite,
     bool? isSelected,
-    bool? isSelectionMode,
     int? newCategory,
   }) {
     return Event(
@@ -41,7 +39,6 @@ class Event {
       chatId: newChatId ?? chatId,
       isFavourite: isFavourite ?? this.isFavourite,
       isSelected: isSelected ?? this.isSelected,
-      isSelectionMode: isSelectionMode ?? this.isSelectionMode,
       categoryIndex: newCategory ?? categoryIndex,
     );
   }
@@ -54,7 +51,6 @@ class Event {
         categoryIndex: data['category_index'],
         isFavourite: data['is_favourite'] == 1 ? true : false,
         isSelected: data['is_selected'] == 1 ? true : false,
-        isSelectionMode: data['is_selection_mode'] == 1 ? true : false,
       );
 
   Map<String, dynamic> toDatabaseMap() => {
@@ -64,7 +60,6 @@ class Event {
         'chat_id': chatId,
         'category_index': categoryIndex,
         'is_favourite': isFavourite ? 1 : 0,
-        'is_selected': isSelected ? 1 : 0,
-        'is_selection_mode': isSelectionMode ? 1 : 0,
+        'is_selected': isSelected ? 1 : 0
       };
 }

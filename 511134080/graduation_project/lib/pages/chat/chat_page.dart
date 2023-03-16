@@ -319,9 +319,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   AppBar _createAppBar(BuildContext context, Chat chat, HomeState state) {
-    final isSelectionMode = List<Event>.from(
-            chat.events.where((Event cardModel) => cardModel.isSelected))
-        .isNotEmpty;
+    final isSelectionMode = context.read<ChatCubit>().state.isSelectionMode;
     if (isSelectionMode) {
       return _createSelectionModeAppBar(chat, state);
     } else {

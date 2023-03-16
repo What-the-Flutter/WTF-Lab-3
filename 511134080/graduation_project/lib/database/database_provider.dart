@@ -18,7 +18,7 @@ class DatabaseProvider {
 
   Future<Database> createDatabase() async {
     var documentsDirectory = await getApplicationDocumentsDirectory();
-    var path = join(documentsDirectory.path, 'chat_journal.db');
+    var path = join(documentsDirectory.path, 'chatJournal.db');
 
     var database = await openDatabase(path, version: 1, onCreate: initDatabase);
     return database;
@@ -33,8 +33,7 @@ class DatabaseProvider {
         time TEXT NOT NULL,
         category_index INTEGER NOT NULL,
         is_favourite INTEGER NOT NULL,
-        is_selected INTEGER NOT NULL,
-        is_selection_mode INTEGER NOT NULL
+        is_selected INTEGER NOT NULL
       )
     ''');
 
