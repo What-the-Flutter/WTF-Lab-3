@@ -13,8 +13,6 @@ class AppCubit extends Cubit<AppState> {
     _init();
   }
 
-  bool get isAuthenticated => state.isAuthenticated;
-
   void _init() async {
     final bool isAuth;
     if (!state.isAuthenticated && await _settingsRepository.isLocked) {
@@ -31,5 +29,7 @@ class AppCubit extends Cubit<AppState> {
     emit(state.copyWith(isAuthenticated: isAuth, tryingUnlock: false));
   }
 
-  bool get tryingUnlock => state.tryingUnlock;
+  void changePageIndex(int index) => emit(state.copyWith(pageIndex: index));
+
+  void changeTitle(String title) => emit(state.copyWith(title: title));
 }

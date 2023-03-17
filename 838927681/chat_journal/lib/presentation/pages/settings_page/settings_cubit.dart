@@ -10,77 +10,44 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({required ApiSettingsRepository settingsRepository})
       : _settingsRepository = settingsRepository,
         super(
-          SettingsState(
-            theme: Themes.lightTheme,
+          const SettingsState(
+            isLightTheme: true,
             isLocked: false,
             backgroundImage: '',
             bubbleAlignment: false,
             centerDate: false,
-            fontSize: Themes.normalTextTheme,
+            fontSize: 0,
           ),
         ) {
     _init();
   }
 
   void _init() async {
-    final theme =
-        await _settingsRepository.theme ? Themes.lightTheme : Themes.darkTheme;
+    final theme = await _settingsRepository.theme;
     final isLocked = await _settingsRepository.isLocked;
     final bubbleAlignment = await _settingsRepository.bubbleAlignment;
     final backgroundImage = await _settingsRepository.backgroundImage;
     final centerDate = await _settingsRepository.centerDate;
     final fontSize = await _settingsRepository.fontSize;
-    if (fontSize == -1) {
-      emit(state.copyWith(
-        theme: theme,
-        isLocked: isLocked,
-        bubbleAlignment: bubbleAlignment,
-        backgroundImage: backgroundImage,
-        fontSize: Themes.smallTextTheme,
-        centerDate: centerDate,
-      ));
-    } else {
-      if (fontSize == 1) {
-        emit(state.copyWith(
-          theme: theme,
-          isLocked: isLocked,
-          bubbleAlignment: bubbleAlignment,
-          backgroundImage: backgroundImage,
-          fontSize: Themes.largeTextTheme,
-          centerDate: centerDate,
-        ));
-      } else {
-        emit(state.copyWith(
-          theme: theme,
-          isLocked: isLocked,
-          bubbleAlignment: bubbleAlignment,
-          backgroundImage: backgroundImage,
-          fontSize: Themes.normalTextTheme,
-          centerDate: centerDate,
-        ));
-      }
-    }
+    emit(state.copyWith(
+      isLightTheme: theme,
+      isLocked: isLocked,
+      bubbleAlignment: bubbleAlignment,
+      backgroundImage: backgroundImage,
+      fontSize: fontSize,
+      centerDate: centerDate,
+    ));
   }
 
   void changeTheme() {
-    if (state.theme == Themes.lightTheme) {
+    if (state.isLightTheme) {
       _settingsRepository.setTheme(false);
-      emit(state.copyWith(theme: Themes.darkTheme));
+      emit(state.copyWith(isLightTheme: false));
     } else {
       _settingsRepository.setTheme(true);
-      emit(state.copyWith(theme: Themes.lightTheme));
+      emit(state.copyWith(isLightTheme: true));
     }
   }
-
-  bool isLight() => state.theme == Themes.lightTheme;
-
-  bool get isLocked => state.isLocked;
-
-  bool get bubbleAlignment => state.bubbleAlignment;
-
-  String get backgroundImage => state.backgroundImage;
-
-  bool get centerDate => state.centerDate;
 
   void setIsLocked(bool value) {
     _settingsRepository.setIsLocked(value);
@@ -98,19 +65,19 @@ class SettingsCubit extends Cubit<SettingsState> {
       case 0:
         {
           _settingsRepository.setFontSize(0);
-          emit(state.copyWith(fontSize: Themes.normalTextTheme));
+          emit(state.copyWith(fontSize: 0));
           break;
         }
       case 1:
         {
           _settingsRepository.setFontSize(1);
-          emit(state.copyWith(fontSize: Themes.largeTextTheme));
+          emit(state.copyWith(fontSize: 1));
           break;
         }
       case -1:
         {
           _settingsRepository.setFontSize(-1);
-          emit(state.copyWith(fontSize: Themes.smallTextTheme));
+          emit(state.copyWith(fontSize: -1));
           break;
         }
     }
@@ -133,8 +100,8 @@ class SettingsCubit extends Cubit<SettingsState> {
         centerDate: false,
         backgroundImage: '',
         bubbleAlignment: false,
-        fontSize: Themes.normalTextTheme,
-        theme: Themes.lightTheme,
+        fontSize: 0,
+        isLightTheme: true,
         isLocked: false,
       ),
     );

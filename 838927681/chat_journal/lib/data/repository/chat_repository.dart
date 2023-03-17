@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import '../../domain/entities/chat.dart';
 import '../../domain/repositories/api_chat_repository.dart';
 import '../../domain/repositories/api_event_repository.dart';
@@ -19,7 +17,7 @@ class ChatRepository extends ApiChatRepository {
 
   @override
   Stream<List<Chat>> get chatsStream =>
-      _provider.chatsStream.map<List<Chat>>(_transformToListChat);
+      _provider.chatsStream.map<List<Chat>>(_transformToListChat).asBroadcastStream();
 
   List<Chat> _transformToListChat(List<DBChat> dbChats) {
     final result = <Chat>[];
@@ -30,10 +28,8 @@ class ChatRepository extends ApiChatRepository {
   }
 
   @override
-  Future<void> addChat(Chat chat) async {
-    final dbChat = Transformer.chatToModel(chat);
-    await _provider.addChat(dbChat);
-  }
+  Future<void> addChat(Chat chat) =>
+      _provider.addChat(Transformer.chatToModel(chat));
 
   @override
   Future<List<Chat>> getChats() async {
@@ -53,14 +49,12 @@ class ChatRepository extends ApiChatRepository {
   }
 
   @override
-  Future<void> removeChat(Chat chat) async => await _provider.deleteChat(
-        Transformer.chatToModel(chat),
-      );
+  Future<void> removeChat(Chat chat) =>
+      _provider.deleteChat(Transformer.chatToModel(chat));
 
   @override
-  Future<void> updateChat(Chat chat) async => await _provider.updateChat(
-        Transformer.chatToModel(chat),
-      );
+  Future<void> updateChat(Chat chat) =>
+      _provider.updateChat(Transformer.chatToModel(chat));
 
   @override
   Future<void> updateLast(String id, String lastMessage, DateTime? lastDate,
@@ -86,6 +80,6 @@ class ChatRepository extends ApiChatRepository {
       chat =
           chat.copyWith(lastMessage: lastMessage, lastDate: chat.creationDate);
     }
-    await _provider.updateChat(Transformer.chatToModel(chat));
+    _provider.updateChat(Transformer.chatToModel(chat));
   }
 }

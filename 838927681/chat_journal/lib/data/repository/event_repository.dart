@@ -13,7 +13,7 @@ class EventRepository extends ApiEventRepository {
 
   @override
   Stream<List<Event>> get eventStream =>
-      _provider.eventsStream.map<List<Event>>(_transformToListEvent);
+      _provider.eventsStream.map<List<Event>>(_transformToListEvent).asBroadcastStream();
 
   List<Event> _transformToListEvent(List<DBEvent> dbEvents) {
     final result = <Event>[];
@@ -53,15 +53,14 @@ class EventRepository extends ApiEventRepository {
   }
 
   @override
-  Future<void> updateEvent(Event event) async =>
+  Future<void> updateEvent(Event event) =>
       _provider.updateEvent(Transformer.eventToModel(event));
 
   @override
-  Future<void> addEvent(Event event) async {
-    await _provider.addEvent(Transformer.eventToModel(event));
-  }
+  Future<void> addEvent(Event event) =>
+      _provider.addEvent(Transformer.eventToModel(event));
 
   @override
-  Future<void> deleteEvent(Event event) async =>
+  Future<void> deleteEvent(Event event) =>
       _provider.deleteEvent(Transformer.eventToModel(event));
 }

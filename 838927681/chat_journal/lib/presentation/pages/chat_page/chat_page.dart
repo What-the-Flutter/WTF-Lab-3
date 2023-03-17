@@ -13,6 +13,7 @@ import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/event.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/themes.dart';
 import '../../widgets/search_delegate.dart';
 import '../chat_page/chat_page_cubit.dart';
 import '../chat_page/chat_page_state.dart';
@@ -24,6 +25,18 @@ class ChatPage extends StatelessWidget {
   late final ChatCubit chatCubit;
 
   ChatPage({required this.chat, super.key});
+
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +56,7 @@ class ChatPage extends StatelessWidget {
                 centerTitle: state.isSelecting ? false : true,
                 title: Text(
                   _appBarTitle(state, context),
-                  style:
-                      context.watch<SettingsCubit>().state.fontSize.headline3!,
+                  style: textTheme(context).headline3!,
                 ),
                 leading: !state.isSelecting
                     ? IconButton(
@@ -146,7 +158,7 @@ class ChatPage extends StatelessWidget {
     return AlertDialog(
       title: Text(
         'Select the page you want to migrate the selected event(s) to!',
-        style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+        style: textTheme(context).bodyText1!,
       ),
       content: Container(
         padding: const EdgeInsets.all(10),
@@ -183,7 +195,7 @@ class ChatPage extends StatelessWidget {
           return ListTile(
             title: Text(
               chats[i].name,
-              style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+              style: textTheme(context).bodyText1!,
             ),
             leading: Radio<int>(
               groupValue: state.selectedRadioIndex,
@@ -290,7 +302,7 @@ class ChatPage extends StatelessWidget {
         .toList()
         .where(
           (element) =>
-              element.contains(extractHashTags(state.currentInput).last),
+              element.text.contains(extractHashTags(state.currentInput).last),
         )
         .toList();
     if (tagList.isEmpty) {
@@ -315,7 +327,7 @@ class ChatPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return Container(
             margin: const EdgeInsets.all(5),
-            child: _tagItem(tagList[index], context),
+            child: _tagItem(tagList[index].text, context),
           );
         },
       ),
@@ -337,16 +349,14 @@ class ChatPage extends StatelessWidget {
         padding: const EdgeInsets.all(5),
         child: HashTagText(
           text: text,
-          decoratedStyle:
-              context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
-                    color: Colors.blue,
-                  ),
-          basicStyle:
-              context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
-                    color: context.read<SettingsCubit>().isLight()
-                        ? Colors.black
-                        : Colors.white,
-                  ),
+          decoratedStyle: textTheme(context).bodyText1!.copyWith(
+                color: Colors.blue,
+              ),
+          basicStyle: textTheme(context).bodyText1!.copyWith(
+                color: context.watch<SettingsCubit>().state.isLightTheme
+                    ? Colors.black
+                    : Colors.white,
+              ),
         ),
       ),
     );
@@ -387,7 +397,7 @@ class ChatPage extends StatelessWidget {
         ),
         Text(
           ChatJournalIcons.eventIconsName[index] ?? '',
-          style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+          style: textTheme(context).bodyText1!,
         )
       ],
     );
@@ -497,10 +507,10 @@ class ChatPage extends StatelessWidget {
 
   Widget _event(
       int index, List<Event> events, ChatState state, BuildContext context) {
-    final eventColor = BlocProvider.of<SettingsCubit>(context).isLight()
+    final eventColor = context.watch<SettingsCubit>().state.isLightTheme
         ? ChatJournalColors.lightGreen
         : ChatJournalColors.darkGrey;
-    final selectedEventColor = BlocProvider.of<SettingsCubit>(context).isLight()
+    final selectedEventColor = context.watch<SettingsCubit>().state.isLightTheme
         ? ChatJournalColors.accentLightGreen
         : ChatJournalColors.lightGrey;
     return Align(
@@ -636,22 +646,13 @@ class ChatPage extends StatelessWidget {
               ),
               HashTagText(
                 text: ChatJournalIcons.eventIconsName[iconIndex] ?? '',
-                basicStyle: context
-                    .watch<SettingsCubit>()
-                    .state
-                    .fontSize
-                    .bodyText1!
-                    .copyWith(
-                      color: context.read<SettingsCubit>().isLight()
+                basicStyle: textTheme(context).bodyText1!.copyWith(
+                      color: context.watch<SettingsCubit>().state.isLightTheme
                           ? Colors.black
                           : Colors.white,
                     ),
-                decoratedStyle: context
-                    .watch<SettingsCubit>()
-                    .state
-                    .fontSize
-                    .bodyText1!
-                    .copyWith(color: Colors.blue),
+                decoratedStyle:
+                    textTheme(context).bodyText1!.copyWith(color: Colors.blue),
               ),
             ],
           ),
@@ -683,7 +684,7 @@ class ChatPage extends StatelessWidget {
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            color: BlocProvider.of<SettingsCubit>(context).isLight()
+            color: context.watch<SettingsCubit>().state.isLightTheme
                 ? ChatJournalColors.lightRed
                 : ChatJournalColors.lightGrey,
           ),
@@ -698,7 +699,7 @@ class ChatPage extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 300),
           child: Text(
             textDate,
-            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
         ),
       );
@@ -759,18 +760,13 @@ class ChatPage extends StatelessWidget {
   Widget _messageEvent(Event event, BuildContext context) {
     return HashTagText(
       text: event.text,
-      basicStyle:
-          context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
-                color: context.read<SettingsCubit>().isLight()
-                    ? Colors.black
-                    : Colors.white,
-              ),
-      decoratedStyle: context
-          .watch<SettingsCubit>()
-          .state
-          .fontSize
-          .bodyText1!
-          .copyWith(color: Colors.blue),
+      basicStyle: textTheme(context).bodyText1!.copyWith(
+            color: context.watch<SettingsCubit>().state.isLightTheme
+                ? Colors.black
+                : Colors.white,
+          ),
+      decoratedStyle:
+          textTheme(context).bodyText1!.copyWith(color: Colors.blue),
       textAlign: TextAlign.left,
     );
   }
@@ -778,7 +774,7 @@ class ChatPage extends StatelessWidget {
   Widget _eventDate(int index, List<Event> events, BuildContext context) {
     return Text(
       DateFormat('h:mm a').format(events[index].dateTime),
-      style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
+      style: textTheme(context).bodyText1!.copyWith(
             color: Colors.grey,
           ),
       textAlign: TextAlign.left,
@@ -792,7 +788,7 @@ class ChatPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: BlocProvider.of<SettingsCubit>(context).isLight()
+            color: context.watch<SettingsCubit>().state.isLightTheme
                 ? ChatJournalColors.lightGreen
                 : ChatJournalColors.lightGrey,
             borderRadius: BorderRadius.circular(8.0),
@@ -801,7 +797,7 @@ class ChatPage extends StatelessWidget {
             children: [
               Text(
                 _chatWithNoEventsTitle(chat.name),
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+                style: textTheme(context).bodyText1!,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -809,7 +805,7 @@ class ChatPage extends StatelessWidget {
                 state.isFavoritesMode
                     ? _chatWithNoFavoritesText()
                     : _chatWithNoEventsText(chat.name),
-                style: context.watch<SettingsCubit>().state.fontSize.bodyText1!,
+                style: textTheme(context).bodyText1!,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -866,7 +862,7 @@ class ChatPage extends StatelessWidget {
         controller: _controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
-          fillColor: BlocProvider.of<SettingsCubit>(context).isLight()
+          fillColor: context.watch<SettingsCubit>().state.isLightTheme
               ? Colors.grey[200]
               : ChatJournalColors.lightGrey,
           filled: true,

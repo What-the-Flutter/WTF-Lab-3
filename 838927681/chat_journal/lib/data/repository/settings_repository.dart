@@ -8,57 +8,43 @@ class SettingsRepository extends ApiSettingsRepository {
       : _settingsProvider = settingsProvider;
 
   @override
-  Future<bool> get theme async => await _settingsProvider.theme;
+  Future<bool> get theme => _settingsProvider.theme;
 
   @override
-  void setTheme(bool isLight) {
-    _settingsProvider.setTheme(isLight);
-  }
+  void setTheme(bool isLight) => _settingsProvider.setTheme(isLight);
 
   @override
-  Future<bool> get isLocked async => await _settingsProvider.isLocked;
+  Future<bool> get isLocked => _settingsProvider.isLocked;
 
   @override
-  void setIsLocked(bool value) {
-    _settingsProvider.setIsLocked(value);
-  }
+  void setIsLocked(bool value) => _settingsProvider.setIsLocked(value);
 
   @override
-  Future<String> get backgroundImage async =>
-      await _settingsProvider.backgroundImage;
+  Future<String> get backgroundImage => _settingsProvider.backgroundImage;
 
   @override
-  Future<bool> get bubbleAlignment async =>
-      await _settingsProvider.bubbleAlignment;
+  Future<bool> get bubbleAlignment => _settingsProvider.bubbleAlignment;
 
   @override
-  Future<bool> get centerDate async => await _settingsProvider.centerDate;
+  Future<bool> get centerDate => _settingsProvider.centerDate;
 
   @override
-  Future<int> get fontSize async => await _settingsProvider.fontSize;
+  Future<int> get fontSize => _settingsProvider.fontSize;
 
   @override
-  void setBackgroundImage(String path) async {
-    _settingsProvider.setBackgroundImage(path);
-  }
+  void setBackgroundImage(String path) =>
+      _settingsProvider.setBackgroundImage(path);
 
   @override
-  void setBubbleAlignment(bool value) {
-    _settingsProvider.setBubbleAlignment(value);
-  }
+  void setBubbleAlignment(bool value) =>
+      _settingsProvider.setBubbleAlignment(value);
 
   @override
-  void setCenterDate(bool value) {
-    _settingsProvider.setCenterDate(value);
-  }
+  void setCenterDate(bool value) => _settingsProvider.setCenterDate(value);
 
   @override
-  void setFontSize(int value) {
-    _settingsProvider.setFontSize(value);
-  }
+  void setFontSize(int value) => _settingsProvider.setFontSize(value);
 
   @override
-  void setDefault() {
-    _settingsProvider.setDefault();
-  }
+  void setDefault() => _settingsProvider.setDefault();
 }

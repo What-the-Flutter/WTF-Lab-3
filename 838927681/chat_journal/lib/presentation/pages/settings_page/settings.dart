@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../theme/themes.dart';
 import 'pick_background_image.dart';
 import 'settings_cubit.dart';
 import 'settings_state.dart';
 
 class Settings extends StatelessWidget {
   const Settings({Key? key}) : super(key: key);
+
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +49,12 @@ class Settings extends StatelessWidget {
         children: [
           Text(
             'Visuals',
-            style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           _visualsBody(context, state),
           Text(
             'Security',
-            style: context.watch<SettingsCubit>().state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           _securityBody(context, state),
         ],
@@ -56,7 +69,7 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Theme',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           leading: const Icon(
             Icons.invert_colors,
@@ -64,7 +77,7 @@ class Settings extends StatelessWidget {
           ),
           subtitle: Text(
             'Light / Dark',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           onTap: () {
             context.read<SettingsCubit>().changeTheme();
@@ -77,12 +90,12 @@ class Settings extends StatelessWidget {
               child: ListTile(
                 title: Text(
                   'FontSize',
-                  style: state.fontSize.bodyText2!,
+                  style: textTheme(context).bodyText2!,
                 ),
                 leading: const Icon(Icons.format_size),
                 subtitle: Text(
                   'Small / Default / Large',
-                  style: state.fontSize.bodyText1!,
+                  style: textTheme(context).bodyText1!,
                 ),
                 onTap: () => _changeFontSizeDialog(state, context),
               ),
@@ -93,7 +106,7 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Bubble Alignment',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           leading: Icon(
             state.bubbleAlignment
@@ -102,7 +115,7 @@ class Settings extends StatelessWidget {
           ),
           subtitle: Text(
             'Force right-to-left bubble alignment',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           trailing: Switch(
             value: state.bubbleAlignment,
@@ -113,7 +126,7 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Center Date Bubble',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           leading: const Icon(Icons.date_range),
           trailing: Switch(
@@ -125,11 +138,11 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Background Image',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           subtitle: Text(
             'Chat background image',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           leading: const Icon(Icons.image),
           onTap: () => Navigator.push(
@@ -143,11 +156,11 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Reset All Preferences',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           subtitle: Text(
             'Reset all Visual Customizations',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           leading: const Icon(Icons.refresh),
           onTap: context.read<SettingsCubit>().setDefault,
@@ -163,12 +176,12 @@ class Settings extends StatelessWidget {
         ListTile(
           title: Text(
             'Fingerprint',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
           ),
           leading: const Icon(Icons.fingerprint),
           subtitle: Text(
             'Enable Fingerprint unlock',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           trailing: Switch(
             value: state.isLocked,
@@ -193,11 +206,11 @@ class Settings extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Font Size', style: state.fontSize.headline3!),
+                Text('Font Size', style: textTheme(context).headline3!),
                 ListTile(
                     title: Text(
                       'Small',
-                      style: state.fontSize.bodyText1!,
+                      style: textTheme(context).bodyText1!,
                     ),
                     onTap: () {
                       context.read<SettingsCubit>().setFontSize(-1);
@@ -206,7 +219,7 @@ class Settings extends StatelessWidget {
                 ListTile(
                     title: Text(
                       'Default',
-                      style: state.fontSize.bodyText1!,
+                      style: textTheme(context).bodyText1!,
                     ),
                     onTap: () {
                       context.read<SettingsCubit>().setFontSize(0);
@@ -215,7 +228,7 @@ class Settings extends StatelessWidget {
                 ListTile(
                   title: Text(
                     'Large',
-                    style: state.fontSize.bodyText1!,
+                    style: textTheme(context).bodyText1!,
                   ),
                   onTap: () {
                     context.read<SettingsCubit>().setFontSize(1);
@@ -230,7 +243,7 @@ class Settings extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 'OK',
-                style: state.fontSize.headline4,
+                style: textTheme(context).headline4,
               ),
             ),
           ],

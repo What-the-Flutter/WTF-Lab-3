@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../theme/colors.dart';
+import '../../theme/themes.dart';
 import '../pages/settings_page/settings_cubit.dart';
 
 class QuestionnaireBotButton extends StatelessWidget {
   QuestionnaireBotButton({super.key});
+
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +28,7 @@ class QuestionnaireBotButton extends StatelessWidget {
       ),
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: BlocProvider.of<SettingsCubit>(context).isLight()
+          backgroundColor: context.watch<SettingsCubit>().state.isLightTheme
               ? ChatJournalColors.lightGreen
               : ChatJournalColors.darkGrey,
           shape: RoundedRectangleBorder(
@@ -28,28 +41,18 @@ class QuestionnaireBotButton extends StatelessWidget {
           children: [
             Icon(
               Icons.smart_toy,
-              color: BlocProvider.of<SettingsCubit>(context).isLight()
+              color: context.watch<SettingsCubit>().state.isLightTheme
                   ? Colors.black
                   : Colors.white,
             ),
             const SizedBox(width: 20),
             Text(
               'Questionnaire bot',
-              style: BlocProvider.of<SettingsCubit>(context).isLight()
-                  ? context
-                      .watch<SettingsCubit>()
-                      .state
-                      .fontSize
-                      .headline4!
-                      .copyWith(
+              style: context.watch<SettingsCubit>().state.isLightTheme
+                  ? textTheme(context).headline4!.copyWith(
                         color: Colors.black,
                       )
-                  : context
-                      .watch<SettingsCubit>()
-                      .state
-                      .fontSize
-                      .headline4!
-                      .copyWith(
+                  : textTheme(context).headline4!.copyWith(
                         color: Colors.white,
                       ),
             )

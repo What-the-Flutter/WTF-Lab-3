@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/event.dart';
+import '../../../domain/entities/tag.dart';
 
 class ChatState extends Equatable {
   final List<Event> events;
   final List<Event> favorites;
-  final Set<String> tags;
+  final List<Tag> tags;
   final bool isSelecting;
   final int selectedCount;
   final bool isEditing;
@@ -21,6 +22,7 @@ class ChatState extends Equatable {
   final String chatId;
   final bool isAddingTag;
   final String currentInput;
+  final List<String> searchTags;
 
   ChatState({
     this.events = const [],
@@ -38,9 +40,10 @@ class ChatState extends Equatable {
     this.selectedRadioIndex = 0,
     this.counterId = 0,
     this.chatId = '',
-    this.tags = const {},
+    this.tags = const [],
     this.isAddingTag = false,
     this.currentInput = '',
+    this.searchTags = const [],
   });
 
   ChatState copyWith({
@@ -59,9 +62,10 @@ class ChatState extends Equatable {
     int? selectedRadioIndex,
     int? counterId,
     String? chatId,
-    Set<String>? tags,
+    List<Tag>? tags,
     bool? isAddingTag,
     String? currentInput,
+    List<String>? searchTags,
   }) {
     return ChatState(
       events: events ?? this.events,
@@ -82,6 +86,7 @@ class ChatState extends Equatable {
       tags: tags ?? this.tags,
       isAddingTag: isAddingTag ?? this.isAddingTag,
       currentInput: currentInput ?? this.currentInput,
+      searchTags: searchTags ?? this.searchTags,
     );
   }
 
@@ -104,5 +109,6 @@ class ChatState extends Equatable {
         tags,
         isAddingTag,
         currentInput,
+        searchTags,
       ];
 }
