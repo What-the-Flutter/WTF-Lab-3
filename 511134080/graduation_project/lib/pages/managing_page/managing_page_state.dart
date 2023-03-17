@@ -1,31 +1,18 @@
 part of 'managing_page_cubit.dart';
 
 class ManagingPageState {
-  final int _selectedIndex;
-  final bool _isCreatingPage;
-  final String _inputText;
-  final String _title;
-  late final Chat _chat;
-
-  final chatsRepository = ChatRepository();
+  final int selectedIndex;
+  final bool isCreatingPage;
+  final String inputText;
+  final String title;
+  late final Chat chat;
 
   ManagingPageState({
-    int selectedIndex = 0,
-    bool isCreatingPage = true,
-    String inputText = '',
-    String title = 'Create a new Page',
-  })  : _title = title,
-        _inputText = inputText,
-        _isCreatingPage = isCreatingPage,
-        _selectedIndex = selectedIndex;
-
-  int get selectedIndex => _selectedIndex;
-
-  String get inputText => _inputText;
-
-  String get title => _title;
-
-  Chat get chat => _chat;
+    this.selectedIndex = 0,
+    this.isCreatingPage = true,
+    this.inputText = '',
+    this.title = 'Create a new Page',
+  });
 
   ManagingPageState copyWith({
     int? index,
@@ -34,9 +21,9 @@ class ManagingPageState {
     String? newTitle,
   }) =>
       ManagingPageState(
-        selectedIndex: index ?? _selectedIndex,
-        isCreatingPage: creatingPage ?? _isCreatingPage,
-        inputText: newInputText ?? _inputText,
-        title: newTitle ?? _title,
+        selectedIndex: index ?? selectedIndex,
+        isCreatingPage: creatingPage ?? isCreatingPage,
+        inputText: newInputText ?? inputText,
+        title: newTitle ?? title,
       );
 }

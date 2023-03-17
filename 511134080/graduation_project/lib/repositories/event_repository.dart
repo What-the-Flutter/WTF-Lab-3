@@ -2,7 +2,9 @@ import '../dao/event_dao.dart';
 import '../models/event.dart';
 
 class EventRepository {
-  final eventDao = EventDao();
+  final EventDao eventDao;
+
+  EventRepository({required this.eventDao});
 
   Future<List<Event>> receiveAllChatEvents(String chatId) =>
       eventDao.receiveAllChatEvents(chatId);

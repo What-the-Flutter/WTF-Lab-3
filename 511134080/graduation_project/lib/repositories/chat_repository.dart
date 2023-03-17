@@ -2,7 +2,9 @@ import '../dao/chat_dao.dart';
 import '../models/chat.dart';
 
 class ChatRepository {
-  final chatDao = ChatDao();
+  final ChatDao chatDao;
+
+  ChatRepository({required this.chatDao});
 
   Future<List<Chat>> receiveAllChats() => chatDao.receiveChats();
 

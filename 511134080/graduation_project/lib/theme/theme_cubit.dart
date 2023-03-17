@@ -5,12 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit({bool isLight = true})
-      : super(
-          ThemeState(
-            isLight: isLight,
-          ),
-        ){init();}
+  ThemeCubit() : super(ThemeState()) {
+    init();
+  }
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -25,7 +22,7 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   Future<void> toggleTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_light', !state._isLight);
-    emit(ThemeState(isLight: !state._isLight));
+    await prefs.setBool('is_light', !state.isLight);
+    emit(ThemeState(isLight: !state.isLight));
   }
 }

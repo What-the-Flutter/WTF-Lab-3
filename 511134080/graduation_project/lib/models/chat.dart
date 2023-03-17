@@ -11,7 +11,6 @@ class Chat {
   final DateTime? date;
   final bool isPinned;
   final bool isShowingFavourites;
-
   final List<Event> events;
 
   const Chat({

@@ -7,8 +7,11 @@ import '../../repositories/chat_repository.dart';
 part 'managing_page_state.dart';
 
 class ManagingPageCubit extends Cubit<ManagingPageState> {
+  final ChatRepository chatsRepository;
+
   ManagingPageCubit({
     required ManagingPageState initState,
+    required this.chatsRepository,
   }) : super(initState);
 
   void initState(Chat? chat) {
@@ -47,7 +50,7 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
   }
 
   Future<void> manageChat(dynamic chatId, String title) async {
-    if (state._isCreatingPage) {
+    if (state.isCreatingPage) {
       await addChat(title);
     } else {
       await editChat(chatId, title);
@@ -56,25 +59,25 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
 
   Future<void> addChat(String title) async {
     final chat = Chat(
-      iconId: state._selectedIndex,
+      iconId: state.selectedIndex,
       title: title,
       id: UniqueKey().toString(),
       date: DateTime.now(),
     );
 
-    state._chat = chat;
-    await state.chatsRepository.insertChat(chat);
+    state.chat = chat;
+    await chatsRepository.insertChat(chat);
   }
 
   Future<void> editChat(dynamic chatId, String newTitle) async {
-    final chats = await state.chatsRepository.receiveAllChats();
+    final chats = await chatsRepository.receiveAllChats();
     final chat = chats.where((chatModel) => chatModel.id == chatId).first;
 
     final editedChat = chat.copyWith(
-      newIconId: state._selectedIndex,
+      newIconId: state.selectedIndex,
       newTitle: newTitle,
     );
-    state._chat = editedChat;
-    await state.chatsRepository.updateChat(editedChat);
+    state.chat = editedChat;
+    await chatsRepository.updateChat(editedChat);
   }
 }

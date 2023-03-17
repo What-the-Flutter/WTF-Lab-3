@@ -1,9 +1,9 @@
 part of 'theme_cubit.dart';
 
 class ThemeState {
-  final bool _isLight;
+  final bool isLight;
 
-  ThemeState({bool isLight = true}) : _isLight = isLight;
+  ThemeState({this.isLight = true});
 
   final _lightTheme = ThemeData(
     iconTheme: const IconThemeData(
@@ -31,7 +31,5 @@ class ThemeState {
     hoverColor: Colors.grey[850],
   );
 
-  ThemeData get theme => _isLight ? _lightTheme : _darkTheme;
-
-  bool get isLight => _isLight;
+  ThemeData get theme => isLight ? _lightTheme : _darkTheme;
 }

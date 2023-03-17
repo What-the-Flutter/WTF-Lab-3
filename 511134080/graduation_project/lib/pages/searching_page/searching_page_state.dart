@@ -1,15 +1,13 @@
 part of 'searching_page_cubit.dart';
 
 class SearchingPageState {
-  final String _input;
+  final String input;
 
   const SearchingPageState({
-    String input = '',
-  }) : _input = input;
-
-  String get input => _input;
+    this.input = '',
+  });
 
   SearchingPageState copyWith({String? newInput}) {
-    return SearchingPageState(input: newInput ?? _input);
+    return SearchingPageState(input: newInput ?? input);
   }
 }

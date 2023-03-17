@@ -7,15 +7,20 @@ import '../../repositories/event_repository.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState()) {
+  final ChatRepository chatsRepository;
+  final EventRepository eventsRepository;
+
+  HomeCubit({
+    required this.chatsRepository,
+    required this.eventsRepository,
+  }) : super(HomeState()) {
     loadChats();
   }
 
   Future<void> loadChats() async {
-    final chats = await state.chatsRepository.receiveAllChats();
+    final chats = await chatsRepository.receiveAllChats();
     for (var i = 0; i < chats.length; i++) {
-      final events =
-          await state.eventsRepository.receiveAllChatEvents(chats[i].id);
+      final events = await eventsRepository.receiveAllChatEvents(chats[i].id);
       chats[i] = chats[i].copyWith(
         newEvents: events,
       );
@@ -28,14 +33,13 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> updateChats(Chat newChat) async {
-    final index = state._chats.indexWhere((Chat chat) => chat.id == newChat.id);
+    final index = state.chats.indexWhere((Chat chat) => chat.id == newChat.id);
 
     if (index != -1) {
-      await state.chatsRepository.updateChat(newChat);
-      final chats = await state.chatsRepository.receiveAllChats();
+      await chatsRepository.updateChat(newChat);
+      final chats = await chatsRepository.receiveAllChats();
       for (var i = 0; i < chats.length; i++) {
-        final events =
-            await state.eventsRepository.receiveAllChatEvents(chats[i].id);
+        final events = await eventsRepository.receiveAllChatEvents(chats[i].id);
         chats[i] = chats[i].copyWith(
           newEvents: events,
         );
@@ -46,11 +50,10 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } else {
-      await state.chatsRepository.insertChat(newChat);
-      final chats = await state.chatsRepository.receiveAllChats();
+      await chatsRepository.insertChat(newChat);
+      final chats = await chatsRepository.receiveAllChats();
       for (var i = 0; i < chats.length; i++) {
-        final events =
-            await state.eventsRepository.receiveAllChatEvents(chats[i].id);
+        final events = await eventsRepository.receiveAllChatEvents(chats[i].id);
         chats[i] = chats[i].copyWith(
           newEvents: events,
         );
@@ -64,8 +67,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> deleteChat(String chatId) async {
-    await state.chatsRepository.deleteChatById(chatId);
-    var chats = await state.chatsRepository.receiveAllChats();
+    await chatsRepository.deleteChatById(chatId);
+    var chats = await chatsRepository.receiveAllChats();
     emit(
       state.copyWith(
         newChats: chats,
@@ -74,14 +77,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> togglePinState(String chatId) async {
-    final chat = state._chats.where((Chat chat) => chat.id == chatId).first;
+    final chat = state.chats.where((Chat chat) => chat.id == chatId).first;
 
-    await state.chatsRepository.updateChat(
+    await chatsRepository.updateChat(
       chat.copyWith(
         pinned: !chat.isPinned,
       ),
     );
-    var chats = await state.chatsRepository.receiveAllChats();
+    var chats = await chatsRepository.receiveAllChats();
     emit(
       state.copyWith(
         newChats: chats,

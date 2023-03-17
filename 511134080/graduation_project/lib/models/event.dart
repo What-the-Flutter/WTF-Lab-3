@@ -6,9 +6,7 @@ class Event {
   final DateTime time;
   final bool isFavourite;
   final bool isSelected;
-
   final int categoryIndex;
-
   final String id;
   final String chatId;
 

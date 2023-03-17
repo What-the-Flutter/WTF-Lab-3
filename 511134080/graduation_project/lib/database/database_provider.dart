@@ -6,7 +6,7 @@ final eventTable = 'Event';
 final chatTable = 'Chat';
 
 class DatabaseProvider {
-  static final DatabaseProvider dbProvider = DatabaseProvider();
+  // static final DatabaseProvider dbProvider = DatabaseProvider();
 
   static Database? _database;
 
@@ -17,10 +17,11 @@ class DatabaseProvider {
   }
 
   Future<Database> createDatabase() async {
-    var documentsDirectory = await getApplicationDocumentsDirectory();
-    var path = join(documentsDirectory.path, 'chatJournal.db');
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, 'chatJournal.db');
 
-    var database = await openDatabase(path, version: 1, onCreate: initDatabase);
+    final database =
+        await openDatabase(path, version: 1, onCreate: initDatabase);
     return database;
   }
 
@@ -34,10 +35,7 @@ class DatabaseProvider {
         category_index INTEGER NOT NULL,
         is_favourite INTEGER NOT NULL,
         is_selected INTEGER NOT NULL
-      )
-    ''');
-
-    await database.execute('''
+      );
       CREATE TABLE $chatTable (
         id TEXT PRIMARY KEY NOT NULL,
         title TEXT NOT NULL,
@@ -45,7 +43,7 @@ class DatabaseProvider {
         icon_id INTEGER NOT NULL,
         is_pinned INTEGER NOT NULL,
         is_showing_favourites INTEGER NOT NULL
-      )
+      );
     ''');
   }
 }

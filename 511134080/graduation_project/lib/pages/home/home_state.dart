@@ -1,14 +1,10 @@
 part of 'home_cubit.dart';
 
 class HomeState {
-  final List<Chat> _chats;
-  final chatsRepository = ChatRepository();
-  final eventsRepository = EventRepository();
+  final List<Chat> chats;
 
-  HomeState({List<Chat> chats = const []}) : _chats = chats;
-
-  List<Chat> get chats => _chats;
+  HomeState({this.chats = const []});
 
   HomeState copyWith({List<Chat>? newChats}) =>
-      HomeState(chats: newChats ?? _chats);
+      HomeState(chats: newChats ?? chats);
 }

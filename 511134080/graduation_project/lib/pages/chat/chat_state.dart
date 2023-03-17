@@ -1,60 +1,46 @@
 part of 'chat_cubit.dart';
 
 class ChatState {
-  final Chat _chat;
-  final int _categoryIconIndex;
-  final bool _isChoosingCategory;
-  final bool _isEditingMode;
-  final bool _isSelectionMode;
-
-  final eventsRepository = EventRepository();
-
+  final Chat chat;
+  final int categoryIconIndex;
+  final bool isChoosingCategory;
+  final bool isEditingMode;
+  final bool isSelectionMode;
   late final List<String> _hintMessages;
 
   ChatState({
-    Chat chat = const Chat(
+    this.chat = const Chat(
       iconId: 0,
       title: '',
       id: '0',
       date: null,
     ),
-    int categoryIconIndex = 0,
-    bool isChoosingCategory = false,
-    bool isEditingMode = false,
-    bool isSelectionMode = false,
-  })  : _chat = chat,
-        _categoryIconIndex = categoryIconIndex,
-        _isChoosingCategory = isChoosingCategory,
-        _isEditingMode = isEditingMode,
-        _isSelectionMode = isSelectionMode {
+    this.categoryIconIndex = 0,
+    this.isChoosingCategory = false,
+    this.isEditingMode = false,
+    this.isSelectionMode = false,
+  }) {
     _hintMessages = [
-      'This is the page where you can track everything about "${_chat.title}"!\n',
+      'This is the page where you can track everything about "${chat.title}"!\n',
       'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
-      'This is the page where you can track everything about "${_chat.title}"!\n',
-      'Add your first event to "${_chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
+      'This is the page where you can track everything about "${chat.title}"!\n',
+      'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
     ];
   }
 
-  List<Event> get events => _chat.isShowingFavourites
+  List<Event> get events => chat.isShowingFavourites
       ? List<Event>.from(
-          _chat.events.reversed.where((card) => card.isFavourite),
+          chat.events.reversed.where((card) => card.isFavourite),
         )
-      : List<Event>.from(_chat.events.reversed);
+      : List<Event>.from(chat.events.reversed);
 
-  int get eventsLength => _chat.isShowingFavourites
-      ? _chat.events.where((card) => card.isFavourite).length
-      : _chat.events.length;
+  int get eventsLength => chat.isShowingFavourites
+      ? chat.events.where((card) => card.isFavourite).length
+      : chat.events.length;
 
-  List<String> get hintMessages => _chat.isShowingFavourites
+  List<String> get hintMessages => chat.isShowingFavourites
       ? [_hintMessages[0], _hintMessages[1]]
       : [_hintMessages[2], _hintMessages[3]];
-
-  bool get isChoosingCategory => _isChoosingCategory;
-  bool get isSelectionMode => _isSelectionMode;
-
-  int get categoryIconIndex => _categoryIconIndex;
-
-  Chat get chat => _chat;
 
   ChatState copyWith({
     Chat? newChat,
@@ -64,10 +50,10 @@ class ChatState {
     bool? selectionMode,
   }) =>
       ChatState(
-        chat: newChat ?? _chat,
-        categoryIconIndex: newCategoryIconIndex ?? _categoryIconIndex,
-        isChoosingCategory: choosingCategory ?? _isChoosingCategory,
-        isEditingMode: editingMode ?? _isEditingMode,
-        isSelectionMode: selectionMode ?? _isSelectionMode,
+        chat: newChat ?? chat,
+        categoryIconIndex: newCategoryIconIndex ?? categoryIconIndex,
+        isChoosingCategory: choosingCategory ?? isChoosingCategory,
+        isEditingMode: editingMode ?? isEditingMode,
+        isSelectionMode: selectionMode ?? isSelectionMode,
       );
 }
