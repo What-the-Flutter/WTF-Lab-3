@@ -36,25 +36,28 @@ class TimelineCubit extends Cubit<TimelineState> {
         _chatRepository = chatRepository,
         _tagRepository = tagRepository,
         super(
-          TimelineState.defaultMode(
-            messages: IList<MessageModel>(),
-            chats: IList<ChatModel>(),
-            tags: tagRepository.tagsStream.value,
-            isFiltered: false,
-          ),
-        ) {
+        TimelineState.defaultMode(
+          messages: IList<MessageModel>(),
+          defaultMessages: IList<MessageModel>(),
+          chats: IList<ChatModel>(),
+          tags: tagRepository.tagsStream.value,
+          isFiltered: false,
+        ),
+      ) {
     _messageSubscription = _messageRepository.messagesStreamForTimeline.listen(
-      (messages) {
+          (messages) {
         emit(
           state.copyWith(
             messages: messages,
+            defaultMessages: messages,
           ),
         );
         _messages = messages;
       },
     );
+
     _chatSubscription = _chatRepository.chats.listen(
-      (chats) {
+          (chats) {
         emit(
           state.copyWith(
             chats: chats,
@@ -64,7 +67,7 @@ class TimelineCubit extends Cubit<TimelineState> {
     );
 
     _tagSubscription = _tagRepository.tagsStream.listen(
-      (tags) {
+          (tags) {
         emit(
           state.copyWith(
             tags: tags,
@@ -102,12 +105,35 @@ class TimelineCubit extends Cubit<TimelineState> {
     );
   }
 
+  void updateModeForStatistic() {
+    state.mapOrNull(defaultMode: (defaultMode) {
+      emit(
+        TimelineState.filterMode(
+          messages: defaultMode.messages,
+          defaultMessages: _messages,
+          chats: defaultMode.chats,
+          tags: defaultMode.tags,
+          filterWay: 0,
+          searchQuery: '',
+          tagIds: ISet<String>(),
+          chatIds: ISet<String>(),
+          dateFilter: DateFilter.newOnce.dateFilter,
+          imagesOnly: false,
+          audioOnly: false,
+          strongTagFilter: false,
+          resultExist: true,
+        ),
+      );
+    });
+  }
+
   void updateMode(bool withFilter) {
     state.map(
       defaultMode: (defaultMode) {
         emit(
           TimelineState.filterMode(
             messages: defaultMode.messages,
+            defaultMessages: _messages,
             chats: defaultMode.chats,
             tags: defaultMode.tags,
             filterWay: 0,
@@ -126,6 +152,7 @@ class TimelineCubit extends Cubit<TimelineState> {
         emit(
           TimelineState.defaultMode(
             messages: withFilter ? filterMode.messages : _messages,
+            defaultMessages: _messages,
             chats: filterMode.chats,
             tags: filterMode.tags,
             isFiltered: !listEquals(
@@ -144,9 +171,9 @@ class TimelineCubit extends Cubit<TimelineState> {
         final messages = _messagesWithTags()
             .where(
               (message) => message.messageText.toLowerCase().contains(
-                    query.toLowerCase(),
-                  ),
-            )
+            query.toLowerCase(),
+          ),
+        )
             .toIList();
 
         emit(
@@ -222,8 +249,8 @@ class TimelineCubit extends Cubit<TimelineState> {
     return state.mapOrNull(
       filterMode: (filterMode) {
         final tagsLists = filterMode.tagIds.map(
-          (id) => filterMode.tags.where(
-            (tag) => tag.id == id,
+              (id) => filterMode.tags.where(
+                (tag) => tag.id == id,
           ),
         );
 
@@ -231,8 +258,8 @@ class TimelineCubit extends Cubit<TimelineState> {
 
         logger('Selected tags: $tags', 'Timeline_filter');
 
-        final messagesOfChats = _messagesOfChats();
-        if(filterMode.tagIds.isEmpty) return messagesOfChats;
+        final messagesOfChats = messagesOfSelectedChats();
+        if (filterMode.tagIds.isEmpty) return messagesOfChats;
 
         if (filterMode.strongTagFilter) {
           Function deepEq = const DeepCollectionEquality.unordered().equals;
@@ -240,10 +267,10 @@ class TimelineCubit extends Cubit<TimelineState> {
           final messages = messagesOfChats
               .where(
                 (mes) => deepEq(
-                  tags,
-                  mes.tags.toList(),
-                ),
-              )
+              tags,
+              mes.tags.toList(),
+            ),
+          )
               .toIList();
 
           logger('Messages is (strong) $messages', 'Timeline_filter');
@@ -251,9 +278,9 @@ class TimelineCubit extends Cubit<TimelineState> {
           return messages;
         } else {
           final messagesExLists = messagesOfChats.map(
-            (mes) => mes.tags.map(
-              (tag) => tags.map(
-                (e) {
+                (mes) => mes.tags.map(
+                  (tag) => tags.map(
+                    (e) {
                   if (e.id == tag.id) {
                     return mes;
                   }
@@ -280,6 +307,8 @@ class TimelineCubit extends Cubit<TimelineState> {
   }
 
   void updateSelectableChats(String chatId) {
+    logger('$chatId', 'Selection chat');
+
     state.mapOrNull(
       filterMode: (filterMode) {
         emit(
@@ -295,7 +324,7 @@ class TimelineCubit extends Cubit<TimelineState> {
 
     state.mapOrNull(
       filterMode: (filterMode) {
-        final messages = _messagesOfChats();
+        final messages = messagesOfSelectedChats();
 
         emit(
           filterMode.copyWith(messages: messages),
@@ -304,12 +333,26 @@ class TimelineCubit extends Cubit<TimelineState> {
     );
   }
 
-  IList<MessageModel> _messagesOfChats() {
+  IList<ChatModel> selectedChats() {
+    Iterable<Iterable<ChatModel>> chats = [];
+
+    state.mapOrNull(
+      filterMode: (filterMode) {
+        chats = filterMode.chatIds.map(
+              (id) => filterMode.chats.where((chat) => chat.id == id),
+        );
+      },
+    );
+
+    return chats.expand((list) => list).toIList();
+  }
+
+  IList<MessageModel> messagesOfSelectedChats() {
     return state.mapOrNull(
       filterMode: (filterMode) {
         final messagesLists = filterMode.chatIds.map(
-          (id) => _messages.where(
-            (mes) => mes.parentId == id,
+              (id) => _messages.where(
+                (mes) => mes.parentId == id,
           ),
         );
 
@@ -328,11 +371,11 @@ class TimelineCubit extends Cubit<TimelineState> {
             dateFilter: filter.dateFilter,
             messages: filter == DateFilter.newOnce
                 ? filterMode.messages.sort(
-                    (a, b) => a.sendDate.compareTo(b.sendDate),
-                  )
+                  (a, b) => a.sendDate.compareTo(b.sendDate),
+            )
                 : filterMode.messages.sort(
-                    (a, b) => b.sendDate.compareTo(a.sendDate),
-                  ),
+                  (a, b) => b.sendDate.compareTo(a.sendDate),
+            ),
           ),
         );
       },
@@ -347,8 +390,8 @@ class TimelineCubit extends Cubit<TimelineState> {
             imagesOnly: value,
             messages: value
                 ? filterMode.messages
-                    .where((mes) => mes.images.isNotEmpty)
-                    .toIList()
+                .where((mes) => mes.images.isNotEmpty)
+                .toIList()
                 : _messages,
           ),
         );
@@ -366,5 +409,11 @@ class TimelineCubit extends Cubit<TimelineState> {
         );
       },
     );
+  }
+
+  int countFiles() {
+    final files = state.defaultMessages.map((mes) => mes.images);
+
+    return files.expand((list) => list).length;
   }
 }

@@ -17,16 +17,22 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$TimelineState {
   IList<MessageModel> get messages => throw _privateConstructorUsedError;
+  IList<MessageModel> get defaultMessages => throw _privateConstructorUsedError;
   IList<ChatModel> get chats => throw _privateConstructorUsedError;
   IList<TagModel> get tags => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(IList<MessageModel> messages,
-            IList<ChatModel> chats, IList<TagModel> tags, bool isFiltered)
+    required TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -42,12 +48,17 @@ mixin _$TimelineState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -63,12 +74,17 @@ mixin _$TimelineState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -116,6 +132,7 @@ abstract class $TimelineStateCopyWith<$Res> {
   @useResult
   $Res call(
       {IList<MessageModel> messages,
+      IList<MessageModel> defaultMessages,
       IList<ChatModel> chats,
       IList<TagModel> tags});
 }
@@ -134,6 +151,7 @@ class _$TimelineStateCopyWithImpl<$Res, $Val extends TimelineState>
   @override
   $Res call({
     Object? messages = null,
+    Object? defaultMessages = null,
     Object? chats = null,
     Object? tags = null,
   }) {
@@ -141,6 +159,10 @@ class _$TimelineStateCopyWithImpl<$Res, $Val extends TimelineState>
       messages: null == messages
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
+              as IList<MessageModel>,
+      defaultMessages: null == defaultMessages
+          ? _value.defaultMessages
+          : defaultMessages // ignore: cast_nullable_to_non_nullable
               as IList<MessageModel>,
       chats: null == chats
           ? _value.chats
@@ -164,6 +186,7 @@ abstract class _$$_DefaultModeCopyWith<$Res>
   @useResult
   $Res call(
       {IList<MessageModel> messages,
+      IList<MessageModel> defaultMessages,
       IList<ChatModel> chats,
       IList<TagModel> tags,
       bool isFiltered});
@@ -181,6 +204,7 @@ class __$$_DefaultModeCopyWithImpl<$Res>
   @override
   $Res call({
     Object? messages = null,
+    Object? defaultMessages = null,
     Object? chats = null,
     Object? tags = null,
     Object? isFiltered = null,
@@ -189,6 +213,10 @@ class __$$_DefaultModeCopyWithImpl<$Res>
       messages: null == messages
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
+              as IList<MessageModel>,
+      defaultMessages: null == defaultMessages
+          ? _value.defaultMessages
+          : defaultMessages // ignore: cast_nullable_to_non_nullable
               as IList<MessageModel>,
       chats: null == chats
           ? _value.chats
@@ -211,12 +239,15 @@ class __$$_DefaultModeCopyWithImpl<$Res>
 class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
   const _$_DefaultMode(
       {required this.messages,
+      required this.defaultMessages,
       required this.chats,
       required this.tags,
       required this.isFiltered});
 
   @override
   final IList<MessageModel> messages;
+  @override
+  final IList<MessageModel> defaultMessages;
   @override
   final IList<ChatModel> chats;
   @override
@@ -226,7 +257,7 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TimelineState.defaultMode(messages: $messages, chats: $chats, tags: $tags, isFiltered: $isFiltered)';
+    return 'TimelineState.defaultMode(messages: $messages, defaultMessages: $defaultMessages, chats: $chats, tags: $tags, isFiltered: $isFiltered)';
   }
 
   @override
@@ -235,6 +266,7 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
     properties
       ..add(DiagnosticsProperty('type', 'TimelineState.defaultMode'))
       ..add(DiagnosticsProperty('messages', messages))
+      ..add(DiagnosticsProperty('defaultMessages', defaultMessages))
       ..add(DiagnosticsProperty('chats', chats))
       ..add(DiagnosticsProperty('tags', tags))
       ..add(DiagnosticsProperty('isFiltered', isFiltered));
@@ -246,6 +278,8 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
         (other.runtimeType == runtimeType &&
             other is _$_DefaultMode &&
             const DeepCollectionEquality().equals(other.messages, messages) &&
+            const DeepCollectionEquality()
+                .equals(other.defaultMessages, defaultMessages) &&
             const DeepCollectionEquality().equals(other.chats, chats) &&
             const DeepCollectionEquality().equals(other.tags, tags) &&
             (identical(other.isFiltered, isFiltered) ||
@@ -256,6 +290,7 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(messages),
+      const DeepCollectionEquality().hash(defaultMessages),
       const DeepCollectionEquality().hash(chats),
       const DeepCollectionEquality().hash(tags),
       isFiltered);
@@ -269,12 +304,17 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(IList<MessageModel> messages,
-            IList<ChatModel> chats, IList<TagModel> tags, bool isFiltered)
+    required TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -287,18 +327,23 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
             bool resultExist)
         filterMode,
   }) {
-    return defaultMode(messages, chats, tags, isFiltered);
+    return defaultMode(messages, defaultMessages, chats, tags, isFiltered);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -311,18 +356,24 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
             bool resultExist)?
         filterMode,
   }) {
-    return defaultMode?.call(messages, chats, tags, isFiltered);
+    return defaultMode?.call(
+        messages, defaultMessages, chats, tags, isFiltered);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -337,7 +388,7 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
     required TResult orElse(),
   }) {
     if (defaultMode != null) {
-      return defaultMode(messages, chats, tags, isFiltered);
+      return defaultMode(messages, defaultMessages, chats, tags, isFiltered);
     }
     return orElse();
   }
@@ -377,12 +428,15 @@ class _$_DefaultMode with DiagnosticableTreeMixin implements _DefaultMode {
 abstract class _DefaultMode implements TimelineState {
   const factory _DefaultMode(
       {required final IList<MessageModel> messages,
+      required final IList<MessageModel> defaultMessages,
       required final IList<ChatModel> chats,
       required final IList<TagModel> tags,
       required final bool isFiltered}) = _$_DefaultMode;
 
   @override
   IList<MessageModel> get messages;
+  @override
+  IList<MessageModel> get defaultMessages;
   @override
   IList<ChatModel> get chats;
   @override
@@ -405,6 +459,7 @@ abstract class _$$_FilterModeCopyWith<$Res>
   $Res call(
       {IList<MessageModel> messages,
       IList<ChatModel> chats,
+      IList<MessageModel> defaultMessages,
       IList<TagModel> tags,
       int filterWay,
       String searchQuery,
@@ -430,6 +485,7 @@ class __$$_FilterModeCopyWithImpl<$Res>
   $Res call({
     Object? messages = null,
     Object? chats = null,
+    Object? defaultMessages = null,
     Object? tags = null,
     Object? filterWay = null,
     Object? searchQuery = null,
@@ -450,6 +506,10 @@ class __$$_FilterModeCopyWithImpl<$Res>
           ? _value.chats
           : chats // ignore: cast_nullable_to_non_nullable
               as IList<ChatModel>,
+      defaultMessages: null == defaultMessages
+          ? _value.defaultMessages
+          : defaultMessages // ignore: cast_nullable_to_non_nullable
+              as IList<MessageModel>,
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -500,6 +560,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
   const _$_FilterMode(
       {required this.messages,
       required this.chats,
+      required this.defaultMessages,
       required this.tags,
       required this.filterWay,
       required this.searchQuery,
@@ -515,6 +576,8 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
   final IList<MessageModel> messages;
   @override
   final IList<ChatModel> chats;
+  @override
+  final IList<MessageModel> defaultMessages;
   @override
   final IList<TagModel> tags;
   @override
@@ -538,7 +601,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TimelineState.filterMode(messages: $messages, chats: $chats, tags: $tags, filterWay: $filterWay, searchQuery: $searchQuery, tagIds: $tagIds, chatIds: $chatIds, dateFilter: $dateFilter, imagesOnly: $imagesOnly, audioOnly: $audioOnly, strongTagFilter: $strongTagFilter, resultExist: $resultExist)';
+    return 'TimelineState.filterMode(messages: $messages, chats: $chats, defaultMessages: $defaultMessages, tags: $tags, filterWay: $filterWay, searchQuery: $searchQuery, tagIds: $tagIds, chatIds: $chatIds, dateFilter: $dateFilter, imagesOnly: $imagesOnly, audioOnly: $audioOnly, strongTagFilter: $strongTagFilter, resultExist: $resultExist)';
   }
 
   @override
@@ -548,6 +611,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
       ..add(DiagnosticsProperty('type', 'TimelineState.filterMode'))
       ..add(DiagnosticsProperty('messages', messages))
       ..add(DiagnosticsProperty('chats', chats))
+      ..add(DiagnosticsProperty('defaultMessages', defaultMessages))
       ..add(DiagnosticsProperty('tags', tags))
       ..add(DiagnosticsProperty('filterWay', filterWay))
       ..add(DiagnosticsProperty('searchQuery', searchQuery))
@@ -567,6 +631,8 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
             other is _$_FilterMode &&
             const DeepCollectionEquality().equals(other.messages, messages) &&
             const DeepCollectionEquality().equals(other.chats, chats) &&
+            const DeepCollectionEquality()
+                .equals(other.defaultMessages, defaultMessages) &&
             const DeepCollectionEquality().equals(other.tags, tags) &&
             (identical(other.filterWay, filterWay) ||
                 other.filterWay == filterWay) &&
@@ -591,6 +657,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
       runtimeType,
       const DeepCollectionEquality().hash(messages),
       const DeepCollectionEquality().hash(chats),
+      const DeepCollectionEquality().hash(defaultMessages),
       const DeepCollectionEquality().hash(tags),
       filterWay,
       searchQuery,
@@ -611,12 +678,17 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(IList<MessageModel> messages,
-            IList<ChatModel> chats, IList<TagModel> tags, bool isFiltered)
+    required TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)
         defaultMode,
     required TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -632,6 +704,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
     return filterMode(
         messages,
         chats,
+        defaultMessages,
         tags,
         filterWay,
         searchQuery,
@@ -647,12 +720,17 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult? Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult? Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -668,6 +746,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
     return filterMode?.call(
         messages,
         chats,
+        defaultMessages,
         tags,
         filterWay,
         searchQuery,
@@ -683,12 +762,17 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(IList<MessageModel> messages, IList<ChatModel> chats,
-            IList<TagModel> tags, bool isFiltered)?
+    TResult Function(
+            IList<MessageModel> messages,
+            IList<MessageModel> defaultMessages,
+            IList<ChatModel> chats,
+            IList<TagModel> tags,
+            bool isFiltered)?
         defaultMode,
     TResult Function(
             IList<MessageModel> messages,
             IList<ChatModel> chats,
+            IList<MessageModel> defaultMessages,
             IList<TagModel> tags,
             int filterWay,
             String searchQuery,
@@ -706,6 +790,7 @@ class _$_FilterMode with DiagnosticableTreeMixin implements _FilterMode {
       return filterMode(
           messages,
           chats,
+          defaultMessages,
           tags,
           filterWay,
           searchQuery,
@@ -756,6 +841,7 @@ abstract class _FilterMode implements TimelineState {
   const factory _FilterMode(
       {required final IList<MessageModel> messages,
       required final IList<ChatModel> chats,
+      required final IList<MessageModel> defaultMessages,
       required final IList<TagModel> tags,
       required final int filterWay,
       required final String searchQuery,
@@ -771,6 +857,8 @@ abstract class _FilterMode implements TimelineState {
   IList<MessageModel> get messages;
   @override
   IList<ChatModel> get chats;
+  @override
+  IList<MessageModel> get defaultMessages;
   @override
   IList<TagModel> get tags;
   int get filterWay;

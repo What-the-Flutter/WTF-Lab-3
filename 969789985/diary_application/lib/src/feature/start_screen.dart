@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:app_minimizer/app_minimizer.dart';
-import 'package:diary_application/src/feature/widget/timeline/scope/timeline_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../lifecycle_event_handler.dart';
 import '../core/util/resources/themes.dart';
 import 'cubit/theme/theme_cubit.dart';
-import 'widget/general/navigation_drawer/navigation_drawer_menu.dart';
 import 'widget/general/theme_switcher.dart';
 import 'widget/main/animated_main_title.dart';
 import 'widget/main/bottom_navigation_gnav.dart';
@@ -16,6 +15,7 @@ import 'widget/main/clear_filter.dart';
 import 'widget/main/fab_button.dart';
 import 'widget/main/filter_action.dart';
 import 'widget/main/start_page_body.dart';
+import 'widget/main/statistic/statistic_scope.dart';
 import 'widget/theme/theme_scope.dart';
 
 class StartScreen extends StatefulWidget {
@@ -30,7 +30,15 @@ class _StartScreenState extends State<StartScreen> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(
+      LifecycleEventHandler(
+        pausedCallback: StatisticScope.of(context).dispatchAction,
+        resumedCallback: StatisticScope.of(context).updateEntryTime,
+      ),
+    );
+
     _systemNavBarColor();
+
   }
 
   @override
@@ -76,19 +84,19 @@ class _StartScreenState extends State<StartScreen> {
   void _systemNavBarColor() {
     Future.delayed(
       Duration.zero,
-      () => context.read<ThemeCubit>().state.isDarkMode
+          () => context.read<ThemeCubit>().state.isDarkMode
           ? SystemChrome.setSystemUIOverlayStyle(
-              const SystemUiOverlayStyle(
-                systemNavigationBarColor: Color(AppColors.primaryDark),
-              ),
-            )
+        const SystemUiOverlayStyle(
+          systemNavigationBarColor: Color(AppColors.primaryDark),
+        ),
+      )
           : SystemChrome.setSystemUIOverlayStyle(
-              SystemUiOverlayStyle(
-                systemNavigationBarColor: Color(
-                  ThemeScope.of(context).state.primaryColor,
-                ),
-              ),
-            ),
+        SystemUiOverlayStyle(
+          systemNavigationBarColor: Color(
+            ThemeScope.of(context).state.primaryColor,
+          ),
+        ),
+      ),
     );
   }
 }
