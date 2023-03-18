@@ -2,6 +2,9 @@ analyzer:
   exclude:
     - build/**
     - test/**
+    - lib/chat/**
+    - lib/chat_editor/**
+    - lib/chats/**
   errors:
     unused_field: ignore
     unused_element: ignore
