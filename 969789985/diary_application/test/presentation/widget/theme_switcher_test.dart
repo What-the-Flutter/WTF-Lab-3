@@ -11,15 +11,13 @@ import 'package:lottie/lottie.dart';
 import 'package:diary_application/src/feature/widget/general/theme_switcher.dart';
 import 'package:diary_application/src/feature/cubit/theme/theme_cubit.dart';
 
-import '../../app_tester.dart';
-import 'utils/mocked_theme_cubit.dart';
+import '../app_tester.dart';
+import '../../utils/mock_theme_scope.mocks.dart';
 
 void main() async {
   group('Theme switcher', () {
     late ThemeCubit themeCubit;
     late ThemeState themeState;
-
-    final f = MockedThemeScope();
 
     setUp(() {
       themeCubit = MockThemeCubit();

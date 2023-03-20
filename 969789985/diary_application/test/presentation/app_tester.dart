@@ -4,9 +4,11 @@ class AppTester extends StatelessWidget {
   final Widget? bodyWidget;
   final Widget? bottomNavBarWidget;
   final List<Widget>? actionsWidgets;
+  final Widget? appBarTitle;
 
   const AppTester({
     this.bodyWidget,
+    this.appBarTitle,
     this.bottomNavBarWidget,
     this.actionsWidgets,
     super.key,
@@ -17,6 +19,7 @@ class AppTester extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          title: appBarTitle ?? null,
           actions: actionsWidgets ?? null,
         ),
         body: bodyWidget ?? null,

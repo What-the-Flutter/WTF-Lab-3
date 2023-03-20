@@ -5,12 +5,12 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../core/domain/models/local/activity/activity_model.dart';
 import '../../../core/domain/models/local/chat/chat_model.dart';
 import '../../../core/domain/models/local/message/message_model.dart';
 import '../../../core/domain/repository/statistic/api_statistic_repository.dart';
-import '../../../core/util/logger.dart';
 import '../../../core/util/resources/strings.dart';
 
 part 'statistic_cubit.freezed.dart';
@@ -26,20 +26,20 @@ class StatisticCubit extends Cubit<StatisticState> {
     required ApiStatisticRepository repository,
   })  : _repository = repository,
         super(
-        StatisticState.initial(
-          activities: IList<ActivityModel>(),
-          messages: IList<MessageModel>(),
-          datesRange: IList([
-            DateTime.now().copyWith(day: DateTime.now().day - 7),
-            DateTime.now(),
-          ]),
-          entryTime: DateTime.now(),
-          yMax: 0,
-          dateSelection: MessageDateChartSelections.lastWeek,
-        ),
-      ) {
+          StatisticState(
+            activities: IList<ActivityModel>(),
+            messages: IList<MessageModel>(),
+            datesRange: IList([
+              DateTime.now().copyWith(day: DateTime.now().day - 7),
+              DateTime.now(),
+            ]),
+            entryTime: DateTime.now(),
+            yMax: 0,
+            dateSelection: MessageDateChartSelections.lastWeek,
+          ),
+        ) {
     _subscription = _repository.activities.listen(
-          (activities) {
+      (activities) {
         if (activities.length == 8) {
           _repository.deleteActivity(activities.first.id);
         }
@@ -49,7 +49,7 @@ class StatisticCubit extends Cubit<StatisticState> {
           yMax = activities
               .map(
                 (activity) => (activity.spentTime / 60).floor() as int,
-          )
+              )
               .toList()
               .reduce(max);
         }
@@ -59,7 +59,7 @@ class StatisticCubit extends Cubit<StatisticState> {
             activities: activities
                 .sorted(
                   (a, b) => a.date.compareTo(b.date),
-            )
+                )
                 .toIList(),
             yMax: yMax,
           ),
@@ -77,49 +77,49 @@ class StatisticCubit extends Cubit<StatisticState> {
 
   DateTime messagesGraphXAxis(MessageModel message) {
     return state.dateSelection == MessageDateChartSelections.lastYear ||
-        state.dateSelection == MessageDateChartSelections.lastSixMonth
+            state.dateSelection == MessageDateChartSelections.lastSixMonth
         ? DateTime(
-      message.sendDate.year,
-      message.sendDate.month,
-    )
+            message.sendDate.year,
+            message.sendDate.month,
+          )
         : DateTime(
-      message.sendDate.year,
-      message.sendDate.month,
-      message.sendDate.day,
-    );
+            message.sendDate.year,
+            message.sendDate.month,
+            message.sendDate.day,
+          );
   }
 
   int messagesGraphYAxis(
-      IList<MessageModel> messages,
-      MessageModel comparedMessage,
-      ) {
+    IList<MessageModel> messages,
+    MessageModel comparedMessage,
+  ) {
     return messages
         .where(
           (mes) => state.dateSelection == MessageDateChartSelections.lastYear ||
-          state.dateSelection == MessageDateChartSelections.lastSixMonth
-          ? DateTime(
-        mes.sendDate.year,
-        mes.sendDate.month,
-      ).compareTo(
-        DateTime(
-          comparedMessage.sendDate.year,
-          comparedMessage.sendDate.month,
-        ),
-      ) ==
-          0
-          : DateTime(
-        mes.sendDate.year,
-        mes.sendDate.month,
-        mes.sendDate.day,
-      ).compareTo(
-        DateTime(
-          comparedMessage.sendDate.year,
-          comparedMessage.sendDate.month,
-          comparedMessage.sendDate.day,
-        ),
-      ) ==
-          0,
-    )
+                  state.dateSelection == MessageDateChartSelections.lastSixMonth
+              ? DateTime(
+                    mes.sendDate.year,
+                    mes.sendDate.month,
+                  ).compareTo(
+                    DateTime(
+                      comparedMessage.sendDate.year,
+                      comparedMessage.sendDate.month,
+                    ),
+                  ) ==
+                  0
+              : DateTime(
+                    mes.sendDate.year,
+                    mes.sendDate.month,
+                    mes.sendDate.day,
+                  ).compareTo(
+                    DateTime(
+                      comparedMessage.sendDate.year,
+                      comparedMessage.sendDate.month,
+                      comparedMessage.sendDate.day,
+                    ),
+                  ) ==
+                  0,
+        )
         .length;
   }
 
@@ -159,9 +159,9 @@ class StatisticCubit extends Cubit<StatisticState> {
   }
 
   void _updateDatesRange(
-      DateTime firstValue,
-      MessageDateChartSelections selection,
-      ) {
+    DateTime firstValue,
+    MessageDateChartSelections selection,
+  ) {
     emit(
       state.copyWith(
         dateSelection: selection,
@@ -177,7 +177,7 @@ class StatisticCubit extends Cubit<StatisticState> {
       yMax = state.activities
           .map(
             (activity) => (activity.spentTime / 60).floor() as int,
-      )
+          )
           .toList()
           .reduce(max);
     }
@@ -201,7 +201,7 @@ class StatisticCubit extends Cubit<StatisticState> {
     final currentDate = DateTime(now.year, now.month, now.day);
 
     final activity = state.activities.firstWhereOrNull(
-          (activity) => activity.date.compareTo(currentDate) == 0,
+      (activity) => activity.date.compareTo(currentDate) == 0,
     );
 
     final diff = now.difference(state.entryTime);
@@ -213,14 +213,10 @@ class StatisticCubit extends Cubit<StatisticState> {
           spentTime: diff.inSeconds,
         ),
       );
-
-      return;
     } else {
       await updateActivity(
         activity.copyWith(spentTime: activity.spentTime + diff.inSeconds),
       );
-
-      return;
     }
   }
 
@@ -228,14 +224,16 @@ class StatisticCubit extends Cubit<StatisticState> {
     if (state.activities.isEmpty) return 0;
 
     final average = state.activities.map((e) => e.spentTime).reduce(
-          (a, b) => a + b,
-    ) /
+              (a, b) => a + b,
+            ) /
         state.activities.length;
 
     return ((average as double) / 60).floor();
   }
 
   ChatModel mostUsedChat(IList<ChatModel> chats, IList<MessageModel> messages) {
+    if (chats.isEmpty || messages.isEmpty) return ChatModel(chatIcon: 0);
+
     final mostCommon = messages
         .fold<Map<String, int>>(
       {},

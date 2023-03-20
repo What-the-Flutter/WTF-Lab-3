@@ -1,38 +1,38 @@
 {
   "project_info": {
-    "project_number": "360518503177",
-    "firebase_url": "https://diary-application-9ac33-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "diary-application-9ac33",
-    "storage_bucket": "diary-application-9ac33.appspot.com"
+    "project_number": "1079872076382",
+    "firebase_url": "https://diary-application-757ff-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "diary-application-757ff",
+    "storage_bucket": "diary-application-757ff.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360518503177:android:4571c2ede78e848b68a1d8",
+        "mobilesdk_app_id": "1:1079872076382:android:f997722c1562f92710d2cf",
         "android_client_info": {
           "package_name": "com.wtflab.diary_application"
         }
       },
       "oauth_client": [
         {
-          "client_id": "360518503177-75d70e1ukl1b7qs2fdd0u6pc5njs4c2i.apps.googleusercontent.com",
+          "client_id": "1079872076382-paqp1rkgm1oe9i8abropbeb5he82k5vt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyARv6ZH7_0yb6EYxVJjxFF9OBsxwMWml1A"
+          "current_key": "AIzaSyBBUtaswkVLJcfi6Pxut7I0A5__QRCEHJs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "360518503177-75d70e1ukl1b7qs2fdd0u6pc5njs4c2i.apps.googleusercontent.com",
+              "client_id": "1079872076382-paqp1rkgm1oe9i8abropbeb5he82k5vt.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "360518503177-8hput33bghdmbbcpk8ikgt2k661vv4hs.apps.googleusercontent.com",
+              "client_id": "1079872076382-4urbef4clcbfispdvos4jn5lr9l7pkhj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.example.diaryApplication"

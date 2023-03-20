@@ -38,7 +38,6 @@ class _StartScreenState extends State<StartScreen> {
     );
 
     _systemNavBarColor();
-
   }
 
   @override

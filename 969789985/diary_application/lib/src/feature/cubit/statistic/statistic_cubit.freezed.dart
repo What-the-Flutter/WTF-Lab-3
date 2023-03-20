@@ -23,59 +23,6 @@ mixin _$StatisticState {
   int get yMax => throw _privateConstructorUsedError;
   MessageDateChartSelections get dateSelection =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)
-        initial,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)?
-        initial,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)?
-        initial,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $StatisticStateCopyWith<StatisticState> get copyWith =>
@@ -147,11 +94,11 @@ class _$StatisticStateCopyWithImpl<$Res, $Val extends StatisticState>
 }
 
 /// @nodoc
-abstract class _$$_InitialCopyWith<$Res>
+abstract class _$$_StatisticStateCopyWith<$Res>
     implements $StatisticStateCopyWith<$Res> {
-  factory _$$_InitialCopyWith(
-          _$_Initial value, $Res Function(_$_Initial) then) =
-      __$$_InitialCopyWithImpl<$Res>;
+  factory _$$_StatisticStateCopyWith(
+          _$_StatisticState value, $Res Function(_$_StatisticState) then) =
+      __$$_StatisticStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -164,10 +111,11 @@ abstract class _$$_InitialCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_InitialCopyWithImpl<$Res>
-    extends _$StatisticStateCopyWithImpl<$Res, _$_Initial>
-    implements _$$_InitialCopyWith<$Res> {
-  __$$_InitialCopyWithImpl(_$_Initial _value, $Res Function(_$_Initial) _then)
+class __$$_StatisticStateCopyWithImpl<$Res>
+    extends _$StatisticStateCopyWithImpl<$Res, _$_StatisticState>
+    implements _$$_StatisticStateCopyWith<$Res> {
+  __$$_StatisticStateCopyWithImpl(
+      _$_StatisticState _value, $Res Function(_$_StatisticState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -180,7 +128,7 @@ class __$$_InitialCopyWithImpl<$Res>
     Object? yMax = null,
     Object? dateSelection = null,
   }) {
-    return _then(_$_Initial(
+    return _then(_$_StatisticState(
       activities: null == activities
           ? _value.activities
           : activities // ignore: cast_nullable_to_non_nullable
@@ -211,8 +159,8 @@ class __$$_InitialCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_Initial implements _Initial {
-  const _$_Initial(
+class _$_StatisticState implements _StatisticState {
+  const _$_StatisticState(
       {required this.activities,
       required this.messages,
       required this.datesRange,
@@ -235,14 +183,14 @@ class _$_Initial implements _Initial {
 
   @override
   String toString() {
-    return 'StatisticState.initial(activities: $activities, messages: $messages, datesRange: $datesRange, entryTime: $entryTime, yMax: $yMax, dateSelection: $dateSelection)';
+    return 'StatisticState(activities: $activities, messages: $messages, datesRange: $datesRange, entryTime: $entryTime, yMax: $yMax, dateSelection: $dateSelection)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Initial &&
+            other is _$_StatisticState &&
             const DeepCollectionEquality()
                 .equals(other.activities, activities) &&
             const DeepCollectionEquality().equals(other.messages, messages) &&
@@ -268,98 +216,19 @@ class _$_Initial implements _Initial {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_InitialCopyWith<_$_Initial> get copyWith =>
-      __$$_InitialCopyWithImpl<_$_Initial>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)
-        initial,
-  }) {
-    return initial(
-        activities, messages, datesRange, entryTime, yMax, dateSelection);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)?
-        initial,
-  }) {
-    return initial?.call(
-        activities, messages, datesRange, entryTime, yMax, dateSelection);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            IList<ActivityModel> activities,
-            IList<MessageModel> messages,
-            IList<DateTime> datesRange,
-            DateTime entryTime,
-            int yMax,
-            MessageDateChartSelections dateSelection)?
-        initial,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial(
-          activities, messages, datesRange, entryTime, yMax, dateSelection);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-  }) {
-    return initial(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-  }) {
-    return initial?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial(this);
-    }
-    return orElse();
-  }
+  _$$_StatisticStateCopyWith<_$_StatisticState> get copyWith =>
+      __$$_StatisticStateCopyWithImpl<_$_StatisticState>(this, _$identity);
 }
 
-abstract class _Initial implements StatisticState {
-  const factory _Initial(
-      {required final IList<ActivityModel> activities,
-      required final IList<MessageModel> messages,
-      required final IList<DateTime> datesRange,
-      required final DateTime entryTime,
-      required final int yMax,
-      required final MessageDateChartSelections dateSelection}) = _$_Initial;
+abstract class _StatisticState implements StatisticState {
+  const factory _StatisticState(
+          {required final IList<ActivityModel> activities,
+          required final IList<MessageModel> messages,
+          required final IList<DateTime> datesRange,
+          required final DateTime entryTime,
+          required final int yMax,
+          required final MessageDateChartSelections dateSelection}) =
+      _$_StatisticState;
 
   @override
   IList<ActivityModel> get activities;
@@ -375,6 +244,6 @@ abstract class _Initial implements StatisticState {
   MessageDateChartSelections get dateSelection;
   @override
   @JsonKey(ignore: true)
-  _$$_InitialCopyWith<_$_Initial> get copyWith =>
+  _$$_StatisticStateCopyWith<_$_StatisticState> get copyWith =>
       throw _privateConstructorUsedError;
 }
