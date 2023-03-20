@@ -52,5 +52,14 @@
   "enableFingerPrint": "Уключыць адбітак пальца",
   "waitPls": "Пачакайце, калі ласка!",
   "wait": "Пачакайце...",
-  "notAuth": "Не аўтэнтыфікаваны!"
+  "notAuth": "Не аўтэнтыфікаваны!",
+  "fontSize": "Памер шрыфта",
+  "fontSizeState": "Маленькі / Стандартны / Вялікі",
+  "bubbleAlignment": "Выраўноўванне бурбалкі",
+  "alignmentAction": "Прымусовае выраўноўванне бурбалкі справа налева",
+  "centerDateBubble": "Цэнтр бурбалкі даты",
+  "backgroundImage": "Фонавы відарыс",
+  "chatBackgroundImage": "Фонавы відарыс чата",
+  "resetSettings": "Скінуць усе налады",
+  "resetAllSettings": "Скінуць усе налады"
 }

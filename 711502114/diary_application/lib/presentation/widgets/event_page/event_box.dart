@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/category.dart';
 import '../../../domain/models/event.dart';
 import '../../../domain/utils/utils.dart';
 import '../../../theme/colors.dart';
+import '../../pages/settings/settings_cubit.dart';
 
 class EventBox extends StatelessWidget {
   final Event event;
@@ -27,6 +29,8 @@ class EventBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final category = event.category;
     final waitMessage = AppLocalizations.of(context)?.waitPls ?? '';
+    final state = context.watch<SettingsCubit>().state;
+    final isRight = state.alignment;
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
       child: Column(
@@ -38,16 +42,18 @@ class EventBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
+            textDirection: isRight ? TextDirection.rtl : TextDirection.ltr,
             children: [
+              if (isRight) const SizedBox(width: 10),
               if (event.photoPath?.isEmpty ?? false)
-                _messageContainer()
+                _messageContainer(isRight)
               else if (event.message.isEmpty)
-                _attachContainer() ?? Text(waitMessage)
+                _attachContainer(isRight) ?? Text(waitMessage)
               else
                 Column(
                   children: [
-                    _messageContainer(size.width * .75, false),
-                    _attachContainer(false) ?? Text(waitMessage),
+                    _messageContainer(isRight, size.width * .75, false),
+                    _attachContainer(isRight, false) ?? Text(waitMessage),
                   ],
                 ),
               const SizedBox(width: 10),
@@ -65,6 +71,9 @@ class EventBox extends StatelessWidget {
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: !state.isCenter
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center,
                     children: [
                       Text(formatDate(context, event.creationTime)),
                       Text(formatTime(event.creationTime)),
@@ -79,55 +88,71 @@ class EventBox extends StatelessWidget {
     );
   }
 
-  Widget _messageContainer([double minWidth = 0.0, bool isUsualText = true]) {
-    return Container(
-      constraints: BoxConstraints(
-        minWidth: minWidth,
-        maxWidth: size.width * .75,
-      ),
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: isSelected ? circleMessageSelectedColor : circleMessageColor,
-        borderRadius: BorderRadius.only(
-          topLeft: _circular,
-          topRight: _circular,
-          bottomRight: isUsualText ? _circular : Radius.zero,
+  Widget _messageContainer(
+    bool isReverse, [
+    double minWidth = 0.0,
+    bool isUsualText = true,
+  ]) {
+    return Transform.scale(
+      scaleX: isReverse ? -1 : 1,
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: minWidth,
+          maxWidth: size.width * .75,
         ),
-      ),
-      child: Text(
-        event.message,
-        style: const TextStyle(fontSize: 16, color: Colors.white),
-        overflow: TextOverflow.clip,
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: isSelected ? circleMessageSelectedColor : circleMessageColor,
+          borderRadius: BorderRadius.only(
+            topLeft: _circular,
+            topRight: _circular,
+            bottomRight: isUsualText ? _circular : Radius.zero,
+          ),
+        ),
+        child: Transform.scale(
+          scaleX: isReverse ? -1 : 1,
+          child: Text(
+            event.message,
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+            overflow: TextOverflow.clip,
+          ),
+        ),
       ),
     );
   }
 
-  Widget? _attachContainer([bool isUsualAttach = true]) {
+  Widget? _attachContainer(bool isReverse, [bool isUsualAttach = true]) {
     if (event.photoPath != null && !event.photoPath!.contains('https://')) {
       return null;
     }
-    return Container(
-      constraints: BoxConstraints(minWidth: size.width * .75),
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: isSelected ? circleMessageSelectedColor : circleMessageColor,
-        borderRadius: BorderRadius.only(
-          topLeft: isUsualAttach ? _circular : Radius.zero,
-          topRight: isUsualAttach ? _circular : Radius.zero,
-          bottomRight: _circular,
-        ),
-      ),
-      child: SizedBox(
-        child: CachedNetworkImage(
-          imageUrl: event.photoPath ?? '',
-          progressIndicatorBuilder: (context, url, progress) => Center(
-            child: CircularProgressIndicator(
-              value: progress.progress,
-            ),
+    return Transform.scale(
+      scaleX: isReverse ? -1 : 1,
+      child: Container(
+        constraints: BoxConstraints(minWidth: size.width * .75),
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: isSelected ? circleMessageSelectedColor : circleMessageColor,
+          borderRadius: BorderRadius.only(
+            topLeft: isUsualAttach ? _circular : Radius.zero,
+            topRight: isUsualAttach ? _circular : Radius.zero,
+            bottomRight: _circular,
           ),
         ),
-        width: size.width * 0.3,
-        height: size.height * 0.3,
+        child: Transform.scale(
+          scaleX: isReverse ? -1 : 1,
+          child: SizedBox(
+            child: CachedNetworkImage(
+              imageUrl: event.photoPath ?? '',
+              progressIndicatorBuilder: (context, url, progress) => Center(
+                child: CircularProgressIndicator(
+                  value: progress.progress,
+                ),
+              ),
+            ),
+            width: size.width * 0.3,
+            height: size.height * 0.3,
+          ),
+        ),
       ),
     );
   }

@@ -52,5 +52,14 @@
   "enableFingerPrint": "Enable finger print",
   "waitPls": "Wait please!",
   "wait": "Wait...",
-  "notAuth": "Not authenticated!"
+  "notAuth": "Not authenticated!",
+  "fontSize": "FontSize",
+  "fontSizeState": "Small / Default / Large",
+  "bubbleAlignment": "Bubble alignment",
+  "alignmentAction": "Force right-to-left bubble alignment",
+  "centerDateBubble": "Center Date Bubble",
+  "backgroundImage": "Background image",
+  "chatBackgroundImage": "Chat background image",
+  "resetSettings": "Reset all settings",
+  "resetAllSettings": "Reset all customizations"
 }
