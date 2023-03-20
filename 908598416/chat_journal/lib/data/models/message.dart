@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../constants/constants.dart';
+import '../constants/firestore_constants.dart';
 
 class Message {
   final String chatId;
@@ -9,13 +9,12 @@ class Message {
   final int type;
   final bool isPinned;
 
-  Message({
-    required this.chatId,
-    required this.timestamp,
-    required this.content,
-    required this.type,
-    required this.isPinned
-  });
+  Message(
+      {required this.chatId,
+      required this.timestamp,
+      required this.content,
+      required this.type,
+      required this.isPinned});
 
   Map<String, dynamic> toJson() {
     return {
@@ -33,6 +32,11 @@ class Message {
     final String content = doc.get(FirestoreConstants.content);
     final int type = doc.get(FirestoreConstants.type);
     final bool isPinned = doc.get(FirestoreConstants.isPinned);
-    return Message(chatId: chatId, timestamp: timestamp, content: content, type: type, isPinned: isPinned);
+    return Message(
+        chatId: chatId,
+        timestamp: timestamp,
+        content: content,
+        type: type,
+        isPinned: isPinned);
   }
 }

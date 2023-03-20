@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/color_constants.dart';
+import '/../data/constants/color_constants.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override

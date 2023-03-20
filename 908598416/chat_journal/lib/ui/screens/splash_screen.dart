@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../constants/color_constants.dart';
-import '../providers/auth_provider.dart';
-import 'pages.dart';
+import '/../data/constants/color_constants.dart';
+import '/data/providers/auth_provider.dart';
+import '../../bloc/cubit/sign_in/sign_in_cubit.dart';
+import 'screens.dart';
 
 class SplashPage extends StatefulWidget {
   SplashPage({Key? key}) : super(key: key);
@@ -14,25 +15,10 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   @override
-  void initState() {
+  void initState(){
+    final _cubit = BlocProvider.of<SignInCubit>(context);
     super.initState();
-    Future.delayed(const Duration(seconds: 1), _checkSignedIn);
-  }
-
-  void _checkSignedIn() async {
-    final _authProvider = context.read<AuthProvider>();
-    final _isLoggedIn = await _authProvider.isLoggedIn();
-    if (_isLoggedIn) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-      return;
-    }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
+    Future.delayed(const Duration(milliseconds: 300),() => _cubit.checkSignedIn(context));
   }
 
   @override

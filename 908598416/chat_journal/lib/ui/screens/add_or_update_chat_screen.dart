@@ -1,54 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../constants/color_constants.dart';
-import '../constants/icons.dart';
-import '../providers/auth_provider.dart';
-import '../providers/chat_provider.dart';
+import '/data/constants/color_constants.dart';
+import '/data/constants/icons.dart';
+import '../../bloc/cubit/chats/chats_cubit.dart';
+import '../../bloc/cubit/sign_in/sign_in_cubit.dart';
 
-class AddChat extends StatefulWidget {
+class AddOrUpdateChat extends StatefulWidget {
   final bool isEdited;
   final String currentChatId;
   final String chatName;
+  final int icon;
 
-  AddChat(
+  AddOrUpdateChat(
       {required this.isEdited,
       required this.currentChatId,
-      required this.chatName});
+      required this.chatName,
+      required this.icon});
 
   @override
-  State<AddChat> createState() => _AddChat();
+  State<AddOrUpdateChat> createState() => _AddOrUpdateChat();
 }
 
-class _AddChat extends State<AddChat> {
-  late final AuthProvider _authProvider;
+class _AddOrUpdateChat extends State<AddOrUpdateChat> {
+  late final SignInCubit _authCubit;
+  late final ChatsCubit _chatCubit;
   late final TextEditingController _chatNameController;
-  late final ChatProvider _chatProvider;
   late final String _currentUserId;
   late int _selectedIcon = 0;
 
   @override
   void initState() {
     super.initState();
-    _authProvider = context.read<AuthProvider>();
-    _chatProvider = context.read<ChatProvider>();
-    _currentUserId = _authProvider.getUserFirebaseId()!;
+    if(widget.isEdited){
+      _selectedIcon = widget.icon;
+    }
+
+    _authCubit = BlocProvider.of<SignInCubit>(context);
+    _chatCubit = BlocProvider.of<ChatsCubit>(context);
+    _currentUserId = _authCubit.getUserFirebaseId()!;
     _chatNameController = TextEditingController();
     _chatNameController.text = widget.chatName;
-  }
-
-  void _addChat() {
-    final _name = _chatNameController.text.toString();
-    _chatProvider.addChat(_name, _currentUserId, _selectedIcon);
-    Navigator.pop(context);
-  }
-
-  void _editChat() {
-    final _name = _chatNameController.text.toString();
-    _chatProvider.updateChat(
-        _currentUserId, widget.currentChatId, _name, _selectedIcon);
-    Navigator.pop(context);
   }
 
   @override
@@ -105,10 +97,24 @@ class _AddChat extends State<AddChat> {
                 size: 40,
               ),
             ),
-            ElevatedButton.icon(
-                onPressed: () => widget.isEdited ? _editChat() : _addChat(),
-                label: const Text('add chat'),
-                icon: const Icon(Icons.add)),
+            widget.isEdited
+                ? ElevatedButton.icon(
+                    onPressed: () => _chatCubit.updateChat(
+                        context,
+                        _currentUserId,
+                        widget.currentChatId,
+                        _chatNameController.text.toString(),
+                        _selectedIcon),
+                    icon: const Icon(Icons.done),
+                    label: const Text('update chat'))
+                : ElevatedButton.icon(
+                    onPressed: () => _chatCubit.addChat(
+                        context,
+                        _chatNameController.text.toString(),
+                        _currentUserId,
+                        _selectedIcon),
+                    icon: const Icon(Icons.add),
+                    label: const Text('add chat')),
             Expanded(
               child: GridView.builder(
                 shrinkWrap: true,

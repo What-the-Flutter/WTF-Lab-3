@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
-import '../constants/app_constants.dart';
-import '../constants/color_constants.dart';
-import '../providers/auth_provider.dart';
+import '/../data/constants/app_constants.dart';
+import '/../data/constants/color_constants.dart';
+import '../../bloc/cubit/sign_in/sign_in_cubit.dart';
 import '../widgets/widgets.dart';
-import 'pages.dart';
+import 'screens.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -18,19 +18,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    final _authProvider = Provider.of<AuthProvider>(context);
-    switch (_authProvider.status) {
-      case Status.authenticateError:
-        Fluttertoast.showToast(msg: 'Sign in fail');
-        break;
-      case Status.authenticateCanceled:
-        Fluttertoast.showToast(msg: 'Sign in canceled');
-        break;
-      case Status.authenticated:
-        Fluttertoast.showToast(msg: 'Sign in success');
-        break;
-      default:
-        break;
+    final _authCubit = BlocProvider.of<SignInCubit>(context);
+    final _state = _authCubit.state;
+
+    if (_state is AuthenticateError) {
+      Fluttertoast.showToast(msg: 'Sign in fail');
+    } else if (_state is AuthenticateCanceled) {
+      Fluttertoast.showToast(msg: 'Sign in canceled');
+    } else if (_state is Authenticated) {
+      Fluttertoast.showToast(msg: 'Sign in success');
     }
     return Scaffold(
         appBar: AppBar(
@@ -45,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             Center(
               child: TextButton(
                 onPressed: () async {
-                  _authProvider.handleSignIn().then((isSuccess) {
+                  _authCubit.handleSignIn().then((isSuccess) {
                     if (isSuccess) {
                       Navigator.pushReplacement(
                         context,
@@ -56,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   }).catchError((error, stackTrace) {
                     Fluttertoast.showToast(msg: error.toString());
-                    _authProvider.handleException();
+                    _authCubit.handleException();
                   });
                 },
                 child: const Text(
@@ -81,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             // Loading
             Positioned(
-              child: _authProvider.status == Status.authenticating
+              child: _state is AuthenticationInProgress
                   ? LoadingView()
                   : const SizedBox.shrink(),
             ),

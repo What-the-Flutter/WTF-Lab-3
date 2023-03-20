@@ -5,13 +5,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:nested/nested.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'pages/splash_page.dart';
-import 'providers/providers.dart';
+import 'bloc/cubit/chats/chats_cubit.dart';
+import 'bloc/cubit/messages/messages_cubit.dart';
+import 'bloc/cubit/sign_in/sign_in_cubit.dart';
+import 'bloc/cubit/theme_cubit.dart';
+import 'data/providers/providers.dart';
+import 'ui/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,68 +33,40 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _multiProvider();
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(
+              create: (context) => SignInCubit(AuthProvider(
+                    firebaseAuth: FirebaseAuth.instance,
+                    googleSignIn: GoogleSignIn(),
+                    prefs: prefs,
+                    firebaseFirestore: firebaseFirestore,
+                  ))),
+          BlocProvider(
+              create: (context) => ChatsCubit(
+                    ChatProvider(
+                      firebaseFirestore: firebaseFirestore,
+                    ),
+                  )),
+          BlocProvider(
+              create: (context) => MessagesCubit(
+                    MessageProvider(
+                      prefs: prefs,
+                      firebaseFirestore: firebaseFirestore,
+                      firebaseStorage: firebaseStorage,
+                    ),
+                  )),
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
+          return MaterialApp(
+            title: 'Chat journal',
+            theme: state.theme,
+            debugShowCheckedModeBanner: false,
+            home: SplashPage(),
+          );
+        }));
+    //_multiProvider();
   }
 
-  MultiProvider _multiProvider() {
-    return MultiProvider(
-    providers: _providers(),
-    child: _changeNotifierProvider(),
-  );
-  }
-
-  ChangeNotifierProvider<ThemeProvider> _changeNotifierProvider() {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-          builder: (context, themeNotifier, child) {
-            return MaterialApp(
-              title: 'Chat journal',
-              theme: themeNotifier.isDark
-                  ? ThemeData(
-                brightness: Brightness.dark,
-              )
-                  : ThemeData(
-                  brightness: Brightness.light,
-                  primaryColor: Colors.green,
-                  primarySwatch: Colors.green
-              ),
-              debugShowCheckedModeBanner: false,
-              home: SplashPage(),
-            );
-          }),
-    );
-  }
-
-  List<SingleChildWidget> _providers() {
-    return [
-      ChangeNotifierProvider<AuthProvider>(
-        create: (_) => AuthProvider(
-          firebaseAuth: FirebaseAuth.instance,
-          googleSignIn: GoogleSignIn(),
-          prefs: prefs,
-          firebaseFirestore: firebaseFirestore,
-        ),
-      ),
-      Provider<SettingProvider>(
-        create: (_) => SettingProvider(
-          prefs: prefs,
-          firebaseFirestore: firebaseFirestore,
-          firebaseStorage: firebaseStorage,
-        ),
-      ),
-      Provider<HomeProvider>(
-        create: (_) => HomeProvider(
-          firebaseFirestore: firebaseFirestore,
-        ),
-      ),
-      Provider<ChatProvider>(
-        create: (_) => ChatProvider(
-          prefs: prefs,
-          firebaseFirestore: firebaseFirestore,
-          firebaseStorage: firebaseStorage,
-        ),
-      ),
-    ];
-  }
 }

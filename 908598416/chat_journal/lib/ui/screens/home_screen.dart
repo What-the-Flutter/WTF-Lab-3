@@ -4,21 +4,20 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
 
-import '../constants/icons.dart';
-import '/constants/app_constants.dart';
-import '/constants/constants.dart';
-import '/providers/providers.dart';
-import '/utils/utils.dart';
-import '../models/models.dart';
+import '/data/constants/constants.dart';
+import '/data/models/models.dart';
+import '../../bloc/cubit/chats/chats_cubit.dart';
+import '../../bloc/cubit/sign_in/sign_in_cubit.dart';
+import '../../bloc/cubit/theme_cubit.dart';
+import '../utils/utils.dart';
 import '../widgets/widgets.dart';
-import 'add_chat_page.dart';
-import 'chat_page.dart';
-import 'login_page.dart';
+import 'add_or_update_chat_screen.dart';
+import 'chat_screen.dart';
+import 'login_screen.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -33,18 +32,19 @@ class HomePageState extends State<HomePage> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final ScrollController _listScrollController = ScrollController();
 
   int _limit = 20;
+  String _textSearch = '';
   final int _limitIncrement = 20;
   final bool _isLoading = false;
 
-  late final AuthProvider _authProvider;
+  late final SignInCubit _authCubit;
+  late final ChatsCubit _chatsCubit;
+  late final ThemeCubit _themeCubit;
+
   late final String _currentUserId;
-  late final HomeProvider _homeProvider;
-  late final ChatProvider _chatProvider;
-  late final ThemeProvider _themeProvider;
+
   final Debouncer _searchDebouncer = Debouncer(milliseconds: 300);
   final StreamController<bool> _btnClearController = StreamController<bool>();
   final TextEditingController _searchBarTec = TextEditingController();
@@ -57,13 +57,12 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _authProvider = context.read<AuthProvider>();
-    _homeProvider = context.read<HomeProvider>();
-    _chatProvider = context.read<ChatProvider>();
-    _themeProvider = context.read<ThemeProvider>();
+    _authCubit = BlocProvider.of<SignInCubit>(context);
+    _chatsCubit = BlocProvider.of<ChatsCubit>(context);
+    _themeCubit = BlocProvider.of<ThemeCubit>(context);
 
-    if (_authProvider.getUserFirebaseId()?.isNotEmpty == true) {
-      _currentUserId = _authProvider.getUserFirebaseId()!;
+    if (_authCubit.getUserFirebaseId()?.isNotEmpty == true) {
+      _currentUserId = _authCubit.getUserFirebaseId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -77,88 +76,82 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, themeNotifier, child) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            AppConstants.homeTitle,
-            style: TextStyle(color: ColorConstants.primaryColor),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          AppConstants.homeTitle,
+          style: TextStyle(color: ColorConstants.primaryColor),
+        ),
+        centerTitle: true,
+        actions: <Widget>[_popupMenu()],
+      ),
+      bottomNavigationBar: BottomNavigation(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addListItem,
+        tooltip: 'Add new chat',
+        child: const Icon(Icons.add),
+      ),
+      body: SafeArea(
+        child: WillPopScope(
+          child: Stack(
+            children: <Widget>[
+              // List
+              Column(
+                children: [
+                  _searchBar(),
+                  Expanded(
+                    child: buildStreamBuilder(),
+                  ),
+                ],
+              ),
+              Positioned(
+                child: _isLoading ? LoadingView() : const SizedBox.shrink(),
+              )
+            ],
           ),
-          centerTitle: true,
-          actions: <Widget>[_popupMenu()],
+          onWillPop: _onBackPress,
         ),
-        bottomNavigationBar: BottomNavigation(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _addListItem,
-          tooltip: 'Add new chat',
-          child: const Icon(Icons.add),
-        ),
-        body: SafeArea(
-          child: WillPopScope(
-            child: Stack(
-              children: <Widget>[
-                // List
-                Column(
-                  children: [
-                    Expanded(
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: _homeProvider.getStreamFireStore(
-                            FirestoreConstants.pathChatsCollection,
-                            _limit,
-                            _currentUserId),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if ((snapshot.data?.docs.length ?? 0) > 0) {
-                              final chats = <Chat>[];
-                              for (var doc in snapshot.data!.docs) {
-                                final _chat = Chat.fromDocument(doc);
-                                chats.add(_chat);
-                              }
-                              chats.sort(_chatProvider.compare);
+      ),
+    );
+  }
 
-                              return ListView.builder(
-                                padding: const EdgeInsets.all(10),
-                                itemBuilder: (context, index) =>
-                                    _item(context, chats[index]),
-                                itemCount: snapshot.data?.docs.length,
-                                controller: _listScrollController,
-                              );
-                            } else {
-                              return const Center(
-                                child: Text('No chats'),
-                              );
-                            }
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: ColorConstants.themeColor,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+  StreamBuilder buildStreamBuilder() {
+    return StreamBuilder<QuerySnapshot>(
+      stream:
+          _chatsCubit.getStreamFireStore(_limit, _currentUserId, _textSearch),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if ((snapshot.data?.docs.length ?? 0) > 0) {
+            final chats = <Chat>[];
+            for (var doc in snapshot.data!.docs) {
+              final _chat = Chat.fromDocument(doc);
+              chats.add(_chat);
+            }
+            chats.sort(_chatsCubit.compare);
 
-                // Loading
-                Positioned(
-                  child: _isLoading ? LoadingView() : const SizedBox.shrink(),
-                )
-              ],
-            ),
-            onWillPop: _onBackPress,
-          ),
-        ),
-      );
-    });
+            return ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemBuilder: (context, index) => _item(context, chats[index]),
+              itemCount: snapshot.data?.docs.length,
+              controller: _listScrollController,
+            );
+          } else {
+            return const Center(
+              child: Text('No chats'),
+            );
+          }
+        } else {
+          return LoadingView();
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
     _btnClearController.close();
-    _authProvider.dispose();
+    _authCubit.dispose();
   }
 
   void _registerNotification() {
@@ -175,8 +168,7 @@ class HomePageState extends State<HomePage> {
     _firebaseMessaging.getToken().then((token) {
       print('push token: $token');
       if (token != null) {
-        _homeProvider.updateDataFirestore(FirestoreConstants.pathUserCollection,
-            _currentUserId, {'pushToken': token});
+        _chatsCubit.updateDataFirestore(_currentUserId, {'pushToken': token});
       }
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
@@ -235,22 +227,24 @@ class HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => AddChat(
+          builder: (context) => AddOrUpdateChat(
                 isEdited: false,
                 currentChatId: '',
                 chatName: '',
+                icon: 0,
               )),
     );
   }
 
-  void _editListItem(String currentChatId, String chatName) {
+  void _editListItem(String currentChatId, String chatName, int icon) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => AddChat(
+          builder: (context) => AddOrUpdateChat(
                 isEdited: true,
                 currentChatId: currentChatId,
                 chatName: chatName,
+                icon: icon,
               )),
     );
   }
@@ -353,7 +347,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> _handleSignOut() async {
-    _authProvider.handleSignOut();
+    _authCubit.handleSignOut();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginPage()),
       (route) => false,
@@ -573,17 +567,17 @@ class HomePageState extends State<HomePage> {
           );
         })) {
       case _ChatChoice.delete:
-        _chatProvider.deleteChat(_currentUserId, chat.chatId);
+        _chatsCubit.deleteChat(_currentUserId, chat.chatId);
         break;
       case _ChatChoice.pin:
-        _chatProvider.pinChat(_currentUserId, chat.chatId);
+        _chatsCubit.pinChat(_currentUserId, chat.chatId);
         break;
       case _ChatChoice.edit:
-        _editListItem(chat.chatId, chat.name);
+        _editListItem(chat.chatId, chat.name, chat.iconIndex);
         break;
       case _ChatChoice.info:
         try {
-          _chatProvider.getInfo(context, _currentUserId, chat.chatId);
+          _chatsCubit.getInfo(context, _currentUserId, chat.chatId);
         } catch (e) {
           print(e);
         }
@@ -594,8 +588,71 @@ class HomePageState extends State<HomePage> {
   }
 
   void _changeTheme() {
-    _themeProvider.switchTheme();
+    _themeCubit.toggleTheme();
+  }
+
+  Widget _searchBar() {
+    return Container(
+      height: 40,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.search, color: ColorConstants.greyColor, size: 20),
+          const SizedBox(width: 5),
+          Expanded(
+            child: TextFormField(
+              textInputAction: TextInputAction.search,
+              controller: _searchBarTec,
+              onChanged: (value) {
+                _searchDebouncer.run(() {
+                  if (value.isNotEmpty) {
+                    _btnClearController.add(true);
+                    setState(() {
+                      _textSearch = value;
+                    });
+                  } else {
+                    _btnClearController.add(false);
+                    setState(() {
+                      _textSearch = '';
+                    });
+                  }
+                });
+              },
+              decoration: const InputDecoration.collapsed(
+                hintText: 'Search for chat',
+                hintStyle:
+                    TextStyle(fontSize: 20, color: ColorConstants.greyColor),
+              ),
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+          StreamBuilder<bool>(
+              stream: _btnClearController.stream,
+              builder: (context, snapshot) {
+                return snapshot.data == true
+                    ? GestureDetector(
+                        onTap: () {
+                          _searchBarTec.clear();
+                          _btnClearController.add(false);
+                          setState(() {
+                            _textSearch = '';
+                          });
+                        },
+                        child: const Icon(Icons.clear_rounded,
+                            color: ColorConstants.greyColor, size: 20))
+                    : const SizedBox.shrink();
+              }),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: ColorConstants.greyColor2,
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+    );
   }
 }
 
 enum _ChatChoice { delete, edit, pin, info }
+

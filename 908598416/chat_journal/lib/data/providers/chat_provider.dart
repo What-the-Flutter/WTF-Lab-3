@@ -1,117 +1,41 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/constants.dart';
-import '../models/models.dart';
+import '../constants/firestore_constants.dart';
+import '../models/chat.dart';
 
 class ChatProvider {
-  final SharedPreferences prefs;
   final FirebaseFirestore firebaseFirestore;
-  final FirebaseStorage firebaseStorage;
 
-  ChatProvider(
-      {required this.firebaseFirestore,
-      required this.prefs,
-      required this.firebaseStorage});
+  ChatProvider({required this.firebaseFirestore});
 
-  UploadTask uploadFile(File image, String fileName) {
-    final _reference = firebaseStorage.ref().child(fileName);
-    final _uploadTask = _reference.putFile(image);
-    return _uploadTask;
-  }
-
-  Future<void> updateDataFirestore(String collectionPath, String docPath,
-      Map<String, dynamic> dataNeedUpdate) {
+  Future<void> updateDataFirestore(
+      String collectionPath, String path, Map<String, String> dataNeedUpdate) {
     return firebaseFirestore
         .collection(collectionPath)
-        .doc(docPath)
+        .doc(path)
         .update(dataNeedUpdate);
   }
 
-  Future<void> updateMessage(
-      String currentUserId, String chatId, String id, String text) async {
-    final DocumentReference documentReferencer = firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .doc(currentUserId)
-        .collection(chatId)
-        .doc(id);
+  Stream<QuerySnapshot> getStreamFireStore(
+      String pathCollection, int limit, String userId, String? search) {
 
-    final _data = <String, dynamic>{'content': text};
-
-    await documentReferencer
-        .update(_data)
-        .whenComplete(() => print('Сообщение успешно обновлено'))
-        .catchError(print);
-  }
-
-  Future<void> pinMessage(
-      String currentUserId, String chatId, String id, bool isPinned) async {
-    final DocumentReference _documentReferencer = firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .doc(currentUserId)
-        .collection(chatId)
-        .doc(id);
-
-    final _data = <String, dynamic>{FirestoreConstants.isPinned: !isPinned};
-
-    await _documentReferencer
-        .update(_data)
-        .whenComplete(() => print(isPinned
-            ? 'Сообщение успешно откреплено'
-            : 'Сообщение успешно закреплено'))
-        .catchError(print);
-  }
-
-  Future<void> deleteMessage(
-      String currentUserId, String chatId, String id) async {
-    final DocumentReference _documentReferencer = firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .doc(currentUserId)
-        .collection(chatId)
-        .doc(id);
-
-    await _documentReferencer
-        .delete()
-        .whenComplete(() => print('сообщение удалено!'))
-        .catchError(print);
-  }
-
-  Stream<QuerySnapshot> getChatStream(
-      String currentUserId, String chatId, int limit) {
-    return firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .doc(currentUserId)
-        .collection(chatId)
-        .orderBy(FirestoreConstants.timestamp, descending: true)
-        .limit(limit)
-        .snapshots();
-  }
-
-  void sendMessage(
-      String content, int type, String chatId, String currentUserId) {
-    final DocumentReference _documentReference = firebaseFirestore
-        .collection(FirestoreConstants.pathMessageCollection)
-        .doc(currentUserId)
-        .collection(chatId)
-        .doc(DateTime.now().millisecondsSinceEpoch.toString());
-
-    final _messageChat = Message(
-        chatId: chatId,
-        timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
-        content: content,
-        type: type,
-        isPinned: false);
-
-    FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(
-        _documentReference,
-        _messageChat.toJson(),
-      );
-    });
+    if(search?.isNotEmpty == true){
+      return firebaseFirestore
+          .collection(pathCollection)
+          .doc(userId)
+          .collection(userId)
+          .limit(limit)
+          .where(FirestoreConstants.name, isEqualTo: search)
+          .snapshots();
+    }else{
+      return firebaseFirestore
+          .collection(pathCollection)
+          .doc(userId)
+          .collection(userId)
+          .limit(limit)
+          .snapshots();
+    }
   }
 
   void addChat(String name, String currentUserId, int iconIndex) {
@@ -196,7 +120,7 @@ class ChatProvider {
     await _documentReferencer
         .update(_data)
         .whenComplete(() =>
-            print(isPinned ? 'Чат успешно откреплен' : 'Чат успешно закреплен'))
+        print(isPinned ? 'Чат успешно откреплен' : 'Чат успешно закреплен'))
         .catchError(print);
   }
 
@@ -239,9 +163,4 @@ class ChatProvider {
     }
     return 0;
   }
-}
-
-class TypeMessage {
-  static const text = 0;
-  static const image = 1;
 }
