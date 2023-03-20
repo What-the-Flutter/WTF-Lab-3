@@ -5,11 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../../../core/data/repository/security/security_repository.dart';
 import '../../../../core/util/resources/dimensions.dart';
 import '../../../../core/util/resources/icons.dart';
-import '../../../../core/util/typedefs.dart';
 import '../../../cubit/settings/security_cubit.dart';
 import '../../../page/safety/safety_biometric_page.dart';
 import '../../../start_screen.dart';
-import '../../safety/safety_body/safety_biometric_body.dart';
 import '../../theme/theme_scope.dart';
 
 class PasscodeNumbers extends StatelessWidget {
@@ -171,7 +169,7 @@ class _CodeRow extends StatelessWidget {
 
 class _CodeButton extends StatelessWidget {
   final Widget content;
-  final Callback action;
+  final VoidCallback action;
 
   const _CodeButton({
     super.key,
