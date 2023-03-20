@@ -1,62 +1,33 @@
 {
   "project_info": {
-    "project_number": "959830848159",
-    "project_id": "chatjournal-d8c56",
-    "storage_bucket": "chatjournal-d8c56.appspot.com"
+    "project_number": "165493054205",
+    "project_id": "coolchatjournal",
+    "storage_bucket": "coolchatjournal.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:959830848159:android:74400d0637ef515cb928aa",
+        "mobilesdk_app_id": "1:165493054205:android:6166465164c35178d7bc94",
         "android_client_info": {
           "package_name": "com.example.cool_chat_journal"
         }
       },
       "oauth_client": [
         {
-          "client_id": "959830848159-j9sq21081792q9ucri16i8l354odhdjo.apps.googleusercontent.com",
+          "client_id": "165493054205-j579475vh5cnrltc7im0isfnt3spk52u.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA_IPxGBXV_ixanITRHfFDc8-fmS2uo78Y"
+          "current_key": "AIzaSyCg89KWVzYdyMSDFe6q-wAkBj8N8w2P4lI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "959830848159-j9sq21081792q9ucri16i8l354odhdjo.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:959830848159:android:05017a3d5befff1fb928aa",
-        "android_client_info": {
-          "package_name": "com.wtflab.coolchatjournal"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "959830848159-j9sq21081792q9ucri16i8l354odhdjo.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA_IPxGBXV_ixanITRHfFDc8-fmS2uo78Y"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "959830848159-j9sq21081792q9ucri16i8l354odhdjo.apps.googleusercontent.com",
+              "client_id": "165493054205-j579475vh5cnrltc7im0isfnt3spk52u.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

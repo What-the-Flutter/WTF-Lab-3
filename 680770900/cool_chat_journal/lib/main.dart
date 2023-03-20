@@ -1,5 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'app.dart';
@@ -12,7 +12,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final user = await FirebaseAuth.instance.signInAnonymously();
+  final userCredential = await FirebaseAuth.instance.signInAnonymously();
 
-  runApp(const CoolChatJournalApp());
+  runApp(CoolChatJournalApp(user: userCredential.user));
 }

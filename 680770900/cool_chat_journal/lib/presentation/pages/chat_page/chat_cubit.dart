@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
 import '../../../data/models/models.dart';
@@ -9,20 +10,20 @@ import '../../../data/repository/events_repository.dart';
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final _eventsRepository = EventsRepository();
+  final EventsRepository _eventsRepository;
   final _categoriesRepository = CategoriesRepository();
 
-  ChatCubit() : super(const ChatState(chatId: '-'));
+  ChatCubit({required User? user})
+    : _eventsRepository = EventsRepository(user: user), 
+      super(const ChatState(chatId: '-'));
 
   void updateEvents() async {
     if (!state.status.isLoading) {
       emit(state.copyWith(status: ChatStatus.loading));
 
-      final allEvents = await _eventsRepository.loadEvents();
-      final events = allEvents
-        .where((event) => event.chatId == state.chatId)
-        .toList();
-
+      final events = await _eventsRepository.readEvents(state.chatId);
+      events.sort((a, b) => a.changeTime.compareTo(b.changeTime));
+      
       emit(
         state.copyWith(   
           events: events,
@@ -43,8 +44,8 @@ class ChatCubit extends Cubit<ChatState> {
     updateEvents();
   }
   
-  void deleteEvent(String eventId) async {
-    await _eventsRepository.deleteEvent(eventId);
+  void deleteEvent(Event event) async {
+    await _eventsRepository.deleteEvent(event);
     updateEvents();
   }
 
@@ -55,7 +56,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void deleteSelectedEvents() {
     for (final eventId in state.selectedEventsIds) {
-      deleteEvent(eventId);
+      deleteEvent(state.events.firstWhere((e) => e.id == eventId));
     }
   }
 

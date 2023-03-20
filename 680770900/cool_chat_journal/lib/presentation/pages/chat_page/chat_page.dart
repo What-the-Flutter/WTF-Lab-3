@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,11 +13,13 @@ import 'widgets/event_view.dart';
 class ChatPage extends StatelessWidget {
   final String chatId;
   final String chatName;
+  final User? user;
 
   const ChatPage._({
     super.key,
     required this.chatId,
     required this.chatName,
+    required this.user,
   });
 
   static Route<void> route({
@@ -24,6 +27,7 @@ class ChatPage extends StatelessWidget {
     required HomeCubit homeCubit,
     required String chatId,
     required String chatName,
+    required User? user,
   }) {
     return MaterialPageRoute(
       builder: (_) => BlocProvider.value(
@@ -32,6 +36,7 @@ class ChatPage extends StatelessWidget {
           key: key,
           chatId: chatId,
           chatName: chatName,
+          user: user,
         ),
       ),
     );
@@ -40,7 +45,7 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatCubit(),
+      create: (_) => ChatCubit(user: user),
       child: ChatView(
         chatId: chatId,
         chatName: chatName,
@@ -324,7 +329,7 @@ class _ChatViewState extends State<ChatView> {
 
                     return false;
                   },
-                  onDismissed: (_) => cubit.deleteEvent(event.id),
+                  onDismissed: (_) => cubit.deleteEvent(event),
                 );
               });
         } else {

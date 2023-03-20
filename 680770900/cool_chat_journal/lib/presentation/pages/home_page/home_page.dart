@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,19 +9,28 @@ import 'home_cubit.dart';
 import 'widgets/manage_panel_dialog.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final User? user;
+  
+  const HomePage({
+    super.key,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HomeCubit(),
-      child: const HomePageView(),
+      create: (_) => HomeCubit(user: user),
+      child: HomePageView(user: user),
     );
   }
 }
 
 class HomePageView extends StatefulWidget {
-  const HomePageView();
+  final User? user;
+
+  const HomePageView({
+    required this.user,
+  });
 
   @override
   State<HomePageView> createState() => _HomePageViewState();
@@ -57,6 +67,7 @@ class _HomePageViewState extends State<HomePageView> {
             homeCubit: context.read<HomeCubit>(),
             chatId: chat.id,
             chatName: chat.name,
+            user: widget.user,
           ),
         ),
         child: ListTile(

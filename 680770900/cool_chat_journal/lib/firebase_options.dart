@@ -44,40 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCR9cPlsfDqG3_dda2VJVPNzaaGaNAZg9g',
-    appId: '1:959830848159:web:5d0e24f2e3f1d580b928aa',
-    messagingSenderId: '959830848159',
-    projectId: 'chatjournal-d8c56',
-    authDomain: 'chatjournal-d8c56.firebaseapp.com',
-    storageBucket: 'chatjournal-d8c56.appspot.com',
-    measurementId: 'G-B74XTLERL9',
+    apiKey: 'AIzaSyCMzkFzTU15jrvz7zYhev7XWN5ibMTrBlA',
+    appId: '1:165493054205:web:caf988d65f4ec2c1d7bc94',
+    messagingSenderId: '165493054205',
+    projectId: 'coolchatjournal',
+    authDomain: 'coolchatjournal.firebaseapp.com',
+    storageBucket: 'coolchatjournal.appspot.com',
+    measurementId: 'G-JEE8LKDT3H',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA_IPxGBXV_ixanITRHfFDc8-fmS2uo78Y',
-    appId: '1:959830848159:android:74400d0637ef515cb928aa',
-    messagingSenderId: '959830848159',
-    projectId: 'chatjournal-d8c56',
-    storageBucket: 'chatjournal-d8c56.appspot.com',
+    apiKey: 'AIzaSyCg89KWVzYdyMSDFe6q-wAkBj8N8w2P4lI',
+    appId: '1:165493054205:android:6166465164c35178d7bc94',
+    messagingSenderId: '165493054205',
+    projectId: 'coolchatjournal',
+    storageBucket: 'coolchatjournal.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCylzrS5_SawQec6dYkvtl-r27aynQqCX4',
-    appId: '1:959830848159:ios:e9f204c2f4823eaab928aa',
-    messagingSenderId: '959830848159',
-    projectId: 'chatjournal-d8c56',
-    storageBucket: 'chatjournal-d8c56.appspot.com',
-    iosClientId: '959830848159-rbgkm6t1lve16e24ae53n2f9244fajjg.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBMGrxFZg7K7bgwK4QaFjRMTyK-h7XZ6Lk',
+    appId: '1:165493054205:ios:5a3693cc196e6986d7bc94',
+    messagingSenderId: '165493054205',
+    projectId: 'coolchatjournal',
+    storageBucket: 'coolchatjournal.appspot.com',
+    iosClientId: '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
     iosBundleId: 'com.example.coolChatJournal',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCylzrS5_SawQec6dYkvtl-r27aynQqCX4',
-    appId: '1:959830848159:ios:e9f204c2f4823eaab928aa',
-    messagingSenderId: '959830848159',
-    projectId: 'chatjournal-d8c56',
-    storageBucket: 'chatjournal-d8c56.appspot.com',
-    iosClientId: '959830848159-rbgkm6t1lve16e24ae53n2f9244fajjg.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBMGrxFZg7K7bgwK4QaFjRMTyK-h7XZ6Lk',
+    appId: '1:165493054205:ios:5a3693cc196e6986d7bc94',
+    messagingSenderId: '165493054205',
+    projectId: 'coolchatjournal',
+    storageBucket: 'coolchatjournal.appspot.com',
+    iosClientId: '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
     iosBundleId: 'com.example.coolChatJournal',
   );
 }

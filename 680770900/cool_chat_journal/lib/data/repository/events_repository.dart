@@ -1,50 +1,61 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/models.dart';
-import '../provider/database_provider.dart';
+import '../provider/firebase_provider.dart';
 
 class EventsRepository {
-  final DatabaseProvider _dbProvider = DatabaseProvider();
+  final FirebaseProvider _firebaseProvider;
 
-  Future<List<Event>> loadEvents() async => _dbProvider.loadEvents();
+  EventsRepository({required User? user}) 
+    : _firebaseProvider = FirebaseProvider(user: user);
 
-  Future<void> addEvents(Iterable<Event> newEvents) async {
-    final events = await _dbProvider.loadEvents();
-    events.addAll(newEvents);
-    await _dbProvider.saveEvents(events);
+  Future<List<Event>> readEvents(String chatId) async {
+    final jsonEvents = await _firebaseProvider.read<Event>(
+      tableName: '${FirebaseProvider.eventsRoot}/$chatId',
+    );
+
+    return jsonEvents.map(Event.fromJson).toList();
   }
 
-  Future<void> updateEvents(Iterable<Event> newEvents) async {
-    final updatedEventsIds = newEvents.map((event) => event.id);
-
-    final oldEvents = await _dbProvider.loadEvents();
-    final events = oldEvents
-      .where((e) => !updatedEventsIds.contains(e.id)).toList();
-
-    events.addAll(newEvents);
-    await _dbProvider.saveEvents(events);
+  Future<void> addEvents(Iterable<Event> events) async {
+    for (final event in events) {
+      await addEvent(event);
+    }
   }
 
-  Future<void> addEvent(Event event) async {
-    final events = await _dbProvider.loadEvents();
-    events.add(event);
-    await _dbProvider.saveEvents(events);
+  Future<void> updateEvents(Iterable<Event> events) async {
+    for (final event in events) {
+      await updateEvent(event);
+    }
   }
 
-  Future<void> deleteEvent(String eventId) async {
-    final events = await _dbProvider.loadEvents();
-    await _dbProvider.saveEvents(events.where((event) => event.id != eventId));
-  }
+  Future<void> addEvent(Event event) async =>
+    await _firebaseProvider.add(
+      json: event.toJson(),
+      tableName: '${FirebaseProvider.eventsRoot}/${event.chatId}',
+    );
+
+  Future<void> deleteEvent(Event event) async =>
+    await _firebaseProvider.delete(
+      id: event.id,
+      tableName: '${FirebaseProvider.eventsRoot}/${event.chatId}',
+    );
 
   Future<void> updateEvent(Event event) async {
-    final oldEvents = await _dbProvider.loadEvents();
-    final events = oldEvents.where((e) => e.id != event.id).toList();
-    events.add(event);
-    await _dbProvider.saveEvents(events);
+    await _firebaseProvider.delete(
+      id: event.id,
+      tableName: '${FirebaseProvider.eventsRoot}/${event.chatId}',  
+    );
+    await _firebaseProvider.add(
+      json: event.toJson(),
+      tableName: '${FirebaseProvider.eventsRoot}/${event.chatId}',
+    );
   }
 
   Future<void> deleteEventsFromChat(String chatId) async {
-    final events = await _dbProvider.loadEvents();
-    await _dbProvider.saveEvents(
-      events.where((event) => event.chatId != chatId),
+     await _firebaseProvider.delete(
+      id: chatId,
+      tableName: FirebaseProvider.eventsRoot,
     );
   }
 }

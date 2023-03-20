@@ -1,21 +1,27 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../data/models/chat.dart';
 import '../../../data/repository/chats_repository.dart';
+import '../../../data/repository/events_repository.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final _chatsRepository = ChatsRepository();
+  final ChatsRepository _chatsRepository;
+  final EventsRepository _eventsRepository;
 
-  HomeCubit() : super(const HomeState());
+  HomeCubit({required User? user}) 
+    : _chatsRepository = ChatsRepository(user: user), 
+      _eventsRepository = EventsRepository(user: user),
+      super(const HomeState());
 
   void updateChats() async {
     if (!state.status.isLoading) {
       emit(state.copyWith(status: HomeStatus.loading));
 
-      final chats = await _chatsRepository.loadChats();
+      final chats = await _chatsRepository.readChats();
       _sortChats(chats);
 
       emit(
@@ -34,6 +40,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void deleteChat(String chatId) async {
     await _chatsRepository.deleteChat(chatId);
+    await _eventsRepository.deleteEventsFromChat(chatId);
     updateChats();
   }
 
@@ -43,7 +50,9 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void switchChatPinning(String id) async {
-    final chat = state.chats.firstWhere((chat) => chat.id == id);
+    final chats = await state.chats;
+    final chat = chats.firstWhere((chat) => chat.id == id);
+
     editChat(
       chat.copyWith(isPinned: !chat.isPinned),
     );
