@@ -10,16 +10,16 @@ class CustomTheme {
   final Color _iconColor;
   final Color _actionColor;
 
-  CustomTheme(
-      {required name,
-      required themeColor,
-      required auxiliaryColor,
-      required keyColor,
-      required backgroundColor,
-      required textColor,
-      required iconColor,
-      required actionColor})
-      : _name = name,
+  CustomTheme({
+    required name,
+    required themeColor,
+    required auxiliaryColor,
+    required keyColor,
+    required backgroundColor,
+    required textColor,
+    required iconColor,
+    required actionColor,
+  })  : _name = name,
         _themeColor = themeColor,
         _auxiliaryColor = auxiliaryColor,
         _keyColor = keyColor,

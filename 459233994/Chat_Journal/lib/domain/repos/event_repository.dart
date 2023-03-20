@@ -1,7 +1,7 @@
 import '../entities/event.dart';
 
 abstract class EventRepository{
-  Future<List<Event>> getEvents(int chatId);
+  Future<List<Event>> getEvents(String chatId);
 
   Future<void> insertEvent(Event event);
 

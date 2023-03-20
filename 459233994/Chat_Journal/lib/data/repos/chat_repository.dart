@@ -1,38 +1,43 @@
 import '../../domain/entities/chat.dart';
 import '../../domain/repos/chat_repository.dart';
 import '../entities/chat_dto.dart';
-import '../services/database_helper.dart';
+import '../services/database_service.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
-  final DatabaseHelper databaseHelper = DatabaseHelper.instance;
+  final DataBaseService dataBaseService = DataBaseService();
 
   @override
   Future<List<Chat>> getChats() async {
-    var raw = await databaseHelper.queryAllChats();
-    return raw.map((f) => ChatDTO.fromJSON(f).toModel()).toList();
+    final keys = <String>[];
+    final raw = await dataBaseService.queryAllChats(keys);
+    final chats = raw.map((chat) => ChatDTO.fromJSON(chat).toModel()).toList();
+    for (var i = 0; i < chats.length; i++) {
+      chats[i] = chats[i].copyWith(id: keys[i]);
+    }
+    return chats;
   }
 
   @override
   Future<void> insertChat(Chat chat) async {
-    var chatDTO = ChatDTO(
+    final chatDTO = ChatDTO(
       name: chat.name,
       createTime: chat.createTime,
       pageIcon: chat.pageIcon,
       isPinned: chat.isPinned,
     );
-    databaseHelper.insertChat(chatDTO.toJson());
+    dataBaseService.insertChat(chatDTO.toJson());
   }
 
   @override
   Future<void> changeChat(Chat chat) async {
-    var chatDTO = ChatDTO(
+    final chatDTO = ChatDTO(
       id: chat.id,
       name: chat.name,
       createTime: chat.createTime,
       pageIcon: chat.pageIcon,
       isPinned: chat.isPinned,
     );
-    databaseHelper.updateChat(
+    dataBaseService.updateChat(
       chat.id!,
       chatDTO.toJson(),
     );
@@ -40,6 +45,6 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<void> deleteChat(Chat chat) async {
-    databaseHelper.deleteChat(chat.id!);
+    dataBaseService.deleteChat(chat.id!);
   }
 }

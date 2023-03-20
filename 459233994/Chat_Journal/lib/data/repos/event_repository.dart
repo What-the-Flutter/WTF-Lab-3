@@ -1,34 +1,46 @@
+import 'dart:io';
+
 import '../../domain/entities/event.dart';
 import '../../domain/repos/event_repository.dart';
 import '../entities/event_dto.dart';
-import '../services/database_helper.dart';
+import '../services/database_service.dart';
 
 class EventRepositoryImpl extends EventRepository {
-  final DatabaseHelper databaseHelper = DatabaseHelper.instance;
+  final DataBaseService dataBaseService = DataBaseService();
 
   @override
-  Future<List<Event>> getEvents(int chatId) async {
-    var raw = await databaseHelper.queryAllEventsForChat(chatId);
-    return raw.map((f) => EventDTO.fromJSON(f).toModel()).toList();
+  Future<List<Event>> getEvents(String chatId) async {
+    final keys = <String>[];
+    final raw = await dataBaseService.queryAllEventsForChat(chatId, keys);
+    final events =
+        raw.map((event) => EventDTO.fromJSON(event).toModel()).toList();
+    for (var i = 0; i < events.length; i++) {
+      events[i] = events[i].copyWith(id: keys[i]);
+    }
+    return events;
   }
 
   @override
   Future<void> insertEvent(Event event) async {
-    var eventDTO = EventDTO(
+    String? fileUrl;
+    if (event.imageData != null){
+      fileUrl = await dataBaseService.loadImage(File(event.imageData!));
+    }
+    final eventDTO = EventDTO(
       chatId: event.chatId,
       createTime: event.createTime,
       isDone: event.isDone,
       isFavorite: event.isFavorite,
       textData: event.textData,
-      imageData: event.imageData,
+      imageData: fileUrl ?? event.imageData,
       category: event.category,
     );
-    databaseHelper.insertEvent(eventDTO.toJson());
+    dataBaseService.insertEvent(eventDTO.toJson());
   }
 
   @override
   Future<void> changeEvent(Event event) async {
-    var eventDTO = EventDTO(
+    final eventDTO = EventDTO(
       id: event.id,
       chatId: event.chatId,
       createTime: event.createTime,
@@ -38,7 +50,7 @@ class EventRepositoryImpl extends EventRepository {
       imageData: event.imageData,
       category: event.category,
     );
-    databaseHelper.updateEvent(
+    dataBaseService.updateEvent(
       event.id!,
       eventDTO.toJson(),
     );
@@ -46,6 +58,6 @@ class EventRepositoryImpl extends EventRepository {
 
   @override
   Future<void> deleteEvent(Event event) async {
-    databaseHelper.deleteEvent(event.id!);
+    dataBaseService.deleteEvent(event.id!);
   }
 }

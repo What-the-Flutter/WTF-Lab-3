@@ -1,15 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/event.dart';
 
 class EventDTO {
-  final int? id;
-  final int chatId;
+  final String? id;
+  final String chatId;
   final DateTime createTime;
   final String? textData;
-  final File? imageData;
+  final String? imageData;
   final IconData? category;
   final bool isDone;
   final bool isFavorite;
@@ -33,9 +31,9 @@ class EventDTO {
       isDone: json['is_done'] == 0 ? false : true,
       isFavorite: json['is_favorite'] == 0 ? false : true,
       textData: json['text_data'],
-      imageData: json['image_data'] == null ? null : File(json['image_data']),
+      imageData: json['image_data'],
       category: json['category'] == null ? null : IconData(
-        int.parse(json['category']),
+        json['category'],
         fontFamily: 'MaterialIcons',
       ),
     );
@@ -47,7 +45,7 @@ class EventDTO {
         'is_done': isDone ? 1 : 0,
         'is_favorite': isFavorite ? 1 : 0,
         'text_data': textData,
-        'image_data': imageData?.path,
+        'image_data': imageData,
         'category': category?.codePoint,
       };
 

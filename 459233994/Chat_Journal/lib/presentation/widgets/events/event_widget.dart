@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-
 import '../../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
-import '../app_theme/inherited_app_theme.dart';
+import '../app_theme/app_theme_cubit.dart';
 
 class EventWidget extends StatefulWidget {
   final Event _event;
 
   EventWidget({
     required event,
-  })  : _event = event;
+  }) : _event = event;
 
   @override
   State<EventWidget> createState() => _EventWidgetState(
@@ -25,11 +24,11 @@ class _EventWidgetState extends State<EventWidget> {
   double _leftPositionValue = 10;
   final DateFormat formatter = DateFormat('Hm');
   final GlobalKey _widgetKey = GlobalKey();
-  late BuildContext _buildContext;          //TODO check context
+  late BuildContext _buildContext; //TODO check context
 
   _EventWidgetState({
     required event,
-  })  : _event = event;
+  }) : _event = event;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +75,11 @@ class _EventWidgetState extends State<EventWidget> {
         constraints: const BoxConstraints(maxWidth: 300),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: InheritedAppTheme.of(context)?.getTheme.auxiliaryColor,
+          color: ReadContext(context)
+              .read<AppThemeCubit>()
+              .state
+              .customTheme
+              .auxiliaryColor,
         ),
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: Column(
@@ -87,7 +90,11 @@ class _EventWidgetState extends State<EventWidget> {
               _event.textData!,
               softWrap: true,
               style: TextStyle(
-                color: InheritedAppTheme.of(context)?.getTheme.textColor,
+                color: ReadContext(context)
+                    .read<AppThemeCubit>()
+                    .state
+                    .customTheme
+                    .textColor,
                 fontSize: 16,
               ),
             ),
@@ -99,7 +106,11 @@ class _EventWidgetState extends State<EventWidget> {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: InheritedAppTheme.of(context)?.getTheme.auxiliaryColor,
+          color: ReadContext(context)
+              .read<AppThemeCubit>()
+              .state
+              .customTheme
+              .auxiliaryColor,
         ),
         padding: const EdgeInsets.fromLTRB(5, 5, 5, 10),
         child: Column(
@@ -108,7 +119,7 @@ class _EventWidgetState extends State<EventWidget> {
             Container(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.file(
+                child: Image.network(
                   _event.imageData!,
                   fit: BoxFit.contain,
                 ),
@@ -141,7 +152,11 @@ class _EventWidgetState extends State<EventWidget> {
             Text(
               formatter.format(_event.createTime),
               style: TextStyle(
-                color: InheritedAppTheme.of(context)?.getTheme.textColor,
+                color: ReadContext(context)
+                    .read<AppThemeCubit>()
+                    .state
+                    .customTheme
+                    .textColor,
                 fontSize: 12,
               ),
             ),
@@ -153,7 +168,11 @@ class _EventWidgetState extends State<EventWidget> {
                   if (_event.isDone) {
                     return Icon(
                       Icons.check,
-                      color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+                      color: ReadContext(context)
+                          .read<AppThemeCubit>()
+                          .state
+                          .customTheme
+                          .iconColor,
                       size: 14,
                     );
                   } else {
@@ -168,7 +187,11 @@ class _EventWidgetState extends State<EventWidget> {
                 if (_event.isFavorite) {
                   return Icon(
                     Icons.bookmark,
-                    color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+                    color: ReadContext(context)
+                        .read<AppThemeCubit>()
+                        .state
+                        .customTheme
+                        .iconColor,
                     size: 14,
                   );
                 }
@@ -184,7 +207,11 @@ class _EventWidgetState extends State<EventWidget> {
     if (_event.category != null) {
       return Icon(
         _event.category,
-        color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+        color: ReadContext(context)
+            .read<AppThemeCubit>()
+            .state
+            .customTheme
+            .iconColor,
       );
     } else {
       return Container(
@@ -213,7 +240,7 @@ class _EventWidgetState extends State<EventWidget> {
       () {
         if (_leftPositionValue >
             MediaQuery.of(context).size.width - _getMessageWidth() - 10) {
-          var changedEvent = _event.isDone
+          final changedEvent = _event.isDone
               ? _event.updateDoneState(_event, false)
               : _event.updateDoneState(_event, true);
           ReadContext(context)
@@ -229,7 +256,7 @@ class _EventWidgetState extends State<EventWidget> {
 
   void _tapHandler() {
     setState(() {
-      var changedEvent = _event.isFavorite
+      final changedEvent = _event.isFavorite
           ? _event.updateFavoriteState(_event, false)
           : _event.updateFavoriteState(_event, true);
       ReadContext(context)

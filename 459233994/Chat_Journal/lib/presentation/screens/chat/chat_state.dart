@@ -1,17 +1,17 @@
-import '../../../data/repos/event_repository.dart';
 import '../../../domain/entities/chat.dart';
 
 class ChatState {
-  final EventRepositoryImpl eventRepository = EventRepositoryImpl();
   final Chat? chat;
   final bool isLoaded;
   final bool? isFavorite;
   final bool? isSearched;
+  final bool? isInputFilled;
 
   ChatState({
     this.chat,
     this.isFavorite,
     this.isSearched,
+    this.isInputFilled,
     required this.isLoaded,
   });
 
@@ -20,12 +20,14 @@ class ChatState {
     bool? isFavorite,
     bool? isSearched,
     bool? isLoaded,
+    bool? isInputFilled,
   }) {
     return ChatState(
       isLoaded: isLoaded ?? this.isLoaded,
       chat: chat ?? this.chat,
       isFavorite: isFavorite ?? this.isFavorite,
       isSearched: isSearched ?? this.isSearched,
+      isInputFilled: isInputFilled ?? this.isInputFilled,
     );
   }
 }

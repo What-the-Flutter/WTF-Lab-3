@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "481858581012",
+    "firebase_url": "https://chat-journal-a1d9a-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "chat-journal-a1d9a",
+    "storage_bucket": "chat-journal-a1d9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481858581012:android:5de3e70f2f08f6e2806d01",
+        "android_client_info": {
+          "package_name": "com.example.chat_journal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481858581012-3kl3la6f006c9dm4bmqsdpu5hi328qai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqa59EWV9rAHGQESDTB8D8-3GwJm8iY8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481858581012-3kl3la6f006c9dm4bmqsdpu5hi328qai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

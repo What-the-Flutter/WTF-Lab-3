@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
 import '../../screens/home/home_cubit.dart';
-import '../app_theme/inherited_app_theme.dart';
+import '../app_theme/app_theme_cubit.dart';
 import 'event_dialog_cubit.dart';
 import 'event_dialog_state.dart';
 
@@ -168,12 +168,12 @@ class _EventDialogState extends State<EventDialog> {
                 return ListTile(
                   leading: Icon(
                     chats[index].pageIcon,
-                    color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+                    color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
                   ),
                   title: Text(
                     chats[index].name,
                     style: TextStyle(
-                      color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+                      color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
                     ),
                   ),
                   onTap: () {
