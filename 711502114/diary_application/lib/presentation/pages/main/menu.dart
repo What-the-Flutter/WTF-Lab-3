@@ -27,16 +27,12 @@ class BottomMenu extends StatelessWidget {
         final cubit = context.read<MenuCubit>();
         final choosePage = cubit.choosePage;
 
-        if (!cubit.isAuthenticated) {
-          if (cubit.tryingUnlock) {
-            return const Text('Wait...');
-          } else {
-            const Text('Not authenticated!');
-          }
-        }
-
         return Scaffold(
-          body: Center(child: _pages[pageState.pageIndex]),
+          body: Center(
+            child: cubit.isAuthenticated
+                ? _pages[pageState.pageIndex]
+                : _showWaitLabel(local, cubit.tryingUnlock),
+          ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
@@ -63,5 +59,9 @@ class BottomMenu extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _showWaitLabel(AppLocalizations? local, bool tryToUnlock) {
+    return Text(tryToUnlock ? local?.wait ?? '' : local?.notAuth ?? '');
   }
 }

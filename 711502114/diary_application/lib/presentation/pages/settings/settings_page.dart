@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings_cubit.dart';
 import 'settings_state.dart';
@@ -9,45 +10,41 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Settings'),
-            centerTitle: true,
-          ),
-          body: _settingsBody(context, state),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)?.settings ?? ''),
+        centerTitle: true,
+      ),
+      body: _settingsBody(context),
     );
   }
 
-  Widget _settingsBody(BuildContext context, SettingsState state) {
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: ListView(
-        children: [
-          _theme(context, state),
-          _fingerPrint(context, state),
-        ],
+  Widget _settingsBody(BuildContext context) {
+    final local = AppLocalizations.of(context);
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) => Padding(
+        padding: const EdgeInsets.all(5),
+        child: ListView(
+          children: [
+            _theme(context, state, local),
+            _fingerPrint(context, state, local),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _theme(BuildContext context, SettingsState state) {
+  Widget _theme(
+      BuildContext context, SettingsState state, AppLocalizations? local) {
     return Column(
       children: [
         ListTile(
-          title: Text(
-            'Theme',
-          ),
+          title: Text(local?.theme ?? ''),
           leading: const Icon(
             Icons.invert_colors,
             size: 30,
           ),
-          subtitle: Text(
-            'Light / Dark',
-          ),
+          subtitle: Text(local?.themeState ?? ''),
           onTap: () {
             context.read<SettingsCubit>().changeTheme();
           },
@@ -56,17 +53,14 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget _fingerPrint(BuildContext context, SettingsState state) {
+  Widget _fingerPrint(
+      BuildContext context, SettingsState state, AppLocalizations? local) {
     return Column(
       children: [
         ListTile(
-          title: Text(
-            'Fingerprint',
-          ),
+          title: Text(local?.fingerPrint ?? ''),
           leading: const Icon(Icons.fingerprint),
-          subtitle: Text(
-            'Enable Fingerprint unlock',
-          ),
+          subtitle: Text(local?.enableFingerPrint ?? ''),
           trailing: Switch(
             value: state.isLocked,
             onChanged: (value) {

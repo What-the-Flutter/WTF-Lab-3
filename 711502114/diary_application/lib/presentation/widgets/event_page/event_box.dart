@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/category.dart';
 import '../../../domain/models/event.dart';
@@ -25,7 +26,7 @@ class EventBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final category = event.category;
-    final waitMessage = 'Wait please!';
+    final waitMessage = AppLocalizations.of(context)?.waitPls ?? '';
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
       child: Column(

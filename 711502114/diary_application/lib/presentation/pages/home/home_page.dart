@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../domain/models/chat.dart';
 import '../../../domain/utils/utils.dart';
@@ -66,12 +68,24 @@ class _HomePageState extends State<HomePage> {
   Drawer _buildDrawer(AppLocalizations? local, BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(child: Text('${DateTime.now()}')),
-          const ListTile(
-            title: Text('Help spread the word'),
-            leading: Icon(Icons.card_giftcard),
+          DrawerHeader(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                '${DateFormat('EEEE, dd MMM yyyy').format(DateTime.now())}',
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+          ListTile(
+            title: const Text('Help spread the word'),
+            leading: const Icon(Icons.card_giftcard),
+            onTap: () async {
+              final text =
+                  '''${local?.appShare}\n${local?.applicationProjectLink}''';
+              await Share.share(text);
+            },
           ),
           const ListTile(
             title: Text('Search'),
