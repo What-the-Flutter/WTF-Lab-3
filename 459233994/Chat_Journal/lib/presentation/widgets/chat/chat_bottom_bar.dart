@@ -1,17 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
-import '../app_theme/inherited_app_theme.dart';
-import 'chat_bottom_bar_cubit.dart';
-import 'chat_bottom_bar_state.dart';
+import '../../screens/chat/chat_state.dart';
+import '../app_theme/app_theme_cubit.dart';
 
 class ChatBottomBar extends StatefulWidget {
-  final int chatId;
+  final String chatId;
 
   ChatBottomBar({
     required this.chatId,
@@ -54,77 +51,84 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ChatBottomBarCubit>(
-      create: (context) => ChatBottomBarCubit(),
-      child: Column(
-        children: [
-          _selectableCategory(),
-          Row(
-            key: _globalKey,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Icon(
-                Icons.label,
-                color: InheritedAppTheme.of(context)!.getTheme.iconColor,
-              ),
-              Container(
-                width: 300,
-                padding: const EdgeInsets.all(10),
-                child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(15),
-                      ),
-                      borderSide: BorderSide(
-                        color:
-                            InheritedAppTheme.of(context)!.getTheme.textColor,
-                      ),
+    return Column(
+      children: [
+        _selectableCategory(),
+        Row(
+          key: _globalKey,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Icon(
+              Icons.label,
+              color: ReadContext(context)
+                  .read<AppThemeCubit>()
+                  .state
+                  .customTheme
+                  .iconColor,
+            ),
+            Container(
+              width: 300,
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(15),
                     ),
-                    hintText: 'Enter event',
+                    borderSide: BorderSide(
+                      color: ReadContext(context)
+                          .read<AppThemeCubit>()
+                          .state
+                          .customTheme
+                          .textColor,
+                    ),
                   ),
-                  onChanged: (value) {
-                    ReadContext(_globalKey.currentContext!)
-                        .read<ChatBottomBarCubit>()
-                        .changeState(value);
-                  },
+                  hintText: 'Enter event',
                 ),
+                onChanged: (value) {
+                  ReadContext(_globalKey.currentContext!)
+                      .read<ChatCubit>()
+                      .changeBottomBarState(value);
+                },
               ),
-              _sendIcon(),
-            ],
-          ),
-        ],
-      ),
+            ),
+            _sendIcon(),
+          ],
+        ),
+      ],
     );
   }
 
   void _getFromGallery(BuildContext context) async {
-    var pickedFile = await ImagePicker().pickImage(
+    final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 1800,
       maxHeight: 1800,
     );
     if (pickedFile != null) {
-      var imageFile = File(pickedFile.path);
       ReadContext(context).read<ChatCubit>().addEventToChat(
             Event(
               chatId: widget.chatId,
-              imageData: imageFile,
+              imageData: pickedFile.path,
             ),
           );
     }
   }
 
   Widget _sendIcon() {
-    return BlocBuilder<ChatBottomBarCubit, ChatBottomBarState>(
+    return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        if (state is ChatBottomBarFilled) {
+        if (state.isInputFilled == true) {
           return InkWell(
             child: Icon(
               Icons.send,
-              color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+              color: ReadContext(context)
+                  .read<AppThemeCubit>()
+                  .state
+                  .customTheme
+                  .iconColor,
             ),
             onTap: () {
               _pickedIcon == 0
@@ -142,8 +146,8 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                         ),
                       );
               ReadContext(_globalKey.currentContext!)
-                  .read<ChatBottomBarCubit>()
-                  .changeState('');
+                  .read<ChatCubit>()
+                  .changeBottomBarState('');
               _textController.clear();
               FocusManager.instance.primaryFocus?.unfocus();
             },
@@ -152,7 +156,11 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           return InkWell(
             child: Icon(
               Icons.add_a_photo,
-              color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+              color: ReadContext(context)
+                  .read<AppThemeCubit>()
+                  .state
+                  .customTheme
+                  .iconColor,
             ),
             onTap: () => _getFromGallery(context),
           );
@@ -162,9 +170,9 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
   }
 
   Widget _selectableCategory() {
-    return BlocBuilder<ChatBottomBarCubit, ChatBottomBarState>(
+    return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        if (state is ChatBottomBarFilled) {
+        if (state.isInputFilled == true) {
           return SizedBox(
             height: 40,
             child: ListView.builder(
@@ -207,7 +215,11 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                 alignment: Alignment.center,
                 child: Icon(
                   _icons[index],
-                  color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+                  color: ReadContext(context)
+                      .read<AppThemeCubit>()
+                      .state
+                      .customTheme
+                      .iconColor,
                   size: 36,
                 ),
               ),

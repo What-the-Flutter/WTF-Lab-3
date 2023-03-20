@@ -1,15 +1,28 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repos/event_repository.dart';
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/event.dart';
 import 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  ChatCubit() : super(ChatState(isLoaded: false));
+  final EventRepositoryImpl _eventRepository;
+
+  ChatCubit({required eventRepository})
+      : _eventRepository = eventRepository,
+        super(ChatState(isLoaded: false)) {
+    eventRepository.dataBaseService.databaseRef
+        .child(eventRepository.dataBaseService.fireBaseAuth.currentUser!.uid)
+        .child('events')
+        .onValue
+        .listen((event) {
+      updateChat();
+    });
+  }
 
   void loadChat(Chat chat) async {
     await Future<void>.delayed(const Duration(milliseconds: 50));
-    var events = await state.eventRepository.getEvents(chat.id!);
+    final events = await _eventRepository.getEvents(chat.id!);
     chat.events.clear();
     chat.events.addAll(events);
     emit(
@@ -18,25 +31,24 @@ class ChatCubit extends Cubit<ChatState> {
         isFavorite: false,
         isSearched: false,
         isLoaded: true,
+        isInputFilled: false,
       ),
     );
   }
 
   void updateChat() async {
-    var events = await state.eventRepository.getEvents(state.chat!.id!);
+    final events = await _eventRepository.getEvents(state.chat!.id!);
     state.chat?.events.clear();
     state.chat?.events.addAll(events);
     emit(state.copyWith());
   }
 
   void editEvent({required Event editedEvent}) {
-    state.eventRepository.changeEvent(editedEvent);
-    updateChat();
+    _eventRepository.changeEvent(editedEvent);
   }
 
-  void deleteEvent({required Event event}){
-    state.eventRepository.deleteEvent(event);
-    updateChat();
+  void deleteEvent({required Event event}) {
+    _eventRepository.deleteEvent(event);
   }
 
   void changeFavoriteState() {
@@ -51,20 +63,25 @@ class ChatCubit extends Cubit<ChatState> {
         : emit(state.copyWith(isSearched: true));
   }
 
+  void changeBottomBarState(String value) {
+    value.isNotEmpty
+        ? emit(state.copyWith(isInputFilled: true))
+        : emit(state.copyWith(isInputFilled: false));
+  }
+
   void addEventToChat(Event event) async {
-    await state.eventRepository.insertEvent(event);
-    updateChat();
+    await _eventRepository.insertEvent(event);
   }
 
   List<Event> getEvents() {
     return state.chat!.events;
   }
 
-  Event getEventById(int id) {
+  Event getEventById(String id) {
     return state.chat!.events.firstWhere((element) => element.id == id);
   }
 
-  Event getEventByIndex(int index){
+  Event getEventByIndex(int index) {
     return state.chat!.events[index];
   }
 }

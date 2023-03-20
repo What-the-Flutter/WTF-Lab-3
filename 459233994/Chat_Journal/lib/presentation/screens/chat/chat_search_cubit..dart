@@ -11,7 +11,7 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
   }
 
   Future<void> searchEvents(String event, List<Event> events) async {
-    var searchedEvents = await events.where(
+    final searchedEvents = await events.where(
       (element) =>
           (element.textData != null && element.textData!.contains(event)),
     );
