@@ -52,7 +52,7 @@ class EventsRepository {
     );
 
     if (event.image != null) {
-      await _storageProvider.uploadFromMemory(
+      await _storageProvider.upload(
         filename: '${event.chatId}/${event.id}',
         data: event.image!,
       );
@@ -72,7 +72,7 @@ class EventsRepository {
 
   Future<void> updateEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.uploadFromMemory(
+      await _storageProvider.upload(
         filename: '${event.chatId}/${event.id}',
         data: event.image!,
       );

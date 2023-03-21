@@ -5,10 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/event.dart';
 import '../home_page/home_cubit.dart';
 import 'chat_cubit.dart';
-import 'widgets/bottom_panel.dart';
-import 'widgets/dialogs.dart';
-import 'widgets/event_search_delegate.dart';
-import 'widgets/event_view.dart';
+import 'widgets/widgets.dart';
 
 class ChatPage extends StatelessWidget {
   final String chatId;
@@ -272,78 +269,71 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Widget _createEventsView() {
-    return BlocConsumer<ChatCubit, ChatState>(
-      listenWhen: (previous, current) => previous.events != current.events,
-      listener: (context, state) {
-        context.read<HomeCubit>().updateChats();
-      },
-      builder: (context, state) {
-        final events = _generateEventsList(state);
+    final cubit = context.read<ChatCubit>();
 
-        if (events.isNotEmpty) {
-          final cubit = context.read<ChatCubit>();
+    final events = _generateEventsList(cubit.state);
 
-          return ListView.builder(
-              reverse: true,
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                final viewIndex = events.length - index - 1;
-                final event = events[viewIndex];
+    if (events.isNotEmpty) {
+      return ListView.builder(
+        reverse: true,
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          final viewIndex = events.length - index - 1;
+          final event = events[viewIndex];
 
-                return Dismissible(
-                  background: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.all(15.0),
-                    child: const Icon(Icons.edit),
-                  ),
-                  secondaryBackground: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.all(15.0),
-                    child: const Icon(Icons.delete),
-                  ),
-                  key: ValueKey<int>(viewIndex),
-                  child: EventView(
-                    event: event,
-                    isSelected:
-                        cubit.state.selectedEventsIds.contains(event.id),
-                    onTap: () {
-                      if (cubit.state.selectedEventsIds.isNotEmpty) {
-                        cubit.switchSelectStatus(event.id);
-                      } else {
-                        cubit.switchEventFavorite(event.id);
-                      }
-                    },
-                    onLongPress: () => cubit.switchSelectStatus(event.id),
-                  ),
-                  confirmDismiss: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      return true;
-                    } else if (!cubit.state.isEditMode) {
-                      cubit.switchSelectStatus(widget.chatId);
-                      cubit.toggleEditMode();
-                    }
-
-                    return false;
-                  },
-                  onDismissed: (_) => cubit.deleteEvent(event),
-                );
-              });
-        } else {
-          return Align(
-            alignment: Alignment.topCenter,
-            child: Card(
-              child: ListTile(
-                title: Text(
-                  'This is the page where you can track '
-                  'everything about "${widget.chatName}"',
-                  textAlign: TextAlign.center,
-                ),
-              ),
+          return Dismissible(
+            background: Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(15.0),
+              child: const Icon(Icons.edit),
             ),
+            secondaryBackground: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.all(15.0),
+              child: const Icon(Icons.delete),
+            ),
+            key: ValueKey<int>(viewIndex),
+            child: EventView(
+              event: event,
+              isSelected:
+                  cubit.state.selectedEventsIds.contains(event.id),
+              onTap: () {
+                if (cubit.state.selectedEventsIds.isNotEmpty) {
+                  cubit.switchSelectStatus(event.id);
+                } else {
+                  cubit.switchEventFavorite(event.id);
+                }
+              },
+              onLongPress: () => cubit.switchSelectStatus(event.id),
+            ),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.endToStart) {
+                return true;
+              } else if (!cubit.state.isEditMode) {
+                cubit.switchSelectStatus(widget.chatId);
+                cubit.toggleEditMode();
+              }
+
+              return false;
+            },
+            onDismissed: (_) => cubit.deleteEvent(event),
           );
         }
-      },
-    );
+      );
+    } else {
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Card(
+          child: ListTile(
+            title: Text(
+              'This is the page where you can track '
+              'everything about "${widget.chatName}"',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   @override

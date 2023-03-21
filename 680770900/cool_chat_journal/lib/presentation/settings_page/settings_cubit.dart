@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,12 @@ part 'settings_state.dart';
 class SettingsCubit extends Cubit<SettingsState> {
   final _settingsRepository = SettingsRepository();
 
-  SettingsCubit() : super(SettingsState(themeData: ThemeKeyX.lightTheme));
+  SettingsCubit() 
+    : super(
+      SettingsState(
+        themeData: ThemeKeyX.lightTheme,
+      ),
+    );
 
   Future<void> initTheme() async {
     final themeKey = await _settingsRepository.updateTheme();

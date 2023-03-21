@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'presentation/pages/home_page/home_page.dart';
-import 'presentation/pages/settings_page/settings_cubit.dart';
+import 'presentation/home_page/home_page.dart';
+import 'presentation/settings_page/settings_cubit.dart';
 
 class CoolChatJournalApp extends StatefulWidget {
   final User? user;

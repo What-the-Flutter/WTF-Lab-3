@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/chat.dart';
 import '../chat_editor_page/chat_editor_page.dart';
 import '../chat_page/chat_page.dart';
-import '../settings_page/settigns_page.dart';
 import '../settings_page/settings_cubit.dart';
+import '../settings_page/settings_page.dart';
 import 'home_cubit.dart';
 import 'widgets/manage_panel_dialog.dart';
 
@@ -125,14 +125,17 @@ class _HomePageViewState extends State<HomePageView> {
         leading: IconButton(
           icon: const Icon(Icons.settings_outlined),
           onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const SettingsPage())),
+            context,
+            MaterialPageRoute(
+              builder: (_) => const SettingsPage(),
+            ),
+          ),
         ),
         title: const Text('Cool Chat Journal'),
         actions: [
           IconButton(
             icon: const Icon(Icons.color_lens_outlined),
-            onPressed: () async =>
-                await context.read<SettingsCubit>().switchTheme(),
+            onPressed: () => context.read<SettingsCubit>().switchTheme(),
           ),
         ],
       ),
@@ -158,14 +161,15 @@ class _HomePageViewState extends State<HomePageView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).push<void>(
-              ChatEditorPage.route(
-                homeCubit: context.read<HomeCubit>(),
-              ),
-            );
-          }),
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).push<void>(
+            ChatEditorPage.route(
+              homeCubit: context.read<HomeCubit>(),
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -1,10 +1,7 @@
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
 
 class StorageProvider {
   final User? user;
@@ -12,31 +9,13 @@ class StorageProvider {
 
   StorageProvider({required this.user});
 
-  Future<void> uploadFromFile({
-    required String filename,
-    required File file,
-    String directory = 'images',
-  }) async {
-    final ref = _storageInstance.ref('${user?.uid}/$directory/$filename');
-    await ref.putFile(file);
-  }
-
-  Future<void> uploadFromMemory({
+  Future<void> upload({
     required String filename,
     required Uint8List data,
     String directory = 'images',
   }) async {
     final ref = _storageInstance.ref('${user?.uid}/$directory/$filename');
     await ref.putData(data);
-  }
-
-  Future<void> uploadFromBase64({
-    required String filename,
-    required String base64,
-    String directory = 'images',
-  }) async {
-    final ref = _storageInstance.ref('${user?.uid}/$directory/$filename');
-    await ref.putString(base64);
   }
 
   Future<Uint8List> download({

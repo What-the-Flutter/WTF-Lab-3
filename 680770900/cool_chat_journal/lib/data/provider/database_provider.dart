@@ -16,28 +16,6 @@ class DatabaseProvider {
     required this.user,
   });
 
-  void _initConnection<T>({
-    required String refPath,
-    required StreamController<List<T>> streamController,
-    required T Function(JsonMap) fromJson,
-  }) {
-    final ref = FirebaseDatabase.instance.ref(refPath);
-    ref.onValue.listen((event) {
-      var values = <T>[];
-
-      for (final firebaseObject in event.snapshot.children) {
-        final rawData = firebaseObject.value as Map<dynamic, dynamic>;
-        final json =
-            rawData.map((key, value) => MapEntry(key.toString(), value));
-
-        print('INFO: json $json');
-        values.add(fromJson(json));
-      }
-
-      streamController.add(values);
-    });
-  }
-
   Future<List<JsonMap>> read<T>({
     required String tableName,
   }) async {

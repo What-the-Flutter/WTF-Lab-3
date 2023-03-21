@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/chat.dart';
 import '../home_page/home_cubit.dart';
 import 'chat_editor_cubit.dart';
-import 'widget/chat_icons.dart';
+import 'widgets/chat_icons.dart';
 
 class ChatEditorPage extends StatelessWidget {
   final Chat? sourceChat;
@@ -48,10 +48,11 @@ class _ChatEditorView extends StatelessWidget {
   });
 
   void _saveChat(BuildContext context) {
-    final title = context.read<ChatEditorCubit>().state.title;
+    final chatEditorCubit = context.read<ChatEditorCubit>();
+    final title = chatEditorCubit.state.title;
+
     if (title.isNotEmpty) {
-      final chatsCubit = context.read<HomeCubit>();
-      final iconIndex = context.read<ChatEditorCubit>().state.iconIndex;
+      final iconIndex = chatEditorCubit.state.iconIndex;
       final chat = Chat(
         id: sourceChat?.id,
         iconCode: ChatIcons.icons[iconIndex].codePoint,
@@ -60,6 +61,7 @@ class _ChatEditorView extends StatelessWidget {
         isPinned: false,
       );
 
+      final chatsCubit = context.read<HomeCubit>();
       if (sourceChat != null) {
         chatsCubit.editChat(chat);
       } else {
@@ -93,9 +95,11 @@ class _ChatEditorView extends StatelessWidget {
   }
 
   Widget _createTitleField(BuildContext context) {
+    final cubit = context.read<ChatEditorCubit>();
+
     final initialValue = sourceChat?.name;
     if (initialValue != null) {
-      context.read<ChatEditorCubit>().changeTitle(initialValue);
+      cubit.changeTitle(initialValue);
     }
 
     return Padding(
@@ -108,8 +112,7 @@ class _ChatEditorView extends StatelessWidget {
             borderSide: BorderSide(width: 3),
           ),
         ),
-        onChanged: (value) =>
-            context.read<ChatEditorCubit>().changeTitle(value),
+        onChanged: cubit.changeTitle,
       ),
     );
   }
