@@ -16,12 +16,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> initTheme() async {
     final themeKey = await _settingsRepository.updateTheme();
 
-    emit(
-      state.copyWith(
-        themeKey: themeKey,
-        themeData: themeKey.themeData,
-      )
-    );
+    emit(state.copyWith(
+      themeKey: themeKey,
+      themeData: themeKey.themeData,
+    ));
   }
 
   Future<void> switchTheme() async {
@@ -37,11 +35,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     await _settingsRepository.saveTheme(themeKey);
 
-    emit(
-      state.copyWith(
-        themeKey: themeKey,
-        themeData: themeKey.themeData,
-      )
-    );
+    emit(state.copyWith(
+      themeKey: themeKey,
+      themeData: themeKey.themeData,
+    ));
   }
 }

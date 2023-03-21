@@ -12,7 +12,7 @@ import 'widgets/manage_panel_dialog.dart';
 
 class HomePage extends StatelessWidget {
   final User? user;
-  
+
   const HomePage({
     super.key,
     required this.user,
@@ -110,7 +110,7 @@ class _HomePageViewState extends State<HomePageView> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().updateChats();
-    
+
     final settingsCubit = context.read<SettingsCubit>();
 
     if (!settingsCubit.state.isInit) {
@@ -125,16 +125,14 @@ class _HomePageViewState extends State<HomePageView> {
         leading: IconButton(
           icon: const Icon(Icons.settings_outlined),
           onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SettingsPage())
-          ),
+              context, MaterialPageRoute(builder: (_) => const SettingsPage())),
         ),
         title: const Text('Cool Chat Journal'),
         actions: [
           IconButton(
             icon: const Icon(Icons.color_lens_outlined),
-            onPressed: () async => 
-              await context.read<SettingsCubit>().switchTheme(),
+            onPressed: () async =>
+                await context.read<SettingsCubit>().switchTheme(),
           ),
         ],
       ),
@@ -144,13 +142,13 @@ class _HomePageViewState extends State<HomePageView> {
             context.read<HomeCubit>().updateChats();
           }
         },
-        builder:(context, state) {
+        builder: (context, state) {
           if (state.status.isSuccess) {
             final chats = state.chats;
             return ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) =>
-                _createChatCard(context, chats[index]),
+                  _createChatCard(context, chats[index]),
             );
           } else if (state.status.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -160,15 +158,14 @@ class _HomePageViewState extends State<HomePageView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push<void>(
-            ChatEditorPage.route(
-              homeCubit: context.read<HomeCubit>(),
-            ),
-          );
-        }
-      ),
+          child: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.of(context).push<void>(
+              ChatEditorPage.route(
+                homeCubit: context.read<HomeCubit>(),
+              ),
+            );
+          }),
     );
   }
 }

@@ -69,14 +69,13 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-
-   bool _isHasImage(BuildContext context) {
+  bool _isHasImage(BuildContext context) {
     final state = context.read<ChatCubit>().state;
 
     return state.events
         .where(
-          (event) => 
-            state.selectedEventsIds.contains(event.id) && event.image != null,
+          (event) =>
+              state.selectedEventsIds.contains(event.id) && event.image != null,
         )
         .isNotEmpty;
   }
@@ -114,8 +113,7 @@ class _ChatViewState extends State<ChatView> {
     final cubit = context.read<ChatCubit>();
     final value = await showModalBottomSheet<bool>(
       context: context,
-      builder: (context) =>
-          DeleteDialog(cubit.state.selectedEventsIds.length),
+      builder: (context) => DeleteDialog(cubit.state.selectedEventsIds.length),
     );
 
     if (value == true) {
@@ -275,8 +273,7 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _createEventsView() {
     return BlocConsumer<ChatCubit, ChatState>(
-      listenWhen: (previous, current) =>
-          previous.events != current.events,
+      listenWhen: (previous, current) => previous.events != current.events,
       listener: (context, state) {
         context.read<HomeCubit>().updateChats();
       },
@@ -316,8 +313,7 @@ class _ChatViewState extends State<ChatView> {
                         cubit.switchEventFavorite(event.id);
                       }
                     },
-                    onLongPress: () => 
-                      cubit.switchSelectStatus(event.id),
+                    onLongPress: () => cubit.switchSelectStatus(event.id),
                   ),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
@@ -360,15 +356,26 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
-      return Scaffold(
-        appBar: AppBar(
-          leading: _createAppBarLeading(context),
-          title: _createAppBarTitle(context),
-          actions: _createActions(context),
-        ),
-        body: _createScaffoldBody(context),
-      );
-    });
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        final Widget body;
+        if (state.status.isSuccess) {
+          body = _createScaffoldBody(context);
+        } else if (state.status.isFailure) {
+          body = const Center(child: Text('Oops! Something wrong.'));
+        } else {
+          body = const Center(child: CircularProgressIndicator());
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            leading: _createAppBarLeading(context),
+            title: _createAppBarTitle(context),
+            actions: _createActions(context),
+          ),
+          body: body,
+        );
+      },
+    );
   }
 }

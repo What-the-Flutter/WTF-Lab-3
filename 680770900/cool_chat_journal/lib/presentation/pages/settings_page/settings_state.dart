@@ -1,9 +1,7 @@
 part of 'settings_cubit.dart';
 
 extension ThemeKeyX on ThemeKey {
-  ThemeData get themeData => this == ThemeKey.light 
-    ? lightTheme
-    : darkTheme;
+  ThemeData get themeData => this == ThemeKey.light ? lightTheme : darkTheme;
 
   static final lightTheme = FlexThemeData.light(
     useMaterial3: true,
@@ -32,14 +30,13 @@ class SettingsState extends Equatable {
     bool? isInit,
     ThemeKey? themeKey,
     ThemeData? themeData,
-  }) => SettingsState(
-    isInit: isInit ?? this.isInit,
-    themeKey: themeKey ?? this.themeKey,
-    themeData: themeData ?? this.themeData,
-  );
+  }) =>
+      SettingsState(
+        isInit: isInit ?? this.isInit,
+        themeKey: themeKey ?? this.themeKey,
+        themeData: themeData ?? this.themeData,
+      );
 
   @override
   List<Object> get props => [themeKey, themeData, isInit];
 }
-
-

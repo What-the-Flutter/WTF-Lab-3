@@ -38,7 +38,7 @@ class Event {
 
   factory Event.fromJson(JsonMap json) => _$EventFromJson(json);
 
-  JsonMap toJson() => _$EventToJson(this); 
+  JsonMap toJson() => _$EventToJson(this);
 
   Event copyWith({
     String? id,
@@ -48,19 +48,14 @@ class Event {
     DateTime? changeTime,
     String? chatId,
     NullWrapper<String?>? categoryId,
-  }) => Event(
-    id: id ?? this.id,
-    isFavorite: isFavorite ?? this.isFavorite,
-    changeTime: changeTime ?? this.changeTime,
-    chatId: chatId ?? this.chatId,
-    content: content != null
-      ? content.value
-      : this.content,
-    image: image != null 
-      ? image.value
-      : this.image,
-    categoryId: categoryId != null 
-      ? categoryId.value
-      : this.categoryId,
-  );
+  }) =>
+      Event(
+        id: id ?? this.id,
+        isFavorite: isFavorite ?? this.isFavorite,
+        changeTime: changeTime ?? this.changeTime,
+        chatId: chatId ?? this.chatId,
+        content: content != null ? content.value : this.content,
+        image: image != null ? image.value : this.image,
+        categoryId: categoryId != null ? categoryId.value : this.categoryId,
+      );
 }

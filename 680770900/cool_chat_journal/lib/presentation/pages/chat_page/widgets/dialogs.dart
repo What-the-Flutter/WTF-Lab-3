@@ -85,8 +85,11 @@ class _TransferDialogState extends State<TransferDialog> {
                   itemBuilder: (context, index) {
                     return RadioListTile(
                       title: Text(widget.chats[index].name),
-                      activeColor: context.read<SettingsCubit>()
-                        .state.themeData.backgroundColor,
+                      activeColor: context
+                          .read<SettingsCubit>()
+                          .state
+                          .themeData
+                          .backgroundColor,
                       value: widget.chats[index].id,
                       groupValue: _selectedChat,
                       onChanged: (value) => setState(
@@ -102,8 +105,11 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: context.read<SettingsCubit>()
-                        .state.themeData.backgroundColor,
+                      color: context
+                          .read<SettingsCubit>()
+                          .state
+                          .themeData
+                          .backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('OK'),
@@ -113,8 +119,11 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: context.read<SettingsCubit>()
-                        .state.themeData.backgroundColor,
+                      color: context
+                          .read<SettingsCubit>()
+                          .state
+                          .themeData
+                          .backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('Cancel'),

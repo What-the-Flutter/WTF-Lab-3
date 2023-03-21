@@ -67,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '165493054205',
     projectId: 'coolchatjournal',
     storageBucket: 'coolchatjournal.appspot.com',
-    iosClientId: '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
+    iosClientId:
+        '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
     iosBundleId: 'com.example.coolChatJournal',
   );
 
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '165493054205',
     projectId: 'coolchatjournal',
     storageBucket: 'coolchatjournal.appspot.com',
-    iosClientId: '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
+    iosClientId:
+        '165493054205-ip7cu4u85nngc6oi2plo1ilt6mo58h1n.apps.googleusercontent.com',
     iosBundleId: 'com.example.coolChatJournal',
   );
 }

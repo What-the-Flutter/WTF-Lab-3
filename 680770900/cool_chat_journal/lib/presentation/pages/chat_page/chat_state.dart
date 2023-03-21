@@ -48,30 +48,31 @@ class ChatState extends Equatable {
     bool? showCategories,
     NullPropertyWrapper<String?>? selectedCategoryId,
     ChatStatus? status,
-  }) => ChatState(
-    chatId: chatId ?? this.chatId,
-    events: events ?? this.events,
-    isEditMode: isEditMode ?? this.isEditMode,
-    isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
-    selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
-    categories: categories ?? this.categories,
-    showCategories: showCategories ?? this.showCategories,
-    status: status ?? this.status,
-    selectedCategoryId: selectedCategoryId != null
-        ? selectedCategoryId.value
-        : this.selectedCategoryId,
-  );
+  }) =>
+      ChatState(
+        chatId: chatId ?? this.chatId,
+        events: events ?? this.events,
+        isEditMode: isEditMode ?? this.isEditMode,
+        isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
+        selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
+        categories: categories ?? this.categories,
+        showCategories: showCategories ?? this.showCategories,
+        status: status ?? this.status,
+        selectedCategoryId: selectedCategoryId != null
+            ? selectedCategoryId.value
+            : this.selectedCategoryId,
+      );
 
   @override
   List<Object?> get props => [
-    chatId,
-    events,
-    isEditMode,
-    isFavoriteMode,
-    selectedEventsIds,
-    categories,
-    showCategories,
-    selectedCategoryId,
-    status,
-  ];
+        chatId,
+        events,
+        isEditMode,
+        isFavoriteMode,
+        selectedEventsIds,
+        categories,
+        showCategories,
+        selectedCategoryId,
+        status,
+      ];
 }

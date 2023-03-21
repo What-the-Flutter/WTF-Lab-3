@@ -21,10 +21,11 @@ class HomeState extends Equatable {
   HomeState copyWith({
     List<Chat>? chats,
     HomeStatus? status,
-  }) => HomeState(
-    chats: chats ?? this.chats,
-    status: status ?? this.status,
-  );
+  }) =>
+      HomeState(
+        chats: chats ?? this.chats,
+        status: status ?? this.status,
+      );
 
   @override
   List<Object> get props => [chats, status];

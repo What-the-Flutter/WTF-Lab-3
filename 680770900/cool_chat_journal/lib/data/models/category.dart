@@ -19,21 +19,22 @@ class Category {
     required this.title,
     required this.icon,
     required this.isCustom,
-    }) : id = id ?? const Uuid().v4();
+  }) : id = id ?? const Uuid().v4();
 
   factory Category.fromJson(JsonMap json) => _$CategoryFromJson(json);
 
-  JsonMap toJson() => _$CategoryToJson(this); 
+  JsonMap toJson() => _$CategoryToJson(this);
 
   Category copyWith({
     String? id,
     String? title,
     int? icon,
     bool? isCustom,
-  }) => Category(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    icon: icon ?? this.icon,
-    isCustom: isCustom ?? this.isCustom,
-  );
+  }) =>
+      Category(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        icon: icon ?? this.icon,
+        isCustom: isCustom ?? this.isCustom,
+      );
 }

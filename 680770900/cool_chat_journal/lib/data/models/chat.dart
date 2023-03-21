@@ -25,7 +25,7 @@ class Chat {
 
   factory Chat.fromJson(JsonMap json) => _$ChatFromJson(json);
 
-  JsonMap toJson() => _$ChatToJson(this); 
+  JsonMap toJson() => _$ChatToJson(this);
 
   Chat copyWith({
     String? id,
@@ -33,11 +33,12 @@ class Chat {
     String? name,
     DateTime? createdTime,
     bool? isPinned,
-  }) => Chat(
-    id: id ?? this.id,
-    iconCode: iconCode ?? this.iconCode,
-    name: name ?? this.name,
-    createdTime: createdTime ?? this.createdTime,
-    isPinned: isPinned ?? this.isPinned,
-  );
+  }) =>
+      Chat(
+        id: id ?? this.id,
+        iconCode: iconCode ?? this.iconCode,
+        name: name ?? this.name,
+        createdTime: createdTime ?? this.createdTime,
+        isPinned: isPinned ?? this.isPinned,
+      );
 }

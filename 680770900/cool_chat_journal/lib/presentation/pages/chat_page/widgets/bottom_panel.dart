@@ -52,12 +52,12 @@ class _BottomPanelState extends State<BottomPanel> {
         final cubit = context.read<ChatCubit>();
 
         final event = Event(
-            chatId: widget.chatId,
-            image: imageBytes,
-            isFavorite: false,
-            changeTime: DateTime.now(),
-            categoryId: cubit.state.selectedCategoryId,
-          );
+          chatId: widget.chatId,
+          image: imageBytes,
+          isFavorite: false,
+          changeTime: DateTime.now(),
+          categoryId: cubit.state.selectedCategoryId,
+        );
 
         cubit.addNewEvent(
           event,
@@ -82,8 +82,7 @@ class _BottomPanelState extends State<BottomPanel> {
     } else {
       final NullWrapper<String?>? selectedCategory;
       if (cubit.state.selectedCategoryId != null) {
-        selectedCategory =
-          NullWrapper<String?>(cubit.state.selectedCategoryId);
+        selectedCategory = NullWrapper<String?>(cubit.state.selectedCategoryId);
       } else {
         selectedCategory = null;
       }
@@ -117,7 +116,7 @@ class _BottomPanelState extends State<BottomPanel> {
         (category) => category.id == selectedCategory,
       );
 
-      icon = IconData(category.icon, fontFamily: 'MaterialIcons');  
+      icon = IconData(category.icon, fontFamily: 'MaterialIcons');
     } else {
       icon = Icons.widgets_rounded;
     }

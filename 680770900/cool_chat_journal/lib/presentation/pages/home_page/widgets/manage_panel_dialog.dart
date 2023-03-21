@@ -193,8 +193,11 @@ class InfoDialog extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(top: 40.0),
               decoration: BoxDecoration(
-                color: 
-                  context.read<SettingsCubit>().state.themeData.backgroundColor,
+                color: context
+                    .read<SettingsCubit>()
+                    .state
+                    .themeData
+                    .backgroundColor,
               ),
               child: TextButton(
                 child: const Text('OK'),

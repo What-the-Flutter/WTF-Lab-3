@@ -16,7 +16,7 @@ class SettingsProvider {
     final name = prefs.getString(themeName);
 
     if (name == ThemeKey.dark.name) return ThemeKey.dark;
-    
+
     return ThemeKey.light;
   }
 }

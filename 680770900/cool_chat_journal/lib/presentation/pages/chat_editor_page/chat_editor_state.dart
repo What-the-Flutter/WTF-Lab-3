@@ -12,12 +12,12 @@ class ChatEditorState extends Equatable {
   ChatEditorState copyWith({
     int? iconIndex,
     String? title,
-  }) => ChatEditorState(
-    iconIndex: iconIndex ?? this.iconIndex,
-    title: title ?? this.title,
-  );
+  }) =>
+      ChatEditorState(
+        iconIndex: iconIndex ?? this.iconIndex,
+        title: title ?? this.title,
+      );
 
   @override
   List<Object> get props => [iconIndex, title];
 }
-

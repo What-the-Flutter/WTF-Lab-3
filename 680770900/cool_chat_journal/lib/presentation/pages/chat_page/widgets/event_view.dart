@@ -74,8 +74,8 @@ class _EventViewState extends State<EventView> {
       onLongPress: widget.onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          color: context.read<SettingsCubit>()
-            .state.themeData.colorScheme.primary,
+          color:
+              context.read<SettingsCubit>().state.themeData.colorScheme.primary,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         margin: const EdgeInsets.all(4.0),

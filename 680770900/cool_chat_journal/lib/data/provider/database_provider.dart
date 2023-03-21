@@ -12,35 +12,9 @@ class DatabaseProvider {
 
   final User? user;
 
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
-
-  final _chatsStreamController = StreamController<List<Chat>>.broadcast();
-  final _eventsStreamController = StreamController<List<Event>>.broadcast();
-  final _categoriesStreamController = StreamController<List<Category>>.broadcast();
-
   DatabaseProvider({
     required this.user,
-  }) {
-    // final userRoot = 'users/${user?.uid}';
-
-    // _initConnection<Chat>(
-    //   refPath: '$userRoot/$chatsRoot',
-    //   streamController: _chatsStreamController,
-    //   fromJson: Chat.fromJson,
-    // );
-
-    // _initConnection<Event>(
-    //   refPath: '$userRoot/$chatsRoot',
-    //   streamController: _eventsStreamController,
-    //   fromJson: Event.fromJson,
-    // );
-
-    // _initConnection<Category>(
-    //   refPath: '$userRoot/$chatsRoot',
-    //   streamController: _categoriesStreamController,
-    //   fromJson: Category.fromJson,
-    // );
-  }
+  });
 
   void _initConnection<T>({
     required String refPath,
@@ -53,8 +27,9 @@ class DatabaseProvider {
 
       for (final firebaseObject in event.snapshot.children) {
         final rawData = firebaseObject.value as Map<dynamic, dynamic>;
-        final json = rawData.map((key, value) => MapEntry(key.toString(), value));
-        
+        final json =
+            rawData.map((key, value) => MapEntry(key.toString(), value));
+
         print('INFO: json $json');
         values.add(fromJson(json));
       }
@@ -67,16 +42,16 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     final snapshot = await FirebaseDatabase.instance
-      .ref('/users/${user?.uid}/$tableName')
-      .get();
+        .ref('/users/${user?.uid}/$tableName')
+        .get();
 
     if (snapshot.exists) {
       var objects = <JsonMap>[];
 
       for (final firebaseObject in snapshot.children) {
         final rawData = firebaseObject.value as Map<dynamic, dynamic>;
-        final json = rawData
-          .map((key, value) => MapEntry(key.toString(), value));
+        final json =
+            rawData.map((key, value) => MapEntry(key.toString(), value));
 
         objects.add(json);
       }
@@ -92,7 +67,7 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     final ref = FirebaseDatabase.instance
-      .ref('/users/${user?.uid}/$tableName/${json['id']}');
+        .ref('/users/${user?.uid}/$tableName/${json['id']}');
 
     await ref.set(json);
   }
@@ -102,16 +77,7 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     await FirebaseDatabase.instance
-      .ref('users/${user?.uid}/$tableName/$id')
-      .remove();
+        .ref('users/${user?.uid}/$tableName/$id')
+        .remove();
   }
-
-  Stream<List<Chat>> get chatsStream => 
-    _chatsStreamController.stream; 
-
-  Stream<List<Event>> get eventsStream => 
-    _eventsStreamController.stream; 
-
-  Stream<List<Category>> get categoriesStream => 
-    _categoriesStreamController.stream; 
 }

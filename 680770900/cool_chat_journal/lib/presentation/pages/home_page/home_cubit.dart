@@ -12,10 +12,10 @@ class HomeCubit extends Cubit<HomeState> {
   final ChatsRepository _chatsRepository;
   final EventsRepository _eventsRepository;
 
-  HomeCubit({required User? user}) 
-    : _chatsRepository = ChatsRepository(user: user), 
-      _eventsRepository = EventsRepository(user: user),
-      super(const HomeState());
+  HomeCubit({required User? user})
+      : _chatsRepository = ChatsRepository(user: user),
+        _eventsRepository = EventsRepository(user: user),
+        super(const HomeState());
 
   void updateChats() async {
     if (!state.status.isLoading) {
