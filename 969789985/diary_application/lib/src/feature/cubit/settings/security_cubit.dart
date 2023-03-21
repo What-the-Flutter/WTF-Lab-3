@@ -10,7 +10,6 @@ import 'package:local_auth/local_auth.dart';
 import '../../../core/data/repository/security/security_repository.dart';
 import '../../../core/domain/repository/security/api_security_repository.dart';
 import '../../../core/util/logger.dart';
-import '../../../core/util/typedefs.dart';
 
 part 'security_cubit.freezed.dart';
 
@@ -68,7 +67,7 @@ class SecurityCubit extends Cubit<SecurityState> {
 
   void onPasscodeChanged({
     required int passcode,
-    required Callback action,
+    required void Function() action,
     required bool authValue,
   }) {
     emit(
@@ -139,7 +138,7 @@ class SecurityCubit extends Cubit<SecurityState> {
     );
   }
 
-  void _readPasscode(Callback action) {
+  void _readPasscode(void Function() action) {
     final passcode = _sha256passcode(
       state.passcodeSequence.join(),
     );

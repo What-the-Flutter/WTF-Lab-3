@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/data/repository/theme/theme_repository.dart';
 import '../../../../../core/util/resources/dimensions.dart';
-import '../../../../../core/util/typedefs.dart';
 import '../../../../cubit/theme/theme_cubit.dart';
 import '../../../theme/theme_scope.dart';
 
@@ -72,7 +71,7 @@ class AppearanceMessageAlignment extends StatelessWidget {
 
 class _AnimatedChip extends StatelessWidget {
   final String text;
-  final Callback action;
+  final VoidCallback action;
   final double width;
   final double height;
   final int color;

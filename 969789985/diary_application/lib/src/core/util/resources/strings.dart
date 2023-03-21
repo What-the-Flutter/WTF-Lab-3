@@ -35,6 +35,13 @@ abstract class MessageAlignment {
   static const String end = '_end';
 }
 
+enum MessageDateChartSelections {
+  lastWeek,
+  lastMonth,
+  lastSixMonth,
+  lastYear,
+}
+
 abstract class Strings {
   static const String chatTitleTooltipMessage =
       'Give a short and meaningful title (for example,\nif your chat is about sports events,\ngive it the name "Sport").';

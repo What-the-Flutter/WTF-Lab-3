@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/data/repository/security/security_repository.dart';
 import '../../../../core/util/resources/dimensions.dart';
-import '../../../../core/util/typedefs.dart';
 import '../../../cubit/settings/security_cubit.dart';
 import '../../../page/settings/security/passcode_warning_page.dart';
 import '../general/settings_divider.dart';
@@ -88,8 +87,8 @@ class SecurityBody extends StatelessWidget {
 }
 
 class _SecuritySwitch extends StatelessWidget {
-  final Callback positiveAction;
-  final Callback negativeAction;
+  final VoidCallback positiveAction;
+  final VoidCallback negativeAction;
   final bool value;
 
   const _SecuritySwitch({

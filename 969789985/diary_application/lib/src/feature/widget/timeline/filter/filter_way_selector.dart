@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/util/resources/dimensions.dart';
-import '../../../../core/util/typedefs.dart';
 import '../../../cubit/timeline/timeline_cubit.dart';
 import '../../theme/theme_scope.dart';
 import '../scope/timeline_scope.dart';
@@ -85,7 +84,7 @@ class FilterWaySelector extends StatelessWidget {
 }
 
 class _SelectorButton extends StatelessWidget {
-  final Callback action;
+  final VoidCallback action;
   final String buttonText;
   final double width;
   final double height;

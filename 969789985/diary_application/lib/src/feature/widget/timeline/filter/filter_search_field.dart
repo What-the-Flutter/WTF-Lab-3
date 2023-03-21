@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/util/resources/dimensions.dart';
-import '../../../../core/util/typedefs.dart';
 import '../../../cubit/timeline/timeline_cubit.dart';
 import '../../theme/theme_scope.dart';
 import '../scope/timeline_scope.dart';
@@ -68,7 +67,7 @@ class _FilterSearchFieldState extends State<FilterSearchField> {
 }
 
 class _ClearQueryButton extends StatelessWidget {
-  final Callback action;
+  final VoidCallback action;
 
   const _ClearQueryButton({
     super.key,

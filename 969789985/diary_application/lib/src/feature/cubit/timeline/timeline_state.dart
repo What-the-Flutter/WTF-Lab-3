@@ -4,6 +4,7 @@ part of 'timeline_cubit.dart';
 class TimelineState with _$TimelineState {
   const factory TimelineState.defaultMode({
     required IList<MessageModel> messages,
+    required IList<MessageModel> defaultMessages,
     required IList<ChatModel> chats,
     required IList<TagModel> tags,
     required bool isFiltered,
@@ -12,6 +13,7 @@ class TimelineState with _$TimelineState {
   const factory TimelineState.filterMode({
     required IList<MessageModel> messages,
     required IList<ChatModel> chats,
+    required IList<MessageModel> defaultMessages,
     required IList<TagModel> tags,
     required int filterWay,
     required String searchQuery,

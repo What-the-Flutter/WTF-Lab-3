@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/util/resources/dimensions.dart';
 import '../../../../core/util/resources/icons.dart';
-import '../../../../core/util/typedefs.dart';
 
 class SettingsButtonFoundation extends StatelessWidget {
-  final Callback action;
+  final VoidCallback action;
   final int iconCodePoint;
   final String buttonTitle;
   final String buttonDescription;

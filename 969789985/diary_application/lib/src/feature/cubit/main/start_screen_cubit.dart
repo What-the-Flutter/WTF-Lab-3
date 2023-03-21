@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../core/util/logger.dart';
+
 part 'start_screen_state.dart';
 
 part 'start_screen_cubit.freezed.dart';
@@ -17,6 +19,8 @@ class StartScreenCubit extends Cubit<StartScreenState> {
         );
 
   set pageIndex(int pageIndex) {
+    logger('Current page index: $pageIndex', 'Page_index');
+
     emit(
       state.copyWith(
         pageIndex: pageIndex,
