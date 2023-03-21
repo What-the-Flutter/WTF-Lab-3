@@ -1,0 +1,1 @@
+enum ThemeKey { light, dark }

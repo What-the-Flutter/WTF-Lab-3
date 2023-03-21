@@ -1,144 +1,117 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import '../models/models.dart';
 
 class DatabaseProvider {
-  static const databasePath = 'local_storage_chats_api.database';
-  static const version = 1;
+  static const chatsRoot = 'chats';
+  static const eventsRoot = 'events';
+  static const categoriesRoot = 'categories';
 
-  static const chatsTable = 'Chats';
-  static const eventsTable = 'Events';
-  static const categoriesTable = 'Categories';
+  final User? user;
 
-  Future<Database>? _database;
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
 
-  Future<void> _init() async {
-    _database = openDatabase(
-      join(await getDatabasesPath(), databasePath),
-      onCreate: _onCreate,
-      version: version,
-    );
+  final _chatsStreamController = StreamController<List<Chat>>.broadcast();
+  final _eventsStreamController = StreamController<List<Event>>.broadcast();
+  final _categoriesStreamController = StreamController<List<Category>>.broadcast();
+
+  DatabaseProvider({
+    required this.user,
+  }) {
+    // final userRoot = 'users/${user?.uid}';
+
+    // _initConnection<Chat>(
+    //   refPath: '$userRoot/$chatsRoot',
+    //   streamController: _chatsStreamController,
+    //   fromJson: Chat.fromJson,
+    // );
+
+    // _initConnection<Event>(
+    //   refPath: '$userRoot/$chatsRoot',
+    //   streamController: _eventsStreamController,
+    //   fromJson: Event.fromJson,
+    // );
+
+    // _initConnection<Category>(
+    //   refPath: '$userRoot/$chatsRoot',
+    //   streamController: _categoriesStreamController,
+    //   fromJson: Category.fromJson,
+    // );
   }
 
-  void _onCreate(Database db, int newVersion) async {
-    await db.execute('''
-      CREATE TABLE $chatsTable (
-        id TEXT PRIMARY KEY NOT NULL,
-        icon_code INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        created_time TEXT NOT NULL,
-        is_pinned INTEGER NOT NULL
-      )''');
+  void _initConnection<T>({
+    required String refPath,
+    required StreamController<List<T>> streamController,
+    required T Function(JsonMap) fromJson,
+  }) {
+    final ref = FirebaseDatabase.instance.ref(refPath);
+    ref.onValue.listen((event) {
+      var values = <T>[];
 
-    await db.execute('''
-      CREATE TABLE $eventsTable (
-        id TEXT PRIMARY KEY,
-        content TEXT NOT NULL,
-        is_image INTEGER NOT NULL,
-        is_favorite INTEGER NOT NULL,
-        change_time TEXT NOT NULL,
-        chat_id TEXT NOT NULL,
-        category_id TEXT 
-      )''');
+      for (final firebaseObject in event.snapshot.children) {
+        final rawData = firebaseObject.value as Map<dynamic, dynamic>;
+        final json = rawData.map((key, value) => MapEntry(key.toString(), value));
+        
+        print('INFO: json $json');
+        values.add(fromJson(json));
+      }
 
-    await db.execute('''
-      CREATE TABLE $categoriesTable (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        icon INTEGER NOT NULL,
-        is_custom INTEGER NOT NULL
-      )''');
+      streamController.add(values);
+    });
   }
 
-  Future<List<Chat>> loadChats() async {
-    if (_database == null) {
-      await _init();
-    }
+  Future<List<JsonMap>> read<T>({
+    required String tableName,
+  }) async {
+    final snapshot = await FirebaseDatabase.instance
+      .ref('/users/${user?.uid}/$tableName')
+      .get();
 
-    final db = await _database!;
+    if (snapshot.exists) {
+      var objects = <JsonMap>[];
 
-    final jsonMap = await db.query(chatsTable);
-    return List.generate(
-      jsonMap.length,
-      (i) => Chat.fromJson(jsonMap[i]),
-    );
-  }
+      for (final firebaseObject in snapshot.children) {
+        final rawData = firebaseObject.value as Map<dynamic, dynamic>;
+        final json = rawData
+          .map((key, value) => MapEntry(key.toString(), value));
 
-  Future<void> saveChats(Iterable<Chat> chats) async {
-    if (_database == null) {
-      await _init();
-    }
+        objects.add(json);
+      }
 
-    final db = await _database!;
-    final jsonMap = chats.map((chat) => chat.toJson());
-    await db.delete(chatsTable);
-    for (final chat in jsonMap) {
-      await db.insert(
-        chatsTable,
-        chat,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-  }
-
-  Future<List<Event>> loadEvents() async {
-    if (_database == null) {
-      await _init();
-    }
-
-    final db = await _database!;
-    final jsonMap = await db.query(eventsTable);
-    return List.generate(
-      jsonMap.length,
-      (i) => Event.fromJson(jsonMap[i]),
-    );
-  }
-
-  Future<void> saveEvents(Iterable<Event> events) async {
-    if (_database == null) {
-      await _init();
-    }
-
-    final db = await _database!;
-    final jsonMap = events.map((event) => event.toJson());
-    await db.delete(eventsTable);
-    for (final event in jsonMap) {
-      await db.insert(
-        eventsTable,
-        event,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      return objects;
+    } else {
+      return [];
     }
   }
 
-  Future<List<Category>> loadCategories() async {
-    if (_database == null) {
-      await _init();
-    }
+  Future<void> add({
+    required JsonMap json,
+    required String tableName,
+  }) async {
+    final ref = FirebaseDatabase.instance
+      .ref('/users/${user?.uid}/$tableName/${json['id']}');
 
-    final db = await _database!;
-    final jsonMap = await db.query(categoriesTable);
-    return List.generate(
-      jsonMap.length,
-      (i) => Category.fromJson(jsonMap[i]),
-    );
+    await ref.set(json);
   }
 
-  Future<void> saveCategories(Iterable<Category> categories) async {
-    if (_database == null) {
-      await _init();
-    }
-
-    final db = await _database!;
-    final jsonMap = categories.map((event) => event.toJson());
-    await db.delete(categoriesTable);
-    for (final event in jsonMap) {
-      await db.insert(
-        categoriesTable,
-        event,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
+  Future<void> delete({
+    required String id,
+    required String tableName,
+  }) async {
+    await FirebaseDatabase.instance
+      .ref('users/${user?.uid}/$tableName/$id')
+      .remove();
   }
+
+  Stream<List<Chat>> get chatsStream => 
+    _chatsStreamController.stream; 
+
+  Stream<List<Event>> get eventsStream => 
+    _eventsStreamController.stream; 
+
+  Stream<List<Category>> get categoriesStream => 
+    _categoriesStreamController.stream; 
 }

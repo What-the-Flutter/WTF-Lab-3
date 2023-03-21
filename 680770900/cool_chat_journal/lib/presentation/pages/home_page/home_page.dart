@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/chat.dart';
 import '../chat_editor_page/chat_editor_page.dart';
 import '../chat_page/chat_page.dart';
+import '../settings_page/settings_cubit.dart';
 import 'home_cubit.dart';
 import 'widgets/manage_panel_dialog.dart';
 
@@ -57,7 +58,7 @@ class _HomePageViewState extends State<HomePageView> {
   }
 
   Widget _createChatCard(BuildContext context, Chat chat) {
-    final theme = Theme.of(context);
+    final theme = context.read<SettingsCubit>().state.themeData;
 
     return Card(
       child: InkWell(
@@ -108,6 +109,12 @@ class _HomePageViewState extends State<HomePageView> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().updateChats();
+    
+    final settingsCubit = context.read<SettingsCubit>();
+
+    if (!settingsCubit.state.isInit) {
+      settingsCubit.initTheme();
+    }
   }
 
   @override
@@ -122,7 +129,8 @@ class _HomePageViewState extends State<HomePageView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.color_lens_outlined),
-            onPressed: () => print('Change color'),
+            onPressed: () async => 
+              await context.read<SettingsCubit>().switchTheme(),
           ),
         ],
       ),

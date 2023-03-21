@@ -11,7 +11,7 @@ Chat _$ChatFromJson(Map<String, dynamic> json) => $checkedCreate(
       json,
       ($checkedConvert) {
         final val = Chat(
-          id: $checkedConvert('id', (v) => v as String),
+          id: $checkedConvert('id', (v) => v as String?),
           iconCode: $checkedConvert('icon_code', (v) => v as int),
           name: $checkedConvert('name', (v) => v as String),
           createdTime: $checkedConvert(

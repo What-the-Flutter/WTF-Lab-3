@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../data/models/chat.dart';
-import '../../../../themes/custom_theme.dart';
+import '../../settings_page/settings_cubit.dart';
 
 class ManagePanelDialog extends StatelessWidget {
   final Chat chat;
@@ -152,7 +153,7 @@ class InfoDialog extends StatelessWidget {
           horizontal: 30.0,
           vertical: 20.0,
         ),
-        color: CustomTheme.of(context).primaryColor,
+        color: context.read<SettingsCubit>().state.themeData.primaryColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -189,24 +190,11 @@ class InfoDialog extends StatelessWidget {
               ),
             ),
             Text(formatter.format(chat.createdTime)),
-            /*if (chat.events.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Latest Event',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(formatter.format(chat.events.last.changeTime)),
-                ],
-              ),*/
             Container(
               margin: const EdgeInsets.only(top: 40.0),
               decoration: BoxDecoration(
-                color: CustomTheme.of(context).backgroundColor,
+                color: 
+                  context.read<SettingsCubit>().state.themeData.backgroundColor,
               ),
               child: TextButton(
                 child: const Text('OK'),

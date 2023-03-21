@@ -49,18 +49,18 @@ class _BottomPanelState extends State<BottomPanel> {
 
       if (image != null) {
         final imageBytes = await image.readAsBytes();
-        final base64Image = base64Encode(imageBytes);
         final cubit = context.read<ChatCubit>();
 
-        cubit.addNewEvent(
-          Event(
+        final event = Event(
             chatId: widget.chatId,
-            content: base64Image,
-            isImage: true,
+            image: imageBytes,
             isFavorite: false,
             changeTime: DateTime.now(),
             categoryId: cubit.state.selectedCategoryId,
-          ),
+          );
+
+        cubit.addNewEvent(
+          event,
         );
       }
     }
@@ -74,7 +74,6 @@ class _BottomPanelState extends State<BottomPanel> {
         Event(
           chatId: widget.chatId,
           content: _textController.text,
-          isImage: false,
           isFavorite: false,
           changeTime: DateTime.now(),
           categoryId: cubit.state.selectedCategoryId,
@@ -91,7 +90,7 @@ class _BottomPanelState extends State<BottomPanel> {
 
       cubit.editEvent(
         sourceEvent.copyWith(
-          content: _textController.text,
+          content: NullWrapper<String?>(_textController.text),
           categoryId: selectedCategory,
         ),
       );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../data/models/chat.dart';
-import '../../../../themes/custom_theme.dart';
+import '../../settings_page/settings_cubit.dart';
 
 class DeleteDialog extends StatelessWidget {
   final int countSelectedEvents;
@@ -70,7 +71,7 @@ class _TransferDialogState extends State<TransferDialog> {
           horizontal: 30.0,
           vertical: 20.0,
         ),
-        color: CustomTheme.of(context).primaryColor,
+        color: context.read<SettingsCubit>().state.themeData.primaryColor,
         child: Material(
           type: MaterialType.transparency,
           child: Column(
@@ -84,7 +85,8 @@ class _TransferDialogState extends State<TransferDialog> {
                   itemBuilder: (context, index) {
                     return RadioListTile(
                       title: Text(widget.chats[index].name),
-                      activeColor: CustomTheme.of(context).backgroundColor,
+                      activeColor: context.read<SettingsCubit>()
+                        .state.themeData.backgroundColor,
                       value: widget.chats[index].id,
                       groupValue: _selectedChat,
                       onChanged: (value) => setState(
@@ -100,7 +102,8 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: CustomTheme.of(context).backgroundColor,
+                      color: context.read<SettingsCubit>()
+                        .state.themeData.backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('OK'),
@@ -110,7 +113,8 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: CustomTheme.of(context).backgroundColor,
+                      color: context.read<SettingsCubit>()
+                        .state.themeData.backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('Cancel'),

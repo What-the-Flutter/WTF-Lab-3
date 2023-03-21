@@ -76,7 +76,7 @@ class _ChatViewState extends State<ChatView> {
     return state.events
         .where(
           (event) => 
-            state.selectedEventsIds.contains(event.id) && event.isImage,
+            state.selectedEventsIds.contains(event.id) && event.image != null,
         )
         .isNotEmpty;
   }

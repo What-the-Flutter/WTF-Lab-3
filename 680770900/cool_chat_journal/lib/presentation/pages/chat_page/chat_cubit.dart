@@ -11,10 +11,11 @@ part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final EventsRepository _eventsRepository;
-  final _categoriesRepository = CategoriesRepository();
+  final CategoriesRepository _categoriesRepository;
 
   ChatCubit({required User? user})
     : _eventsRepository = EventsRepository(user: user), 
+      _categoriesRepository = CategoriesRepository(user: user),
       super(const ChatState(chatId: '-'));
 
   void updateEvents() async {
@@ -34,7 +35,7 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void updateCategories() async {
-    final categories = await _categoriesRepository.loadCategories();
+    final categories = await _categoriesRepository.readCategories();
 
     emit(state.copyWith(categories: categories));
   }
@@ -78,7 +79,9 @@ class ChatCubit extends Cubit<ChatState> {
     var copiedText = '';
 
     final selectedEvents = state.events.where(
-      (event) => state.selectedEventsIds.contains(event.id) && !event.isImage,
+      (event) => 
+        state.selectedEventsIds.contains(event.id) 
+        && event.image == null,
     );
 
     for (final event in selectedEvents) {

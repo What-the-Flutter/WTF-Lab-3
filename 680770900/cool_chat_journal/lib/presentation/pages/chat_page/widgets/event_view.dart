@@ -1,9 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../data/models/models.dart';
+import '../../settings_page/settings_cubit.dart';
 
 class EventView extends StatefulWidget {
   final Event event;
@@ -56,17 +56,17 @@ class _EventViewState extends State<EventView> {
 
   Widget _createEventContent() {
     final Widget eventContent;
-    if (widget.event.isImage) {
+    if (widget.event.image != null) {
       eventContent = Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Image.memory(
-          base64Decode(widget.event.content),
+          widget.event.image!,
           width: 200.0,
           height: 200.0,
         ),
       );
     } else {
-      eventContent = Text(widget.event.content);
+      eventContent = Text(widget.event.content!);
     }
 
     return GestureDetector(
@@ -74,7 +74,8 @@ class _EventViewState extends State<EventView> {
       onLongPress: widget.onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: context.read<SettingsCubit>()
+            .state.themeData.colorScheme.primary,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         margin: const EdgeInsets.all(4.0),

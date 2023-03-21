@@ -1,24 +1,32 @@
-import '../models/models.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../models/category.dart';
 import '../provider/database_provider.dart';
 
 class CategoriesRepository {
-  final DatabaseProvider _dbProvider = DatabaseProvider();
+  final DatabaseProvider _databaseProvider;
 
-  Future<List<Category>> loadCategories() async => _dbProvider.loadCategories();
+  CategoriesRepository({required User? user}) 
+    : _databaseProvider = DatabaseProvider(user: user);
 
-  Future<void> saveCategories(List<Category> categories) async =>
-    _dbProvider.saveCategories(categories);
 
-  Future<void> addCategory(Category category) async {
-    final categories = await _dbProvider.loadCategories();
-    categories.add(category);
-    await _dbProvider.saveCategories(categories);
-  }
-
-  Future<void> deleteCategory(String categoryId) async {
-    final categories = await _dbProvider.loadCategories();
-    await _dbProvider.saveCategories(
-      categories.where((category) => category.id != categoryId),
+  Future<List<Category>> readCategories() async {
+    final jsonCategories = await _databaseProvider.read<Category>(
+      tableName: DatabaseProvider.categoriesRoot,
     );
+
+    return jsonCategories.map(Category.fromJson).toList();
   }
+
+  Future<void> addCategory(Category category) async =>
+    await _databaseProvider.add(
+      json: category.toJson(),
+      tableName: DatabaseProvider.categoriesRoot,
+    );
+
+  Future<void> deleteCategory(String categoryId) async =>
+    await _databaseProvider.delete(
+      id: categoryId,
+      tableName: DatabaseProvider.categoriesRoot,
+    );
 }

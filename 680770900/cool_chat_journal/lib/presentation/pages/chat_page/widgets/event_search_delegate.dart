@@ -14,7 +14,8 @@ class EventSearchDelegate extends SearchDelegate {
     final fondedNotes = <Event>[];
 
     for (final event in events) {
-      if (!event.isImage && event.content.contains(query)) {
+      final content = event.content;
+      if (content != null && content.contains(query)) {
         fondedNotes.add(event);
       }
     }

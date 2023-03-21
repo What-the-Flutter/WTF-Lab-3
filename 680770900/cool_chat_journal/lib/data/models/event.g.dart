@@ -11,10 +11,8 @@ Event _$EventFromJson(Map<String, dynamic> json) => $checkedCreate(
       json,
       ($checkedConvert) {
         final val = Event(
-          id: $checkedConvert('id', (v) => v as String),
-          content: $checkedConvert('content', (v) => v as String),
-          isImage: $checkedConvert(
-              'is_image', (v) => const BooleanConverter().fromJson(v as int)),
+          id: $checkedConvert('id', (v) => v as String?),
+          content: $checkedConvert('content', (v) => v as String?),
           isFavorite: $checkedConvert('is_favorite',
               (v) => const BooleanConverter().fromJson(v as int)),
           changeTime: $checkedConvert(
@@ -25,7 +23,6 @@ Event _$EventFromJson(Map<String, dynamic> json) => $checkedCreate(
         return val;
       },
       fieldKeyMap: const {
-        'isImage': 'is_image',
         'isFavorite': 'is_favorite',
         'changeTime': 'change_time',
         'chatId': 'chat_id',
@@ -39,6 +36,5 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'change_time': instance.changeTime.toIso8601String(),
       'chat_id': instance.chatId,
       'category_id': instance.categoryId,
-      'is_image': const BooleanConverter().toJson(instance.isImage),
       'is_favorite': const BooleanConverter().toJson(instance.isFavorite),
     };
