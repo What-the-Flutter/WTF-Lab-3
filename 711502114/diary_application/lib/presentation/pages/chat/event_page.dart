@@ -105,7 +105,9 @@ class _MessengerPageState extends State<MessengerPage> {
   AppBar _buildAppBar(EventCubit cubit) {
     final selected = cubit.selectedMode;
     return AppBar(
-      title: selected ? null : Text(widget.chat.title),
+      title: selected
+          ? null
+          : Text(widget.chat.title, style: textTheme(context).headline1!),
       centerTitle: !selected,
       leading: selected
           ? ToolMenuIcon(
@@ -157,9 +159,7 @@ class _MessengerPageState extends State<MessengerPage> {
           alignment: const Alignment(.1, .15),
           child: Text(
             '${cubit.state.selectedIndexes.length}',
-            style: const TextStyle(
-              fontSize: 25,
-            ),
+            style: textTheme(context).headline1!,
           ),
         ),
       ),

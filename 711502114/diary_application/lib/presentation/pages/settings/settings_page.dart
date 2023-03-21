@@ -29,12 +29,14 @@ class Settings extends StatelessWidget {
         child: ListView(
           children: [
             _listTile(
+              context,
               local.theme,
               local.themeState,
               Icons.invert_colors,
               onTap: context.read<SettingsCubit>().changeTheme,
             ),
             _listTile(
+              context,
               local.fingerPrint,
               local.enableFingerPrint,
               Icons.fingerprint,
@@ -46,6 +48,7 @@ class Settings extends StatelessWidget {
               ),
             ),
             _listTile(
+              context,
               local.fontSize,
               local.fontSizeState,
               Icons.format_size,
@@ -64,6 +67,7 @@ class Settings extends StatelessWidget {
               },
             ),
             _listTile(
+              context,
               local.bubbleAlignment,
               local.alignmentAction,
               state.alignment
@@ -77,6 +81,7 @@ class Settings extends StatelessWidget {
               ),
             ),
             _listTile(
+              context,
               local.centerDateBubble,
               '',
               Icons.date_range_outlined,
@@ -87,12 +92,12 @@ class Settings extends StatelessWidget {
                 },
               ),
             ),
-            _listTile(
-                local.backgroundImage, local.chatBackgroundImage, Icons.image,
-                onTap: () {
+            _listTile(context, local.backgroundImage, local.chatBackgroundImage,
+                Icons.image, onTap: () {
               openNewPage(context, BackgroundChatImage(state: state));
             }),
             _listTile(
+              context,
               local.resetSettings,
               local.resetAllSettings,
               Icons.reset_tv,
@@ -105,6 +110,7 @@ class Settings extends StatelessWidget {
   }
 
   Widget _listTile(
+    BuildContext context,
     String title,
     String subtitle,
     IconData icon, {
@@ -114,9 +120,9 @@ class Settings extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: Text(title),
+          title: Text(title, style: textTheme(context).bodyText2!),
           leading: Icon(icon, size: 30),
-          subtitle: Text(subtitle),
+          subtitle: Text(subtitle, style: textTheme(context).bodyText1!),
           onTap: onTap,
           trailing: trailing,
         ),

@@ -76,7 +76,7 @@ class _AddChatPageState extends State<AddChatPage> {
                         : widget.editChat == null
                             ? local?.addNewChat ?? ''
                             : local?.editChat ?? '',
-                    style: const TextStyle(fontSize: 26),
+                    style: textTheme(context).headline1!
                   ),
                   const SizedBox(height: 10),
                   AddChatKeyboard(

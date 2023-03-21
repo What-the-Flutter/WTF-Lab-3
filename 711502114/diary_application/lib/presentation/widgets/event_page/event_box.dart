@@ -36,7 +36,7 @@ class EventBox extends StatelessWidget {
       child: Column(
         children: [
           if (category != null) ...[
-            _pinCategoryLabel(category),
+            _pinCategoryLabel(context, category, isRight),
             const SizedBox(height: 5),
           ],
           Row(
@@ -46,13 +46,14 @@ class EventBox extends StatelessWidget {
             children: [
               if (isRight) const SizedBox(width: 10),
               if (event.photoPath?.isEmpty ?? false)
-                _messageContainer(isRight)
+                _messageContainer(context, isRight)
               else if (event.message.isEmpty)
                 _attachContainer(isRight) ?? Text(waitMessage)
               else
                 Column(
                   children: [
-                    _messageContainer(isRight, size.width * .75, false),
+                    _messageContainer(
+                        context, isRight, size.width * .75, false),
                     _attachContainer(isRight, false) ?? Text(waitMessage),
                   ],
                 ),
@@ -89,6 +90,7 @@ class EventBox extends StatelessWidget {
   }
 
   Widget _messageContainer(
+    BuildContext context,
     bool isReverse, [
     double minWidth = 0.0,
     bool isUsualText = true,
@@ -113,7 +115,7 @@ class EventBox extends StatelessWidget {
           scaleX: isReverse ? -1 : 1,
           child: Text(
             event.message,
-            style: const TextStyle(fontSize: 16, color: Colors.white),
+            style: textTheme(context).bodyText2!,
             overflow: TextOverflow.clip,
           ),
         ),
@@ -157,10 +159,16 @@ class EventBox extends StatelessWidget {
     );
   }
 
-  Widget _pinCategoryLabel(Category category) {
+  Widget _pinCategoryLabel(
+    BuildContext context,
+    Category category,
+    bool isRight,
+  ) {
     return Row(
+      textDirection: isRight ? TextDirection.rtl : TextDirection.ltr,
       children: [
-        Text(category.title, style: const TextStyle(fontSize: 18)),
+        if (isRight) const SizedBox(width: 10),
+        Text(category.title, style: textTheme(context).bodyText2!),
         SizedBox(width: size.width * .05),
         Icon(category.icon),
       ],
