@@ -72,35 +72,37 @@ class _HomePageViewState extends State<HomePageView> {
             user: widget.user,
           ),
         ),
-        child: ListTile(
-          leading: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: theme.colorScheme.background,
-                ),
-                child: Icon(
-                  IconData(chat.iconCode, fontFamily: 'MaterialIcons'),
-                ),
-              ),
-              if (chat.isPinned)
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: ListTile(
+            leading: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
                 Container(
+                  padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
                     shape: BoxShape.circle,
+                    color: theme.colorScheme.background,
                   ),
-                  child: const Icon(
-                    Icons.push_pin,
-                    size: 20,
+                  child: Icon(
+                    IconData(chat.iconCode, fontFamily: 'MaterialIcons'),
                   ),
                 ),
-            ],
+                if (chat.isPinned)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.push_pin,
+                      size: 20,
+                    ),
+                  ),
+              ],
+            ),
+            title: Text(chat.name),
           ),
-          title: Text(chat.name),
-          subtitle: const Text('_generateSubtitle()'),
         ),
       ),
     );
