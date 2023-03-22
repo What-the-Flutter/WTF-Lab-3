@@ -5,6 +5,10 @@ import 'settings_provider_api.dart';
 class SettingsProvider extends SettingsProviderApi {
   static final themeKey = 'isDark';
   static final lockKey = 'isLocked';
+  static final fontSizeKey = 'font size';
+  static final bubbleAlignmentKey = 'bubble alignment';
+  static final centerDateKey = 'center date';
+  static final backgroundImageKey = 'background image';
 
   @override
   Future<bool> get theme async {
@@ -29,5 +33,64 @@ class SettingsProvider extends SettingsProviderApi {
   Future<void> setIsLocked(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(lockKey, value);
+  }
+
+  @override
+  Future<String> get backgroundImage async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(backgroundImageKey) ?? '';
+  }
+
+  @override
+  Future<void> setBackgroundImage(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(backgroundImageKey, path);
+  }
+
+  @override
+  Future<int> get fontSize async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(fontSizeKey) ?? 0;
+  }
+
+  @override
+  Future<void> setFontSize(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt(fontSizeKey, value);
+  }
+
+  @override
+  Future<bool> get bubbleAlignment async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(bubbleAlignmentKey) ?? false;
+  }
+
+  @override
+  Future<void> setBubbleAlignment(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(bubbleAlignmentKey, value);
+  }
+
+  @override
+  Future<bool> get centerDate async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(centerDateKey) ?? false;
+  }
+
+  @override
+  Future<void> setCenterDate(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(centerDateKey, value);
+  }
+
+  @override
+  void setDefault() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(themeKey, true);
+    prefs.setBool(lockKey, false);
+    prefs.setInt(fontSizeKey, 0);
+    prefs.setString(backgroundImageKey, '');
+    prefs.setBool(bubbleAlignmentKey, false);
+    prefs.setBool(centerDateKey, false);
   }
 }

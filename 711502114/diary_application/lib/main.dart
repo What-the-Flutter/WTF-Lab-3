@@ -20,6 +20,7 @@ import 'presentation/pages/main/menu.dart';
 import 'presentation/pages/main/menu_cubit.dart';
 import 'presentation/pages/settings/settings_cubit.dart';
 import 'presentation/pages/settings/settings_state.dart';
+import 'presentation/pages/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,7 +99,7 @@ class ChatJournalApplication extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
-            home: const BottomMenu(),
+            home: const SplashScreen(child: BottomMenu()),
           ),
         ),
       ),

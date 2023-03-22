@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../domain/utils/utils.dart';
+import 'settings_background_chat_page.dart';
 import 'settings_cubit.dart';
 import 'settings_state.dart';
 
@@ -9,70 +12,119 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Settings'),
-            centerTitle: true,
-          ),
-          body: _settingsBody(context, state),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)?.settings ?? ''),
+        centerTitle: true,
+      ),
+      body: _settingsBody(context),
     );
   }
 
-  Widget _settingsBody(BuildContext context, SettingsState state) {
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: ListView(
-        children: [
-          _theme(context, state),
-          _fingerPrint(context, state),
-        ],
+  Widget _settingsBody(BuildContext context) {
+    final local = AppLocalizations.of(context)!;
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) => Padding(
+        padding: const EdgeInsets.all(5),
+        child: ListView(
+          children: [
+            _listTile(
+              context,
+              local.theme,
+              local.themeState,
+              Icons.invert_colors,
+              onTap: context.read<SettingsCubit>().changeTheme,
+            ),
+            _listTile(
+              context,
+              local.fingerPrint,
+              local.enableFingerPrint,
+              Icons.fingerprint,
+              trailing: Switch(
+                value: state.isLocked,
+                onChanged: (_) {
+                  context.read<SettingsCubit>().setIsLocked(_);
+                },
+              ),
+            ),
+            _listTile(
+              context,
+              local.fontSize,
+              local.fontSizeState,
+              Icons.format_size,
+              onTap: () {
+                switch (state.fontSize) {
+                  case 0:
+                    context.read<SettingsCubit>().changeFontSize(1);
+                    break;
+                  case 1:
+                    context.read<SettingsCubit>().changeFontSize(-1);
+                    break;
+                  default:
+                    context.read<SettingsCubit>().changeFontSize(0);
+                    break;
+                }
+              },
+            ),
+            _listTile(
+              context,
+              local.bubbleAlignment,
+              local.alignmentAction,
+              state.alignment
+                  ? Icons.format_align_right
+                  : Icons.format_align_left,
+              trailing: Switch(
+                value: state.alignment,
+                onChanged: (_) {
+                  context.read<SettingsCubit>().setBubbleAlignment(_);
+                },
+              ),
+            ),
+            _listTile(
+              context,
+              local.centerDateBubble,
+              '',
+              Icons.date_range_outlined,
+              trailing: Switch(
+                value: state.isCenter,
+                onChanged: (_) {
+                  context.read<SettingsCubit>().setCenterDate(_);
+                },
+              ),
+            ),
+            _listTile(context, local.backgroundImage, local.chatBackgroundImage,
+                Icons.image, onTap: () {
+              openNewPage(context, BackgroundChatImage(state: state));
+            }),
+            _listTile(
+              context,
+              local.resetSettings,
+              local.resetAllSettings,
+              Icons.reset_tv,
+              onTap: context.read<SettingsCubit>().setDefault,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _theme(BuildContext context, SettingsState state) {
+  Widget _listTile(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon, {
+    void Function()? onTap,
+    Widget? trailing,
+  }) {
     return Column(
       children: [
         ListTile(
-          title: Text(
-            'Theme',
-          ),
-          leading: const Icon(
-            Icons.invert_colors,
-            size: 30,
-          ),
-          subtitle: Text(
-            'Light / Dark',
-          ),
-          onTap: () {
-            context.read<SettingsCubit>().changeTheme();
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _fingerPrint(BuildContext context, SettingsState state) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text(
-            'Fingerprint',
-          ),
-          leading: const Icon(Icons.fingerprint),
-          subtitle: Text(
-            'Enable Fingerprint unlock',
-          ),
-          trailing: Switch(
-            value: state.isLocked,
-            onChanged: (value) {
-              context.read<SettingsCubit>().setIsLocked(value);
-            },
-          ),
+          title: Text(title, style: textTheme(context).bodyText2!),
+          leading: Icon(icon, size: 30),
+          subtitle: Text(subtitle, style: textTheme(context).bodyText1!),
+          onTap: onTap,
+          trailing: trailing,
         ),
       ],
     );

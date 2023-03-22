@@ -81,11 +81,11 @@ class ChatCard extends StatelessWidget {
       children: [
         Text(
           chat.title,
-          style: const TextStyle(fontSize: 20),
+          style: textTheme(context).headline4!,
         ),
         Text(
           description.replaceAll('\n', ' '),
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
+          style: textTheme(context).bodyText1!.copyWith(color: Colors.grey),
         ),
       ],
     );
@@ -99,7 +99,7 @@ class ChatCard extends StatelessWidget {
     }
     return Text(
       time ?? '',
-      style: const TextStyle(color: Colors.grey, fontSize: 16),
+      style: textTheme(context).bodyText1!.copyWith(color: Colors.grey),
     );
   }
 }

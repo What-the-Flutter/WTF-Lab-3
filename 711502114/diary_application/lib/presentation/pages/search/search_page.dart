@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../domain/utils/utils.dart';
 import '../../../theme/colors.dart';
 import '../../widgets/event_page/event_box.dart';
 import '../settings/settings_cubit.dart';
@@ -31,7 +32,7 @@ class SearchPage extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   onChanged: cubit.lookForWords,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                  style: textTheme(context).bodyText2!,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.search, color: Colors.white),
                     suffixIcon: IconButton(

@@ -56,7 +56,7 @@ class InfoChatDialog extends StatelessWidget {
             Text(
               _useDateTimeFormat(context, chat.creationTime),
               style: TextStyle(
-                color: BlocProvider.of<SettingsCubit>(context).isDark
+                color: context.read<SettingsCubit>().isDark
                     ? Colors.grey
                     : Colors.white,
               ),
@@ -69,7 +69,7 @@ class InfoChatDialog extends StatelessWidget {
             Text(
               _useDateTimeFormat(context, _knowLastEvent()),
               style: TextStyle(
-                color: BlocProvider.of<SettingsCubit>(context).isDark
+                color: context.read<SettingsCubit>().isDark
                     ? Colors.grey
                     : Colors.white,
               ),

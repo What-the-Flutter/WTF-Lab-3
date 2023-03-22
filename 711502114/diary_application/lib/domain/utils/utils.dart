@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../presentation/pages/settings/settings_cubit.dart';
+import '../../theme/colors.dart';
 
 String formatDate(BuildContext context, String date,
     {bool includeTime = false}) {
@@ -86,5 +90,16 @@ int countOrientationCoefficient(BuildContext context) {
     return 1;
   } else {
     return media.size.width ~/ media.size.height;
+  }
+}
+
+TextTheme textTheme(BuildContext context) {
+  switch (context.read<SettingsCubit>().state.fontSize) {
+    case 1:
+      return CustomTheme.largeTextTheme;
+    case -1:
+      return CustomTheme.smallTextTheme;
+    default:
+      return CustomTheme.defaultTextTheme;
   }
 }

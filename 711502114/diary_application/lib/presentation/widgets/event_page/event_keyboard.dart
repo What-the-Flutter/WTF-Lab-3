@@ -55,7 +55,7 @@ class EventKeyboard extends StatelessWidget {
                       : Colors.white,
                 ),
               ),
-              style: const TextStyle(fontSize: 20, color: Colors.white),
+              style: textTheme(context).bodyText2!,
             ),
           ),
           if (checkOrientation(context))
