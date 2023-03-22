@@ -9,23 +9,33 @@ import 'pages/home/home_cubit.dart';
 import 'pages/home/home_page.dart';
 import 'pages/managing_page/managing_page_cubit.dart';
 import 'pages/searching_page/searching_page_cubit.dart';
+import 'pages/settings/settings_cubit.dart';
+import 'pages/singInAnonymously.dart';
 import 'repositories/chat_repository.dart';
 import 'repositories/event_repository.dart';
-import 'theme/theme_cubit.dart';
 
-class ChatJournal extends StatelessWidget {
-  final DatabaseProvider dbProvider;
-  final ChatDao chatDao;
-  final EventDao eventDao;
-  final ChatRepository chatRepository;
-  final EventRepository eventRepository;
-  const ChatJournal(
-      {required this.chatRepository,
-      required this.eventRepository,
-      required this.chatDao,
-      required this.dbProvider,
-      required this.eventDao,
-      super.key});
+class ChatJournal extends StatefulWidget {
+  late final DatabaseProvider dbProvider;
+  late final ChatDao chatDao;
+  late final EventDao eventDao;
+  late final ChatRepository chatRepository;
+  late final EventRepository eventRepository;
+  ChatJournal();
+  @override
+  State<ChatJournal> createState() => _ChatJournalState();
+}
+
+class _ChatJournalState extends State<ChatJournal> {
+  @override
+  void initState() {
+    super.initState();
+    SignInAnonymously.signInAnonymously();
+    widget.dbProvider = DatabaseProvider();
+    widget.chatDao = ChatDao(dbProvider: widget.dbProvider);
+    widget.eventDao = EventDao(dbProvider: widget.dbProvider);
+    widget.chatRepository = ChatRepository(chatDao: widget.chatDao);
+    widget.eventRepository = EventRepository(eventDao: widget.eventDao);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,29 +43,29 @@ class ChatJournal extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) => HomeCubit(
-            chatsRepository: chatRepository,
-            eventsRepository: eventRepository,
+            chatsRepository: widget.chatRepository,
+            eventsRepository: widget.eventRepository,
           ),
         ),
         BlocProvider(
           create: (context) => ChatCubit(
-            eventsRepository: eventRepository,
+            eventsRepository: widget.eventRepository,
           ),
         ),
         BlocProvider(
           create: (context) => ManagingPageCubit(
-            chatsRepository: chatRepository,
+            chatsRepository: widget.chatRepository,
             initState: ManagingPageState(),
           ),
         ),
         BlocProvider(
-          create: (_) => ThemeCubit(),
+          create: (_) => SettingsCubit(),
         ),
         BlocProvider(
           create: (_) => SearchingPageCubit(),
         ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
           return MaterialApp(
             title: 'Chat Journal',

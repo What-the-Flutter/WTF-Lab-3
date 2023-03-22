@@ -6,19 +6,23 @@ class ChatState {
   final bool isChoosingCategory;
   final bool isEditingMode;
   final bool isSelectionMode;
+  final bool isInputEmpty;
+  final bool isChoosingImageOptions;
   late final List<String> _hintMessages;
 
   ChatState({
     this.chat = const Chat(
       iconId: 0,
       title: '',
-      id: '0',
+      id: '',
       date: null,
     ),
     this.categoryIconIndex = 0,
     this.isChoosingCategory = false,
     this.isEditingMode = false,
     this.isSelectionMode = false,
+    this.isInputEmpty = true,
+    this.isChoosingImageOptions = false,
   }) {
     _hintMessages = [
       'This is the page where you can track everything about "${chat.title}"!\n',
@@ -48,6 +52,8 @@ class ChatState {
     bool? choosingCategory,
     bool? editingMode,
     bool? selectionMode,
+    bool? inputEmpty,
+    bool? choosingImageOptions,
   }) =>
       ChatState(
         chat: newChat ?? chat,
@@ -55,5 +61,7 @@ class ChatState {
         isChoosingCategory: choosingCategory ?? isChoosingCategory,
         isEditingMode: editingMode ?? isEditingMode,
         isSelectionMode: selectionMode ?? isSelectionMode,
+        isInputEmpty: inputEmpty ?? isInputEmpty,
+        isChoosingImageOptions: choosingImageOptions ?? isChoosingImageOptions,
       );
 }

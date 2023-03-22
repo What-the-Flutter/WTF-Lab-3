@@ -42,6 +42,12 @@ dependencies:
   path_provider: ^2.0.13
   path: ^1.8.3
   shared_preferences: ^2.0.18
+  firebase_database: ^10.0.16
+  firebase_storage: ^11.0.16
+  firebase_auth: ^4.2.2
+  firebase_core: ^2.8.0
+  image_picker: ^0.8.7
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

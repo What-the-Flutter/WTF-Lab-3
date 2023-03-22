@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/chat.dart';
-import '../../theme/theme_cubit.dart';
 import '../../widgets/event_list_title.dart';
 import '../managing_page/managing_page.dart';
+import '../settings/settings_cubit.dart';
+import '../settings/settings_page.dart';
 import 'home_cubit.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,6 +26,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeCubit>().init();
+  }
+
   AppBar _createAppBar() {
     return AppBar(
       title: const Text(
@@ -35,12 +43,8 @@ class _HomePageState extends State<HomePage> {
       ),
       centerTitle: true,
       backgroundColor: Theme.of(context).canvasColor,
-      leading: IconButton(
-        icon: const Icon(Icons.menu),
-        onPressed: () {},
-      ),
       actions: [
-        BlocBuilder<ThemeCubit, ThemeState>(
+        BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             return IconButton(
               icon: state.isLight
@@ -51,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                       Icons.dark_mode_outlined,
                     ),
               onPressed: () {
-                context.read<ThemeCubit>().toggleTheme();
+                context.read<SettingsCubit>().toggleTheme();
               },
             );
           },
@@ -150,22 +154,67 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<HomeCubit>().loadChats();
     return Scaffold(
       appBar: _createAppBar(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+              ),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  DateFormat('MMM dd, yyyy').format(
+                    DateTime.now(),
+                  ),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            ListTile(
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
+                Navigator.pop(context);
+              },
+              iconColor: Theme.of(context).disabledColor,
+              leading: const Icon(
+                Icons.settings,
+              ),
+              title: Text(
+                'Settings',
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: _createBody(),
       floatingActionButton: SizedBox(
         width: 64,
         height: 64,
         child: FloatingActionButton(
           onPressed: () async {
-            final chat = await Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ManagingPage(),
               ),
             );
-            context.read<HomeCubit>().updateChats(chat);
+            // context.read<HomeCubit>().updateChats(chat);
           },
           elevation: 16,
           child: const Icon(

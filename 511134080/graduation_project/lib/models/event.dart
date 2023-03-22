@@ -9,6 +9,7 @@ class Event {
   final int categoryIndex;
   final String id;
   final String chatId;
+  final String? imagePath;
 
   const Event({
     required this.title,
@@ -18,6 +19,7 @@ class Event {
     this.isFavourite = false,
     this.isSelected = false,
     this.categoryIndex = 0,
+    this.imagePath,
   });
 
   Event copyWith({
@@ -28,6 +30,7 @@ class Event {
     bool? isFavourite,
     bool? isSelected,
     int? newCategory,
+    String? newImagePath,
   }) {
     return Event(
       title: newTitle ?? title,
@@ -37,6 +40,7 @@ class Event {
       isFavourite: isFavourite ?? this.isFavourite,
       isSelected: isSelected ?? this.isSelected,
       categoryIndex: newCategory ?? categoryIndex,
+      imagePath: newImagePath ?? imagePath,
     );
   }
 
@@ -48,6 +52,7 @@ class Event {
         categoryIndex: data['category_index'],
         isFavourite: data['is_favourite'] == 1 ? true : false,
         isSelected: data['is_selected'] == 1 ? true : false,
+        imagePath: data['image_path'],
       );
 
   Map<String, dynamic> toDatabaseMap() => {
@@ -57,6 +62,7 @@ class Event {
         'chat_id': chatId,
         'category_index': categoryIndex,
         'is_favourite': isFavourite ? 1 : 0,
-        'is_selected': isSelected ? 1 : 0
+        'is_selected': isSelected ? 1 : 0,
+        'image_path': imagePath,
       };
 }

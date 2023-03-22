@@ -1,43 +1,42 @@
-import 'package:sqflite/sqflite.dart';
-
 import '../database/database_provider.dart';
 import '../models/chat.dart';
 
 class ChatDao {
-  final DatabaseProvider dbProvider;
+  final DatabaseProvider _dbProvider;
 
-  ChatDao({required this.dbProvider});
+  ChatDao({required DatabaseProvider dbProvider}) : _dbProvider = dbProvider;
+
+  Stream<List<Chat>> get chatsStream {
+    return _dbProvider.chatsStream.map((event) {
+      final snapshot = event.snapshot;
+      return snapshot.children
+          .map((e) =>
+              Chat.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .toList();
+    });
+  }
 
   Future<List<Chat>> receiveChats() async {
-    final db = await dbProvider.database;
-    final result = await db.query(chatTable);
-    return result.map(Chat.fromDatabaseMap).toList();
+    final snapshot = await _dbProvider.queryAllChats();
+    if (snapshot.exists) {
+      return snapshot.children
+          .map((e) =>
+              Chat.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .toList();
+    } else {
+      return [];
+    }
   }
 
-  Future<int> createChat(Chat chat) async {
-    final db = await dbProvider.database;
-    final result = await db.insert(
-      chatTable,
-      chat.toDatabaseMap(),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
-    return result;
+  Future<void> createChat(Chat chat) async {
+    return await _dbProvider.insertChat(chat.toDatabaseMap());
   }
 
-  Future<int> updateChat(Chat chat) async {
-    final db = await dbProvider.database;
-    final result = await db.update(
-      chatTable,
-      chat.toDatabaseMap(),
-      where: 'id = ?',
-      whereArgs: [chat.id],
-    );
-    return result;
+  Future<void> updateChat(Chat chat) async {
+    return await _dbProvider.updateChat(chat.toDatabaseMap());
   }
 
-  Future<int> deleteChat(String id) async {
-    final db = await dbProvider.database;
-    final result = await db.delete(chatTable, where: 'id = ?', whereArgs: [id]);
-    return result;
+  Future<void> deleteChat(String id) async {
+    return await _dbProvider.deleteChat(id);
   }
 }

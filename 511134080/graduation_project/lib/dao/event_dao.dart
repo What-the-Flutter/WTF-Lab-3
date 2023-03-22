@@ -2,41 +2,42 @@ import '../database/database_provider.dart';
 import '../models/event.dart';
 
 class EventDao {
-  final DatabaseProvider dbProvider;
+  final DatabaseProvider _dbProvider;
 
-  EventDao({required this.dbProvider});
+  EventDao({required DatabaseProvider dbProvider}) : _dbProvider = dbProvider;
+
+  Stream<List<Event>> get eventsStream {
+    return _dbProvider.eventsStream.map((event) {
+      final snapshot = event.snapshot;
+      return snapshot.children
+          .map((e) =>
+              Event.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .toList();
+    });
+  }
 
   Future<List<Event>> receiveAllChatEvents(String chatId) async {
-    final db = await dbProvider.database;
-    final result = await db.query(
-      eventTable,
-      where: 'chat_id = ?',
-      whereArgs: [chatId],
-    );
-    return result.map(Event.fromDatabaseMap).toList();
+    final snapshot = await _dbProvider.queryAllEvents(chatId);
+    if (snapshot.exists) {
+      return snapshot.children
+          .map((e) =>
+              Event.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .toList()
+        ..sort((a, b) => a.time.compareTo(b.time));
+    } else {
+      return [];
+    }
   }
 
-  Future<int> createEvent(Event event) async {
-    final db = await dbProvider.database;
-    final result = await db.insert(eventTable, event.toDatabaseMap());
-    return result;
+  Future<void> createEvent(Event event) async {
+    return await _dbProvider.insertEvent(event);
   }
 
-  Future<int> updateEvent(Event event) async {
-    final db = await dbProvider.database;
-    final result = await db.update(
-      eventTable,
-      event.toDatabaseMap(),
-      where: 'id = ?',
-      whereArgs: [event.id],
-    );
-    return result;
+  Future<void> updateEvent(Event event) async {
+    return await _dbProvider.updateEvent(event.toDatabaseMap());
   }
 
-  Future<int> deleteEvent(String id) async {
-    final db = await dbProvider.database;
-    final result =
-        await db.delete(eventTable, where: 'id = ?', whereArgs: [id]);
-    return result;
+  Future<void> deleteEvent(String id) async {
+    return await _dbProvider.deleteEvent(id);
   }
 }

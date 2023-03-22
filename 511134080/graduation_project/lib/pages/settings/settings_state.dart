@@ -1,9 +1,9 @@
-part of 'theme_cubit.dart';
+part of 'settings_cubit.dart';
 
-class ThemeState {
+class SettingsState {
   final bool isLight;
 
-  ThemeState({this.isLight = true});
+  SettingsState({this.isLight = true});
 
   final _lightTheme = ThemeData(
     iconTheme: const IconThemeData(
@@ -18,6 +18,7 @@ class ThemeState {
     primaryColorLight: Colors.deepPurple.shade300,
     primaryColorDark: Colors.deepPurple,
     hoverColor: Colors.deepPurple,
+    disabledColor: Colors.grey[700],
   );
 
   final _darkTheme = ThemeData(
@@ -29,7 +30,12 @@ class ThemeState {
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
     hoverColor: Colors.grey[850],
+    disabledColor: Colors.grey[700],
   );
 
   ThemeData get theme => isLight ? _lightTheme : _darkTheme;
+
+  SettingsState copyWith({bool? light}) => SettingsState(
+        isLight: light ?? isLight,
+      );
 }

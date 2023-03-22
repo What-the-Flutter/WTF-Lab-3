@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../models/chat.dart';
 import '../../models/event.dart';
@@ -10,15 +14,76 @@ part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final EventRepository eventsRepository;
-  ChatCubit({required this.eventsRepository}) : super(ChatState());
+  late final StreamSubscription<List<Event>> eventsSubscription;
+
+  ChatCubit({required this.eventsRepository}) : super(ChatState()) {
+    initSubscription();
+  }
+
+  void initSubscription() {
+    eventsSubscription = eventsRepository.eventsStream.listen((events) async {
+      if (state.chat.id != '') {
+        final chatEvents = List<Event>.from(
+            events.where((event) => event.chatId == state.chat.id))
+          ..sort((a, b) => a.time.compareTo(b.time));
+        emit(
+          state.copyWith(
+            newChat: state.chat.copyWith(
+              newEvents: chatEvents,
+            ),
+          ),
+        );
+      }
+    });
+  }
 
   Future<void> init(Chat chat) async {
-    final events = await eventsRepository.receiveAllChatEvents(chat.id);
+    emit(state.copyWith(newChat: chat));
+  }
+
+  void toggleShowingImageOptions() {
+    final isChoosing = state.isChoosingImageOptions;
     emit(
       state.copyWith(
-        newChat: chat.copyWith(
-          newEvents: events,
-        ),
+        choosingImageOptions: !state.isChoosingImageOptions,
+        choosingCategory:
+            isChoosing == false ? false : state.isChoosingCategory,
+      ),
+    );
+  }
+
+  Future<void> pickImage(bool isFromGallery) async {
+    final PermissionStatus status;
+    if (isFromGallery) {
+      status = await Permission.mediaLibrary.request();
+    } else {
+      status = await Permission.camera.request();
+    }
+    if (status.isGranted) {
+      final imagePicker = ImagePicker();
+      final pickedFile = await imagePicker.pickImage(
+          source: isFromGallery ? ImageSource.gallery : ImageSource.camera);
+      final reg = RegExp(r'[#\[\]]');
+      final key = UniqueKey().toString();
+
+      if (pickedFile != null) {
+        final event = Event(
+          title: '',
+          time: DateTime.now(),
+          id: key.replaceAll(reg, ''),
+          chatId: state.chat.id,
+          imagePath: pickedFile.path,
+        );
+        addEvent(event);
+        toggleShowingImageOptions();
+      }
+    }
+  }
+
+  void inputChanged(String value) {
+    emit(
+      state.copyWith(
+        inputEmpty: value == '',
       ),
     );
   }
@@ -38,6 +103,8 @@ class ChatCubit extends Cubit<ChatState> {
     emit(
       state.copyWith(
         choosingCategory: choosingCategory,
+        choosingImageOptions:
+            choosingCategory == true ? false : state.isChoosingImageOptions,
       ),
     );
   }
@@ -64,11 +131,13 @@ class ChatCubit extends Cubit<ChatState> {
   void onEnterSubmitted(String title) {
     if (!state.isEditingMode) {
       if (title != '' || state.categoryIconIndex != 0) {
+        final reg = RegExp(r'[#\[\]]');
+        final key = UniqueKey().toString();
         final event = Event(
           chatId: state.chat.id,
           title: title,
           time: DateTime.now(),
-          id: UniqueKey().toString(),
+          id: key.replaceAll(reg, ''),
           categoryIndex: state.categoryIconIndex,
         );
 
@@ -85,20 +154,33 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     }
+    inputChanged('');
     changeCategoryIcon(0);
   }
 
   Future<void> addEvent(Event event) async {
     await eventsRepository.insertEvent(event);
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
+  }
 
-    emit(
-      state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
-      ),
-    );
+  Null Function()? onEditButtonPressed(
+      TextEditingController textFieldController, FocusNode focusNode) {
+    final selectedEvents = List<Event>.from(
+        state.chat.events.where((Event cardModel) => cardModel.isSelected));
+    if (selectedEvents.length == 1 &&
+        selectedEvents.where((element) => element.imagePath != null).isEmpty) {
+      return () {
+        toggleEditingMode(
+          editingMode: true,
+        );
+        final event = state.chat.events.where((Event e) => e.isSelected).first;
+        textFieldController.text = event.title;
+
+        changeCategoryIcon(event.categoryIndex);
+        focusNode.requestFocus();
+      };
+    } else {
+      return null;
+    }
   }
 
   Future<void> editSelectedEvent(String newTitle, int newCategory) async {
@@ -111,17 +193,6 @@ class ChatCubit extends Cubit<ChatState> {
         newCategory: newCategory,
       ),
     );
-
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
-    emit(
-      state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
-      ),
-    );
-
     cancelSelectionMode();
   }
 
@@ -133,26 +204,22 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     }
-
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
     emit(
       state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
         selectionMode: false,
       ),
     );
   }
 
-  Future<void> copySelectedCards() async {
+  Future<void> copySelectedEvents() async {
     var text = '';
 
     final events = state.chat.events.where((Event event) => event.isSelected);
 
     for (final e in events) {
-      text += '${e.title}\n';
+      if (e.imagePath == null) {
+        text += '${e.title}\n';
+      }
     }
 
     cancelSelectionMode();
@@ -164,23 +231,13 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  Future<void> deleteSelectedCards() async {
+  Future<void> deleteSelectedEvents() async {
     final selectedEvents =
-        state.chat.events.where((Event cardModel) => cardModel.isSelected);
+        state.chat.events.where((Event event) => event.isSelected);
 
     for (final event in selectedEvents) {
       await eventsRepository.deleteEventById(event.id);
     }
-
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
-    emit(
-      state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
-      ),
-    );
 
     cancelSelectionMode();
   }
@@ -200,16 +257,6 @@ class ChatCubit extends Cubit<ChatState> {
         isFavourite: !event.isFavourite,
       ),
     );
-
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
-    emit(
-      state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
-      ),
-    );
   }
 
   Future<void> manageSelectedEvent(Event event) async {
@@ -222,15 +269,6 @@ class ChatCubit extends Cubit<ChatState> {
       await eventsRepository.updateEvent(
         event.copyWith(
           isSelected: !event.isSelected,
-        ),
-      );
-      final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
-      emit(
-        state.copyWith(
-          newChat: state.chat.copyWith(
-            newEvents: events,
-          ),
         ),
       );
     }
@@ -253,14 +291,8 @@ class ChatCubit extends Cubit<ChatState> {
         );
       }
     }
-
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
     emit(
       state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
         selectionMode: false,
       ),
     );
@@ -279,21 +311,15 @@ class ChatCubit extends Cubit<ChatState> {
       ),
     );
 
-    final events = await eventsRepository.receiveAllChatEvents(state.chat.id);
-
     emit(
       state.copyWith(
-        newChat: state.chat.copyWith(
-          newEvents: events,
-        ),
         selectionMode: true,
       ),
     );
   }
 
-  Future<void> moveSelectedCards(Chat destinationChat) async {
+  Future<void> moveSelectedEvents(Chat destinationChat) async {
     final selectedEvents = state.chat.events.where((Event e) => e.isSelected);
-    cancelSelectionMode();
 
     for (final event in selectedEvents) {
       await eventsRepository.updateEvent(
