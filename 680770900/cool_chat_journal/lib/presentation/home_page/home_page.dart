@@ -47,7 +47,7 @@ class _HomePageViewState extends State<HomePageView> {
       builder: (context) => ManagePanelDialog(
         chat: chat,
         onDeleteChat: () => cubit.deleteChat(chat.id),
-        onSwitchChatPinning: () => cubit.switchChatPinning(chat.id),
+        onSwitchChatPinning: () => cubit.switchChatPinning(chat),
         onEditChat: () => Navigator.of(context).push<void>(
           ChatEditorPage.route(
             homeCubit: cubit,
@@ -109,7 +109,7 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     super.initState();
-    context.read<HomeCubit>().updateChats();
+    context.read<HomeCubit>().initStream();
 
     final settingsCubit = context.read<SettingsCubit>();
 
@@ -139,26 +139,24 @@ class _HomePageViewState extends State<HomePageView> {
           ),
         ],
       ),
-      body: BlocConsumer<HomeCubit, HomeState>(
-        listener: (context, state) {
-          if (state.status.isInitial) {
-            context.read<HomeCubit>().updateChats();
-          }
-        },
-        builder: (context, state) {
-          if (state.status.isSuccess) {
-            final chats = state.chats;
-            return ListView.builder(
-              itemCount: chats.length,
-              itemBuilder: (context, index) =>
-                  _createChatCard(context, chats[index]),
-            );
-          } else if (state.status.isLoading) {
+      body: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) => StreamBuilder(
+          stream: state.chatsStream,
+          builder: (_, snapshot) {
+            final chats = snapshot.data;
+
+            if (chats != null) {
+              context.read<HomeCubit>().sortChats(chats);
+              return ListView.builder(
+                itemCount: chats.length,
+                itemBuilder: (context, index) =>
+                    _createChatCard(context, chats[index]),
+              );
+            }
+
             return const Center(child: CircularProgressIndicator());
-          } else {
-            return const Center(child: Text('Oops! Something wrong.'));
-          }
-        },
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
