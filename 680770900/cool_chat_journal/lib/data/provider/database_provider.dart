@@ -10,11 +10,55 @@ class DatabaseProvider {
   static const eventsRoot = 'events';
   static const categoriesRoot = 'categories';
 
+  final _chatsStreamController = StreamController<List<Chat>>();
+  final _eventsStreamController = StreamController<List<Event>>();
+  final _categoriesStreamController = StreamController<List<Category>>();
+
   final User? user;
 
   DatabaseProvider({
     required this.user,
-  });
+  }) {
+    _initConnection(
+      tableName: chatsRoot,
+      controller: _chatsStreamController,
+      fromJson: Chat.fromJson,
+    );
+  }
+
+  void _initConnection<T>({
+    required String tableName,
+    required StreamController<List<T>> controller,
+    required T Function(JsonMap) fromJson,
+  }) {
+    final ref =
+        FirebaseDatabase.instance.ref('/users/${user?.uid}/$tableName');
+
+    ref.onValue.listen(
+      (event) {
+        final rawData = event.snapshot.value as Map<dynamic, dynamic>?;
+        if (rawData == null) {
+          controller.add([]);
+          return;
+        }
+
+        final jsonList =
+            rawData.values
+                .map((e) => e as Map<Object?, Object?>);
+
+        var objects = <T>[];
+        for (final rawObject in jsonList) {
+          final json = rawObject.map(
+            (key, value) => MapEntry(key.toString(), value),
+          );
+
+          objects.add(fromJson(json));
+        }
+
+        controller.add(objects);
+      },
+    );
+  }
 
   Future<List<JsonMap>> read<T>({
     required String tableName,
@@ -58,4 +102,9 @@ class DatabaseProvider {
         .ref('users/${user?.uid}/$tableName/$id')
         .remove();
   }
+
+  Stream<List<Chat>> get chatsStream => _chatsStreamController.stream;
+  Stream<List<Event>> get eventsStream => _eventsStreamController.stream;
+  Stream<List<Category>> get categoriesStream => 
+    _categoriesStreamController.stream;
 }

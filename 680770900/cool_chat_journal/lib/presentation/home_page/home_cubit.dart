@@ -17,17 +17,12 @@ class HomeCubit extends Cubit<HomeState> {
         _eventsRepository = EventsRepository(user: user),
         super(const HomeState());
 
-  void updateChats() async {
-    if (!state.status.isLoading) {
-      emit(state.copyWith(status: HomeStatus.loading));
-
-      final chats = await _chatsRepository.readChats();
-      _sortChats(chats);
-
+  void initStream() {
+    if (state.streamStatus.isInitial) {
       emit(
         state.copyWith(
-          chats: chats,
-          status: HomeStatus.success,
+          chatsStream: _chatsRepository.stream,
+          streamStatus: StreamStatus.success,
         ),
       );
     }
@@ -35,30 +30,22 @@ class HomeCubit extends Cubit<HomeState> {
 
   void addChat(Chat chat) async {
     await _chatsRepository.addChat(chat);
-    updateChats();
   }
 
   void deleteChat(String chatId) async {
     await _chatsRepository.deleteChat(chatId);
     await _eventsRepository.deleteEventsFromChat(chatId);
-    updateChats();
   }
 
   void editChat(Chat chat) async {
     await _chatsRepository.updateChat(chat);
-    updateChats();
   }
 
-  void switchChatPinning(String id) async {
-    final chats = await state.chats;
-    final chat = chats.firstWhere((chat) => chat.id == id);
-
-    editChat(
-      chat.copyWith(isPinned: !chat.isPinned),
-    );
+  void switchChatPinning(Chat chat) async {
+    await _chatsRepository.updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
 
-  void _sortChats(List<Chat> chats) {
+  void sortChats(List<Chat> chats) {
     chats.sort((a, b) {
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;

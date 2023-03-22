@@ -34,6 +34,11 @@ class StorageProvider {
     required String filename,
     String directory = 'images',
   }) async {
-    await _storageInstance.ref('${user?.uid}/$directory/$filename').delete();
+    try {
+      await _storageInstance.ref('${user?.uid}/$directory/$filename').delete();
+    } on FirebaseException catch (_) {
+      print("Storage hasn't images");
+    }
+ 
   }
 }

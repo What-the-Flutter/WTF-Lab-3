@@ -1,32 +1,34 @@
 part of 'home_cubit.dart';
 
-enum HomeStatus { initial, loading, success, failure }
+enum StreamStatus { initial, success}
 
-extension HomeStatusX on HomeStatus {
-  bool get isInitial => this == HomeStatus.initial;
-  bool get isLoading => this == HomeStatus.loading;
-  bool get isSuccess => this == HomeStatus.success;
-  bool get isFailure => this == HomeStatus.failure;
+extension StreamStatusX on StreamStatus {
+  bool get isInitial => this == StreamStatus.initial;
+  bool get isSuccess => this == StreamStatus.success;
 }
 
 class HomeState extends Equatable {
+  final Stream<List<Chat>> chatsStream;
   final List<Chat> chats;
-  final HomeStatus status;
+  final StreamStatus streamStatus;
 
   const HomeState({
+    this.chatsStream = const Stream.empty(),
     this.chats = const [],
-    this.status = HomeStatus.initial,
+    this.streamStatus = StreamStatus.initial,
   });
 
   HomeState copyWith({
+    Stream<List<Chat>>? chatsStream,
     List<Chat>? chats,
-    HomeStatus? status,
+    StreamStatus? streamStatus,
   }) =>
       HomeState(
+        chatsStream: chatsStream ?? this.chatsStream,
         chats: chats ?? this.chats,
-        status: status ?? this.status,
+        streamStatus: streamStatus ?? this.streamStatus,
       );
 
   @override
-  List<Object> get props => [chats, status];
+  List<Object> get props => [chats, chatsStream, streamStatus];
 }

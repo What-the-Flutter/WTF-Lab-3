@@ -38,4 +38,6 @@ class ChatsRepository {
       tableName: DatabaseProvider.chatsRoot,
     );
   }
+
+  Stream<List<Chat>> get stream => _databaseProvider.chatsStream;
 }
