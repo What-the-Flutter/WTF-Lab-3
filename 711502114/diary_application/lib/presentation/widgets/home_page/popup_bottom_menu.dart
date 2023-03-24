@@ -1,8 +1,8 @@
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../domain/models/chat.dart';
-import '../../pages/home/home_cubit.dart';
 import 'chat_functions.dart';
 
 class PopupBottomMenu extends StatelessWidget {

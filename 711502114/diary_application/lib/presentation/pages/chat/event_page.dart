@@ -1,23 +1,23 @@
 import 'dart:io';
 
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
+import 'package:diary_application/presentation/pages/search/search_cubit.dart';
+import 'package:diary_application/presentation/pages/search/search_page.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/presentation/widgets/event_page/category_box.dart';
+import 'package:diary_application/presentation/widgets/event_page/dismiss_item.dart';
+import 'package:diary_application/presentation/widgets/event_page/event_box.dart';
+import 'package:diary_application/presentation/widgets/event_page/event_keyboard.dart';
+import 'package:diary_application/presentation/widgets/event_page/info_box.dart';
+import 'package:diary_application/presentation/widgets/event_page/migration_events_dialog.dart';
+import 'package:diary_application/presentation/widgets/event_page/tool_menu_icon.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../domain/models/chat.dart';
-import '../../../domain/utils/utils.dart';
-import '../../../theme/colors.dart';
-import '../../widgets/event_page/category_box.dart';
-import '../../widgets/event_page/dismiss_item.dart';
-import '../../widgets/event_page/event_box.dart';
-import '../../widgets/event_page/event_keyboard.dart';
-import '../../widgets/event_page/info_box.dart';
-import '../../widgets/event_page/migration_events_dialog.dart';
-import '../../widgets/event_page/tool_menu_icon.dart';
-import '../home/home_cubit.dart';
-import '../search/search_cubit.dart';
-import '../search/search_page.dart';
-import '../settings/settings_cubit.dart';
 import 'event_cubit.dart';
 import 'event_state.dart';
 

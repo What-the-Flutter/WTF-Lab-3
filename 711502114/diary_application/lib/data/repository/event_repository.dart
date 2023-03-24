@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import '../../domain/models/event.dart';
-import '../../domain/repository/event_repository_api.dart';
-import '../converter/converter_db.dart';
-import '../entities/event_db.dart';
-import '../provider/api_firebase_provider.dart';
+import 'package:diary_application/data/converter/converter_db.dart';
+import 'package:diary_application/data/entities/event_db.dart';
+import 'package:diary_application/data/provider/api_firebase_provider.dart';
+import 'package:diary_application/domain/models/event.dart';
+import 'package:diary_application/domain/repository/event_repository_api.dart';
 
 class EventRepository extends EventRepositoryApi {
   final ApiDataProvider _provider;
@@ -53,7 +53,7 @@ class EventRepository extends EventRepositoryApi {
 
   @override
   Future<List<Event>> getAllEvents() async {
-    var dbEvents = await _provider.events;
+    final dbEvents = await _provider.events;
     final events = List<Event>.generate(
       dbEvents.length,
       (i) => ConverterDB.entity2Event(dbEvents[i]),

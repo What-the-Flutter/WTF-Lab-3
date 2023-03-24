@@ -1,10 +1,10 @@
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/utils/icons.dart';
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../../domain/models/chat.dart';
-import '../../../domain/utils/icons.dart';
-import '../../../theme/colors.dart';
-import '../../pages/home/home_cubit.dart';
 
 class MigrationEventsDialog extends StatelessWidget {
   final Function(Chat chat) handleClicking;

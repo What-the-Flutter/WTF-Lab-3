@@ -1,13 +1,11 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-import '../../../domain/models/chat.dart';
-import '../../../domain/models/event.dart';
-import '../../../domain/repository/chat_repository_api.dart';
-import '../../../domain/repository/event_repository_api.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/models/event.dart';
+import 'package:diary_application/domain/repository/chat_repository_api.dart';
+import 'package:diary_application/domain/repository/event_repository_api.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {

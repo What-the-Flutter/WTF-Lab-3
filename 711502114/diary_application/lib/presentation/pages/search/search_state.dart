@@ -1,6 +1,5 @@
+import 'package:diary_application/domain/models/event.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../domain/models/event.dart';
 
 class SearchState extends Equatable {
   final List<Event> events;

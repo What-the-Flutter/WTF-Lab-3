@@ -1,11 +1,11 @@
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/presentation/widgets/event_page/event_box.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../domain/utils/utils.dart';
-import '../../../theme/colors.dart';
-import '../../widgets/event_page/event_box.dart';
-import '../settings/settings_cubit.dart';
 import 'search_cubit.dart';
 import 'search_state.dart';
 

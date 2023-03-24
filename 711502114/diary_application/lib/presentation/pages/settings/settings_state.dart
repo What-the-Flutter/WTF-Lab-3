@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SettingsState extends Equatable {
   final ThemeData theme;
   final bool isLocked;
-  final int fontSize;
+  final String fontSize;
   final bool alignment;
   final bool isCenter;
   final String backgroundImage;
@@ -21,7 +21,7 @@ class SettingsState extends Equatable {
   SettingsState copyWith({
     ThemeData? theme,
     bool? isLocked,
-    int? fontSize,
+    String? fontSize,
     bool? alignment,
     bool? isCenter,
     String? backgroundImage,

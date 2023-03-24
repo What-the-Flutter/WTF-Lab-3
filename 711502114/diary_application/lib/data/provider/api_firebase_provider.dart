@@ -1,5 +1,5 @@
-import '../entities/chat_db.dart';
-import '../entities/event_db.dart';
+import 'package:diary_application/data/entities/chat_db.dart';
+import 'package:diary_application/data/entities/event_db.dart';
 
 abstract class ApiDataProvider {
   Future<ChatDB> getChat(String id);

@@ -1,6 +1,6 @@
+import 'package:diary_application/domain/models/event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/models/event.dart';
 import 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {

@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:diary_application/data/entities/chat_db.dart';
+import 'package:diary_application/data/entities/event_db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../entities/chat_db.dart';
-import '../entities/event_db.dart';
 import 'api_firebase_provider.dart';
 
 class FirebaseProvider extends ApiDataProvider {
@@ -53,7 +53,7 @@ class FirebaseProvider extends ApiDataProvider {
 
   @override
   Future<List<ChatDB>> get chats async {
-    var result = <ChatDB>[];
+    final result = <ChatDB>[];
     final dbChats = await _ref.child(chatsFolder).once();
     for (final dbChat in dbChats.snapshot.children) {
       final map = dbChat.value as Map<dynamic, dynamic>;
@@ -119,7 +119,7 @@ class FirebaseProvider extends ApiDataProvider {
 
   @override
   Future<List<EventDB>> get events async {
-    var result = <EventDB>[];
+    final result = <EventDB>[];
     final dbEvents = await _ref.child(eventsFolder).once();
     for (final dbEvent in dbEvents.snapshot.children) {
       final map = dbEvent.value as Map<dynamic, dynamic>;

@@ -1,8 +1,7 @@
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../../pages/settings/settings_cubit.dart';
 
 class InfoBox extends StatelessWidget {
   final String mainTitle;

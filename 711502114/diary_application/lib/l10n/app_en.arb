@@ -61,5 +61,11 @@
   "backgroundImage": "Background image",
   "chatBackgroundImage": "Chat background image",
   "resetSettings": "Reset all settings",
-  "resetAllSettings": "Reset all customizations"
+  "resetAllSettings": "Reset all customizations",
+  "helpSpread": "Help spread the word",
+  "search": "Search",
+  "notification": "Notification",
+  "statistics": "Statistics",
+  "addCategoryMenu": "Category adding",
+  "feedback": "Feedback"
 }

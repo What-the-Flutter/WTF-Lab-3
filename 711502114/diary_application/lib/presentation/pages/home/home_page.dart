@@ -1,19 +1,19 @@
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/chat/event_page.dart';
+import 'package:diary_application/presentation/pages/creation/add_chat_page.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/presentation/pages/settings/settings_page.dart';
+import 'package:diary_application/presentation/widgets/home_page/archive_row.dart';
+import 'package:diary_application/presentation/widgets/home_page/chat_card.dart';
+import 'package:diary_application/presentation/widgets/home_page/popup_bottom_menu.dart';
+import 'package:diary_application/presentation/widgets/home_page/questionnaire_bot_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../domain/models/chat.dart';
-import '../../../domain/utils/utils.dart';
-import '../../widgets/home_page/archive_row.dart';
-import '../../widgets/home_page/chat_card.dart';
-import '../../widgets/home_page/popup_bottom_menu.dart';
-import '../../widgets/home_page/questionnaire_bot_row.dart';
-import '../chat/event_page.dart';
-import '../creation/add_chat_page.dart';
-import '../settings/settings_cubit.dart';
-import '../settings/settings_page.dart';
 import 'home_cubit.dart';
 import 'home_state.dart';
 
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
           ),
           ListTile(
             title: Text(
-              'Help spread the word',
+              local?.helpSpread ?? '',
               style: textTheme(context).bodyText1!,
             ),
             leading: const Icon(Icons.card_giftcard),
@@ -90,16 +90,22 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ListTile(
-            title: Text('Search', style: textTheme(context).bodyText1!),
+            title: Text(
+              local?.search ?? '',
+              style: textTheme(context).bodyText1!,
+            ),
             leading: const Icon(Icons.search),
           ),
           ListTile(
-            title: Text('Notification', style: textTheme(context).bodyText1!),
+            title: Text(
+              local?.notification ?? '',
+              style: textTheme(context).bodyText1!,
+            ),
             leading: const Icon(Icons.notifications),
           ),
           ListTile(
             title: Text(
-              'Statistics',
+              local?.statistics ?? '',
               style: textTheme(context).bodyText1!,
             ),
             leading: const Icon(Icons.analytics),
@@ -117,7 +123,7 @@ class _HomePageState extends State<HomePage> {
           ListTile(
             leading: const Icon(Icons.settings),
             title: Text(
-              'Category adding',
+              local?.addCategoryMenu ?? '',
               style: textTheme(context).bodyText1!,
             ),
             onTap: () {
@@ -126,7 +132,10 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ListTile(
-            title: Text('Feedback', style: textTheme(context).bodyText1!),
+            title: Text(
+              local?.feedback ?? '',
+              style: textTheme(context).bodyText1!,
+            ),
             leading: const Icon(Icons.feedback),
           )
         ],

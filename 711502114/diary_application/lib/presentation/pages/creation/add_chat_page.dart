@@ -1,15 +1,15 @@
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/utils/icons.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
+import 'package:diary_application/presentation/pages/home/home_state.dart';
+import 'package:diary_application/presentation/widgets/add_chat_page/add_chat_keyboard.dart';
+import 'package:diary_application/presentation/widgets/add_chat_page/chat_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../domain/models/category.dart';
-import '../../../domain/models/chat.dart';
-import '../../../domain/utils/icons.dart';
-import '../../../domain/utils/utils.dart';
-import '../../widgets/add_chat_page/add_chat_keyboard.dart';
-import '../../widgets/add_chat_page/chat_icon.dart';
-import '../home/home_cubit.dart';
-import '../home/home_state.dart';
 import 'creation_cubit.dart';
 import 'creation_state.dart';
 

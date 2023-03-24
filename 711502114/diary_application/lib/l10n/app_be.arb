@@ -61,5 +61,11 @@
   "backgroundImage": "Фонавы відарыс",
   "chatBackgroundImage": "Фонавы відарыс чата",
   "resetSettings": "Скінуць усе налады",
-  "resetAllSettings": "Скінуць усе налады"
+  "resetAllSettings": "Скінуць усе налады",
+  "helpSpread": "Дапамажыце распаўсюдзіць інфармацыю",
+  "search": "Пошук",
+  "notification": "Апавяшчэнне",
+  "statistic": "Статыстыка",
+  "addCategoryMenu": "Даданне катэгорыі",
+  "feedback": "Зваротная сувязь"
 }

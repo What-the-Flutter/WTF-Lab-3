@@ -1,5 +1,5 @@
-import '../../domain/repository/settings_repository_api.dart';
-import '../provider/settings_provider_api.dart';
+import 'package:diary_application/data/provider/settings_provider_api.dart';
+import 'package:diary_application/domain/repository/settings_repository_api.dart';
 
 class SettingsRepository extends SettingsRepositoryApi {
   final SettingsProviderApi _provider;
@@ -20,7 +20,7 @@ class SettingsRepository extends SettingsRepositoryApi {
   Future<String> get backgroundImage async => _provider.backgroundImage;
 
   @override
-  Future<int> get fontSize async => _provider.fontSize;
+  Future<String> get fontSize async => _provider.fontSize;
 
   @override
   Future<bool> get isCenter async => _provider.centerDate;
@@ -41,7 +41,7 @@ class SettingsRepository extends SettingsRepositoryApi {
   }
 
   @override
-  void setFontSize(int size) {
+  void setFontSize(String size) {
     _provider.setFontSize(size);
   }
 

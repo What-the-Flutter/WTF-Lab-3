@@ -1,7 +1,8 @@
+import 'package:diary_application/domain/repository/settings_repository_api.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/repository/settings_repository_api.dart';
-import '../../../theme/colors.dart';
 import 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -12,7 +13,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         super(SettingsState(
           theme: CustomTheme.darkTheme,
           isLocked: false,
-          fontSize: 0,
+          fontSize: FontSize.medium.toString(),
           alignment: false,
           isCenter: false,
           backgroundImage: '',
@@ -58,21 +59,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(isLocked: value));
   }
 
-  void changeFontSize(int size) {
-    switch (size) {
-      case 0:
-        _setFontSize(0);
-        break;
-      case -1:
-        _setFontSize(-1);
-        break;
-      default:
-        _setFontSize(1);
-        break;
-    }
-  }
-
-  void _setFontSize(int size) {
+  void setFontSize(String size) {
     _repository.setFontSize(size);
     emit(state.copyWith(fontSize: size));
   }
@@ -98,7 +85,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(
         isLocked: false,
         theme: CustomTheme.darkTheme,
-        fontSize: 0,
+        fontSize: FontSize.medium.toString(),
         alignment: false,
         isCenter: false,
         backgroundImage: '',

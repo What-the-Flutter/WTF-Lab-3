@@ -1,8 +1,8 @@
-import '../../data/entities/event_db.dart';
-import '../../domain/models/category.dart';
-import '../../domain/models/chat.dart';
-import '../../domain/models/event.dart';
-import '../entities/chat_db.dart';
+import 'package:diary_application/data/entities/chat_db.dart';
+import 'package:diary_application/data/entities/event_db.dart';
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/models/event.dart';
 
 class ConverterDB {
   static Chat entity2Chat(ChatDB chatDB) {

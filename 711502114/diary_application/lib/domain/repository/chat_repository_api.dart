@@ -1,4 +1,4 @@
-import '../models/chat.dart';
+import 'package:diary_application/domain/models/chat.dart';
 
 abstract class ChatRepositoryApi {
   Future<void> addChat(Chat chat);

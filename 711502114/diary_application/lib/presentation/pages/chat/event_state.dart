@@ -1,5 +1,5 @@
-import '../../../domain/models/category.dart';
-import '../../../domain/models/event.dart';
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/event.dart';
 
 class EventState {
   final String chatId;
