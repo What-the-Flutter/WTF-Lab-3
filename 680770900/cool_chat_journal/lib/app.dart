@@ -3,10 +3,13 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'presentation/chat_editor_page/chat_editor_cubit.dart';
+import 'presentation/chat_page/chat_cubit.dart';
+import 'presentation/home_page/home_cubit.dart';
 import 'presentation/home_page/home_page.dart';
 import 'presentation/settings_page/settings_cubit.dart';
 
-class CoolChatJournalApp extends StatefulWidget {
+class CoolChatJournalApp extends StatelessWidget {
   final User? user;
 
   const CoolChatJournalApp({
@@ -14,14 +17,8 @@ class CoolChatJournalApp extends StatefulWidget {
     required this.user,
   });
 
-  @override
-  State<CoolChatJournalApp> createState() => _CoolChatJournalAppState();
-}
-
-class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
-  
-  TextTheme _generateTextTheme(BuildContext context) {
-    final fontSizeType = context.read<SettingsCubit>().state.fontSizeType;
+  TextTheme _generateTextTheme(SettingsState state) {
+    final fontSizeType = state.fontSizeType;
 
     final double defaultSize;
     switch (fontSizeType) {
@@ -54,9 +51,9 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
       labelSmall: TextStyle(fontSize: defaultSize),
     );
   }
-  
-  ThemeData _generateTheme(BuildContext context) {
-    final themeKey = context.read<SettingsCubit>().state.themeType;
+
+  ThemeData _generateTheme(SettingsState state) {
+    final themeKey = state.themeType;
 
     switch (themeKey) {
       case ThemeType.light:
@@ -64,32 +61,48 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
           useMaterial3: true,
           surface: const Color(0xffff7373),
           scheme: FlexScheme.mandyRed,
-          textTheme: _generateTextTheme(context),
+          textTheme: _generateTextTheme(state),
         );
       case ThemeType.dark:
         return FlexThemeData.dark(
           useMaterial3: true,
           scheme: FlexScheme.mandyRed,
-          textTheme: _generateTextTheme(context),
+          textTheme: _generateTextTheme(state),
         );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SettingsCubit(user: widget.user),
-      child: Builder(builder: (context) {
-        return BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SettingsCubit>(
+          create: (_) => SettingsCubit(user: user),
+        ),
+
+        BlocProvider<HomeCubit>(
+          create: (_) => HomeCubit(user: user),
+        ),
+
+        BlocProvider<ChatCubit>(
+          create: (_) => ChatCubit(user: user),
+        ),
+
+        BlocProvider<ChatEditorCubit>(
+          create: (_) => ChatEditorCubit(),
+        ),
+      ],
+      child: Builder(
+        builder: (_) => BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (_, state) {
             return MaterialApp(
               title: 'Cool Chat Journal',
-              theme: _generateTheme(context),
-              home: HomePage(user: widget.user),
+              theme: _generateTheme(state),
+              home: HomePage(user: user),
             );
           },
-        );
-      }),
+        ),
+      ),
     );
   }
 }

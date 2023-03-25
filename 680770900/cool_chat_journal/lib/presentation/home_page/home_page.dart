@@ -12,35 +12,18 @@ import '../settings_page/settings_page.dart';
 import 'home_cubit.dart';
 import 'widgets/manage_panel_dialog.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final User? user;
 
   const HomePage({
-    super.key,
     required this.user,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeCubit(user: user),
-      child: HomePageView(user: user),
-    );
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePageView extends StatefulWidget {
-  final User? user;
-
-  const HomePageView({
-    required this.user,
-  });
-
-  @override
-  State<HomePageView> createState() => _HomePageViewState();
-}
-
-class _HomePageViewState extends State<HomePageView> {
+class _HomePageState extends State<HomePage> {
   final _dateFormat = DateFormat.yMMMMd('en_US');
 
   void _openManagePanel(BuildContext context, Chat chat) {
@@ -52,11 +35,13 @@ class _HomePageViewState extends State<HomePageView> {
         chat: chat,
         onDeleteChat: () => cubit.deleteChat(chat.id),
         onSwitchChatPinning: () => cubit.switchChatPinning(chat),
-        onEditChat: () => Navigator.of(context).push<void>(
-          ChatEditorPage.route(
-            homeCubit: cubit,
-            sourceChat: chat,
-          ),
+        onEditChat: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatEditorPage(
+              sourceChat: chat,
+            ),
+          ), 
         ),
       ),
     );
@@ -66,12 +51,13 @@ class _HomePageViewState extends State<HomePageView> {
     return Card(
       child: InkWell(
         onLongPress: () => _openManagePanel(context, chat),
-        onTap: () => Navigator.of(context).push<void>(
-          ChatPage.route(
-            homeCubit: context.read<HomeCubit>(),
-            chatId: chat.id,
-            chatName: chat.name,
-            user: widget.user,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              chatId: chat.id,
+              chatName: chat.name,
+            ),
           ),
         ),
         child: Padding(
@@ -114,9 +100,14 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     super.initState();
-    context.read<HomeCubit>().initStream();
-    context.read<SettingsCubit>().initTheme();
-    context.read<SettingsCubit>().uploadBackgroundImage();
+    context.read<HomeCubit>().subscribeChatsStream();
+    context.read<SettingsCubit>().initSettings();
+  }
+
+  @override
+  void dispose() {
+    context.read<HomeCubit>().unsubscribeChatsStream();
+    super.dispose();
   }
 
   @override
@@ -176,15 +167,6 @@ class _HomePageViewState extends State<HomePageView> {
         ),
       ),
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: const Icon(Icons.settings_outlined),
-        //   onPressed: () => Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (_) => const SettingsPage(),
-        //     ),
-        //   ),
-        // ),
         title: const Text('Cool Chat Journal'),
         actions: [
           IconButton(
@@ -194,33 +176,20 @@ class _HomePageViewState extends State<HomePageView> {
         ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) => StreamBuilder(
-          stream: state.chatsStream,
-          builder: (_, snapshot) {
-            final chats = snapshot.data;
-
-            if (chats != null) {
-              context.read<HomeCubit>().sortChats(chats);
-              return ListView.builder(
-                itemCount: chats.length,
-                itemBuilder: (context, index) =>
-                    _createChatCard(context, chats[index]),
-              );
-            }
-
-            return const Center(child: CircularProgressIndicator());
-          },
+        builder: (context, state) => ListView.builder(
+          itemCount: state.chats.length,
+          itemBuilder: (context, index) =>
+            _createChatCard(context, state.chats[index]),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push<void>(
-            ChatEditorPage.route(
-              homeCubit: context.read<HomeCubit>(),
-            ),
-          );
-        },
+        onPressed: () => Navigator.push(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => const ChatEditorPage(),
+          ),
+        ),
       ),
     );
   }

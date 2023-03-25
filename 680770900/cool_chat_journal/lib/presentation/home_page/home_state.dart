@@ -1,34 +1,32 @@
 part of 'home_cubit.dart';
 
-enum StreamStatus { initial, success}
-
-extension StreamStatusX on StreamStatus {
-  bool get isInitial => this == StreamStatus.initial;
-  bool get isSuccess => this == StreamStatus.success;
-}
 
 class HomeState extends Equatable {
-  final Stream<List<Chat>> chatsStream;
+  final ChatsSubscription? streamSubscription;
   final List<Chat> chats;
-  final StreamStatus streamStatus;
 
   const HomeState({
-    this.chatsStream = const Stream.empty(),
+    this.streamSubscription,
     this.chats = const [],
-    this.streamStatus = StreamStatus.initial,
   });
 
   HomeState copyWith({
-    Stream<List<Chat>>? chatsStream,
+    _NullWrapper<ChatsSubscription?>? streamSubscription,
     List<Chat>? chats,
-    StreamStatus? streamStatus,
   }) =>
       HomeState(
-        chatsStream: chatsStream ?? this.chatsStream,
         chats: chats ?? this.chats,
-        streamStatus: streamStatus ?? this.streamStatus,
+        streamSubscription: streamSubscription != null 
+          ? streamSubscription.value
+          : this.streamSubscription,
       );
 
   @override
-  List<Object> get props => [chats, chatsStream, streamStatus];
+  List<Object?> get props => [chats, streamSubscription];
+}
+
+class _NullWrapper<T> {
+  final T value;
+
+  const _NullWrapper(this.value);
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +10,8 @@ import '../../../data/repository/events_repository.dart';
 
 part 'home_state.dart';
 
+typedef ChatsSubscription = StreamSubscription<List<Chat>>;
+
 class HomeCubit extends Cubit<HomeState> {
   final ChatsRepository _chatsRepository;
   final EventsRepository _eventsRepository;
@@ -17,12 +21,23 @@ class HomeCubit extends Cubit<HomeState> {
         _eventsRepository = EventsRepository(user: user),
         super(const HomeState());
 
-  void initStream() {
-    if (state.streamStatus.isInitial) {
+  void subscribeChatsStream() {
+    final subscription = _chatsRepository.chatsStream.listen(_setChats);
+
+    emit(
+      state.copyWith(
+        streamSubscription: _NullWrapper<ChatsSubscription?>(subscription),
+      ),
+    );
+  }
+
+  void unsubscribeChatsStream() {
+    if (state.streamSubscription != null) {
+      state.streamSubscription!.cancel();
+
       emit(
         state.copyWith(
-          chatsStream: _chatsRepository.stream,
-          streamStatus: StreamStatus.success,
+          streamSubscription: const _NullWrapper<ChatsSubscription?>(null),
         ),
       );
     }
@@ -45,11 +60,16 @@ class HomeCubit extends Cubit<HomeState> {
     await _chatsRepository.updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
 
-  void sortChats(List<Chat> chats) {
+  void _sortChats(List<Chat> chats) {
     chats.sort((a, b) {
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
       return a.createdTime.compareTo(b.createdTime);
     });
+  }
+
+  void _setChats(List<Chat> chats) {
+    _sortChats(chats);
+    emit(state.copyWith(chats: chats));
   }
 }

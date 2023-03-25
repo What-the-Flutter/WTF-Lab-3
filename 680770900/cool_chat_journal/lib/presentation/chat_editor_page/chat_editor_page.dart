@@ -9,40 +9,7 @@ import 'widgets/chat_icons.dart';
 class ChatEditorPage extends StatelessWidget {
   final Chat? sourceChat;
 
-  ChatEditorPage._({
-    super.key,
-    this.sourceChat,
-  });
-
-  static Route<void> route({
-    Key? key,
-    required HomeCubit homeCubit,
-    Chat? sourceChat,
-  }) {
-    return MaterialPageRoute(
-      builder: (_) => BlocProvider.value(
-        value: homeCubit,
-        child: ChatEditorPage._(
-          key: key,
-          sourceChat: sourceChat,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ChatEditorCubit(),
-      child: _ChatEditorView(sourceChat: sourceChat),
-    );
-  }
-}
-
-class _ChatEditorView extends StatelessWidget {
-  final Chat? sourceChat;
-
-  const _ChatEditorView({
+  const ChatEditorPage({
     super.key,
     this.sourceChat,
   });

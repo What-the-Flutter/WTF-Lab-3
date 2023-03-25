@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,65 +7,23 @@ import '../settings_page/settings_cubit.dart';
 import 'chat_cubit.dart';
 import 'widgets/widgets.dart';
 
-class ChatPage extends StatelessWidget {
-  final String chatId;
-  final String chatName;
-  final User? user;
-
-  const ChatPage._({
-    super.key,
-    required this.chatId,
-    required this.chatName,
-    required this.user,
-  });
-
-  static Route<void> route({
-    Key? key,
-    required HomeCubit homeCubit,
-    required String chatId,
-    required String chatName,
-    required User? user,
-  }) {
-    return MaterialPageRoute(
-      builder: (_) => BlocProvider.value(
-        value: homeCubit,
-        child: ChatPage._(
-          key: key,
-          chatId: chatId,
-          chatName: chatName,
-          user: user,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ChatCubit(user: user),
-      child: ChatView(
-        chatId: chatId,
-        chatName: chatName,
-      ),
-    );
-  }
-}
-
-class ChatView extends StatefulWidget {
+class ChatPage extends StatefulWidget {
   final String chatId;
   final String chatName;
 
-  const ChatView({
+  const ChatPage({
     super.key,
     required this.chatId,
     required this.chatName,
   });
 
   @override
-  State<ChatView> createState() => _ChatViewState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatViewState extends State<ChatView> {
+class _ChatPageState extends State<ChatPage> {
+  late VoidCallback _unsubscribeEventsStream;
+
   bool _isHasImage(BuildContext context) {
     final state = context.read<ChatCubit>().state;
 
@@ -341,22 +298,23 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
 
-    context.read<ChatCubit>().loadChat(widget.chatId);
-    context.read<ChatCubit>().updateEvents();
+    final cubit = context.read<ChatCubit>();
+    cubit.loadChat(widget.chatId);
+    cubit.subscribeEventsStream();
+    _unsubscribeEventsStream = cubit.unsubscribeEventsStream;
+  }
+
+  @override
+  void dispose() {
+    _unsubscribeEventsStream();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        final Widget body;
-        if (state.status.isSuccess) {
-          body = _createScaffoldBody(context);
-        } else if (state.status.isFailure) {
-          body = const Center(child: Text('Oops! Something wrong.'));
-        } else {
-          body = const Center(child: CircularProgressIndicator());
-        }
+        final body = _createScaffoldBody(context);
 
         final backgroundImage = 
             context.read<SettingsCubit>().state.backgroundImage;

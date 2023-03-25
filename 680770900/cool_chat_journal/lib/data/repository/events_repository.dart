@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
 import '../provider/database_provider.dart';
@@ -11,49 +12,35 @@ class EventsRepository {
   final StorageProvider _storageProvider;
 
   final imageCache = <String, Uint8List>{};
+  final _eventsSubject = BehaviorSubject<List<Event>>();
 
   EventsRepository({required User? user})
       : _databaseProvider = DatabaseProvider(user: user),
         _storageProvider = StorageProvider(user: user);
 
-  Future<List<Event>> readEvents(String chatId) async {
-    final jsonEvents = await _databaseProvider.read<Event>(
-      tableName: '${DatabaseProvider.eventsRoot}/$chatId',
-    );
+  Stream<List<Event>> get eventsStream => _databaseProvider.eventsStream;
 
-    final allEvents = jsonEvents.map(Event.fromJson);
+  Future<Uint8List> readImage(Event event) async {
+    if (imageCache.keys.contains(event.id)) {
+      return imageCache[event.id]!;
+    } else {
+      final image = await _storageProvider.download(
+          filename: _generateImagePath(event));
+      imageCache[event.id] = image;
 
-    final images = allEvents.where((event) => event.content == null);
-    final events = allEvents.where((event) => event.content != null).toList();
-
-    for (final imageEvent in images) {
-      final Uint8List image;
-
-      if (imageCache.keys.contains(imageEvent.id)) {
-        image = imageCache[imageEvent.id]!;
-      } else {
-        image = await _storageProvider.download(
-            filename: '${imageEvent.chatId}/${imageEvent.id}');
-        imageCache[imageEvent.id] = image;
-      }
-
-      events.add(imageEvent.copyWith(
-        image: NullWrapper<Uint8List?>(image),
-      ));
+      return image;
     }
-
-    return events;
   }
 
   Future<void> addEvent(Event event) async {
     await _databaseProvider.add(
       json: event.toJson(),
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
+      tableName: '${DatabaseProvider.eventsRoot}',
     );
 
     if (event.image != null) {
       await _storageProvider.upload(
-        filename: '${event.chatId}/${event.id}',
+        filename: _generateImagePath(event),
         data: event.image!,
       );
     }
@@ -61,41 +48,26 @@ class EventsRepository {
 
   Future<void> deleteEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.delete(filename: '${event.chatId}/${event.id}');
+      await _storageProvider.delete(filename: _generateImagePath(event));
     }
 
     await _databaseProvider.delete(
       id: event.id,
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
+      tableName: _generateEventPath(event),
     );
   }
 
   Future<void> updateEvent(Event event) async {
     if (event.image != null) {
       await _storageProvider.upload(
-        filename: '${event.chatId}/${event.id}',
+        filename: _generateImagePath(event),
         data: event.image!,
       );
     }
 
-    await _databaseProvider.delete(
-      id: event.id,
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
-    );
     await _databaseProvider.add(
       json: event.toJson(),
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
-    );
-  }
-
-  Future<void> deleteEventsFromChat(String chatId) async {
-    await _storageProvider.delete(
-      filename: chatId,
-    );
-
-    await _databaseProvider.delete(
-      id: chatId,
-      tableName: DatabaseProvider.eventsRoot,
+      tableName: _generateEventPath(event),
     );
   }
 
@@ -109,5 +81,22 @@ class EventsRepository {
     for (final event in events) {
       await updateEvent(event);
     }
+  }
+
+  Future<void> deleteEventsFromChat(String chatId) async {
+    final events = await _databaseProvider.eventsStream.last;
+    final deletedEvents = events.where((event) => event.chatId == chatId);
+
+    for (final event in deletedEvents) {
+      await deleteEvent(event);
+    }
+  }
+
+  String _generateImagePath(Event event) {
+    return event.id;
+  }
+
+  String _generateEventPath(Event event) {
+    return '${DatabaseProvider.eventsRoot}';
   }
 }

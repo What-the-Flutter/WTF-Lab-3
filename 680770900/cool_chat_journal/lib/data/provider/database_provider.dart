@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
 
@@ -11,7 +12,8 @@ class DatabaseProvider {
   static const categoriesRoot = 'categories';
   static const tagsRoot = 'tags';
 
-  final _chatsStreamController = StreamController<List<Chat>>();
+  final _chatsSubject = BehaviorSubject<List<Chat>>();
+  final _eventsSubject = BehaviorSubject<List<Event>>();
 
   final User? user;
 
@@ -20,14 +22,19 @@ class DatabaseProvider {
   }) {
     _initConnection(
       tableName: chatsRoot,
-      controller: _chatsStreamController,
+      subject: _chatsSubject,
       fromJson: Chat.fromJson,
+    );
+    _initConnection(
+      tableName: eventsRoot,
+      subject: _eventsSubject,
+      fromJson: Event.fromJson,
     );
   }
 
   void _initConnection<T>({
     required String tableName,
-    required StreamController<List<T>> controller,
+    required BehaviorSubject<List<T>> subject,
     required T Function(JsonMap) fromJson,
   }) {
     final ref =
@@ -37,7 +44,7 @@ class DatabaseProvider {
       (event) {
         final rawData = event.snapshot.value as Map<dynamic, dynamic>?;
         if (rawData == null) {
-          controller.add([]);
+          subject.add([]);
           return;
         }
 
@@ -54,7 +61,7 @@ class DatabaseProvider {
           objects.add(fromJson(json));
         }
 
-        controller.add(objects);
+        subject.add(objects);
       },
     );
   }
@@ -102,5 +109,6 @@ class DatabaseProvider {
         .remove();
   }
 
-  Stream<List<Chat>> get chatsStream => _chatsStreamController.stream;
+  Stream<List<Chat>> get chatsStream => _chatsSubject.stream;
+  Stream<List<Event>> get eventsStream => _eventsSubject.stream;
 }

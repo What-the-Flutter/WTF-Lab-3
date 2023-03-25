@@ -1,75 +1,71 @@
 part of 'chat_cubit.dart';
 
-enum ChatStatus { initial, loading, success, failure }
-
-extension ChatStatusX on ChatStatus {
-  bool get isInitial => this == ChatStatus.initial;
-  bool get isLoading => this == ChatStatus.loading;
-  bool get isSuccess => this == ChatStatus.success;
-  bool get isFailure => this == ChatStatus.failure;
-}
-
-class NullPropertyWrapper<T> {
-  final T value;
-
-  const NullPropertyWrapper(this.value);
-}
-
 class ChatState extends Equatable {
   final String chatId;
+  final EventsSubscription? eventsSubscription;
+  final Map<String, Uint8List>? images;
+
   final List<Event> events;
-  final bool isEditMode;
-  final bool isFavoriteMode;
   final List<String> selectedEventsIds;
   final List<Category> categories;
   final List<Tag> tags;
+
+  final bool isEditMode;
+  final bool isFavoriteMode;
   final bool showTags;
   final bool showCategories;
+
   final String? selectedCategoryId;
-  final ChatStatus status;
   final String? text;
 
   const ChatState({
     required this.chatId,
+    this.eventsSubscription,
+    this.images,
     this.events = const [],
-    this.isEditMode = false,
-    this.isFavoriteMode = false,
     this.selectedEventsIds = const [],
     this.categories = const [],
     this.tags = const [],
+    this.isEditMode = false,
+    this.isFavoriteMode = false,
     this.showTags = false,
     this.showCategories = false,
     this.selectedCategoryId,
-    this.status = ChatStatus.initial,
-    this.text = '',
+    this.text,
   });
 
   ChatState copyWith({
     String? chatId,
+    _NullWrapper<EventsSubscription?>? eventsSubscription,
+    _NullWrapper<Map<String, Uint8List>?>? images,
     List<Event>? events,
-    bool? isEditMode,
-    bool? isFavoriteMode,
     List<String>? selectedEventsIds,
     List<Category>? categories,
     List<Tag>? tags,
+    bool? isEditMode,
+    bool? isFavoriteMode,
     bool? showTags,
     bool? showCategories,
-    NullPropertyWrapper<String?>? selectedCategoryId,
-    ChatStatus? status,
+    _NullWrapper<String?>? selectedCategoryId,
     String? text,
   }) =>
       ChatState(
         chatId: chatId ?? this.chatId,
         events: events ?? this.events,
-        isEditMode: isEditMode ?? this.isEditMode,
-        isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
         selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
         categories: categories ?? this.categories,
         tags: tags ?? this.tags,
+        isEditMode: isEditMode ?? this.isEditMode,
+        isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
         showTags: showTags ?? this.showTags,
         showCategories: showCategories ?? this.showCategories,
-        status: status ?? this.status,
         text: text ?? this.text,
+        eventsSubscription: eventsSubscription != null
+            ? eventsSubscription.value
+            : this.eventsSubscription,
+        images: images != null
+            ? images.value
+            : this.images,
         selectedCategoryId: selectedCategoryId != null
             ? selectedCategoryId.value
             : this.selectedCategoryId,
@@ -79,15 +75,21 @@ class ChatState extends Equatable {
   List<Object?> get props => [
         chatId,
         events,
-        isEditMode,
-        isFavoriteMode,
+        images,
         selectedEventsIds,
         categories,
-        showCategories,
-        showTags,
-        selectedCategoryId,
-        status,
-        text,
         tags,
+        isEditMode,
+        isFavoriteMode,
+        showTags,
+        showCategories,
+        selectedCategoryId,
+        text,
       ];
+}
+
+class _NullWrapper<T> {
+  final T value;
+
+  const _NullWrapper(this.value);
 }

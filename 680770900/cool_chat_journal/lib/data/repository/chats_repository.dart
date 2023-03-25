@@ -39,5 +39,5 @@ class ChatsRepository {
     );
   }
 
-  Stream<List<Chat>> get stream => _databaseProvider.chatsStream;
+  Stream<List<Chat>> get chatsStream => _databaseProvider.chatsStream;
 }

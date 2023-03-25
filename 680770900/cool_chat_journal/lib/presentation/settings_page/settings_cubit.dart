@@ -21,6 +21,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     : _settingsRepository = SettingsRepository(user),
       super(const SettingsState());
 
+  Future<void> initSettings() async {
+    await initTheme();
+    await uploadBackgroundImage();
+  }
+
   Future<void> initTheme() async {
     final themeTypeConverter = 
       _Converter(
