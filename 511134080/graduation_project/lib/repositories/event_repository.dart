@@ -6,12 +6,14 @@ class EventRepository {
 
   EventRepository({required this.eventDao});
 
+  Stream<List<Event>> get eventsStream => eventDao.eventsStream;
+
   Future<List<Event>> receiveAllChatEvents(String chatId) =>
       eventDao.receiveAllChatEvents(chatId);
 
-  Future<int> insertEvent(Event event) => eventDao.createEvent(event);
+  Future<void> insertEvent(Event event) => eventDao.createEvent(event);
 
-  Future<int> updateEvent(Event event) => eventDao.updateEvent(event);
+  Future<void> updateEvent(Event event) => eventDao.updateEvent(event);
 
-  Future<int> deleteEventById(String id) => eventDao.deleteEvent(id);
+  Future<void> deleteEvent(Event event) => eventDao.deleteEvent(event);
 }

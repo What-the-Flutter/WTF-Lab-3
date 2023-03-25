@@ -1,11 +1,7 @@
-part of 'theme_cubit.dart';
+import 'package:flutter/material.dart';
 
-class ThemeState {
-  final bool isLight;
-
-  ThemeState({this.isLight = true});
-
-  final _lightTheme = ThemeData(
+class AppTheme {
+  final lightTheme = ThemeData(
     iconTheme: const IconThemeData(
       color: Colors.white,
     ),
@@ -18,9 +14,10 @@ class ThemeState {
     primaryColorLight: Colors.deepPurple.shade300,
     primaryColorDark: Colors.deepPurple,
     hoverColor: Colors.deepPurple,
+    disabledColor: Colors.grey[700],
   );
 
-  final _darkTheme = ThemeData(
+  final darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorSchemeSeed: Colors.deepPurple.shade700,
     useMaterial3: true,
@@ -29,7 +26,6 @@ class ThemeState {
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
     hoverColor: Colors.grey[850],
+    disabledColor: Colors.grey[700],
   );
-
-  ThemeData get theme => isLight ? _lightTheme : _darkTheme;
 }

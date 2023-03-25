@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'event.dart';
-
 @immutable
 class Chat {
   final String id;
@@ -11,7 +9,8 @@ class Chat {
   final DateTime? date;
   final bool isPinned;
   final bool isShowingFavourites;
-  final List<Event> events;
+  final String lastEventTitle;
+  final DateTime? lastEventTime;
 
   const Chat({
     required this.iconId,
@@ -20,7 +19,8 @@ class Chat {
     required this.date,
     this.isPinned = false,
     this.isShowingFavourites = false,
-    this.events = const [],
+    this.lastEventTitle = 'No events. Click here to create one.',
+    this.lastEventTime,
   });
 
   Chat copyWith({
@@ -30,7 +30,8 @@ class Chat {
     DateTime? newDate,
     bool? pinned,
     bool? showingFavourites,
-    List<Event>? newEvents,
+    String? newLastEventTitle,
+    DateTime? newLastEventTime,
   }) {
     return Chat(
       id: newId ?? id,
@@ -39,7 +40,8 @@ class Chat {
       date: newDate ?? date,
       isPinned: pinned ?? isPinned,
       isShowingFavourites: showingFavourites ?? isShowingFavourites,
-      events: newEvents ?? events,
+      lastEventTitle: newLastEventTitle ?? lastEventTitle,
+      lastEventTime: newLastEventTime ?? lastEventTime,
     );
   }
 
@@ -50,6 +52,10 @@ class Chat {
         date: DateTime.parse(data['date']),
         isPinned: data['is_pinned'] == 1 ? true : false,
         isShowingFavourites: data['is_showing_favourites'] == 1 ? true : false,
+        lastEventTitle: data['last_event_title'],
+        lastEventTime: data['last_event_time'] != null
+            ? DateTime.parse(data['last_event_time'])
+            : null,
       );
 
   Map<String, dynamic> toDatabaseMap() => {
@@ -59,5 +65,7 @@ class Chat {
         'date': date.toString(),
         'is_pinned': isPinned ? 1 : 0,
         'is_showing_favourites': isShowingFavourites ? 1 : 0,
+        'last_event_title': lastEventTitle,
+        'last_event_time': lastEventTime?.toString(),
       };
 }

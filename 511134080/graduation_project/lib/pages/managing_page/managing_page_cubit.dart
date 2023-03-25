@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
@@ -61,11 +60,10 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     final chat = Chat(
       iconId: state.selectedIndex,
       title: title,
-      id: UniqueKey().toString(),
+      id: '',
       date: DateTime.now(),
     );
 
-    state.chat = chat;
     await chatsRepository.insertChat(chat);
   }
 
@@ -77,7 +75,6 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
       newIconId: state.selectedIndex,
       newTitle: newTitle,
     );
-    state.chat = editedChat;
     await chatsRepository.updateChat(editedChat);
   }
 }

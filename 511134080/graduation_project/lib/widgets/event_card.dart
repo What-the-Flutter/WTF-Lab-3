@@ -19,15 +19,34 @@ class EventCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          _cardModel.title,
-          style: const TextStyle(),
+        Container(
+          constraints: const BoxConstraints(
+            maxWidth: 240,
+          ),
+          child: _cardModel.title.isNotEmpty
+              ? Text(
+                  _cardModel.title,
+                  style: const TextStyle(),
+                )
+              : null,
         ),
         const SizedBox(
           height: 5,
         ),
+        Container(
+          child: _cardModel.imagePath != null
+              ? Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 240,
+                  ),
+                  child: Image.network(
+                    _cardModel.imagePath!,
+                  ),
+                )
+              : null,
+        ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(
               Icons.check_circle,

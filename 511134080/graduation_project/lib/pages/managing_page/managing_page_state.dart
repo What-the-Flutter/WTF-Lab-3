@@ -5,7 +5,6 @@ class ManagingPageState {
   final bool isCreatingPage;
   final String inputText;
   final String title;
-  late final Chat chat;
 
   ManagingPageState({
     this.selectedIndex = 0,

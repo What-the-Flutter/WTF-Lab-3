@@ -6,11 +6,13 @@ class ChatRepository {
 
   ChatRepository({required this.chatDao});
 
+  Stream<List<Chat>> get chatsStream => chatDao.chatsStream;
+
   Future<List<Chat>> receiveAllChats() => chatDao.receiveChats();
 
-  Future<int> insertChat(Chat chat) => chatDao.createChat(chat);
+  Future<void> insertChat(Chat chat) => chatDao.createChat(chat);
 
-  Future<int> updateChat(Chat chat) => chatDao.updateChat(chat);
+  Future<void> updateChat(Chat chat) => chatDao.updateChat(chat);
 
-  Future<int> deleteChatById(String id) => chatDao.deleteChat(id);
+  Future<void> deleteChatById(String id) => chatDao.deleteChat(id);
 }
