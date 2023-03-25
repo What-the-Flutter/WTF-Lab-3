@@ -8,7 +8,6 @@ import '../../../../core/util/painter/triangle.dart';
 import '../../../../core/util/resources/dimensions.dart';
 import '../../../../core/util/resources/icons.dart';
 import '../../../../core/util/resources/strings.dart';
-import '../../../../core/util/typedefs.dart';
 import '../../../cubit/theme/theme_cubit.dart';
 import '../../../cubit/timeline/timeline_cubit.dart';
 import '../../../page/chat/chat_page.dart';
@@ -242,7 +241,7 @@ class TimelineMessageCard extends StatelessWidget {
     BuildContext context,
     String text,
     IconData icon,
-    Callback action,
+    VoidCallback action,
   ) {
     return Material(
       color: Color(ThemeScope.of(context).state.primaryColor),

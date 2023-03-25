@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../domain/models/chat.dart';
 import '../../../domain/utils/utils.dart';
@@ -66,43 +68,66 @@ class _HomePageState extends State<HomePage> {
   Drawer _buildDrawer(AppLocalizations? local, BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(child: Text('${DateTime.now()}')),
-          const ListTile(
-            title: Text('Help spread the word'),
-            leading: Icon(Icons.card_giftcard),
+          DrawerHeader(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                  '${DateFormat('EEEE, dd MMM yyyy').format(DateTime.now())}',
+                  style: textTheme(context).headline1!),
+            ),
           ),
-          const ListTile(
-            title: Text('Search'),
-            leading: Icon(Icons.search),
+          ListTile(
+            title: Text(
+              'Help spread the word',
+              style: textTheme(context).bodyText1!,
+            ),
+            leading: const Icon(Icons.card_giftcard),
+            onTap: () async {
+              final text =
+                  '''${local?.appShare}\n${local?.applicationProjectLink}''';
+              await Share.share(text);
+            },
           ),
-          const ListTile(
-            title: Text('Notification'),
-            leading: Icon(Icons.notifications),
+          ListTile(
+            title: Text('Search', style: textTheme(context).bodyText1!),
+            leading: const Icon(Icons.search),
           ),
-          const ListTile(
-            title: Text('Statistics'),
-            leading: Icon(Icons.analytics),
+          ListTile(
+            title: Text('Notification', style: textTheme(context).bodyText1!),
+            leading: const Icon(Icons.notifications),
+          ),
+          ListTile(
+            title: Text(
+              'Statistics',
+              style: textTheme(context).bodyText1!,
+            ),
+            leading: const Icon(Icons.analytics),
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: Text(local?.settings ?? ''),
+            title: Text(
+              local?.settings ?? '',
+              style: textTheme(context).bodyText1!,
+            ),
             onTap: () {
               openNewPage(context, const Settings());
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: Text('Category adding'),
+            title: Text(
+              'Category adding',
+              style: textTheme(context).bodyText1!,
+            ),
             onTap: () {
               closePage(context);
               openNewPage(context, const AddChatPage(isCategoryMode: true));
             },
           ),
-          const ListTile(
-            title: Text('Feedback'),
-            leading: Icon(Icons.feedback),
+          ListTile(
+            title: Text('Feedback', style: textTheme(context).bodyText1!),
+            leading: const Icon(Icons.feedback),
           )
         ],
       ),

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/repository/settings_repository_api.dart';
@@ -10,7 +9,14 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   SettingsCubit({required SettingsRepositoryApi rep})
       : _repository = rep,
-        super(SettingsState(theme: ThemeData.dark(), isLocked: false)) {
+        super(SettingsState(
+          theme: CustomTheme.darkTheme,
+          isLocked: false,
+          fontSize: 0,
+          alignment: false,
+          isCenter: false,
+          backgroundImage: '',
+        )) {
     _init();
   }
 
@@ -19,9 +25,17 @@ class SettingsCubit extends Cubit<SettingsState> {
         ? CustomTheme.darkTheme
         : CustomTheme.lightTheme;
     final isLocked = await _repository.isLocked;
+    final alignment = await _repository.alignment;
+    final centerDate = await _repository.isCenter;
+    final fontSize = await _repository.fontSize;
+    final backgroundImage = await _repository.backgroundImage;
     emit(state.copyWith(
       theme: theme,
       isLocked: isLocked,
+      alignment: alignment,
+      isCenter: centerDate,
+      fontSize: fontSize,
+      backgroundImage: backgroundImage,
     ));
   }
 
@@ -42,5 +56,53 @@ class SettingsCubit extends Cubit<SettingsState> {
   void setIsLocked(bool value) {
     _repository.setIsLocked(value);
     emit(state.copyWith(isLocked: value));
+  }
+
+  void changeFontSize(int size) {
+    switch (size) {
+      case 0:
+        _setFontSize(0);
+        break;
+      case -1:
+        _setFontSize(-1);
+        break;
+      default:
+        _setFontSize(1);
+        break;
+    }
+  }
+
+  void _setFontSize(int size) {
+    _repository.setFontSize(size);
+    emit(state.copyWith(fontSize: size));
+  }
+
+  void setBubbleAlignment(bool isRight) {
+    _repository.setBubbleAlignment(isRight);
+    emit(state.copyWith(alignment: isRight));
+  }
+
+  void setCenterDate(bool isCenter) {
+    _repository.setCenterDate(isCenter);
+    emit(state.copyWith(isCenter: isCenter));
+  }
+
+  void setBackgroundImage(String path) {
+    _repository.setBackgroundImage(path);
+    emit(state.copyWith(backgroundImage: path));
+  }
+
+  void setDefault() {
+    _repository.setDefault();
+    emit(
+      state.copyWith(
+        isLocked: false,
+        theme: CustomTheme.darkTheme,
+        fontSize: 0,
+        alignment: false,
+        isCenter: false,
+        backgroundImage: '',
+      ),
+    );
   }
 }

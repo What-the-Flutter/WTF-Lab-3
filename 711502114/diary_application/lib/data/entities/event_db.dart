@@ -1,4 +1,6 @@
-class EventDB {
+import 'package:equatable/equatable.dart';
+
+class EventDB extends Equatable {
   final String id;
   final String chatId;
   final String message;
@@ -60,6 +62,17 @@ class EventDB {
       categoryName: map[EventFields.categoryName] as String,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        chatId,
+        message,
+        creationTime,
+        isFavorite,
+        photoPath,
+        categoryName,
+      ];
 }
 
 class EventFields {

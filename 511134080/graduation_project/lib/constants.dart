@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'models/chat_model.dart';
-
 const icons = [
   Icon(
     Icons.title,
@@ -185,28 +183,4 @@ const categoryTitle = [
   'Running',
   'Sports',
   'Laundry',
-];
-
-final chats = [
-  ChatModel(
-    iconId: 1,
-    title: 'Travel',
-    id: UniqueKey(),
-    date: DateTime.now(),
-    cards: const [],
-  ),
-  ChatModel(
-    iconId: 2,
-    title: 'Family',
-    id: UniqueKey(),
-    date: DateTime.now(),
-    cards: const [],
-  ),
-  ChatModel(
-    iconId: 3,
-    title: 'Sports',
-    id: UniqueKey(),
-    date: DateTime.now(),
-    cards: const [],
-  ),
 ];

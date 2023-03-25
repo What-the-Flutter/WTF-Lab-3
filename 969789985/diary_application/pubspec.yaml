@@ -85,12 +85,16 @@ dependencies:
   rive: ^0.10.2
   lottie: ^2.2.0
   #graph:
-  graphic: ^1.0.1
+  syncfusion_flutter_charts: ^20.4.54
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
+  bloc_test: ^9.1.1
+  mockito: ^5.3.2
   json_serializable: ^6.3.1
   freezed: ^2.3.2
   build_runner: ^2.3.3

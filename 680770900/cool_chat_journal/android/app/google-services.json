@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "165493054205",
+    "project_id": "coolchatjournal",
+    "storage_bucket": "coolchatjournal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165493054205:android:6166465164c35178d7bc94",
+        "android_client_info": {
+          "package_name": "com.example.cool_chat_journal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165493054205-j579475vh5cnrltc7im0isfnt3spk52u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg89KWVzYdyMSDFe6q-wAkBj8N8w2P4lI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165493054205-j579475vh5cnrltc7im0isfnt3spk52u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

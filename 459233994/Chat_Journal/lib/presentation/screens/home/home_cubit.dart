@@ -1,37 +1,47 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repos/chat_repository.dart';
 import '../../../domain/entities/chat.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState()) {
+  final ChatRepositoryImpl _chatRepository;
+
+  HomeCubit({required chatRepository})
+      : _chatRepository = chatRepository,
+        super(HomeState()) {
     loadChats();
+    _chatRepository.dataBaseService.databaseRef
+        .child(_chatRepository.dataBaseService.fireBaseAuth.currentUser!.uid)
+        .child('chats')
+        .onValue
+        .listen(
+      (event) {
+        loadChats(); //TODO peredelat
+      },
+    );
   }
 
   Future<void> addChat({required Chat chat}) async {
-    await state.chatRepository.insertChat(chat);
-    emit(HomeState(chats: await state.chatRepository.getChats()));
+    await _chatRepository.insertChat(chat);
   }
 
   void editChat({
     required Chat editedChat,
   }) async {
-    state.chatRepository.changeChat(editedChat);
-    emit(HomeState(chats: await state.chatRepository.getChats()));
+    _chatRepository.changeChat(editedChat);
   }
 
-  void deleteChat({required Chat chat}) async{
-    state.chatRepository.deleteChat(chat);
-    emit(HomeState(chats: await state.chatRepository.getChats()));
+  void deleteChat({required Chat chat}) async {
+    _chatRepository.deleteChat(chat);
   }
 
-  void pinChat({required Chat chat}) async{
-    state.chatRepository.changeChat(chat);
-    emit(HomeState(chats: await state.chatRepository.getChats()));
+  void pinChat({required Chat chat}) async {
+    _chatRepository.changeChat(chat);
   }
 
   Future<void> loadChats() async {
-    var chats = await state.chatRepository.getChats();
+    final chats = await _chatRepository.getChats();
     state.chats.addAll(chats);
     emit(HomeState(chats: chats));
   }
@@ -40,7 +50,7 @@ class HomeCubit extends Cubit<HomeState> {
     return state.chats;
   }
 
-  Chat getChat(int index){
+  Chat getChat(int index) {
     return state.chats[index];
   }
 }

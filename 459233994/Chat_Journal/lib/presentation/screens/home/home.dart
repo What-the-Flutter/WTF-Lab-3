@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../widgets/app_theme/inherited_app_theme.dart';
+import '../../widgets/app_theme/app_theme_cubit.dart';
 import '../../widgets/home/chat_list.dart';
 import '../../widgets/home/questionnaire_button.dart';
 import '../../widgets/main_screen_section.dart';
@@ -18,7 +18,6 @@ class Home extends MainScreenSection {
 }
 
 class _HomeState extends State<Home> {
-
   Future<void> _addPage(BuildContext context) async {
     final newChat = await Navigator.push(
       context,
@@ -36,8 +35,11 @@ class _HomeState extends State<Home> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor:
-              InheritedAppTheme.of(context)?.getTheme.backgroundColor,
+          backgroundColor: ReadContext(context)
+              .read<AppThemeCubit>()
+              .state
+              .customTheme
+              .backgroundColor,
           body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -52,14 +54,21 @@ class _HomeState extends State<Home> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor:
-                InheritedAppTheme.of(context)?.getTheme.actionColor,
+            backgroundColor: ReadContext(context)
+                .read<AppThemeCubit>()
+                .state
+                .customTheme
+                .actionColor,
             onPressed: () => {
               _addPage(context),
             },
             child: Icon(
               Icons.add,
-              color: InheritedAppTheme.of(context)?.getTheme.iconColor,
+              color: ReadContext(context)
+                  .read<AppThemeCubit>()
+                  .state
+                  .customTheme
+                  .iconColor,
             ),
           ),
         );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -15,6 +17,7 @@ import '../../widgets/event_page/tool_menu_icon.dart';
 import '../home/home_cubit.dart';
 import '../search/search_cubit.dart';
 import '../search/search_page.dart';
+import '../settings/settings_cubit.dart';
 import 'event_cubit.dart';
 import 'event_state.dart';
 
@@ -52,28 +55,46 @@ class _MessengerPageState extends State<MessengerPage> {
           onWillPop: () => _handleBackButton(cubit),
           child: Scaffold(
             appBar: _buildAppBar(cubit),
-            body: Stack(
-              children: [
-                if (cubit.events.isEmpty) InfoBox(mainTitle: widget.chat.title),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildMessageList(size, cubit),
-                    Column(
-                      children: [
-                        if (cubit.categoryMode && checkOrientation(context))
-                          CategoryBox(setCategory: cubit.setCategory),
-                        EventKeyboard(
-                          width: size.width,
-                          fieldText: _fieldText,
-                          cubit: cubit,
-                          update: updateChatLastEvent,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+            body: Container(
+              decoration:
+                  context.watch<SettingsCubit>().state.backgroundImage != ''
+                      ? BoxDecoration(
+                          image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: FileImage(
+                            File(
+                              context
+                                  .watch<SettingsCubit>()
+                                  .state
+                                  .backgroundImage,
+                            ),
+                          ),
+                        ))
+                      : const BoxDecoration(),
+              child: Stack(
+                children: [
+                  if (cubit.events.isEmpty)
+                    InfoBox(mainTitle: widget.chat.title),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildMessageList(size, cubit),
+                      Column(
+                        children: [
+                          if (cubit.categoryMode && checkOrientation(context))
+                            CategoryBox(setCategory: cubit.setCategory),
+                          EventKeyboard(
+                            width: size.width,
+                            fieldText: _fieldText,
+                            cubit: cubit,
+                            update: updateChatLastEvent,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -84,7 +105,9 @@ class _MessengerPageState extends State<MessengerPage> {
   AppBar _buildAppBar(EventCubit cubit) {
     final selected = cubit.selectedMode;
     return AppBar(
-      title: selected ? null : Text(widget.chat.title),
+      title: selected
+          ? null
+          : Text(widget.chat.title, style: textTheme(context).headline1!),
       centerTitle: !selected,
       leading: selected
           ? ToolMenuIcon(
@@ -136,9 +159,7 @@ class _MessengerPageState extends State<MessengerPage> {
           alignment: const Alignment(.1, .15),
           child: Text(
             '${cubit.state.selectedIndexes.length}',
-            style: const TextStyle(
-              fontSize: 25,
-            ),
+            style: textTheme(context).headline1!,
           ),
         ),
       ),

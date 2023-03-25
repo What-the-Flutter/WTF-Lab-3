@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/util/resources/dimensions.dart';
 import '../../../../../core/util/resources/strings.dart';
-import '../../../../../core/util/typedefs.dart';
 import '../../../../cubit/timeline/timeline_cubit.dart';
 import '../../../theme/theme_scope.dart';
 import '../../scope/timeline_scope.dart';
@@ -57,7 +56,7 @@ class FilterDateSelector extends StatelessWidget {
 }
 
 class _DateSelector extends StatelessWidget {
-  final Callback action;
+  final VoidCallback action;
   final String buttonText;
   final double width;
   final int color;

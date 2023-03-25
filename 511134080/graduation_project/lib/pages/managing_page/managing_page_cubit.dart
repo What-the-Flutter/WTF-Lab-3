@@ -1,16 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
+import '../../repositories/chat_repository.dart';
 
 part 'managing_page_state.dart';
 
 class ManagingPageCubit extends Cubit<ManagingPageState> {
+  final ChatRepository chatsRepository;
+
   ManagingPageCubit({
     required ManagingPageState initState,
+    required this.chatsRepository,
   }) : super(initState);
 
-  void initState(ChatModel? chat) {
+  void initState(Chat? chat) {
     if (chat == null) {
       emit(
         state.copyWith(
@@ -45,58 +48,33 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
     );
   }
 
-  void manageChat(dynamic chatId, String title) {
-    if (state._isCreatingPage) {
-      addChat(title);
+  Future<void> manageChat(dynamic chatId, String title) async {
+    if (state.isCreatingPage) {
+      await addChat(title);
     } else {
-      editChat(chatId, title);
+      await editChat(chatId, title);
     }
   }
 
-  void addChat(String title) {
-    final chat = ChatModel(
-      iconId: state._selectedIndex,
+  Future<void> addChat(String title) async {
+    final chat = Chat(
+      iconId: state.selectedIndex,
       title: title,
-      id: UniqueKey(),
+      id: '',
       date: DateTime.now(),
-      cards: const [],
     );
 
-    final chats = List<ChatModel>.from([chat])..addAll(state._chats);
-
-    emit(
-      state.copyWith(
-        newChats: chats,
-      ),
-    );
-
-    state._resultPage = chat;
+    await chatsRepository.insertChat(chat);
   }
 
-  void editChat(dynamic chatId, String newTitle) {
-    final chat =
-        state._chats.where((chatModel) => chatModel.id == chatId).first;
+  Future<void> editChat(dynamic chatId, String newTitle) async {
+    final chats = await chatsRepository.receiveAllChats();
+    final chat = chats.where((chatModel) => chatModel.id == chatId).first;
 
     final editedChat = chat.copyWith(
-      newIconId: state._selectedIndex,
+      newIconId: state.selectedIndex,
       newTitle: newTitle,
     );
-
-    updateChat(editedChat);
-    state._resultPage = editedChat;
-  }
-
-  void updateChat(ChatModel editedChat) {
-    final index =
-        state._chats.indexWhere((element) => element.id == editedChat.id);
-
-    final chats = state._chats;
-    chats[index] = editedChat;
-
-    emit(
-      state.copyWith(
-        newChats: chats,
-      ),
-    );
+    await chatsRepository.updateChat(editedChat);
   }
 }

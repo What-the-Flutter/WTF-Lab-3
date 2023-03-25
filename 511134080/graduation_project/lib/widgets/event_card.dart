@@ -3,14 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
-import '../models/event_card_model.dart';
+import '../models/event.dart';
 import '../pages/chat/chat_cubit.dart';
 
 class EventCard extends StatelessWidget {
-  final EventCardModel _cardModel;
+  final Event _cardModel;
 
   const EventCard({
-    required EventCardModel cardModel,
+    required Event cardModel,
     required Key key,
   })  : _cardModel = cardModel,
         super(key: key);
@@ -19,15 +19,34 @@ class EventCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          _cardModel.title,
-          style: const TextStyle(),
+        Container(
+          constraints: const BoxConstraints(
+            maxWidth: 240,
+          ),
+          child: _cardModel.title.isNotEmpty
+              ? Text(
+                  _cardModel.title,
+                  style: const TextStyle(),
+                )
+              : null,
         ),
         const SizedBox(
           height: 5,
         ),
+        Container(
+          child: _cardModel.imagePath != null
+              ? Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 240,
+                  ),
+                  child: Image.network(
+                    _cardModel.imagePath!,
+                  ),
+                )
+              : null,
+        ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(
               Icons.check_circle,
@@ -62,16 +81,10 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (!_cardModel.isSelectionMode) {
-          context.read<ChatCubit>().manageFavouriteEventCard(_cardModel);
-        } else {
-          context.read<ChatCubit>().manageSelectedEvent(_cardModel);
-        }
+        context.read<ChatCubit>().manageTapEvent(_cardModel);
       },
       onLongPress: () {
-        if (!_cardModel.isSelectionMode) {
-          context.read<ChatCubit>().turnOnSelectionMode(_cardModel);
-        }
+        context.read<ChatCubit>().manageLongPress(_cardModel);
       },
       child: Row(
         mainAxisSize: MainAxisSize.min,

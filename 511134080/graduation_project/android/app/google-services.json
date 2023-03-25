@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "778943139809",
+    "project_id": "chat-journal-34bdb",
+    "storage_bucket": "chat-journal-34bdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778943139809:android:aef3e10abb6856d157cca0",
+        "android_client_info": {
+          "package_name": "com.KirznerNastya.graduation_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778943139809-mvf5561cfn8qh3c882t4edl5e2ns6l20.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1HlvvwJrSK9ffDb2aK8TYJKrqfpltJeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778943139809-mvf5561cfn8qh3c882t4edl5e2ns6l20.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,6 @@
-class ChatDB {
+import 'package:equatable/equatable.dart';
+
+class ChatDB extends Equatable {
   final String id;
   final String title;
   final int iconNumber;
@@ -66,6 +68,18 @@ class ChatDB {
       lastUpdate: map[ChatFields.lastUpdate] as String,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        iconNumber,
+        creationTime,
+        isPin,
+        isArchive,
+        lastEvent,
+        lastUpdate,
+      ];
 }
 
 class ChatFields {

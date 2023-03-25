@@ -12,7 +12,7 @@ class ClearFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StartScreenCubit, StartScreenState>(
-      builder: (context, sState) {
+      builder: (_, __) {
         return BlocBuilder<TimelineCubit, TimelineState>(
           builder: (context, state) {
             return AnimatedScale(

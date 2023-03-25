@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../theme/themes.dart';
 import 'settings_cubit.dart';
 import 'settings_state.dart';
 
@@ -12,6 +13,18 @@ class PickBackgroundImage extends StatelessWidget {
 
   const PickBackgroundImage({required this.state, Key? key}) : super(key: key);
 
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +32,7 @@ class PickBackgroundImage extends StatelessWidget {
         centerTitle: true,
         title: Text(
           'Background Image',
-          style: state.fontSize.headline1!,
+          style: textTheme(context).headline1!,
         ),
       ),
       body: _pickBackgroundImageBody(context),
@@ -43,7 +56,7 @@ class PickBackgroundImage extends StatelessWidget {
         children: [
           Text(
             'Click the button below to set the Background Image',
-            style: state.fontSize.bodyText2!,
+            style: textTheme(context).bodyText2!,
             textAlign: TextAlign.center,
           ),
           const SizedBox(
@@ -52,7 +65,7 @@ class PickBackgroundImage extends StatelessWidget {
           MaterialButton(
             child: Text(
               'Pick an Image',
-              style: state.fontSize.bodyText2!,
+              style: textTheme(context).bodyText2!,
             ),
             onPressed: () async => await _pickImage(context),
           ),
@@ -74,7 +87,7 @@ class PickBackgroundImage extends StatelessWidget {
         ListTile(
           title: Text(
             'Unset Image',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           leading: const Icon(Icons.delete),
           onTap: () => context.read<SettingsCubit>().setBackgroundImage(''),
@@ -82,7 +95,7 @@ class PickBackgroundImage extends StatelessWidget {
         ListTile(
           title: Text(
             'Pick a new Image',
-            style: state.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
           leading: const Icon(Icons.image),
           onTap: () async => await _pickImage(context),

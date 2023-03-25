@@ -20,17 +20,25 @@ dependencies:
   flutter_bloc: ^8.1.2
   equatable: ^2.0.5
   shared_preferences: ^2.0.18
-  chats_repository:
-    path: packages/chats_repository
-  local_storage_chats_api:
-    path: packages/local_storage_chats_api
   collection: ^1.16.0
+  json_annotation: ^4.8.0
+  sqflite: ^2.2.5
+  uuid: ^3.0.7
+  firebase_core: ^2.8.0
+  firebase_auth: ^4.2.2
+  firebase_database: ^10.0.16
+  firebase_storage: ^11.0.16
+  path_provider: ^2.0.13
+  share_plus: ^6.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.1
+
 
 flutter:
   uses-material-design: true

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/themes.dart';
 import '../../widgets/questionnaire_bot.dart';
 import '../chat_page/chat_page.dart';
 import '../create_chat_page/create_chat_cubit.dart';
@@ -18,6 +19,18 @@ class HomePage extends StatelessWidget {
   final SettingsState settingsState;
 
   const HomePage({required this.settingsState, super.key});
+
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +96,13 @@ class HomePage extends StatelessWidget {
           ListTile(
             title: Text(
               state.chats[i].name,
-              style: settingsState.fontSize.headline4!
+              style: textTheme(context)
+                  .headline4!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               state.chats[i].lastMessage,
-              style: settingsState.fontSize.bodyText1!,
+              style: textTheme(context).bodyText1!,
             ),
             leading: _chatIcon(state.chats[i], context),
           ),
@@ -99,7 +113,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _chatIcon(chat, context) {
-    final color = BlocProvider.of<SettingsCubit>(context).isLight()
+    final color = BlocProvider.of<SettingsCubit>(context).state.isLightTheme
         ? Colors.blueGrey
         : ChatJournalColors.lightGrey;
     return SizedBox(
@@ -133,16 +147,13 @@ class HomePage extends StatelessWidget {
         children: [
           _infoMenuElement(chat, context),
           _chatMenuElement(
-            chat,
-            'Pin/Unpin Page',
-            Icons.pin_drop,
-            Colors.green,
-          ),
+              chat, 'Pin/Unpin Page', Icons.pin_drop, Colors.green, context),
           _chatMenuElement(
             chat,
             'Archive Page',
             Icons.archive,
             ChatJournalColors.accentYellow,
+            context,
           ),
           _editMenuElement(i, state, context),
           _deleteMenuElement(chat, context),
@@ -163,11 +174,7 @@ class HomePage extends StatelessWidget {
         );
       },
       child: _chatMenuElement(
-        chat,
-        'Info',
-        Icons.info,
-        ChatJournalColors.green,
-      ),
+          chat, 'Info', Icons.info, ChatJournalColors.green, context),
     );
   }
 
@@ -179,7 +186,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             chat.name,
-            style: settingsState.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           ),
         ],
       ),
@@ -187,10 +194,11 @@ class HomePage extends StatelessWidget {
         constraints: const BoxConstraints(maxHeight: 150),
         child: Column(
           children: [
-            _chatInfo('Created', chat.creationDate),
+            _chatInfo('Created', chat.creationDate, context),
             _chatInfo(
               'Latest Event',
               chat.lastDate,
+              context,
             ),
           ],
         ),
@@ -200,21 +208,21 @@ class HomePage extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('OK', style: settingsState.fontSize.headline4!),
+          child: Text('OK', style: textTheme(context).headline4!),
         ),
       ],
     );
   }
 
-  Widget _chatInfo(String text, DateTime date) {
+  Widget _chatInfo(String text, DateTime date, BuildContext context) {
     return ListTile(
       title: Text(
         text,
-        style: settingsState.fontSize.bodyText1!,
+        style: textTheme(context).bodyText1!,
       ),
       subtitle: Text(
         DateFormat.yMd().add_jm().format(date),
-        style: settingsState.fontSize.bodyText1!,
+        style: textTheme(context).bodyText1!,
       ),
     );
   }
@@ -235,11 +243,7 @@ class HomePage extends StatelessWidget {
         homePageCubit.updateChats();
       },
       child: _chatMenuElement(
-        state.chats[i],
-        'Edit Page',
-        Icons.edit,
-        Colors.blue,
-      ),
+          state.chats[i], 'Edit Page', Icons.edit, Colors.blue, context),
     );
   }
 
@@ -255,12 +259,13 @@ class HomePage extends StatelessWidget {
         'Delete Page',
         Icons.delete,
         ChatJournalColors.lightRed,
+        context,
       ),
     );
   }
 
   Widget _chatMenuElement(
-      Chat chat, String name, IconData iconData, Color color) {
+      Chat chat, String name, IconData iconData, Color color, context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 10,
@@ -276,7 +281,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 30),
           Text(
             name,
-            style: settingsState.fontSize.bodyText1!,
+            style: textTheme(context).bodyText1!,
           )
         ],
       ),

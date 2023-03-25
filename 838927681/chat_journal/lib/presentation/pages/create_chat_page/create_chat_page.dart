@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/icon_map.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/themes.dart';
 import '../settings_page/settings_cubit.dart';
 import 'create_chat_cubit.dart';
 import 'create_chat_state.dart';
@@ -18,6 +19,18 @@ class CreateChatPage extends StatelessWidget {
     super.key,
   });
 
+  TextTheme textTheme(BuildContext context) {
+    final fontSize = context.read<SettingsCubit>().state.fontSize;
+    switch (fontSize) {
+      case 1:
+        return Themes.largeTextTheme;
+      case -1:
+        return Themes.smallTextTheme;
+      default:
+        return Themes.normalTextTheme;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     createChatCubit = BlocProvider.of<CreateChatCubit>(context);
@@ -29,7 +42,7 @@ class CreateChatPage extends StatelessWidget {
         return Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              color: BlocProvider.of<SettingsCubit>(context).isLight()
+              color: context.watch<SettingsCubit>().state.isLightTheme
                   ? ChatJournalColors.white
                   : ChatJournalColors.black,
             ),
@@ -42,12 +55,7 @@ class CreateChatPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(chat != null ? 'Edit Page' : 'Create a new Page',
-                        style: context
-                            .watch<SettingsCubit>()
-                            .state
-                            .fontSize
-                            .headline2!
-                            .copyWith(
+                        style: textTheme(context).headline2!.copyWith(
                               fontWeight: FontWeight.bold,
                             )),
                     _inputPanel(state, context),
@@ -73,7 +81,7 @@ class CreateChatPage extends StatelessWidget {
         horizontal: 15,
       ),
       decoration: BoxDecoration(
-        color: BlocProvider.of<SettingsCubit>(context).isLight()
+        color: context.watch<SettingsCubit>().state.isLightTheme
             ? ChatJournalColors.iconGrey
             : ChatJournalColors.darkGrey,
         borderRadius: BorderRadius.circular(5),
@@ -83,9 +91,9 @@ class CreateChatPage extends StatelessWidget {
         children: [
           Text(
             'Name of the Page',
-            style: context.watch<SettingsCubit>().state.fontSize.bodyText1!.copyWith(
-              color: ChatJournalColors.accentYellow,
-            ),
+            style: textTheme(context).bodyText1!.copyWith(
+                  color: ChatJournalColors.accentYellow,
+                ),
             textAlign: TextAlign.left,
           ),
           _textField(state, context),
@@ -130,7 +138,7 @@ class CreateChatPage extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: BlocProvider.of<SettingsCubit>(context).isLight()
+                  color: context.watch<SettingsCubit>().state.isLightTheme
                       ? Colors.blueGrey
                       : ChatJournalColors.iconGrey,
                 ),

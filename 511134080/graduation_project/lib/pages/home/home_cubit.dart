@@ -1,45 +1,37 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/chat_model.dart';
+import '../../models/chat.dart';
+import '../../repositories/chat_repository.dart';
+import '../../repositories/event_repository.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({required HomeState initState}) : super(initState);
+  final ChatRepository chatsRepository;
+  final EventRepository eventsRepository;
+  late final StreamSubscription<List<Chat>> chatsSubscription;
 
-  void updateChats(ChatModel newChat) {
-    final index =
-        state._chats.indexWhere((ChatModel chat) => chat.id == newChat.id);
-    if (index != -1) {
-      final chats = state._chats;
-      chats[index] = newChat;
-      emit(
-        state.copyWith(
-          newChats: chats,
-        ),
-      );
-    } else {
-      final chats = List<ChatModel>.from([newChat])..addAll(state._chats);
+  HomeCubit({
+    required this.chatsRepository,
+    required this.eventsRepository,
+  }) : super(HomeState());
 
-      emit(
-        state.copyWith(
-          newChats: chats,
-        ),
-      );
-    }
+  void init() {
+    chatsSubscription = chatsRepository.chatsStream.listen((chats) async {
+      emit(state.copyWith(newChats: chats));
+    });
   }
 
-  void deleteChat(dynamic chatId) {
-    final chats = List<ChatModel>.from(state._chats)
-      ..removeWhere((ChatModel chat) => chat.id == chatId);
-    emit(state.copyWith(newChats: chats));
+  Future<void> deleteChat(String chatId) async {
+    await chatsRepository.deleteChatById(chatId);
   }
 
-  void togglePinState(dynamic chatId) {
-    final chat =
-        state._chats.where((ChatModel chat) => chat.id == chatId).first;
+  Future<void> togglePinState(String chatId) async {
+    final chat = state.chats.where((Chat chat) => chat.id == chatId).first;
 
-    updateChats(
+    await chatsRepository.updateChat(
       chat.copyWith(
         pinned: !chat.isPinned,
       ),
