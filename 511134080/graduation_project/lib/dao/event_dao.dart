@@ -10,8 +10,8 @@ class EventDao {
     return _dbProvider.eventsStream.map((event) {
       final snapshot = event.snapshot;
       return snapshot.children
-          .map((e) =>
-              Event.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .map((event) => Event.fromDatabaseMap(
+              Map<String, dynamic>.from(event.value as Map)))
           .toList();
     });
   }
@@ -20,8 +20,8 @@ class EventDao {
     final snapshot = await _dbProvider.queryAllEvents(chatId);
     if (snapshot.exists) {
       return snapshot.children
-          .map((e) =>
-              Event.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .map((event) => Event.fromDatabaseMap(
+              Map<String, dynamic>.from(event.value as Map)))
           .toList()
         ..sort((a, b) => a.time.compareTo(b.time));
     } else {

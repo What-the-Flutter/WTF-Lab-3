@@ -23,7 +23,7 @@ class EventCard extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: 240,
           ),
-          child: _cardModel.title != ''
+          child: _cardModel.title.isNotEmpty
               ? Text(
                   _cardModel.title,
                   style: const TextStyle(),

@@ -22,7 +22,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void initSubscription() {
     eventsSubscription = eventsRepository.eventsStream.listen((events) async {
-      if (state.chat.id != '') {
+      if (state.chat.id.isNotEmpty) {
         final chatEvents = List<Event>.from(
             events.where((event) => event.chatId == state.chat.id))
           ..sort((a, b) => a.time.compareTo(b.time));
@@ -83,7 +83,7 @@ class ChatCubit extends Cubit<ChatState> {
   void inputChanged(String value) {
     emit(
       state.copyWith(
-        inputEmpty: value == '',
+        inputEmpty: value.isEmpty,
       ),
     );
   }
@@ -130,7 +130,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void onEnterSubmitted(String title) {
     if (!state.isEditingMode) {
-      if (title != '' || state.categoryIconIndex != 0) {
+      if (title.isNotEmpty || state.categoryIconIndex != 0) {
         final reg = RegExp(r'[#\[\]]');
         final key = UniqueKey().toString();
         final event = Event(

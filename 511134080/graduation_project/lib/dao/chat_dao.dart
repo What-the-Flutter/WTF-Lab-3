@@ -10,8 +10,8 @@ class ChatDao {
     return _dbProvider.chatsStream.map((event) {
       final snapshot = event.snapshot;
       return snapshot.children
-          .map((e) =>
-              Chat.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .map((chat) => Chat.fromDatabaseMap(
+              Map<String, dynamic>.from(chat.value as Map)))
           .toList();
     });
   }
@@ -20,8 +20,8 @@ class ChatDao {
     final snapshot = await _dbProvider.queryAllChats();
     if (snapshot.exists) {
       return snapshot.children
-          .map((e) =>
-              Chat.fromDatabaseMap(Map<String, dynamic>.from(e.value as Map)))
+          .map((chat) => Chat.fromDatabaseMap(
+              Map<String, dynamic>.from(chat.value as Map)))
           .toList();
     } else {
       return [];

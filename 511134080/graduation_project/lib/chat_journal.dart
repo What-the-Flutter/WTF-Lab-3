@@ -15,26 +15,26 @@ import 'repositories/chat_repository.dart';
 import 'repositories/event_repository.dart';
 
 class ChatJournal extends StatefulWidget {
-  late final DatabaseProvider dbProvider;
-  late final ChatDao chatDao;
-  late final EventDao eventDao;
-  late final ChatRepository chatRepository;
-  late final EventRepository eventRepository;
   ChatJournal();
   @override
   State<ChatJournal> createState() => _ChatJournalState();
 }
 
 class _ChatJournalState extends State<ChatJournal> {
+  late final DatabaseProvider dbProvider;
+  late final ChatDao chatDao;
+  late final EventDao eventDao;
+  late final ChatRepository chatRepository;
+  late final EventRepository eventRepository;
   @override
   void initState() {
     super.initState();
     SignInAnonymously.signInAnonymously();
-    widget.dbProvider = DatabaseProvider();
-    widget.chatDao = ChatDao(dbProvider: widget.dbProvider);
-    widget.eventDao = EventDao(dbProvider: widget.dbProvider);
-    widget.chatRepository = ChatRepository(chatDao: widget.chatDao);
-    widget.eventRepository = EventRepository(eventDao: widget.eventDao);
+    dbProvider = DatabaseProvider();
+    chatDao = ChatDao(dbProvider: dbProvider);
+    eventDao = EventDao(dbProvider: dbProvider);
+    chatRepository = ChatRepository(chatDao: chatDao);
+    eventRepository = EventRepository(eventDao: eventDao);
   }
 
   @override
@@ -43,18 +43,18 @@ class _ChatJournalState extends State<ChatJournal> {
       providers: [
         BlocProvider(
           create: (_) => HomeCubit(
-            chatsRepository: widget.chatRepository,
-            eventsRepository: widget.eventRepository,
+            chatsRepository: chatRepository,
+            eventsRepository: eventRepository,
           ),
         ),
         BlocProvider(
           create: (context) => ChatCubit(
-            eventsRepository: widget.eventRepository,
+            eventsRepository: eventRepository,
           ),
         ),
         BlocProvider(
           create: (context) => ManagingPageCubit(
-            chatsRepository: widget.chatRepository,
+            chatsRepository: chatRepository,
             initState: ManagingPageState(),
           ),
         ),
@@ -69,7 +69,7 @@ class _ChatJournalState extends State<ChatJournal> {
         builder: (context, state) {
           return MaterialApp(
             title: 'Chat Journal',
-            theme: state.theme,
+            theme: state.currentTheme,
             debugShowCheckedModeBanner: false,
             initialRoute: '/',
             routes: {

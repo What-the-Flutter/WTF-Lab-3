@@ -15,6 +15,7 @@ class DatabaseProvider {
   final DatabaseReference _databaseReference;
   final Reference _storageRef;
   final User? _user;
+
   DatabaseProvider()
       : _databaseReference = FirebaseDatabase.instance.ref('users'),
         _user = FirebaseAuth.instance.currentUser,
@@ -36,7 +37,7 @@ class DatabaseProvider {
       final downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -46,7 +47,7 @@ class DatabaseProvider {
           await _databaseReference.child('${_user!.uid}').child('chats').get();
       return snapshot;
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -56,7 +57,7 @@ class DatabaseProvider {
           _databaseReference.child('${_user!.uid}').child('chats');
       await chatsReference.child(chat['id']).set(chat);
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -67,7 +68,7 @@ class DatabaseProvider {
           .child('chats/${chat['id']}');
       await chatReference.update(chat);
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -87,7 +88,7 @@ class DatabaseProvider {
       }
       _databaseReference.update(updates);
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -101,7 +102,7 @@ class DatabaseProvider {
           .get();
       return snapshot;
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -120,7 +121,7 @@ class DatabaseProvider {
         await eventsReference.child(event.id).set(event.toDatabaseMap());
       }
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -131,7 +132,7 @@ class DatabaseProvider {
           .child('events/${event['id']}');
       await eventReference.update(event);
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 
@@ -141,7 +142,7 @@ class DatabaseProvider {
           _databaseReference.child('${_user!.uid}').child('events/$eventId');
       await eventReference.remove();
     } else {
-      throw Exception('Not sign in!!!');
+      throw Exception('Not signed in!!!');
     }
   }
 }
