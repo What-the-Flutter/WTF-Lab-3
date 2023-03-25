@@ -1,5 +1,5 @@
-import '../database/database_provider.dart';
 import '../models/chat.dart';
+import '../providers/database_provider.dart';
 
 class ChatDao {
   final DatabaseProvider _dbProvider;

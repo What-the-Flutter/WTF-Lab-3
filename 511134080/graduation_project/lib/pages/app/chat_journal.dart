@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'dao/chat_dao.dart';
-import 'dao/event_dao.dart';
-import 'database/database_provider.dart';
-import 'pages/chat/chat_cubit.dart';
-import 'pages/home/home_cubit.dart';
-import 'pages/home/home_page.dart';
-import 'pages/managing_page/managing_page_cubit.dart';
-import 'pages/searching_page/searching_page_cubit.dart';
-import 'pages/settings/settings_cubit.dart';
-import 'pages/singInAnonymously.dart';
-import 'repositories/chat_repository.dart';
-import 'repositories/event_repository.dart';
+import '../../dao/chat_dao.dart';
+import '../../dao/event_dao.dart';
+import '../../providers/database_provider.dart';
+import '../../repositories/chat_repository.dart';
+import '../../repositories/event_repository.dart';
+import '../chat/chat_cubit.dart';
+import '../home/home_cubit.dart';
+import '../home/home_page.dart';
+import '../managing_page/managing_page_cubit.dart';
+import '../searching_page/searching_page_cubit.dart';
+import '../settings/settings_cubit.dart';
+import 'app_cubit.dart';
 
 class ChatJournal extends StatefulWidget {
   ChatJournal();
@@ -29,7 +29,6 @@ class _ChatJournalState extends State<ChatJournal> {
   @override
   void initState() {
     super.initState();
-    SignInAnonymously.signInAnonymously();
     dbProvider = DatabaseProvider();
     chatDao = ChatDao(dbProvider: dbProvider);
     eventDao = EventDao(dbProvider: dbProvider);
@@ -41,6 +40,9 @@ class _ChatJournalState extends State<ChatJournal> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (_) => AppCubit(),
+        ),
         BlocProvider(
           create: (_) => HomeCubit(
             chatsRepository: chatRepository,

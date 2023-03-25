@@ -1,5 +1,5 @@
-import '../database/database_provider.dart';
 import '../models/event.dart';
+import '../providers/database_provider.dart';
 
 class EventDao {
   final DatabaseProvider _dbProvider;

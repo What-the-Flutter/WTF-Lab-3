@@ -66,7 +66,6 @@ class Chat {
         'is_pinned': isPinned ? 1 : 0,
         'is_showing_favourites': isShowingFavourites ? 1 : 0,
         'last_event_title': lastEventTitle,
-        'last_event_time':
-            lastEventTime != null ? lastEventTime.toString() : null,
+        'last_event_time': lastEventTime?.toString(),
       };
 }
