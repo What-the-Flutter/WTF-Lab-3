@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../data/models/chat.dart';
 import '../chat_editor_page/chat_editor_page.dart';
@@ -39,6 +41,8 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomePageViewState extends State<HomePageView> {
+  final _dateFormat = DateFormat.yMMMMd('en_US');
+
   void _openManagePanel(BuildContext context, Chat chat) {
     final cubit = context.read<HomeCubit>();
 
@@ -59,8 +63,6 @@ class _HomePageViewState extends State<HomePageView> {
   }
 
   Widget _createChatCard(BuildContext context, Chat chat) {
-    final theme = context.read<SettingsCubit>().state.themeData;
-
     return Card(
       child: InkWell(
         onLongPress: () => _openManagePanel(context, chat),
@@ -80,18 +82,19 @@ class _HomePageViewState extends State<HomePageView> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: theme.colorScheme.background,
+                    color: Colors.white,
                   ),
                   child: Icon(
                     IconData(chat.iconCode, fontFamily: 'MaterialIcons'),
+                    color: Colors.black,
                   ),
                 ),
                 if (chat.isPinned)
                   Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
+                      color: Theme.of(context).cardColor,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -112,32 +115,81 @@ class _HomePageViewState extends State<HomePageView> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().initStream();
-
-    final settingsCubit = context.read<SettingsCubit>();
-
-    if (!settingsCubit.state.isInit) {
-      settingsCubit.initTheme();
-    }
+    context.read<SettingsCubit>().initTheme();
+    context.read<SettingsCubit>().uploadBackgroundImage();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const SettingsPage(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: theme.primaryColor,
+              ),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  _dateFormat.format(DateTime.now()),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 25.0,
+                  ),
+                ),
+              ),
             ),
-          ),
+            InkWell(
+              child: const ListTile(
+                leading: Icon(Icons.redeem),
+                title: Text('Help spread the world'),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Share.share('Keep track of your life with Chat Journal,'
+                ' a simple and elegant chat-based journal/notes'
+                'application that makes journaling/note-taking fun,'
+                'easy, quick and effortless. '
+                'https://play.google.com/store/apps/details?'
+                'id=com.agiletelescope.chatjournal');
+              },
+            ),
+            InkWell(
+              child: const ListTile(
+                leading: Icon(Icons.settings_outlined),
+                title: Text('Settings'),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SettingsPage(),
+                  ),
+                );
+              }
+            ),
+          ],
         ),
+      ),
+      appBar: AppBar(
+        // leading: IconButton(
+        //   icon: const Icon(Icons.settings_outlined),
+        //   onPressed: () => Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (_) => const SettingsPage(),
+        //     ),
+        //   ),
+        // ),
         title: const Text('Cool Chat Journal'),
         actions: [
           IconButton(
             icon: const Icon(Icons.color_lens_outlined),
-            onPressed: () => context.read<SettingsCubit>().switchTheme(),
+            onPressed: () => context.read<SettingsCubit>().switchThemeType(),
           ),
         ],
       ),

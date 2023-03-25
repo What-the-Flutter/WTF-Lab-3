@@ -1,22 +1,29 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/theme.dart';
+import '../models/theme_info.dart';
 
 class SettingsProvider {
-  static const themeName = 'theme';
   final _prefs = SharedPreferences.getInstance();
 
-  Future<void> save(ThemeKey theme) async {
+  Future<void> save(ThemeInfo themeInfo) async {
     final prefs = await _prefs;
-    await prefs.setString(themeName, theme.name);
+    final json = themeInfo.toJson();
+
+    for (final field in json.keys) {
+      await prefs.setString(field, json[field] as String);
+    }
   }
 
-  Future<ThemeKey> read() async {
+  Future<ThemeInfo> read({
+    String? defaultValue = '',
+  }) async {
     final prefs = await _prefs;
-    final name = prefs.getString(themeName);
+    var json = <String, dynamic>{};
 
-    if (name == ThemeKey.dark.name) return ThemeKey.dark;
+    for (final field in ThemeInfo.fields) {
+      json[field] = await prefs.getString(field) ?? defaultValue;
+    }
 
-    return ThemeKey.light;
+    return ThemeInfo.fromJson(json);
   }
 }

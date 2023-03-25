@@ -22,9 +22,12 @@ class ChatState extends Equatable {
   final bool isFavoriteMode;
   final List<String> selectedEventsIds;
   final List<Category> categories;
+  final List<Tag> tags;
+  final bool showTags;
   final bool showCategories;
   final String? selectedCategoryId;
   final ChatStatus status;
+  final String? text;
 
   const ChatState({
     required this.chatId,
@@ -33,9 +36,12 @@ class ChatState extends Equatable {
     this.isFavoriteMode = false,
     this.selectedEventsIds = const [],
     this.categories = const [],
+    this.tags = const [],
+    this.showTags = false,
     this.showCategories = false,
     this.selectedCategoryId,
     this.status = ChatStatus.initial,
+    this.text = '',
   });
 
   ChatState copyWith({
@@ -45,9 +51,12 @@ class ChatState extends Equatable {
     bool? isFavoriteMode,
     List<String>? selectedEventsIds,
     List<Category>? categories,
+    List<Tag>? tags,
+    bool? showTags,
     bool? showCategories,
     NullPropertyWrapper<String?>? selectedCategoryId,
     ChatStatus? status,
+    String? text,
   }) =>
       ChatState(
         chatId: chatId ?? this.chatId,
@@ -56,8 +65,11 @@ class ChatState extends Equatable {
         isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
         selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
         categories: categories ?? this.categories,
+        tags: tags ?? this.tags,
+        showTags: showTags ?? this.showTags,
         showCategories: showCategories ?? this.showCategories,
         status: status ?? this.status,
+        text: text ?? this.text,
         selectedCategoryId: selectedCategoryId != null
             ? selectedCategoryId.value
             : this.selectedCategoryId,
@@ -72,7 +84,10 @@ class ChatState extends Equatable {
         selectedEventsIds,
         categories,
         showCategories,
+        showTags,
         selectedCategoryId,
         status,
+        text,
+        tags,
       ];
 }

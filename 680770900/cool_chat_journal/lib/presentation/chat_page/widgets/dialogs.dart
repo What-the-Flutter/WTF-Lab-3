@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../data/models/chat.dart';
-import '../../settings_page/settings_cubit.dart';
 
 class DeleteDialog extends StatelessWidget {
   final int countSelectedEvents;
@@ -64,6 +62,7 @@ class _TransferDialogState extends State<TransferDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Container(
         margin: const EdgeInsets.all(40.0),
@@ -71,7 +70,7 @@ class _TransferDialogState extends State<TransferDialog> {
           horizontal: 30.0,
           vertical: 20.0,
         ),
-        color: context.read<SettingsCubit>().state.themeData.primaryColor,
+        color: theme.primaryColor,
         child: Material(
           type: MaterialType.transparency,
           child: Column(
@@ -85,11 +84,7 @@ class _TransferDialogState extends State<TransferDialog> {
                   itemBuilder: (context, index) {
                     return RadioListTile(
                       title: Text(widget.chats[index].name),
-                      activeColor: context
-                          .read<SettingsCubit>()
-                          .state
-                          .themeData
-                          .backgroundColor,
+                      activeColor: theme.backgroundColor,
                       value: widget.chats[index].id,
                       groupValue: _selectedChat,
                       onChanged: (value) => setState(
@@ -105,11 +100,7 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: context
-                          .read<SettingsCubit>()
-                          .state
-                          .themeData
-                          .backgroundColor,
+                      color: theme.backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('OK'),
@@ -119,11 +110,7 @@ class _TransferDialogState extends State<TransferDialog> {
                   Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     decoration: BoxDecoration(
-                      color: context
-                          .read<SettingsCubit>()
-                          .state
-                          .themeData
-                          .backgroundColor,
+                      color: theme.backgroundColor,
                     ),
                     child: TextButton(
                       child: const Text('Cancel'),

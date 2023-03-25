@@ -9,10 +9,9 @@ class DatabaseProvider {
   static const chatsRoot = 'chats';
   static const eventsRoot = 'events';
   static const categoriesRoot = 'categories';
+  static const tagsRoot = 'tags';
 
   final _chatsStreamController = StreamController<List<Chat>>();
-  final _eventsStreamController = StreamController<List<Event>>();
-  final _categoriesStreamController = StreamController<List<Category>>();
 
   final User? user;
 
@@ -104,7 +103,4 @@ class DatabaseProvider {
   }
 
   Stream<List<Chat>> get chatsStream => _chatsStreamController.stream;
-  Stream<List<Event>> get eventsStream => _eventsStreamController.stream;
-  Stream<List<Category>> get categoriesStream => 
-    _categoriesStreamController.stream;
 }

@@ -54,7 +54,7 @@ class _EventViewState extends State<EventView> {
     );
   }
 
-  Widget _createEventContent() {
+  Widget _createEventContent(BuildContext context) {
     final Widget eventContent;
     if (widget.event.image != null) {
       eventContent = Padding(
@@ -69,13 +69,14 @@ class _EventViewState extends State<EventView> {
       eventContent = Text(widget.event.content!);
     }
 
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          color:
-              context.read<SettingsCubit>().state.themeData.colorScheme.primary,
+          color: theme.colorScheme.primary,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         margin: const EdgeInsets.all(4.0),
@@ -111,12 +112,16 @@ class _EventViewState extends State<EventView> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Flexible(
-          child: _createEventContent(),
-        ),
-      ],
+    final AlignmentGeometry alignment;
+    if (context.read<SettingsCubit>().state.bubbleAlignmentType.isLeft) {
+      alignment = Alignment.bottomLeft;
+    } else {
+      alignment = Alignment.bottomRight;
+    }
+
+    return Align(
+      alignment: alignment,
+      child: _createEventContent(context),
     );
   }
 }

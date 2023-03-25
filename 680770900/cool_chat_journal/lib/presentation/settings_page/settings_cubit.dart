@@ -1,49 +1,144 @@
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:flutter/material.dart';
 
-import '../../../data/models/theme.dart';
 import '../../../data/repository/settings_repository.dart';
+import '../../data/models/theme_info.dart';
 
 part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
-  final _settingsRepository = SettingsRepository();
+  static final defaultThemeType = ThemeType.light;
+  static final defaultFontSizeType = FontSizeType.medium;
+  static final defaultBubbleAlignmentType = BubbleAlignmentType.left;
 
-  SettingsCubit() 
-    : super(
-      SettingsState(
-        themeData: ThemeKeyX.lightTheme,
+  final SettingsRepository _settingsRepository;
+
+  SettingsCubit({required User? user})
+    : _settingsRepository = SettingsRepository(user),
+      super(const SettingsState());
+
+  Future<void> initTheme() async {
+    final themeTypeConverter = 
+      _Converter(
+        values: ThemeType.values,
+        defaultValue: defaultThemeType,
+      );
+
+    final fontSizeTypeConverter = 
+      _Converter(
+        values: FontSizeType.values,
+        defaultValue: defaultFontSizeType,
+      );
+
+    final bubbleAlignmentTypeConverter = 
+      _Converter(
+        values: BubbleAlignmentType.values,
+        defaultValue: defaultBubbleAlignmentType,
+      );
+
+    final themeInfo = await _settingsRepository.updateThemeInfo();
+
+    emit(
+      state.copyWith(
+        themeType: themeTypeConverter.fromString(themeInfo.themeType),
+        fontSizeType: fontSizeTypeConverter.fromString(themeInfo.fontSize),
+        bubbleAlignmentType:
+          bubbleAlignmentTypeConverter.fromString(themeInfo.bubbleAlignment),
+      ),
+    );
+  }
+
+  Future<void> switchBubbleAlignmentType() async {
+    final bubbleAlignmentType = state.bubbleAlignmentType.next;
+
+    await _settingsRepository.saveThemeInfo(
+      ThemeInfo(
+        themeType: state.themeType.name,
+        fontSize: state.fontSizeType.name,
+        bubbleAlignment: bubbleAlignmentType.name,
+      )
+    );
+
+    emit(state.copyWith(bubbleAlignmentType: bubbleAlignmentType));
+  }
+
+  Future<void> switchThemeType() async {
+    final themeType = state.themeType.next;
+
+    await _settingsRepository.saveThemeInfo(
+      ThemeInfo(
+        themeType: themeType.name,
+        fontSize: state.fontSizeType.name,
+        bubbleAlignment: state.bubbleAlignmentType.name,
       ),
     );
 
-  Future<void> initTheme() async {
-    final themeKey = await _settingsRepository.updateTheme();
-
-    emit(state.copyWith(
-      themeKey: themeKey,
-      themeData: themeKey.themeData,
-    ));
+    emit(state.copyWith(themeType: themeType));
   }
 
-  Future<void> switchTheme() async {
-    final ThemeKey themeKey;
-    switch (state.themeKey) {
-      case ThemeKey.light:
-        themeKey = ThemeKey.dark;
-        break;
-      case ThemeKey.dark:
-        themeKey = ThemeKey.light;
-        break;
-    }
+  Future<void> switchFontSizeType(FontSizeType fontSizeType) async {
+    await _settingsRepository.saveThemeInfo(
+      ThemeInfo(
+        themeType: state.themeType.name,
+        fontSize: fontSizeType.name,
+        bubbleAlignment: state.bubbleAlignmentType.name,
+      ),
+    );
 
-    await _settingsRepository.saveTheme(themeKey);
+    emit(state.copyWith(fontSizeType: fontSizeType));
+  }
 
-    emit(state.copyWith(
-      themeKey: themeKey,
-      themeData: themeKey.themeData,
-    ));
+  Future<void> uploadBackgroundImage() async {
+    try {
+      final image = await _settingsRepository.downloadBackgroundImage();
+
+      emit(
+        state.copyWith(
+          backgroundImage: _NullWrapper(value: image),
+        ),
+      );
+    } catch (_) { }
+  }
+
+  Future<void> resetBackgroundImage() async {
+    await _settingsRepository.deleteBackgroundImage();
+
+    emit(
+      state.copyWith(
+        backgroundImage: const _NullWrapper(value: null),
+      ),
+    );
+  }
+
+  Future<void> saveBackgroundImage(Uint8List backgroundImage) async {
+    await _settingsRepository.saveBackgroundImage(backgroundImage);
+
+    emit(
+      state.copyWith(
+        backgroundImage: _NullWrapper(value: backgroundImage),
+      ),
+    );
+  }
+
+  Future<void> restoreSettings() async {
+    await _settingsRepository.saveThemeInfo(
+      ThemeInfo(
+        themeType: defaultThemeType.name,
+        fontSize: defaultFontSizeType.name,
+        bubbleAlignment: defaultBubbleAlignmentType.name,
+      ),
+    );
+
+    emit(
+      state.copyWith(
+        themeType: defaultThemeType,
+        fontSizeType: defaultFontSizeType,
+        bubbleAlignmentType: defaultBubbleAlignmentType,
+      ),
+    );
   }
 }

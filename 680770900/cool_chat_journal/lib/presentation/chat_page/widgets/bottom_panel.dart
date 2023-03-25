@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,41 +57,44 @@ class _BottomPanelState extends State<BottomPanel> {
           categoryId: cubit.state.selectedCategoryId,
         );
 
-        cubit.addNewEvent(
-          event,
-        );
+        cubit.addNewEvent(event);
       }
     }
   }
 
-  void _onEnterText() {
+  void _onAddText() {
     final cubit = context.read<ChatCubit>();
-    final sourceEvent = widget.sourceEvent;
-    if (sourceEvent == null) {
-      cubit.addNewEvent(
-        Event(
-          chatId: widget.chatId,
-          content: _textController.text,
-          isFavorite: false,
-          changeTime: DateTime.now(),
-          categoryId: cubit.state.selectedCategoryId,
-        ),
-      );
-    } else {
-      final NullWrapper<String?>? selectedCategory;
-      if (cubit.state.selectedCategoryId != null) {
-        selectedCategory = NullWrapper<String?>(cubit.state.selectedCategoryId);
-      } else {
-        selectedCategory = null;
-      }
+    cubit.addNewEvent(
+      Event(
+        chatId: widget.chatId,
+        content: _textController.text,
+        isFavorite: false,
+        changeTime: DateTime.now(),
+        categoryId: cubit.state.selectedCategoryId,
+      ),
+    );
+  }
 
-      cubit.editEvent(
-        sourceEvent.copyWith(
-          content: NullWrapper<String?>(_textController.text),
-          categoryId: selectedCategory,
-        ),
-      );
+  void _onEditText(Event sourceEvent) {
+    final cubit = context.read<ChatCubit>();
+
+    final NullWrapper<String?>? selectedCategory;
+    if (cubit.state.selectedCategoryId != null) {
+      selectedCategory = NullWrapper<String?>(cubit.state.selectedCategoryId);
+    } else {
+      selectedCategory = null;
     }
+
+    cubit.editEvent(
+      sourceEvent.copyWith(
+        content: NullWrapper<String?>(_textController.text),
+        categoryId: selectedCategory,
+      ),
+    );
+  }
+
+  void _clearView() {
+    final cubit = context.read<ChatCubit>();
 
     if (cubit.state.isEditMode) {
       cubit.toggleEditMode();
@@ -107,26 +108,16 @@ class _BottomPanelState extends State<BottomPanel> {
     _textFocusNode.unfocus();
   }
 
-  Widget _createCategoriesButton() {
-    final cubit = context.read<ChatCubit>();
-    final selectedCategory = cubit.state.selectedCategoryId;
-    final IconData icon;
-    if (selectedCategory != null) {
-      final category = cubit.state.categories.firstWhere(
-        (category) => category.id == selectedCategory,
-      );
+  void _onEnterText() {
+    final sourceEvent = widget.sourceEvent;
 
-      icon = IconData(category.icon, fontFamily: 'MaterialIcons');
+    if (sourceEvent == null) {
+      _onAddText();
     } else {
-      icon = Icons.widgets_rounded;
+      _onEditText(sourceEvent);
     }
 
-    final showCategories = cubit.state.showCategories;
-
-    return IconButton(
-      icon: Icon(icon),
-      onPressed: () => cubit.changeShowCategories(!showCategories),
-    );
+    _clearView();
   }
 
   Widget _createTextField() {
@@ -140,28 +131,123 @@ class _BottomPanelState extends State<BottomPanel> {
   }
 
   Widget _createSendButton() {
+    if (_textController.text.isNotEmpty) {
+      return IconButton(
+        icon: const Icon(Icons.send_rounded),
+        onPressed: _onEnterText,
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.add_a_photo_outlined),
+        onPressed: _onAddImage,
+      );
+    }
+  }
+
+  void _onChangeText() {
+    final cubit = context.read<ChatCubit>();
+
+    final text = _textController.text;
+    cubit.changeText(text);
+
+    if (text.endsWith('#')) {
+      cubit.changeShowTags(true);
+    } else if (text.endsWith(' ')) {
+      cubit.changeShowTags(false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_onChangeText);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        if (_textController.text.isNotEmpty) {
-          return IconButton(
-            icon: const Icon(Icons.send_rounded),
-            onPressed: _onEnterText,
-          );
-        } else {
-          return IconButton(
-            icon: const Icon(Icons.add_a_photo_outlined),
-            onPressed: _onAddImage,
+        if (state.text != null) {
+          _textController.text = state.text!;
+          _textController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _textController.text.length),
           );
         }
+
+        return Container(
+          color: Theme.of(context).backgroundColor,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (state.showTags) const _TagsList(),
+              if (state.showCategories) const _CategoriesList(),
+              Row(
+                children: [
+                  const _CategoriesButton(),
+                  _createTextField(),
+                  _createSendButton(),
+                ],
+              ),
+            ],
+          ),
+        );
       },
     );
   }
+}
 
-  Widget _createCategoriesList() {
+class _CategoriesButton extends StatelessWidget {
+  const _CategoriesButton({super.key});
+
+  IconData _createIcon({
+    String? selectedCategory, 
+    required List<Category> categories,
+  }) {
+    final IconData icon;
+    if (selectedCategory != null) {
+      final category = categories.firstWhere(
+        (category) => category.id == selectedCategory,
+      );
+      icon = IconData(category.icon, fontFamily: 'MaterialIcons');
+    } else {
+      icon = Icons.widgets_rounded;
+    }
+
+    return icon;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        final selectedCategory = state.selectedCategoryId;
+        
+        final icon = _createIcon(
+          selectedCategory: selectedCategory,
+          categories: state.categories,
+        );
+
+        final showCategories = state.showCategories;
+
+        return IconButton(
+          icon: Icon(icon),
+          onPressed: () => 
+            context.read<ChatCubit>().changeShowCategories(!showCategories),
+        );
+      },
+    );
+  }
+}
+
+class _CategoriesList extends StatelessWidget {
+  const _CategoriesList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     final cubit = context.read<ChatCubit>();
     final categories = cubit.state.categories;
     return SizedBox(
-      height: 65,
+      height: 70,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -212,30 +298,55 @@ class _BottomPanelState extends State<BottomPanel> {
       ),
     );
   }
+}
 
-  @override
-  void initState() {
-    super.initState();
+class _TagsList extends StatelessWidget {
+  const _TagsList({super.key});
 
-    _textController.addListener(() => setState(() {}));
+  List<Tag> _generateTags(List<Tag> tags) {
+    return tags;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (context.read<ChatCubit>().state.showCategories)
-          _createCategoriesList(),
-        Row(
-          children: [
-            _createCategoriesButton(),
-            _createTextField(),
-            _createSendButton(),
-          ],
+    final cubit = context.read<ChatCubit>();
+    final tags = _generateTags(cubit.state.tags);
+
+    if (tags.isNotEmpty) {
+      return SizedBox(
+        height: 70,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: tags.length,
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              child: Text(tags[index].value),
+              onPressed: () {
+                final text = '${cubit.state.text}${tags[index].value} ';
+                cubit.changeText(text);
+              },
+            ),
+          ),
         ),
-      ],
-    );
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          child: const Text('+ Add new tag'),
+          onPressed: () {
+            cubit.addNewTag(
+              Tag(
+                value: '#test',
+                count: 1,  
+              ),
+            );
+            cubit.changeShowTags(false);
+          },
+        ),
+      );
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/models/event.dart';
 import '../home_page/home_cubit.dart';
+import '../settings_page/settings_cubit.dart';
 import 'chat_cubit.dart';
 import 'widgets/widgets.dart';
 
@@ -280,7 +281,7 @@ class _ChatViewState extends State<ChatView> {
         itemBuilder: (context, index) {
           final viewIndex = events.length - index - 1;
           final event = events[viewIndex];
-
+      
           return Dismissible(
             background: Container(
               alignment: Alignment.centerLeft,
@@ -313,7 +314,7 @@ class _ChatViewState extends State<ChatView> {
                 cubit.switchSelectStatus(widget.chatId);
                 cubit.toggleEditMode();
               }
-
+      
               return false;
             },
             onDismissed: (_) => cubit.deleteEvent(event),
@@ -357,13 +358,30 @@ class _ChatViewState extends State<ChatView> {
           body = const Center(child: CircularProgressIndicator());
         }
 
+        final backgroundImage = 
+            context.read<SettingsCubit>().state.backgroundImage;
+        final BoxDecoration? boxDecoration;
+        if (backgroundImage != null) {
+          boxDecoration = BoxDecoration(
+            image: DecorationImage(
+              image: MemoryImage(backgroundImage),
+              fit: BoxFit.cover,
+            ),
+          );
+        } else {
+          boxDecoration = null;
+        }
+
         return Scaffold(
           appBar: AppBar(
             leading: _createAppBarLeading(context),
             title: _createAppBarTitle(context),
             actions: _createActions(context),
           ),
-          body: body,
+          body: Container(
+            decoration: boxDecoration,
+            child: body,
+          ),
         );
       },
     );
