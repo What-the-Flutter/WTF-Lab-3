@@ -20,11 +20,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   void init() {
     chatsSubscription = chatsRepository.chatsStream.listen((chats) async {
-      for (var i = 0; i < chats.length; i++) {
+      /* for (var i = 0; i < chats.length; i++) {
         chats[i] = chats[i].copyWith(
             newEvents:
                 await eventsRepository.receiveAllChatEvents(chats[i].id));
-      }
+      }*/
       emit(state.copyWith(newChats: chats));
     });
   }

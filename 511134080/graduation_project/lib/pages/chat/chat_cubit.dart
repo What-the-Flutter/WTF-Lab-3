@@ -63,14 +63,12 @@ class ChatCubit extends Cubit<ChatState> {
       final imagePicker = ImagePicker();
       final pickedFile = await imagePicker.pickImage(
           source: isFromGallery ? ImageSource.gallery : ImageSource.camera);
-      final reg = RegExp(r'[#\[\]]');
-      final key = UniqueKey().toString();
 
       if (pickedFile != null) {
         final event = Event(
           title: '',
           time: DateTime.now(),
-          id: key.replaceAll(reg, ''),
+          id: '',
           chatId: state.chat.id,
           imagePath: pickedFile.path,
         );
@@ -131,13 +129,11 @@ class ChatCubit extends Cubit<ChatState> {
   void onEnterSubmitted(String title) {
     if (!state.isEditingMode) {
       if (title.isNotEmpty || state.categoryIconIndex != 0) {
-        final reg = RegExp(r'[#\[\]]');
-        final key = UniqueKey().toString();
         final event = Event(
           chatId: state.chat.id,
           title: title,
           time: DateTime.now(),
-          id: key.replaceAll(reg, ''),
+          id: '',
           categoryIndex: state.categoryIconIndex,
         );
 

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
@@ -58,12 +57,10 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
   }
 
   Future<void> addChat(String title) async {
-    final reg = RegExp(r'[#\[\]]');
-    final key = UniqueKey().toString();
     final chat = Chat(
       iconId: state.selectedIndex,
       title: title,
-      id: key.replaceAll(reg, ''),
+      id: '',
       date: DateTime.now(),
     );
 

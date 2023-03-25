@@ -55,7 +55,10 @@ class DatabaseProvider {
     if (_user != null) {
       final chatsReference =
           _databaseReference.child('${_user!.uid}').child('chats');
-      await chatsReference.child(chat['id']).set(chat);
+      final chatIdRef = chatsReference.push();
+      final id = chatIdRef.key;
+      chat['id'] = id;
+      await chatIdRef.set(chat);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -110,15 +113,23 @@ class DatabaseProvider {
     if (_user != null) {
       final eventsReference =
           _databaseReference.child('${_user!.uid}').child('events');
+      final eventIdRef = eventsReference.push();
+      final id = eventIdRef.key;
       if (event.imagePath != null) {
         final url = await uploadImage(File(event.imagePath!));
-        await eventsReference.child(event.id).set(event
+
+        await eventIdRef.set(event
             .copyWith(
               newImagePath: url,
+              newId: id,
             )
             .toDatabaseMap());
       } else {
-        await eventsReference.child(event.id).set(event.toDatabaseMap());
+        await eventIdRef.set(event
+            .copyWith(
+              newId: id,
+            )
+            .toDatabaseMap());
       }
     } else {
       throw Exception('Not signed in!!!');
