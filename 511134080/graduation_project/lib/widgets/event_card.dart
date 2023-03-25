@@ -3,14 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
-import '../models/event_card_model.dart';
+import '../models/event.dart';
 import '../pages/chat/chat_cubit.dart';
 
 class EventCard extends StatelessWidget {
-  final EventCardModel _cardModel;
+  final Event _cardModel;
 
   const EventCard({
-    required EventCardModel cardModel,
+    required Event cardModel,
     required Key key,
   })  : _cardModel = cardModel,
         super(key: key);
@@ -62,16 +62,10 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (!_cardModel.isSelectionMode) {
-          context.read<ChatCubit>().manageFavouriteEventCard(_cardModel);
-        } else {
-          context.read<ChatCubit>().manageSelectedEvent(_cardModel);
-        }
+        context.read<ChatCubit>().manageTapEvent(_cardModel);
       },
       onLongPress: () {
-        if (!_cardModel.isSelectionMode) {
-          context.read<ChatCubit>().turnOnSelectionMode(_cardModel);
-        }
+        context.read<ChatCubit>().manageLongPress(_cardModel);
       },
       child: Row(
         mainAxisSize: MainAxisSize.min,
