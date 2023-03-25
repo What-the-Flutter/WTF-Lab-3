@@ -37,7 +37,7 @@ class EventDao {
     return await _dbProvider.updateEvent(event.toDatabaseMap());
   }
 
-  Future<void> deleteEvent(String id) async {
-    return await _dbProvider.deleteEvent(id);
+  Future<void> deleteEvent(Event event) async {
+    return await _dbProvider.deleteEvent(event);
   }
 }

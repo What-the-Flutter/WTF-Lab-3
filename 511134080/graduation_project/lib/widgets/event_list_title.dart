@@ -117,8 +117,8 @@ class EventListTile extends StatelessWidget {
           ),
         ),
         Text(
-          chat.events.isNotEmpty
-              ? '${DateFormat('dd.MM.yyyy').format(chat.events.last.time)} at ${DateFormat('hh:mm a').format(chat.events.last.time)}'
+          chat.lastEventTime != null
+              ? '${DateFormat('dd.MM.yyyy').format(chat.lastEventTime!)} at ${DateFormat('hh:mm a').format(chat.lastEventTime!)}'
               : 'No events yet.',
           style: const TextStyle(
             fontSize: 18,
@@ -179,7 +179,6 @@ class EventListTile extends StatelessWidget {
             },
           ),
         );
-        // context.read<HomeCubit>().updateChats(editedChat);
         Navigator.pop(context);
       },
     );
@@ -232,7 +231,7 @@ class EventListTile extends StatelessWidget {
   }
 
   Widget? _createTrailing(Chat chat, BuildContext context) {
-    if (chat.events.isNotEmpty) {
+    if (chat.lastEventTime != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,7 +242,7 @@ class EventListTile extends StatelessWidget {
                   color: Colors.deepPurple,
                 ),
                 Text(
-                  DateFormat('hh:mm a').format(chat.events.last.time),
+                  DateFormat('hh:mm a').format(chat.lastEventTime!),
                   style: TextStyle(
                     color: Theme.of(context).disabledColor,
                   ),
@@ -253,7 +252,7 @@ class EventListTile extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 32.0),
                   child: Text(
-                    DateFormat('hh:mm a').format(chat.events.last.time),
+                    DateFormat('hh:mm a').format(chat.lastEventTime!),
                     style: TextStyle(
                       color: Theme.of(context).disabledColor,
                     ),
@@ -306,21 +305,12 @@ class EventListTile extends StatelessWidget {
                 : icons[chat.iconId],
           ),
           title: Text(chat.title),
-          subtitle: chat.events.isNotEmpty
-              ? Text(
-                  chat.events.last.title != ''
-                      ? chat.events.last.title
-                      : 'Label Entry',
-                  style: TextStyle(
-                    color: Theme.of(context).disabledColor,
-                  ),
-                )
-              : Text(
-                  'No events. Click here to create one.',
-                  style: TextStyle(
-                    color: Theme.of(context).disabledColor,
-                  ),
-                ),
+          subtitle: Text(
+            chat.lastEventTitle != '' ? chat.lastEventTitle : 'Label Entry',
+            style: TextStyle(
+              color: Theme.of(context).disabledColor,
+            ),
+          ),
           hoverColor: Colors.deepPurple.shade100,
           trailing: _createTrailing(chat, context),
           onTap: () async {
@@ -331,8 +321,7 @@ class EventListTile extends StatelessWidget {
                   chatId: _chatId,
                 ),
               ),
-            ); /*
-            context.read<HomeCubit>().updateChats(updatedChat);*/
+            );
           },
           onLongPress: () {
             _onLongPress(context, chat);

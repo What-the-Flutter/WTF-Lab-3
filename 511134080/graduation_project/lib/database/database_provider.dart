@@ -95,6 +95,33 @@ class DatabaseProvider {
     }
   }
 
+  Future<void> updateChatLastEvent(String chatId) async {
+    final snapshot = await queryAllEvents(chatId);
+    if (snapshot.exists) {
+      final events = snapshot.children
+          .map((event) => Event.fromDatabaseMap(
+              Map<String, dynamic>.from(event.value as Map)))
+          .toList()
+        ..sort((a, b) => a.time.compareTo(b.time));
+
+      final updates = <String, dynamic>{};
+
+      if (events.isNotEmpty) {
+        final lastEvent = events.last;
+        updates['last_event_title'] = lastEvent.title;
+        updates['last_event_time'] = lastEvent.time.toString();
+      } else {
+        updates['last_event_title'] = 'No events. Click here to create one.';
+        updates['last_event_time'] = null;
+      }
+
+      final chatReference =
+          _databaseReference.child('${_user!.uid}').child('chats/$chatId');
+
+      await chatReference.update(updates);
+    }
+  }
+
   Future<DataSnapshot> queryAllEvents(String chatId) async {
     if (_user != null) {
       final snapshot = await _databaseReference
@@ -131,6 +158,7 @@ class DatabaseProvider {
             )
             .toDatabaseMap());
       }
+      updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -142,16 +170,18 @@ class DatabaseProvider {
           .child('${_user!.uid}')
           .child('events/${event['id']}');
       await eventReference.update(event);
+      updateChatLastEvent(event['chat_id']);
     } else {
       throw Exception('Not signed in!!!');
     }
   }
 
-  Future<void> deleteEvent(String eventId) async {
+  Future<void> deleteEvent(Event event) async {
     if (_user != null) {
       final eventReference =
-          _databaseReference.child('${_user!.uid}').child('events/$eventId');
+          _databaseReference.child('${_user!.uid}').child('events/${event.id}');
       await eventReference.remove();
+      updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }

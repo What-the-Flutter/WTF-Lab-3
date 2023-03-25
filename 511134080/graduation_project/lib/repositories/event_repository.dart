@@ -15,5 +15,5 @@ class EventRepository {
 
   Future<void> updateEvent(Event event) => eventDao.updateEvent(event);
 
-  Future<void> deleteEventById(String id) => eventDao.deleteEvent(id);
+  Future<void> deleteEvent(Event event) => eventDao.deleteEvent(event);
 }

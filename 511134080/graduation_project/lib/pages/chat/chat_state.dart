@@ -9,6 +9,7 @@ class ChatState {
   final bool isInputEmpty;
   final bool isChoosingImageOptions;
   late final List<String> _hintMessages;
+  final List<Event> chatEvents;
 
   ChatState({
     this.chat = const Chat(
@@ -23,6 +24,7 @@ class ChatState {
     this.isSelectionMode = false,
     this.isInputEmpty = true,
     this.isChoosingImageOptions = false,
+    this.chatEvents = const [],
   }) {
     _hintMessages = [
       'This is the page where you can track everything about "${chat.title}"!\n',
@@ -34,13 +36,13 @@ class ChatState {
 
   List<Event> get events => chat.isShowingFavourites
       ? List<Event>.from(
-          chat.events.reversed.where((card) => card.isFavourite),
+          chatEvents.reversed.where((card) => card.isFavourite),
         )
-      : List<Event>.from(chat.events.reversed);
+      : List<Event>.from(chatEvents.reversed);
 
   int get eventsLength => chat.isShowingFavourites
-      ? chat.events.where((card) => card.isFavourite).length
-      : chat.events.length;
+      ? chatEvents.where((card) => card.isFavourite).length
+      : chatEvents.length;
 
   List<String> get hintMessages => chat.isShowingFavourites
       ? [_hintMessages[0], _hintMessages[1]]
@@ -54,6 +56,7 @@ class ChatState {
     bool? selectionMode,
     bool? inputEmpty,
     bool? choosingImageOptions,
+    List<Event>? newEvents,
   }) =>
       ChatState(
         chat: newChat ?? chat,
@@ -63,5 +66,6 @@ class ChatState {
         isSelectionMode: selectionMode ?? isSelectionMode,
         isInputEmpty: inputEmpty ?? isInputEmpty,
         isChoosingImageOptions: choosingImageOptions ?? isChoosingImageOptions,
+        chatEvents: newEvents ?? chatEvents,
       );
 }

@@ -253,9 +253,11 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createSelectionModeAppBar(Chat chat, HomeState state) {
-    final length =
-        chat.events.where((Event cardModel) => cardModel.isSelected).length;
+  AppBar _createSelectionModeAppBar(
+      Chat chat, HomeState state, ChatState chatState) {
+    final length = chatState.chatEvents
+        .where((Event cardModel) => cardModel.isSelected)
+        .length;
 
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
@@ -282,7 +284,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createDefaultAppBar(Chat chat) {
+  AppBar _createDefaultAppBar(Chat chat, ChatState chatState) {
     return AppBar(
       centerTitle: true,
       iconTheme: Theme.of(context).iconTheme,
@@ -308,7 +310,7 @@ class _ChatPageState extends State<ChatPage> {
               context,
               MaterialPageRoute(
                 builder: (_) => SearchingPage(
-                  cards: chat.events,
+                  cards: chatState.chatEvents,
                 ),
               ),
             );
@@ -327,12 +329,13 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createAppBar(BuildContext context, Chat chat, HomeState state) {
+  AppBar _createAppBar(
+      BuildContext context, Chat chat, HomeState state, ChatState chatState) {
     final isSelectionMode = context.read<ChatCubit>().state.isSelectionMode;
     if (isSelectionMode) {
-      return _createSelectionModeAppBar(chat, state);
+      return _createSelectionModeAppBar(chat, state, chatState);
     } else {
-      return _createDefaultAppBar(chat);
+      return _createDefaultAppBar(chat, chatState);
     }
   }
 
@@ -534,13 +537,14 @@ class _ChatPageState extends State<ChatPage> {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         final chat = state.chat;
-        final favourites = chat.events.where((Event e) => e.isFavourite);
+        final favourites = state.chatEvents.where((Event e) => e.isFavourite);
 
-        final shouldShowMessage = chat.events.isEmpty ||
+        final shouldShowMessage = state.chatEvents.isEmpty ||
             chat.isShowingFavourites && favourites.isEmpty;
 
         return Scaffold(
-          appBar: _createAppBar(context, chat, context.read<HomeCubit>().state),
+          appBar: _createAppBar(
+              context, chat, context.read<HomeCubit>().state, state),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
