@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../models/chat.dart';
 import '../../widgets/chat_list_title.dart';
@@ -145,54 +146,89 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _createDrawerHeader() {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Text(
+          DateFormat('MMM dd, yyyy').format(
+            DateTime.now(),
+          ),
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _createDrawerSpreadingTile() {
+    return ListTile(
+      onTap: () async {
+        await Share.share('Keep track of your life with Chat Journal, '
+            'a simple and elegant chat-based journal/notes'
+            ' application that makes journaling/note-taking fun, '
+            'easy, quick and effortless.\n https://play.google.com/'
+            'store/apps/details?id=com.agiletelescope.chatjournal');
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.redeem,
+      ),
+      title: Text(
+        'Help spread the word',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
+
+  Widget _createDrawerSettingTile() {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SettingsPage(),
+          ),
+        );
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.settings,
+      ),
+      title: Text(
+        'Settings',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
+
+  Widget _createDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _createDrawerHeader(),
+          _createDrawerSpreadingTile(),
+          _createDrawerSettingTile(),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _createAppBar(),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-              ),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  DateFormat('MMM dd, yyyy').format(
-                    DateTime.now(),
-                  ),
-                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                ),
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-              },
-              iconColor: Theme.of(context).disabledColor,
-              leading: const Icon(
-                Icons.settings,
-              ),
-              title: Text(
-                'Settings',
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).disabledColor,
-                    ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: _createDrawer(),
       body: _createBody(),
       floatingActionButton: SizedBox(
         width: 64,
