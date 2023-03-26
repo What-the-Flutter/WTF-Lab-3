@@ -14,6 +14,7 @@ part 'chat_state.dart';
 
 typedef EventsSubscription = StreamSubscription<List<Event>>;
 typedef CategoriesSubscription = StreamSubscription<List<Category>>;
+typedef TagsSubscription = StreamSubscription<List<Tag>>;
 
 class ChatCubit extends Cubit<ChatState> {
   final EventsRepository _eventsRepository;
@@ -33,12 +34,17 @@ class ChatCubit extends Cubit<ChatState> {
     final categoriesSubscription =
       _categoriesRepository.categoriesStream.listen(_setCategories);
 
+    final tagsSubscription =
+      _tagsRepository.tagsStream.listen(_setTags);
+
     emit(
       state.copyWith(
         eventsSubscription: 
           _NullWrapper<EventsSubscription?>(eventsSubscription),
         categoriesSubscription: 
           _NullWrapper<CategoriesSubscription?>(categoriesSubscription),
+        tagsSubscription:
+          _NullWrapper<TagsSubscription?>(tagsSubscription),
       ),
     );
   }
@@ -46,10 +52,12 @@ class ChatCubit extends Cubit<ChatState> {
   void unsubscribeStreams() {
     state.eventsSubscription?.cancel();
     state.categoriesSubscription?.cancel();
+    state.tagsSubscription?.cancel();   
 
     emit(
       state.copyWith(
         eventsSubscription: const _NullWrapper<EventsSubscription?>(null),
+        tagsSubscription: const _NullWrapper<TagsSubscription?>(null),
         categoriesSubscription: 
             const _NullWrapper<CategoriesSubscription?>(null),
       ),
@@ -78,12 +86,6 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     } catch (_) { }
-  }
-
-  void updateTags() async {
-    final tags = await _tagsRepository.readTags();
-
-    emit(state.copyWith(tags: tags));
   }
 
   void addNewEvent(Event event) async {
@@ -271,4 +273,8 @@ class ChatCubit extends Cubit<ChatState> {
   void _setCategories(List<Category> categories) async {
     emit(state.copyWith(categories: categories));
   }
+
+  void _setTags(List<Tag> tags) async {
+    emit(state.copyWith(tags: tags));
+  } 
 }
