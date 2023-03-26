@@ -15,32 +15,34 @@ class DatabaseProvider {
   final _chatsSubject = BehaviorSubject<List<Chat>>();
   final _eventsSubject = BehaviorSubject<List<Event>>();
   final _categoriesSubject = BehaviorSubject<List<Category>>();
+  final _tagsSubject = BehaviorSubject<List<Tag>>();
 
   final User? user;
 
   DatabaseProvider({
     required this.user,
-    List<JsonMap>? defaultJsonChats,
-    List<JsonMap>? defaultJsonEvents,
     List<JsonMap>? defaultJsonCategories,
   }) {
     _initConnection<Chat>(
       tableName: chatsRoot,
       subject: _chatsSubject,
       fromJson: Chat.fromJson,
-      defaultValues: defaultJsonChats,
     );
     _initConnection<Event>(
       tableName: eventsRoot,
       subject: _eventsSubject,
       fromJson: Event.fromJson,
-      defaultValues: defaultJsonEvents,
     );
     _initConnection<Category>(
       tableName: categoriesRoot,
       subject: _categoriesSubject,
       fromJson: Category.fromJson,
       defaultValues: defaultJsonCategories,
+    );
+    _initConnection<Tag>(
+      tableName: tagsRoot,
+      subject: _tagsSubject,
+      fromJson: Tag.fromJson,
     );
   }
 
@@ -147,4 +149,5 @@ class DatabaseProvider {
   Stream<List<Chat>> get chatsStream => _chatsSubject.stream;
   Stream<List<Event>> get eventsStream => _eventsSubject.stream;
   Stream<List<Category>> get categoriesStream => _categoriesSubject.stream;
+  Stream<List<Tag>> get tagsStream => _tagsSubject.stream;
 }

@@ -84,8 +84,14 @@ class EventsRepository {
   }
 
   Future<void> deleteEventsFromChat(String chatId) async {
-    final events = await _databaseProvider.eventsStream.last;
-    final deletedEvents = events.where((event) => event.chatId == chatId);
+    final jsonEvents = await _databaseProvider.read<Event>(
+      tableName: DatabaseProvider.eventsRoot,
+    );
+
+    final deletedEvents = jsonEvents
+        .map(Event.fromJson)
+        .where((event) => event.chatId == chatId)
+        .toList();
 
     for (final event in deletedEvents) {
       await deleteEvent(event);

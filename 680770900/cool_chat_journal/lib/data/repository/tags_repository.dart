@@ -9,14 +9,6 @@ class TagsRepository {
   TagsRepository({required User? user})
       : _databaseProvider = DatabaseProvider(user: user);
 
-  Future<List<Tag>> readTags() async {
-    final jsonTags = await _databaseProvider.read<Tag>(
-      tableName: DatabaseProvider.tagsRoot,
-    );
-
-    return jsonTags.map(Tag.fromJson).toList();
-  }
-
   Future<void> addTag(Tag tag) async =>
       await _databaseProvider.add(
         json: tag.toJson(),
@@ -40,4 +32,6 @@ class TagsRepository {
       await addTag(newTag);
     }
   } 
+
+  Stream<List<Tag>> get tagsStream => _databaseProvider.tagsStream;
 }

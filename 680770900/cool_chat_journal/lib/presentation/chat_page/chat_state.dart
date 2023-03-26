@@ -4,6 +4,7 @@ class ChatState extends Equatable {
   final String chatId;
   final EventsSubscription? eventsSubscription;
   final CategoriesSubscription? categoriesSubscription;
+  final TagsSubscription? tagsSubscription;
   final Map<String, Uint8List>? images;
 
   final List<Event> events;
@@ -23,6 +24,7 @@ class ChatState extends Equatable {
     required this.chatId,
     this.eventsSubscription,
     this.categoriesSubscription,
+    this.tagsSubscription,
     this.images,
     this.events = const [],
     this.selectedEventsIds = const [],
@@ -40,6 +42,7 @@ class ChatState extends Equatable {
     String? chatId,
     _NullWrapper<EventsSubscription?>? eventsSubscription,
     _NullWrapper<CategoriesSubscription?>? categoriesSubscription,
+    _NullWrapper<TagsSubscription?>? tagsSubscription,
     _NullWrapper<Map<String, Uint8List>?>? images,
     List<Event>? events,
     List<String>? selectedEventsIds,
@@ -69,6 +72,9 @@ class ChatState extends Equatable {
         categoriesSubscription: categoriesSubscription != null
             ? categoriesSubscription.value
             : this.categoriesSubscription,
+        tagsSubscription: tagsSubscription != null
+            ? tagsSubscription.value
+            : this.tagsSubscription,
         images: images != null
             ? images.value
             : this.images,
