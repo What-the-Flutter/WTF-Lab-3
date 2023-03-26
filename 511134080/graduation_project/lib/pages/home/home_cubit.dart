@@ -16,7 +16,9 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.chatsRepository,
     required this.eventsRepository,
-  }) : super(HomeState());
+  }) : super(HomeState()) {
+    init();
+  }
 
   void init() {
     chatsSubscription = chatsRepository.chatsStream.listen((chats) async {

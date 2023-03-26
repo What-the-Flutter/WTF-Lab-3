@@ -9,6 +9,7 @@ import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
 import '../home/home_cubit.dart';
 import '../searching_page/searching_page.dart';
+import '../settings/settings_cubit.dart';
 import 'chat_cubit.dart';
 
 class ChatPage extends StatefulWidget {
@@ -50,29 +51,37 @@ class _ChatPageState extends State<ChatPage> {
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateCard(date: current.time),
-          EventCard(
-            cardModel: current,
-            key: UniqueKey(),
-          )
-        ],
+      return BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DateCard(date: current.time),
+              EventCard(
+                cardModel: current,
+                key: UniqueKey(),
+              )
+            ],
+          );
+        },
       );
     } else {
       final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DateCard(date: current.time),
-            EventCard(
-              cardModel: current,
-              key: UniqueKey(),
-            ),
-          ],
+        return BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DateCard(date: current.time),
+                EventCard(
+                  cardModel: current,
+                  key: UniqueKey(),
+                ),
+              ],
+            );
+          },
         );
       }
       return EventCard(
@@ -114,18 +123,18 @@ class _ChatPageState extends State<ChatPage> {
             Text(
               messages[0],
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
             ),
             Text(
               messages[1],
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
             )
           ],
         ),
@@ -263,11 +272,10 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Theme.of(context).primaryColor,
       title: Text(
         '$length',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w300,
-          fontSize: 24,
-        ),
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+            ),
       ),
       iconTheme: const IconThemeData(
         color: Colors.white,
@@ -290,9 +298,9 @@ class _ChatPageState extends State<ChatPage> {
       iconTheme: Theme.of(context).iconTheme,
       title: Text(
         chat.title,
-        style: const TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              color: Colors.white,
+            ),
       ),
       leading: IconButton(
         icon: const Icon(
@@ -437,6 +445,8 @@ class _ChatPageState extends State<ChatPage> {
                               context
                                   .read<ChatCubit>()
                                   .onEnterSubmitted(_textFieldController.text);
+                              _focusNode.unfocus();
+                              _clearTextInput();
                             },
                             icon: Icon(
                               Icons.send,
@@ -455,11 +465,17 @@ class _ChatPageState extends State<ChatPage> {
 
   TextField _createTextField(ChatState state) {
     return TextField(
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+            ),
         controller: _textFieldController,
         focusNode: _focusNode,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           hintText: 'Enter event',
+          hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+              ),
           filled: true,
           fillColor: Theme.of(context).disabledColor.withAlpha(24),
         ),

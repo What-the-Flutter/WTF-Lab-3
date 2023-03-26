@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/chat.dart';
-import '../../widgets/event_list_title.dart';
+import '../../widgets/chat_list_title.dart';
 import '../managing_page/managing_page.dart';
 import '../settings/settings_cubit.dart';
 import '../settings/settings_page.dart';
@@ -26,20 +26,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<HomeCubit>().init();
-  }
-
   AppBar _createAppBar() {
     return AppBar(
-      title: const Text(
+      title: Text(
         'Home',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 24,
-        ),
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
       ),
       centerTitle: true,
       backgroundColor: Theme.of(context).canvasColor,
@@ -76,11 +69,11 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(
           width: 16,
         ),
-        const Text(
+        Text(
           'Questionnaire Bot',
-          style: TextStyle(
-            fontSize: 20,
-          ),
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
         ),
       ],
     );
@@ -103,10 +96,10 @@ class _HomePageState extends State<HomePage> {
         ),
         Expanded(
           child: BlocBuilder<HomeCubit, HomeState>(
-            builder: (_, state) {
+            builder: (context, state) {
               return ListView.separated(
                 itemCount: state.chats.length,
-                itemBuilder: (_, index) {
+                itemBuilder: (context, index) {
                   return _createListTile(index, state.chats);
                 },
                 separatorBuilder: (_, __) {
@@ -170,23 +163,21 @@ class _HomePageState extends State<HomePage> {
                   DateFormat('MMM dd, yyyy').format(
                     DateTime.now(),
                   ),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                 ),
               ),
             ),
             ListTile(
-              onTap: () async {
-                await Navigator.push(
+              onTap: () {
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const SettingsPage(),
                   ),
                 );
-                Navigator.pop(context);
               },
               iconColor: Theme.of(context).disabledColor,
               leading: const Icon(
@@ -194,9 +185,9 @@ class _HomePageState extends State<HomePage> {
               ),
               title: Text(
                 'Settings',
-                style: TextStyle(
-                  color: Theme.of(context).disabledColor,
-                ),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).disabledColor,
+                    ),
               ),
             ),
           ],
@@ -211,10 +202,11 @@ class _HomePageState extends State<HomePage> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ManagingPage(),
+                builder: (context) => ManagingPage(
+                  context: context,
+                ),
               ),
             );
-            // context.read<HomeCubit>().updateChats(chat);
           },
           elevation: 16,
           child: const Icon(

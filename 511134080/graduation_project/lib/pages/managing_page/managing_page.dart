@@ -15,8 +15,11 @@ class ManagingPage extends StatelessWidget {
   ManagingPage({
     Key? key,
     Chat? editingPage,
+    required BuildContext context,
   })  : _editingPage = editingPage,
-        super(key: key);
+        super(key: key) {
+    context.read<ManagingPageCubit>().initState(_editingPage);
+  }
 
   Widget _createIconButton(
       BuildContext context, int index, ManagingPageState state) {
@@ -42,10 +45,10 @@ class ManagingPage extends StatelessWidget {
             ? Center(
                 child: Text(
                   state.inputText[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white,
+                      ),
                 ),
               )
             : icons[index],
@@ -66,6 +69,10 @@ class ManagingPage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                fontWeight: FontWeight.normal,
+              ),
           onChanged: (value) {
             context.read<ManagingPageCubit>().updateInput(value);
           },
@@ -110,10 +117,8 @@ class ManagingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<ManagingPageCubit>().initState(_editingPage);
     _controller.text = context.read<ManagingPageCubit>().state.inputText;
     _focusNode.requestFocus();
-
     return BlocBuilder<ManagingPageCubit, ManagingPageState>(
       builder: (context, state) {
         return Scaffold(
@@ -127,9 +132,10 @@ class ManagingPage extends StatelessWidget {
                 child: Center(
                   child: Text(
                     state.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                    ),
+                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
                   ),
                 ),
               ),

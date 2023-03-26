@@ -49,9 +49,10 @@ class SearchingPage extends StatelessWidget {
       iconTheme: Theme.of(context).iconTheme,
       backgroundColor: Theme.of(context).primaryColor,
       title: TextField(
-        style: const TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.displayMedium!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.normal,
+            ),
         controller: _controller,
         focusNode: _focusNode,
         decoration: InputDecoration(
@@ -94,13 +95,14 @@ class SearchingPage extends StatelessWidget {
             const SizedBox(
               height: 16,
             ),
-            const Text(
+            Text(
               'Please enter a search query to begin searching',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            )
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
+            ),
           ],
         ),
       );
@@ -109,23 +111,25 @@ class SearchingPage extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
         color: Theme.of(context).primaryColorDark.withAlpha(30),
-        child: const Column(
+        child: Column(
           children: [
             Text(
               'No search results available\n',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
             ),
             Text(
               'No entries match the given search query. Please try again.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
             )
           ],
         ),
