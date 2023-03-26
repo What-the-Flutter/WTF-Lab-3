@@ -94,7 +94,7 @@ class Settings extends StatelessWidget {
             ),
             _listTile(context, local.backgroundImage, local.chatBackgroundImage,
                 Icons.image, onTap: () {
-              openNewPage(context, BackgroundChatImage(state: state));
+              openNewPage(context, const BackgroundChatImage());
             }),
             _listTile(
               context,

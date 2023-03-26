@@ -67,5 +67,8 @@
   "notification": "Notification",
   "statistics": "Statistics",
   "addCategoryMenu": "Category adding",
-  "feedback": "Feedback"
+  "feedback": "Feedback",
+  "setBackgroundLabel": "Click the button below to set the Background Image",
+  "setBackground": "Pick an Image",
+  "cancelBackground": "Unset Image"
 }
