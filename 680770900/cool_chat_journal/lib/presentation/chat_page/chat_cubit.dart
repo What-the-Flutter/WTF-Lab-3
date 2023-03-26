@@ -13,6 +13,7 @@ import '../../data/repository/tags_repository.dart';
 part 'chat_state.dart';
 
 typedef EventsSubscription = StreamSubscription<List<Event>>;
+typedef CategoriesSubscription = StreamSubscription<List<Category>>;
 
 class ChatCubit extends Cubit<ChatState> {
   final EventsRepository _eventsRepository;
@@ -25,26 +26,34 @@ class ChatCubit extends Cubit<ChatState> {
         _tagsRepository = TagsRepository(user: user),
         super(const ChatState(chatId: '-'));
 
-  void subscribeEventsStream() {
-    final subscription = _eventsRepository.eventsStream.listen(_setEvents);
+  void subscribeStreams() {
+    final eventsSubscription = 
+      _eventsRepository.eventsStream.listen(_setEvents);
+
+    final categoriesSubscription =
+      _categoriesRepository.categoriesStream.listen(_setCategories);
 
     emit(
       state.copyWith(
-        eventsSubscription: _NullWrapper<EventsSubscription?>(subscription),
+        eventsSubscription: 
+          _NullWrapper<EventsSubscription?>(eventsSubscription),
+        categoriesSubscription: 
+          _NullWrapper<CategoriesSubscription?>(categoriesSubscription),
       ),
     );
   }
 
-  void unsubscribeEventsStream() {
-    if (state.eventsSubscription != null) {
-      state.eventsSubscription!.cancel();
+  void unsubscribeStreams() {
+    state.eventsSubscription?.cancel();
+    state.categoriesSubscription?.cancel();
 
-      emit(
-        state.copyWith(
-          eventsSubscription: const _NullWrapper<EventsSubscription?>(null),
-        ),
-      );
-    }
+    emit(
+      state.copyWith(
+        eventsSubscription: const _NullWrapper<EventsSubscription?>(null),
+        categoriesSubscription: 
+            const _NullWrapper<CategoriesSubscription?>(null),
+      ),
+    );
   }
 
   Future<void> readImage(Event event) async {
@@ -69,12 +78,6 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     } catch (_) { }
-  }
-
-  void updateCategories() async {
-    final categories = await _categoriesRepository.readCategories();
-
-    emit(state.copyWith(categories: categories));
   }
 
   void updateTags() async {
@@ -263,5 +266,9 @@ class ChatCubit extends Cubit<ChatState> {
     if (_isUpdate(chatsEvents)) {
       emit(state.copyWith(events: chatsEvents));    
     }
+  }
+
+  void _setCategories(List<Category> categories) async {
+    emit(state.copyWith(categories: categories));
   }
 }

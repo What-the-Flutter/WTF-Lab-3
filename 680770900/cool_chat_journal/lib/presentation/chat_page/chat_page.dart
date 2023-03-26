@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/models/event.dart';
+import '../../data/models/category.dart';
 import '../home_page/home_cubit.dart';
 import '../settings_page/settings_cubit.dart';
 import 'chat_cubit.dart';
@@ -238,7 +239,15 @@ class _ChatPageState extends State<ChatPage> {
         itemBuilder: (context, index) {
           final viewIndex = events.length - index - 1;
           final event = events[viewIndex];
-      
+
+          final Category? category;
+          if (event.categoryId != null) {
+            category = context.read<ChatCubit>().state
+                .categories.firstWhere((e) => e.id == event.categoryId);
+          } else {
+            category = null;
+          }
+
           return Dismissible(
             background: Container(
               alignment: Alignment.centerLeft,
@@ -253,6 +262,7 @@ class _ChatPageState extends State<ChatPage> {
             key: ValueKey<int>(viewIndex),
             child: EventView(
               event: event,
+              category: category,
               isSelected:
                   cubit.state.selectedEventsIds.contains(event.id),
               onTap: () {
@@ -300,8 +310,8 @@ class _ChatPageState extends State<ChatPage> {
 
     final cubit = context.read<ChatCubit>();
     cubit.loadChat(widget.chatId);
-    cubit.subscribeEventsStream();
-    _unsubscribeEventsStream = cubit.unsubscribeEventsStream;
+    cubit.subscribeStreams();
+    _unsubscribeEventsStream = cubit.unsubscribeStreams;
   }
 
   @override
