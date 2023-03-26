@@ -4,7 +4,6 @@ import '../models/models.dart';
 import '../provider/database_provider.dart';
 
 class ChatsRepository {
-
   const ChatsRepository();
 
   Future<List<Chat>> readChats() async {
@@ -15,7 +14,7 @@ class ChatsRepository {
     return jsonChats.map(Chat.fromJson).toList();
   }
 
-  Future<void> addChat(Chat chat) async => 
+  Future<void> addChat(Chat chat) async =>
       await GetIt.I<DatabaseProvider>().add(
         json: chat.toJson(),
         tableName: DatabaseProvider.chatsRoot,

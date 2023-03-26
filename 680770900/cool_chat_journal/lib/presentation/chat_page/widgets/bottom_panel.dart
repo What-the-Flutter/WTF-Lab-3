@@ -200,7 +200,7 @@ class _CategoriesButton extends StatelessWidget {
   const _CategoriesButton({super.key});
 
   IconData _createIcon({
-    String? selectedCategory, 
+    String? selectedCategory,
     required List<Category> categories,
   }) {
     final IconData icon;
@@ -221,7 +221,7 @@ class _CategoriesButton extends StatelessWidget {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         final selectedCategory = state.selectedCategoryId;
-        
+
         final icon = _createIcon(
           selectedCategory: selectedCategory,
           categories: state.categories,
@@ -231,8 +231,8 @@ class _CategoriesButton extends StatelessWidget {
 
         return IconButton(
           icon: Icon(icon),
-          onPressed: () => 
-            context.read<ChatCubit>().changeShowCategories(!showCategories),
+          onPressed: () =>
+              context.read<ChatCubit>().changeShowCategories(!showCategories),
         );
       },
     );
@@ -339,7 +339,7 @@ class _TagsList extends StatelessWidget {
             cubit.addNewTag(
               Tag(
                 value: '#test',
-                count: 1,  
+                count: 1,
               ),
             );
             cubit.changeShowTags(false);

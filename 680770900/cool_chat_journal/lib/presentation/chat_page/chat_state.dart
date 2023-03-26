@@ -75,9 +75,7 @@ class ChatState extends Equatable {
         tagsSubscription: tagsSubscription != null
             ? tagsSubscription.value
             : this.tagsSubscription,
-        images: images != null
-            ? images.value
-            : this.images,
+        images: images != null ? images.value : this.images,
         selectedCategoryId: selectedCategoryId != null
             ? selectedCategoryId.value
             : this.selectedCategoryId,

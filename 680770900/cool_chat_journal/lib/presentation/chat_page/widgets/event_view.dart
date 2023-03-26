@@ -66,7 +66,7 @@ class _EventViewState extends State<EventView> {
           height: 200.0,
         ),
       );
-    } else if (widget.event.content != null){
+    } else if (widget.event.content != null) {
       eventContent = Text(widget.event.content!);
     } else {
       context.read<ChatCubit>().readImage(widget.event);

@@ -13,15 +13,15 @@ class EventsRepository {
 
   EventsRepository();
 
-  Stream<List<Event>> get eventsStream => 
+  Stream<List<Event>> get eventsStream =>
       GetIt.I<DatabaseProvider>().eventsStream;
 
   Future<Uint8List> readImage(Event event) async {
     if (_imageCache.keys.contains(event.id)) {
       return _imageCache[event.id]!;
     } else {
-      final image = await GetIt.I<StorageProvider>().download(
-          filename: _generateImagePath(event));
+      final image = await GetIt.I<StorageProvider>()
+          .download(filename: _generateImagePath(event));
       _imageCache[event.id] = image;
 
       return image;

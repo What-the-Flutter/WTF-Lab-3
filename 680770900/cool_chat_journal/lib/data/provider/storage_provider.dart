@@ -12,7 +12,8 @@ class StorageProvider {
     required Uint8List data,
     String directory = 'images',
   }) async {
-    final ref = _storageInstance.ref('${GetIt.I<User>().uid}/$directory/$filename');
+    final ref =
+        _storageInstance.ref('${GetIt.I<User>().uid}/$directory/$filename');
     await ref.putData(data);
   }
 
@@ -20,7 +21,7 @@ class StorageProvider {
     required String filename,
     String directory = 'images',
   }) async {
-    final ref = 
+    final ref =
         _storageInstance.ref('${GetIt.I<User>().uid}/$directory/$filename');
 
     const oneMegabyte = 1024 * 1024;
@@ -35,11 +36,10 @@ class StorageProvider {
   }) async {
     try {
       await _storageInstance
-        .ref('${GetIt.I<User>().uid}/$directory/$filename')
-        .delete();
+          .ref('${GetIt.I<User>().uid}/$directory/$filename')
+          .delete();
     } on FirebaseException catch (_) {
       print("Storage hasn't images");
     }
- 
   }
 }

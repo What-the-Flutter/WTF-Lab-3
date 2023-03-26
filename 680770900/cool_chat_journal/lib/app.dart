@@ -3,21 +3,9 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sqflite/sqflite.dart';
 
-import 'data/provider/database_provider.dart';
-import 'data/provider/settings_provider.dart';
-import 'data/provider/storage_provider.dart';
-import 'data/repository/categories_repository.dart';
-import 'data/repository/chats_repository.dart';
-import 'data/repository/events_repository.dart';
-import 'data/repository/settings_repository.dart';
-import 'data/repository/tags_repository.dart';
-import 'presentation/chat_editor_page/chat_editor_cubit.dart';
-import 'presentation/chat_page/chat_cubit.dart';
-import 'presentation/home_page/home_cubit.dart';
-import 'presentation/home_page/home_page.dart';
-import 'presentation/settings_page/settings_cubit.dart';
+import 'data/data.dart';
+import 'presentation/presentation.dart';
 
 class CoolChatJournalApp extends StatefulWidget {
   final User user;
@@ -94,12 +82,15 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
     GetIt.I.registerSingleton<User>(widget.user);
 
     // Providers.
-    GetIt.I.registerSingleton<DatabaseProvider>(DatabaseProvider());
+    GetIt.I.registerSingleton<DatabaseProvider>(DatabaseProvider(
+      defaultJsonCategories: _DefaultCategories.jsonList,
+    ));
     GetIt.I.registerSingleton<SettingsProvider>(SettingsProvider());
     GetIt.I.registerSingleton<StorageProvider>(StorageProvider());
-  
+
     // Repositories.
-    GetIt.I.registerSingleton<CategoriesRepository>(const CategoriesRepository());
+    GetIt.I
+        .registerSingleton<CategoriesRepository>(const CategoriesRepository());
     GetIt.I.registerSingleton<ChatsRepository>(const ChatsRepository());
     GetIt.I.registerSingleton<EventsRepository>(EventsRepository());
     GetIt.I.registerSingleton<SettingsRepository>(const SettingsRepository());
@@ -119,15 +110,12 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
         BlocProvider<SettingsCubit>(
           create: (_) => GetIt.I<SettingsCubit>(),
         ),
-
         BlocProvider<HomeCubit>(
           create: (_) => GetIt.I<HomeCubit>(),
         ),
-
         BlocProvider<ChatCubit>(
           create: (_) => GetIt.I<ChatCubit>(),
         ),
-
         BlocProvider<ChatEditorCubit>(
           create: (_) => GetIt.I<ChatEditorCubit>(),
         ),
@@ -145,4 +133,16 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
       ),
     );
   }
+}
+
+class _DefaultCategories {
+  static List<JsonMap> get jsonList => list.map((e) => e.toJson()).toList();
+
+  static List<Category> get list => [
+        Category(
+          title: 'test',
+          icon: Icons.fitness_center.codePoint,
+          isCustom: false,
+        ),
+      ];
 }

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../data/repository/settings_repository.dart';
@@ -24,23 +23,20 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> initTheme() async {
-    final themeTypeConverter = 
-      _Converter(
-        values: ThemeType.values,
-        defaultValue: defaultThemeType,
-      );
+    final themeTypeConverter = _Converter(
+      values: ThemeType.values,
+      defaultValue: defaultThemeType,
+    );
 
-    final fontSizeTypeConverter = 
-      _Converter(
-        values: FontSizeType.values,
-        defaultValue: defaultFontSizeType,
-      );
+    final fontSizeTypeConverter = _Converter(
+      values: FontSizeType.values,
+      defaultValue: defaultFontSizeType,
+    );
 
-    final bubbleAlignmentTypeConverter = 
-      _Converter(
-        values: BubbleAlignmentType.values,
-        defaultValue: defaultBubbleAlignmentType,
-      );
+    final bubbleAlignmentTypeConverter = _Converter(
+      values: BubbleAlignmentType.values,
+      defaultValue: defaultBubbleAlignmentType,
+    );
 
     final themeInfo = await GetIt.I<SettingsRepository>().updateThemeInfo();
 
@@ -49,7 +45,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         themeType: themeTypeConverter.fromString(themeInfo.themeType),
         fontSizeType: fontSizeTypeConverter.fromString(themeInfo.fontSize),
         bubbleAlignmentType:
-          bubbleAlignmentTypeConverter.fromString(themeInfo.bubbleAlignment),
+            bubbleAlignmentTypeConverter.fromString(themeInfo.bubbleAlignment),
       ),
     );
   }
@@ -57,13 +53,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> switchBubbleAlignmentType() async {
     final bubbleAlignmentType = state.bubbleAlignmentType.next;
 
-    await GetIt.I<SettingsRepository>().saveThemeInfo(
-      ThemeInfo(
-        themeType: state.themeType.name,
-        fontSize: state.fontSizeType.name,
-        bubbleAlignment: bubbleAlignmentType.name,
-      )
-    );
+    await GetIt.I<SettingsRepository>().saveThemeInfo(ThemeInfo(
+      themeType: state.themeType.name,
+      fontSize: state.fontSizeType.name,
+      bubbleAlignment: bubbleAlignmentType.name,
+    ));
 
     emit(state.copyWith(bubbleAlignmentType: bubbleAlignmentType));
   }
@@ -96,7 +90,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> uploadBackgroundImage() async {
     try {
-      final image = 
+      final image =
           await GetIt.I<SettingsRepository>().downloadBackgroundImage();
 
       emit(
@@ -104,7 +98,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           backgroundImage: _NullWrapper(value: image),
         ),
       );
-    } catch (_) { }
+    } catch (_) {}
   }
 
   Future<void> resetBackgroundImage() async {

@@ -16,7 +16,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(const HomeState());
 
   void subscribeChatsStream() {
-    final subscription = 
+    final subscription =
         GetIt.I<ChatsRepository>().chatsStream.listen(_setChats);
 
     emit(
@@ -52,7 +52,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void switchChatPinning(Chat chat) async {
-    await GetIt.I<ChatsRepository>().updateChat(chat.copyWith(isPinned: !chat.isPinned));
+    await GetIt.I<ChatsRepository>()
+        .updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
 
   void _sortChats(List<Chat> chats) {

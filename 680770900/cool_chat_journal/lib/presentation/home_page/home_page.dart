@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context) => ChatEditorPage(
               sourceChat: chat,
             ),
-          ), 
+          ),
         ),
       ),
     );
@@ -140,28 +140,27 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.pop(context);
                 Share.share('Keep track of your life with Chat Journal,'
-                ' a simple and elegant chat-based journal/notes'
-                'application that makes journaling/note-taking fun,'
-                'easy, quick and effortless. '
-                'https://play.google.com/store/apps/details?'
-                'id=com.agiletelescope.chatjournal');
+                    ' a simple and elegant chat-based journal/notes'
+                    'application that makes journaling/note-taking fun,'
+                    'easy, quick and effortless. '
+                    'https://play.google.com/store/apps/details?'
+                    'id=com.agiletelescope.chatjournal');
               },
             ),
             InkWell(
-              child: const ListTile(
-                leading: Icon(Icons.settings_outlined),
-                title: Text('Settings'),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const SettingsPage(),
-                  ),
-                );
-              }
-            ),
+                child: const ListTile(
+                  leading: Icon(Icons.settings_outlined),
+                  title: Text('Settings'),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SettingsPage(),
+                    ),
+                  );
+                }),
           ],
         ),
       ),
@@ -178,13 +177,13 @@ class _HomePageState extends State<HomePage> {
         builder: (context, state) => ListView.builder(
           itemCount: state.chats.length,
           itemBuilder: (context, index) =>
-            _createChatCard(context, state.chats[index]),
+              _createChatCard(context, state.chats[index]),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => Navigator.push(
-          context, 
+          context,
           MaterialPageRoute(
             builder: (context) => const ChatEditorPage(),
           ),

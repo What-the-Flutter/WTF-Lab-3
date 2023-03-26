@@ -25,7 +25,7 @@ class Tag {
     String? id,
     String? value,
     int? count,
-  }) => 
+  }) =>
       Tag(
         id: id ?? this.id,
         value: value ?? this.value,

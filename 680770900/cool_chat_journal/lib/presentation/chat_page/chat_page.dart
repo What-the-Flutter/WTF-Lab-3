@@ -234,8 +234,7 @@ class _ChatPageState extends State<ChatPage> {
 
             final Category? category;
             if (event.categoryId != null) {
-              category = GetIt
-                  .I<ChatCubit>()
+              category = GetIt.I<ChatCubit>()
                   .state
                   .categories
                   .firstWhere((e) => e.id == event.categoryId);

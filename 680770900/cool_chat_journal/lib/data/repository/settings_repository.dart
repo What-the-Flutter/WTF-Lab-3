@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
 import '../models/models.dart';
@@ -13,7 +12,7 @@ class SettingsRepository {
   Future<void> saveThemeInfo(ThemeInfo themeInfo) async =>
       await GetIt.I<SettingsProvider>().save(themeInfo);
 
-  Future<ThemeInfo> updateThemeInfo() async => 
+  Future<ThemeInfo> updateThemeInfo() async =>
       await GetIt.I<SettingsProvider>().read();
 
   Future<void> saveBackgroundImage(Uint8List image) async =>
@@ -22,7 +21,7 @@ class SettingsRepository {
         data: image,
       );
 
-  Future<Uint8List> downloadBackgroundImage() async => 
+  Future<Uint8List> downloadBackgroundImage() async =>
       await GetIt.I<StorageProvider>().download(filename: 'background_image');
 
   Future<void> deleteBackgroundImage() async =>

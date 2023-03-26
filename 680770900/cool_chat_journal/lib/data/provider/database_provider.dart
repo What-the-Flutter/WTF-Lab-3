@@ -52,8 +52,7 @@ class DatabaseProvider {
     required T Function(JsonMap) fromJson,
     List<JsonMap>? defaultValues,
   }) {
-    final ref =
-        FirebaseDatabase.instance.ref('/users/${user.uid}/$tableName');
+    final ref = FirebaseDatabase.instance.ref('/users/${user.uid}/$tableName');
 
     ref.onValue.listen(
       (event) {
@@ -73,9 +72,7 @@ class DatabaseProvider {
           return;
         }
 
-        final jsonList =
-            rawData.values
-                .map((e) => e as Map<Object?, Object?>);
+        final jsonList = rawData.values.map((e) => e as Map<Object?, Object?>);
 
         var objects = <T>[];
         for (final rawObject in jsonList) {
@@ -95,8 +92,7 @@ class DatabaseProvider {
     required String tableName,
     required Iterable<JsonMap> values,
   }) async {
-    final ref = FirebaseDatabase.instance
-        .ref(tableName);
+    final ref = FirebaseDatabase.instance.ref(tableName);
 
     for (final json in values) {
       await ref.child(json['id']).set(json);

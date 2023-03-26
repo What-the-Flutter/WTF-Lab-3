@@ -1,6 +1,5 @@
 part of 'home_cubit.dart';
 
-
 class HomeState extends Equatable {
   final ChatsSubscription? streamSubscription;
   final List<Chat> chats;
@@ -16,9 +15,9 @@ class HomeState extends Equatable {
   }) =>
       HomeState(
         chats: chats ?? this.chats,
-        streamSubscription: streamSubscription != null 
-          ? streamSubscription.value
-          : this.streamSubscription,
+        streamSubscription: streamSubscription != null
+            ? streamSubscription.value
+            : this.streamSubscription,
       );
 
   @override
