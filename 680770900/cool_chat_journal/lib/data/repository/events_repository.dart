@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
@@ -8,38 +8,34 @@ import '../provider/database_provider.dart';
 import '../provider/storage_provider.dart';
 
 class EventsRepository {
-  final DatabaseProvider _databaseProvider;
-  final StorageProvider _storageProvider;
-
-  final imageCache = <String, Uint8List>{};
+  final _imageCache = <String, Uint8List>{};
   final _eventsSubject = BehaviorSubject<List<Event>>();
 
-  EventsRepository({required User? user})
-      : _databaseProvider = DatabaseProvider(user: user),
-        _storageProvider = StorageProvider(user: user);
+  EventsRepository();
 
-  Stream<List<Event>> get eventsStream => _databaseProvider.eventsStream;
+  Stream<List<Event>> get eventsStream => 
+      GetIt.I<DatabaseProvider>().eventsStream;
 
   Future<Uint8List> readImage(Event event) async {
-    if (imageCache.keys.contains(event.id)) {
-      return imageCache[event.id]!;
+    if (_imageCache.keys.contains(event.id)) {
+      return _imageCache[event.id]!;
     } else {
-      final image = await _storageProvider.download(
+      final image = await GetIt.I<StorageProvider>().download(
           filename: _generateImagePath(event));
-      imageCache[event.id] = image;
+      _imageCache[event.id] = image;
 
       return image;
     }
   }
 
   Future<void> addEvent(Event event) async {
-    await _databaseProvider.add(
+    await GetIt.I<DatabaseProvider>().add(
       json: event.toJson(),
       tableName: '${DatabaseProvider.eventsRoot}',
     );
 
     if (event.image != null) {
-      await _storageProvider.upload(
+      await GetIt.I<StorageProvider>().upload(
         filename: _generateImagePath(event),
         data: event.image!,
       );
@@ -48,10 +44,11 @@ class EventsRepository {
 
   Future<void> deleteEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.delete(filename: _generateImagePath(event));
+      await GetIt.I<StorageProvider>()
+          .delete(filename: _generateImagePath(event));
     }
 
-    await _databaseProvider.delete(
+    await GetIt.I<DatabaseProvider>().delete(
       id: event.id,
       tableName: _generateEventPath(event),
     );
@@ -59,13 +56,13 @@ class EventsRepository {
 
   Future<void> updateEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.upload(
+      await GetIt.I<StorageProvider>().upload(
         filename: _generateImagePath(event),
         data: event.image!,
       );
     }
 
-    await _databaseProvider.add(
+    await GetIt.I<DatabaseProvider>().add(
       json: event.toJson(),
       tableName: _generateEventPath(event),
     );
@@ -84,7 +81,7 @@ class EventsRepository {
   }
 
   Future<void> deleteEventsFromChat(String chatId) async {
-    final jsonEvents = await _databaseProvider.read<Event>(
+    final jsonEvents = await GetIt.I<DatabaseProvider>().read<Event>(
       tableName: DatabaseProvider.eventsRoot,
     );
 

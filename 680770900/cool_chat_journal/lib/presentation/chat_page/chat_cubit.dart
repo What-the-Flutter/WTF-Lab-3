@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../data/models/models.dart';
 import '../../data/repository/categories_repository.dart';
@@ -17,25 +18,17 @@ typedef CategoriesSubscription = StreamSubscription<List<Category>>;
 typedef TagsSubscription = StreamSubscription<List<Tag>>;
 
 class ChatCubit extends Cubit<ChatState> {
-  final EventsRepository _eventsRepository;
-  final CategoriesRepository _categoriesRepository;
-  final TagsRepository _tagsRepository;
-
-  ChatCubit({required User? user})
-      : _eventsRepository = EventsRepository(user: user),
-        _categoriesRepository = CategoriesRepository(user: user),
-        _tagsRepository = TagsRepository(user: user),
-        super(const ChatState(chatId: '-'));
+  ChatCubit() : super(const ChatState(chatId: '-'));
 
   void subscribeStreams() {
     final eventsSubscription = 
-      _eventsRepository.eventsStream.listen(_setEvents);
+      GetIt.I<EventsRepository>().eventsStream.listen(_setEvents);
 
     final categoriesSubscription =
-      _categoriesRepository.categoriesStream.listen(_setCategories);
+      GetIt.I<CategoriesRepository>().categoriesStream.listen(_setCategories);
 
     final tagsSubscription =
-      _tagsRepository.tagsStream.listen(_setTags);
+      GetIt.I<TagsRepository>().tagsStream.listen(_setTags);
 
     emit(
       state.copyWith(
@@ -70,7 +63,7 @@ class ChatCubit extends Cubit<ChatState> {
       if (state.images?[event.id] != null) {
         image = state.images![event.id]!; 
       } else {
-        image = await _eventsRepository.readImage(event);
+        image = await GetIt.I<EventsRepository>().readImage(event);
       }
     
       final events = state.events
@@ -112,11 +105,11 @@ class ChatCubit extends Cubit<ChatState> {
       )
     );
 
-    await _eventsRepository.addEvent(event);
+    await GetIt.I<EventsRepository>().addEvent(event);
   }
 
   void addNewTag(Tag tag) async {
-    await _tagsRepository.addTag(tag);
+    await GetIt.I<TagsRepository>().addTag(tag);
     final tags = List<Tag>.from(state.tags);
     tags.add(tag);
     emit(state.copyWith(tags: tags));
@@ -127,15 +120,16 @@ class ChatCubit extends Cubit<ChatState> {
     _sortEvents(events);
     emit(state.copyWith(events: events));
 
-    await _eventsRepository.deleteEvent(event);
+    await GetIt.I<EventsRepository>().deleteEvent(event);
   }
 
   void editEvent(Event event) async {
-    final events = state.events.where((e) => e.id != event.id).toList()..add(event);
+    final events = 
+        state.events.where((e) => e.id != event.id).toList()..add(event);
     _sortEvents(events);
     emit(state.copyWith(events: events));
 
-    await _eventsRepository.updateEvent(event);
+    await GetIt.I<EventsRepository>().updateEvent(event);
   }
 
   void deleteSelectedEvents() {
@@ -154,7 +148,7 @@ class ChatCubit extends Cubit<ChatState> {
         )
         .toList();
 
-    await _eventsRepository.updateEvents(events);
+    await GetIt.I<EventsRepository>().updateEvents(events);
 
     emit(state.copyWith(events: events));
   }

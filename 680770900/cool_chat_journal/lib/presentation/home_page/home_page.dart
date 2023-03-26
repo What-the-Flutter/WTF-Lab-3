@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -27,14 +28,12 @@ class _HomePageState extends State<HomePage> {
   final _dateFormat = DateFormat.yMMMMd('en_US');
 
   void _openManagePanel(BuildContext context, Chat chat) {
-    final cubit = context.read<HomeCubit>();
-
     showModalBottomSheet(
       context: context,
       builder: (context) => ManagePanelDialog(
         chat: chat,
-        onDeleteChat: () => cubit.deleteChat(chat.id),
-        onSwitchChatPinning: () => cubit.switchChatPinning(chat),
+        onDeleteChat: () => GetIt.I<HomeCubit>().deleteChat(chat.id),
+        onSwitchChatPinning: () => GetIt.I<HomeCubit>().switchChatPinning(chat),
         onEditChat: () => Navigator.push(
           context,
           MaterialPageRoute(

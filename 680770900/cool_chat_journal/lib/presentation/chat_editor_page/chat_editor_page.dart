@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../data/models/chat.dart';
 import '../home_page/home_cubit.dart';
@@ -15,24 +16,20 @@ class ChatEditorPage extends StatelessWidget {
   });
 
   void _saveChat(BuildContext context) {
-    final chatEditorCubit = context.read<ChatEditorCubit>();
-    final title = chatEditorCubit.state.title;
-
-    if (title.isNotEmpty) {
-      final iconIndex = chatEditorCubit.state.iconIndex;
+    if (GetIt.I<ChatEditorCubit>().state.title.isNotEmpty) {
+      final iconIndex = GetIt.I<ChatEditorCubit>().state.iconIndex;
       final chat = Chat(
         id: sourceChat?.id,
         iconCode: ChatIcons.icons[iconIndex].codePoint,
-        name: title,
+        name: GetIt.I<ChatEditorCubit>().state.title,
         createdTime: sourceChat?.createdTime ?? DateTime.now(),
         isPinned: false,
       );
 
-      final chatsCubit = context.read<HomeCubit>();
       if (sourceChat != null) {
-        chatsCubit.editChat(chat);
+        GetIt.I<HomeCubit>().editChat(chat);
       } else {
-        chatsCubit.addChat(chat);
+        GetIt.I<HomeCubit>().addChat(chat);
       }
     }
 
@@ -62,11 +59,9 @@ class ChatEditorPage extends StatelessWidget {
   }
 
   Widget _createTitleField(BuildContext context) {
-    final cubit = context.read<ChatEditorCubit>();
-
     final initialValue = sourceChat?.name;
     if (initialValue != null) {
-      cubit.changeTitle(initialValue);
+      GetIt.I<ChatEditorCubit>().changeTitle(initialValue);
     }
 
     return Padding(
@@ -79,7 +74,7 @@ class ChatEditorPage extends StatelessWidget {
             borderSide: BorderSide(width: 3),
           ),
         ),
-        onChanged: cubit.changeTitle,
+        onChanged: GetIt.I<ChatEditorCubit>().changeTitle,
       ),
     );
   }
@@ -93,17 +88,17 @@ class ChatEditorPage extends StatelessWidget {
         itemCount: icons.length,
         itemBuilder: (_, index) {
           return BlocBuilder<ChatEditorCubit, ChatEditorState>(
-              buildWhen: (previous, current) =>
-                  previous.iconIndex != current.iconIndex,
-              builder: (context, state) {
-                return IconView(
-                  icon: icons[index],
-                  isSelected: index == state.iconIndex,
-                  size: 80,
-                  onTap: () =>
-                      context.read<ChatEditorCubit>().selectIcon(index),
-                );
-              });
+            buildWhen: (previous, current) =>
+                previous.iconIndex != current.iconIndex,
+            builder: (context, state) {
+              return IconView(
+                icon: icons[index],
+                isSelected: index == state.iconIndex,
+                size: 80,
+                onTap: () => GetIt.I<ChatEditorCubit>().selectIcon(index),
+              );
+            },
+          );
         },
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,

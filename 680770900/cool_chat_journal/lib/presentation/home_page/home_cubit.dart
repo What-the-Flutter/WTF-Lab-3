@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../data/models/chat.dart';
 import '../../../data/repository/chats_repository.dart';
@@ -13,16 +13,11 @@ part 'home_state.dart';
 typedef ChatsSubscription = StreamSubscription<List<Chat>>;
 
 class HomeCubit extends Cubit<HomeState> {
-  final ChatsRepository _chatsRepository;
-  final EventsRepository _eventsRepository;
-
-  HomeCubit({required User? user})
-      : _chatsRepository = ChatsRepository(user: user),
-        _eventsRepository = EventsRepository(user: user),
-        super(const HomeState());
+  HomeCubit() : super(const HomeState());
 
   void subscribeChatsStream() {
-    final subscription = _chatsRepository.chatsStream.listen(_setChats);
+    final subscription = 
+        GetIt.I<ChatsRepository>().chatsStream.listen(_setChats);
 
     emit(
       state.copyWith(
@@ -44,20 +39,20 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void addChat(Chat chat) async {
-    await _chatsRepository.addChat(chat);
+    await GetIt.I<ChatsRepository>().addChat(chat);
   }
 
   void deleteChat(String chatId) async {
-    await _chatsRepository.deleteChat(chatId);
-    await _eventsRepository.deleteEventsFromChat(chatId);
+    await GetIt.I<ChatsRepository>().deleteChat(chatId);
+    await GetIt.I<EventsRepository>().deleteEventsFromChat(chatId);
   }
 
   void editChat(Chat chat) async {
-    await _chatsRepository.updateChat(chat);
+    await GetIt.I<ChatsRepository>().updateChat(chat);
   }
 
   void switchChatPinning(Chat chat) async {
-    await _chatsRepository.updateChat(chat.copyWith(isPinned: !chat.isPinned));
+    await GetIt.I<ChatsRepository>().updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
 
   void _sortChats(List<Chat> chats) {

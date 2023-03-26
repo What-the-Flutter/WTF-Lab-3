@@ -1,26 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 
 import '../models/tag.dart';
 import '../provider/database_provider.dart';
 
 class TagsRepository {
-  final DatabaseProvider _databaseProvider;
-
-  TagsRepository({required User? user})
-      : _databaseProvider = DatabaseProvider(user: user);
+  const TagsRepository();
 
   Future<void> addTag(Tag tag) async =>
-      await _databaseProvider.add(
+      await GetIt.I<DatabaseProvider>().add(
         json: tag.toJson(),
         tableName: DatabaseProvider.tagsRoot,
       );
 
   Future<void> deleteLink(String tagId) async {
-    final json = await _databaseProvider.read<Tag>(
+    final json = await GetIt.I<DatabaseProvider>().read<Tag>(
       tableName: '${DatabaseProvider.tagsRoot}/$tagId',
     );
 
-    await _databaseProvider.delete(
+    await GetIt.I<DatabaseProvider>().delete(
       id: tagId,
       tableName: DatabaseProvider.tagsRoot,
     );
@@ -33,5 +30,5 @@ class TagsRepository {
     }
   } 
 
-  Stream<List<Tag>> get tagsStream => _databaseProvider.tagsStream;
+  Stream<List<Tag>> get tagsStream => GetIt.I<DatabaseProvider>().tagsStream;
 }

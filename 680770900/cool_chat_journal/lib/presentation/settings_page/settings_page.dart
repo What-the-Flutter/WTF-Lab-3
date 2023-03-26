@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'settings_cubit.dart';
@@ -16,7 +17,6 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
-        final cubit = context.read<SettingsCubit>();
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -35,7 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Theme'),
                     subtitle: Text('Light / Dark'),
                   ),
-                  onTap: cubit.switchThemeType,
+                  onTap: GetIt.I<SettingsCubit>().switchThemeType,
                 ),
                 const Divider(),
                 InkWell(
@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
 
                     if (fontSizeType != null) {
-                      cubit.switchFontSizeType(fontSizeType);
+                      GetIt.I<SettingsCubit>().switchFontSizeType(fontSizeType);
                     }
                   },
                 ),
@@ -62,7 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Bubble Alignment'),
                     subtitle: Text('Force right-to-left bubble alignment'),
                   ),
-                  onTap: cubit.switchBubbleAlignmentType,
+                  onTap: GetIt.I<SettingsCubit>().switchBubbleAlignmentType,
                 ),
                 const Divider(),
                 InkWell(
@@ -87,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Reset All Preferences'),
                     subtitle: Text('Reset all Visual Customizations'),
                   ),
-                  onTap: cubit.restoreSettings,
+                  onTap: GetIt.I<SettingsCubit>().restoreSettings,
                 ),
               ],
             ),

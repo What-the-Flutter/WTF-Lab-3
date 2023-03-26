@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
@@ -17,10 +18,9 @@ class DatabaseProvider {
   final _categoriesSubject = BehaviorSubject<List<Category>>();
   final _tagsSubject = BehaviorSubject<List<Tag>>();
 
-  final User? user;
+  User get user => GetIt.I<User>();
 
   DatabaseProvider({
-    required this.user,
     List<JsonMap>? defaultJsonCategories,
   }) {
     _initConnection<Chat>(
@@ -53,7 +53,7 @@ class DatabaseProvider {
     List<JsonMap>? defaultValues,
   }) {
     final ref =
-        FirebaseDatabase.instance.ref('/users/${user?.uid}/$tableName');
+        FirebaseDatabase.instance.ref('/users/${user.uid}/$tableName');
 
     ref.onValue.listen(
       (event) {
@@ -107,7 +107,7 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     final snapshot = await FirebaseDatabase.instance
-        .ref('/users/${user?.uid}/$tableName')
+        .ref('/users/${user.uid}/$tableName')
         .get();
 
     if (snapshot.exists) {
@@ -132,7 +132,7 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     final ref = FirebaseDatabase.instance
-        .ref('/users/${user?.uid}/$tableName/${json['id']}');
+        .ref('/users/${user.uid}/$tableName/${json['id']}');
 
     await ref.set(json);
   }
@@ -142,7 +142,7 @@ class DatabaseProvider {
     required String tableName,
   }) async {
     await FirebaseDatabase.instance
-        .ref('users/${user?.uid}/$tableName/$id')
+        .ref('users/${user.uid}/$tableName/$id')
         .remove();
   }
 
