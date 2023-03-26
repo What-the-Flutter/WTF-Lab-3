@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -97,16 +99,20 @@ class _ChatPageState extends State<ChatPage> {
     _clearTextInput();
   }
 
-  Widget _returnEvents(ChatState state) {
-    return Expanded(
-      flex: 10,
-      child: ListView.builder(
-        itemCount: state.eventsLength,
-        reverse: true,
-        itemBuilder: (_, index) {
-          return _createListViewItem(index, state);
-        },
-      ),
+  Widget _returnEvents(ChatState chatState) {
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) {
+        return Expanded(
+          flex: 10,
+          child: ListView.builder(
+            itemCount: chatState.eventsLength,
+            reverse: true,
+            itemBuilder: (_, index) {
+              return _createListViewItem(index, chatState);
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -386,6 +392,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   Text(
                     categoryTitle[index + 1],
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).secondaryHeaderColor,
+                          fontWeight: FontWeight.normal,
+                        ),
                   ),
                 ],
               ),
@@ -401,6 +411,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
           constraints: const BoxConstraints(
             maxHeight: 200,
           ),
@@ -501,8 +512,12 @@ class _ChatPageState extends State<ChatPage> {
           Icons.camera_enhance,
           color: Colors.black,
         ),
-        title: const Text(
+        title: Text(
           'Open Camera',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
         onTap: () {
           context.read<ChatCubit>().pickImage(false);
@@ -522,8 +537,12 @@ class _ChatPageState extends State<ChatPage> {
           Icons.photo,
           color: Colors.black,
         ),
-        title: const Text(
+        title: Text(
           'Open Gallery',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
         onTap: () {
           context.read<ChatCubit>().pickImage(true);
@@ -551,27 +570,46 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
-        final chat = state.chat;
-        final favourites = state.chatEvents.where((Event e) => e.isFavourite);
+      builder: (context, chatState) {
+        final chat = chatState.chat;
+        final favourites =
+            chatState.chatEvents.where((Event e) => e.isFavourite);
 
-        final shouldShowMessage = state.chatEvents.isEmpty ||
+        final shouldShowMessage = chatState.chatEvents.isEmpty ||
             chat.isShowingFavourites && favourites.isEmpty;
 
         return Scaffold(
           appBar: _createAppBar(
-              context, chat, context.read<HomeCubit>().state, state),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              shouldShowMessage
-                  ? _returnHintMessage(chat, state)
-                  : _returnEvents(state),
-              state.isChoosingImageOptions
-                  ? _createImageOptions()
-                  : Container(),
-              _createBottomBar(state),
-            ],
+              context, chat, context.read<HomeCubit>().state, chatState),
+          body: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, state) {
+              return Container(
+                decoration: state.backgroundImage != ''
+                    ? BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(
+                            File(
+                              state.backgroundImage,
+                            ),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : null,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    shouldShowMessage
+                        ? _returnHintMessage(chat, chatState)
+                        : _returnEvents(chatState),
+                    chatState.isChoosingImageOptions
+                        ? _createImageOptions()
+                        : Container(),
+                    _createBottomBar(chatState),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },

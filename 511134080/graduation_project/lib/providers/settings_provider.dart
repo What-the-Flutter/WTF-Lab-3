@@ -25,8 +25,11 @@ class SettingsProvider {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_light', true);
     await prefs.setInt('font_size', 0);
-    await prefs.setBool('is_right_to_left', false);
-    await prefs.setBool('is_center_date', false);
+  }
+
+  Future<void> saveBackgroundImage(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('background_image', path);
   }
 
   Future<bool?> get theme async {
@@ -47,5 +50,10 @@ class SettingsProvider {
   Future<bool?> get dateAlignment async {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.getBool('is_center_date');
+  }
+
+  Future<String?> get backgroundImage async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.getString('background_image');
   }
 }

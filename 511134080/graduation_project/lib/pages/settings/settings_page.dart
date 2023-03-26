@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'choosing_background_image.dart';
 import 'settings_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -149,6 +150,40 @@ class SettingsPage extends StatelessWidget {
         ));
   }
 
+  ListTile _createBackgroundImageTile(BuildContext context) {
+    return ListTile(
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Padding(
+        padding: EdgeInsets.only(right: 16.0),
+        child: Icon(
+          Icons.wallpaper,
+        ),
+      ),
+      title: Text(
+        'Background Image',
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      subtitle: Text(
+        'Chat background image',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+            ),
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChoosingBackgroundImage(),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
@@ -196,6 +231,8 @@ class SettingsPage extends StatelessWidget {
                 _createBubbleAlignmentTile(context, state),
                 const Divider(),
                 _createCenterDateTile(context, state),
+                const Divider(),
+                _createBackgroundImageTile(context),
               ],
             ),
           ),

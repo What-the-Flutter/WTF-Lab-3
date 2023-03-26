@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../providers/settings_provider.dart';
 import '../../theme/theme.dart';
@@ -19,12 +21,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     final fontSize = await settingsProvider.fontSize ?? 0;
     final bubbleAlignment = await settingsProvider.bubbleAlignment ?? false;
     final centerDate = await settingsProvider.dateAlignment ?? false;
+    final backgroundImage = await settingsProvider.backgroundImage ?? '';
     emit(
       state.copyWith(
         light: isLight,
         newFontSize: fontSize,
         rightToLeft: bubbleAlignment,
         centerDate: centerDate,
+        newBackgroundImage: backgroundImage,
       ),
     );
   }
@@ -78,6 +82,34 @@ class SettingsCubit extends Cubit<SettingsState> {
         light: true,
         rightToLeft: false,
         centerDate: false,
+      ),
+    );
+  }
+
+  Future<void> pickBackgroundImage() async {
+    final status = await Permission.mediaLibrary.request();
+
+    if (status.isGranted) {
+      final imagePicker = ImagePicker();
+      final pickedFile =
+          await imagePicker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        settingsProvider.saveBackgroundImage(pickedFile.path);
+        emit(
+          state.copyWith(
+            newBackgroundImage: pickedFile.path,
+          ),
+        );
+      }
+    }
+  }
+
+  void unsetBackgroundImage() {
+    settingsProvider.saveBackgroundImage('');
+    emit(
+      state.copyWith(
+        newBackgroundImage: '',
       ),
     );
   }

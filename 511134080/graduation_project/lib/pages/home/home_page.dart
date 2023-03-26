@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> {
         await Share.share('Keep track of your life with Chat Journal, '
             'a simple and elegant chat-based journal/notes'
             ' application that makes journaling/note-taking fun, '
-            'easy, quick and effortless.\n https://play.google.com/'
+            'easy, quick and effortless.\nhttps://play.google.com/'
             'store/apps/details?id=com.agiletelescope.chatjournal');
       },
       iconColor: Theme.of(context).disabledColor,

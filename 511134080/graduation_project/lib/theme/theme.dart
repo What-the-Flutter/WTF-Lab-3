@@ -9,14 +9,15 @@ class AppTheme {
     useMaterial3: true,
     hintColor: Colors.grey.shade400,
     highlightColor: Colors.green[100],
-    focusColor: Colors.deepPurple.withAlpha(99),
-    cardColor: Colors.deepPurple.withAlpha(72),
+    focusColor: Colors.deepPurple[200],
+    cardColor: Colors.deepPurple[100],
     primaryColorLight: Colors.deepPurple.shade300,
     primaryColorDark: Colors.deepPurple,
     hoverColor: Colors.deepPurple,
     disabledColor: Colors.grey[700],
     textTheme: defaultTextTheme,
     secondaryHeaderColor: Colors.black,
+    scaffoldBackgroundColor: Colors.white,
   );
 
   static final darkTheme = ThemeData(
@@ -26,14 +27,15 @@ class AppTheme {
     brightness: Brightness.dark,
     colorSchemeSeed: Colors.deepPurple.shade700,
     useMaterial3: true,
-    focusColor: Colors.deepPurple.withAlpha(99),
-    cardColor: Colors.deepPurple.withAlpha(72),
+    focusColor: Colors.deepPurple[600],
+    cardColor: Colors.deepPurple[400],
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
     hoverColor: Colors.grey[850],
     disabledColor: Colors.grey[700],
     textTheme: defaultTextTheme,
     secondaryHeaderColor: Colors.white,
+    scaffoldBackgroundColor: Colors.black,
   );
 
   static final smallTextTheme = const TextTheme(
