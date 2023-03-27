@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtagable/functions.dart';
+import 'package:hashtagable/widgets/hashtag_text_field.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants.dart';
@@ -118,12 +120,19 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _returnHintMessage(Chat chat, ChatState state) {
     final messages = state.hintMessages;
-    return Expanded(
-      flex: 9,
+    return Align(
+      alignment: Alignment.topCenter,
       child: Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColorLight,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              8,
+            ),
+          ),
+        ),
         child: Column(
           children: [
             Text(
@@ -325,6 +334,8 @@ class _ChatPageState extends State<ChatPage> {
               MaterialPageRoute(
                 builder: (_) => SearchingPage(
                   cards: chatState.chatEvents,
+                  chatTitle: chat.title,
+                  tags: chatState.tags,
                 ),
               ),
             );
@@ -406,6 +417,77 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Widget _createAddingTagPanel(ChatState state) {
+    final inputtingTag = extractHashTags(_textFieldController.text).last;
+    if (state.tags.isNotEmpty) {
+      final existingTags =
+          state.tags.where((String tag) => tag.contains(inputtingTag));
+      if (existingTags.isNotEmpty) {
+        return Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: ListView.builder(
+              itemCount: existingTags.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
+                            color: Theme.of(context).highlightColor,
+                          ),
+                          child: Text(
+                            existingTags.elementAt(index),
+                          ),
+                        ),
+                        onTap: () {
+                          context.read<ChatCubit>().onExistingTagTap(
+                              inputtingTag,
+                              existingTags.elementAt(index),
+                              _textFieldController);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              color: Theme.of(context).highlightColor,
+            ),
+            child: Text(
+              'Adding Tag: #$inputtingTag',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _createBottomBar(ChatState state) {
     return SingleChildScrollView(
       child: Align(
@@ -420,7 +502,9 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               state.isChoosingCategory
                   ? _createCategoriesChoice()
-                  : Container(),
+                  : state.isAddingTag
+                      ? _createAddingTagPanel(state)
+                      : Container(),
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
@@ -474,31 +558,38 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  TextField _createTextField(ChatState state) {
-    return TextField(
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+  Widget _createTextField(ChatState state) {
+    return HashTagTextField(
+      controller: _textFieldController,
+      focusNode: _focusNode,
+      decoratedStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).primaryColorDark,
+          ),
+      basicStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+          ),
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        hintText: 'Enter event',
+        hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
             ),
-        controller: _textFieldController,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          hintText: 'Enter event',
-          hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-              ),
-          filled: true,
-          fillColor: Theme.of(context).disabledColor.withAlpha(24),
-        ),
-        onSubmitted: (value) {
-          _onEnterEvent(value, state);
-        },
-        onTap: () {
-          context.read<ChatCubit>().toggleChoosingCategory();
-        },
-        onChanged: (value) {
-          context.read<ChatCubit>().inputChanged(value);
-        });
+        filled: true,
+        fillColor: Theme.of(context).disabledColor.withAlpha(24),
+      ),
+      onSubmitted: (value) {
+        _onEnterEvent(value, state);
+      },
+      onChanged: (value) {
+        context.read<ChatCubit>().inputChanged(value);
+      },
+      onDetectionTyped: (_) {
+        context.read<ChatCubit>().toggleAddingTagMode(true);
+      },
+      onDetectionFinished: () {
+        context.read<ChatCubit>().toggleAddingTagMode(false);
+      },
+    );
   }
 
   Container _createCameraButton() {
@@ -597,7 +688,7 @@ class _ChatPageState extends State<ChatPage> {
                       )
                     : null,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     shouldShowMessage
                         ? _returnHintMessage(chat, chatState)

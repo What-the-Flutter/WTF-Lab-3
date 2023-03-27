@@ -11,6 +11,8 @@ class EventRepository {
   Future<List<Event>> receiveAllChatEvents(String chatId) =>
       eventDao.receiveAllChatEvents(chatId);
 
+  Future<List<Event>> receiveAllEvents() => eventDao.receiveAllEvents();
+
   Future<void> insertEvent(Event event) => eventDao.createEvent(event);
 
   Future<void> updateEvent(Event event) => eventDao.updateEvent(event);

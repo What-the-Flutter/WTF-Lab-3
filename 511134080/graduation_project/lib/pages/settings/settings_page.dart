@@ -177,7 +177,7 @@ class SettingsPage extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChoosingBackgroundImage(),
+            builder: (context) => const ChoosingBackgroundImage(),
           ),
         );
       },

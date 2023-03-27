@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation_project/pages/settings/settings_cubit.dart';
+
+import 'settings_cubit.dart';
 
 class ChoosingBackgroundImage extends StatelessWidget {
   const ChoosingBackgroundImage({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class ChoosingBackgroundImage extends StatelessWidget {
                     ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             TextButton(
@@ -36,7 +37,7 @@ class ChoosingBackgroundImage extends StatelessWidget {
               style: TextButton.styleFrom(
                 backgroundColor:
                     Theme.of(context).primaryColorLight.withOpacity(0.8),
-                side: BorderSide(
+                side: const BorderSide(
                   width: 1.0,
                 ),
               ),
@@ -58,7 +59,7 @@ class ChoosingBackgroundImage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Image.file(

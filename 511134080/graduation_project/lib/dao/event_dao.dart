@@ -17,7 +17,20 @@ class EventDao {
   }
 
   Future<List<Event>> receiveAllChatEvents(String chatId) async {
-    final snapshot = await _dbProvider.queryAllEvents(chatId);
+    final snapshot = await _dbProvider.queryChatEvents(chatId);
+    if (snapshot.exists) {
+      return snapshot.children
+          .map((event) => Event.fromDatabaseMap(
+              Map<String, dynamic>.from(event.value as Map)))
+          .toList()
+        ..sort((a, b) => a.time.compareTo(b.time));
+    } else {
+      return [];
+    }
+  }
+
+  Future<List<Event>> receiveAllEvents() async {
+    final snapshot = await _dbProvider.queryAllEvents();
     if (snapshot.exists) {
       return snapshot.children
           .map((event) => Event.fromDatabaseMap(

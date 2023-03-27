@@ -259,10 +259,10 @@ class EventListTile extends StatelessWidget {
       );
     }
     return chat.isPinned
-        ? const Column(
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.attach_file,
                 color: Colors.deepPurple,
               ),

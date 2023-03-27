@@ -9,13 +9,18 @@ import 'searching_page_cubit.dart';
 
 class SearchingPage extends StatelessWidget {
   final List<Event> _cards;
-  SearchingPage({required cards, Key? key})
-      : _cards = cards,
-        super(key: key);
-
+  final String chatTitle;
+  final Set<String> tags;
   final _focusNode = FocusNode();
-
   final _controller = TextEditingController();
+
+  SearchingPage({
+    required cards,
+    required this.chatTitle,
+    required this.tags,
+    Key? key,
+  })  : _cards = cards,
+        super(key: key);
 
   Widget _createListViewItem(index, cards) {
     final current = cards.elementAt(index);
@@ -44,25 +49,33 @@ class SearchingPage extends StatelessWidget {
     }
   }
 
+  Widget _createTextField(BuildContext context) {
+    return TextField(
+      style: Theme.of(context).textTheme.displayMedium!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+          ),
+      controller: _controller,
+      focusNode: _focusNode,
+      decoration: InputDecoration(
+        hintText: 'Search in \'$chatTitle\'',
+        hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+            ),
+        filled: true,
+        fillColor: Theme.of(context).primaryColorLight,
+      ),
+      onChanged: (value) {
+        context.read<SearchingPageCubit>().updateInput(value);
+      },
+    );
+  }
+
   AppBar _createAppBar(BuildContext context, SearchingPageState state) {
     return AppBar(
       iconTheme: Theme.of(context).iconTheme,
       backgroundColor: Theme.of(context).primaryColor,
-      title: TextField(
-        style: Theme.of(context).textTheme.displayMedium!.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.normal,
-            ),
-        controller: _controller,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Theme.of(context).primaryColorLight,
-        ),
-        onChanged: (value) {
-          context.read<SearchingPageCubit>().updateInput(value);
-        },
-      ),
+      title: _createTextField(context),
       actions: state.input != ''
           ? [
               IconButton(
@@ -159,9 +172,13 @@ class SearchingPage extends StatelessWidget {
               );
         return Scaffold(
           appBar: _createAppBar(context, state),
-          body: foundCards.isEmpty
-              ? _createHintMessage(context, state)
-              : _createListViewBuilder(foundCards),
+          body: Column(
+            children: [
+              foundCards.isEmpty
+                  ? _createHintMessage(context, state)
+                  : _createListViewBuilder(foundCards),
+            ],
+          ),
         );
       },
     );

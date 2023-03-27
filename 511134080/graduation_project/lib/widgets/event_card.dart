@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtagable/hashtagable.dart';
 import 'package:intl/intl.dart';
 
 import '../constants.dart';
@@ -53,12 +54,17 @@ class EventCard extends StatelessWidget {
             maxWidth: 240,
           ),
           child: _cardModel.title.isNotEmpty
-              ? Text(
-                  _cardModel.title,
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              ? HashTagText(
+                  text: _cardModel.title,
+                  basicStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
                         color: Theme.of(context).secondaryHeaderColor,
                         fontWeight: FontWeight.normal,
                       ),
+                  decoratedStyle:
+                      Theme.of(context).textTheme.labelMedium!.copyWith(
+                            color: Theme.of(context).primaryColorDark,
+                            fontWeight: FontWeight.normal,
+                          ),
                 )
               : null,
         ),
