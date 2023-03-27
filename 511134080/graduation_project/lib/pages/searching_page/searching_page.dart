@@ -18,9 +18,12 @@ class SearchingPage extends StatelessWidget {
     required cards,
     required this.chatTitle,
     required this.tags,
+    required BuildContext context,
     Key? key,
   })  : _cards = cards,
-        super(key: key);
+        super(key: key) {
+    context.read<SearchingPageCubit>().init(tags, cards);
+  }
 
   Widget _createListViewItem(index, cards) {
     final current = cards.elementAt(index);
@@ -92,62 +95,68 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
+  Widget _createAddingSearchQueryHintMessage(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.all(16),
+      color: Theme.of(context).primaryColorDark.withAlpha(30),
+      child: Column(
+        children: [
+          Icon(
+            Icons.search,
+            size: 64,
+            color: Theme.of(context).dividerColor,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Text(
+            'Please enter a search query to begin searching',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color:
+                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createNoFoundHintMessage(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.all(16),
+      color: Theme.of(context).primaryColorDark.withAlpha(30),
+      child: Column(
+        children: [
+          Text(
+            'No search results available\n',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color:
+                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                ),
+          ),
+          Text(
+            'No entries match the given search query. Please try again.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color:
+                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                ),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _createHintMessage(BuildContext context, SearchingPageState state) {
-    if (state.input == '') {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
-        child: Column(
-          children: [
-            Icon(
-              Icons.search,
-              size: 64,
-              color: Theme.of(context).dividerColor,
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Text(
-              'Please enter a search query to begin searching',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color:
-                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                  ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
-        child: Column(
-          children: [
-            Text(
-              'No search results available\n',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color:
-                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                  ),
-            ),
-            Text(
-              'No entries match the given search query. Please try again.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w400,
-                    color:
-                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                  ),
-            )
-          ],
-        ),
-      );
-    }
+    return state.input == ''
+        ? _createAddingSearchQueryHintMessage(context)
+        : _createNoFoundHintMessage(context);
   }
 
   Widget _createListViewBuilder(List<Event> cards) {
@@ -159,13 +168,7 @@ class SearchingPage extends StatelessWidget {
   }
 
   Widget _createBody(BuildContext context, SearchingPageState state) {
-    final foundCards = state.input == ''
-        ? <Event>[]
-        : List<Event>.from(
-            _cards.reversed.where(
-              (Event event) => event.title.contains(state.input),
-            ),
-          );
+    final foundCards = state.foundedEvents;
 
     return Column(
       children: [
@@ -184,20 +187,39 @@ class SearchingPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check,
-                      color: Colors.black,
-                    ),
-                    Text(
-                      '${tags.elementAt(index)}',
-                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ],
+                child: GestureDetector(
+                  child: Row(
+                    children: [
+                      Container(
+                        child: state.selectedTags.elementAt(index)
+                            ? const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Icon(
+                                  Icons.check,
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                              )
+                            : null,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          '${tags.elementAt(index)}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium!
+                              .copyWith(
+                                color: Theme.of(context).secondaryHeaderColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    context.read<SearchingPageCubit>().toggleTag(index);
+                  },
                 ),
               );
             },

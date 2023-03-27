@@ -332,10 +332,11 @@ class _ChatPageState extends State<ChatPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => SearchingPage(
+                builder: (context) => SearchingPage(
                   cards: chatState.chatEvents,
                   chatTitle: chat.title,
                   tags: chatState.tags,
+                  context: context,
                 ),
               ),
             );
@@ -417,55 +418,49 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createAddingTagPanel(ChatState state) {
-    final inputtingTag = extractHashTags(_textFieldController.text).last;
-    if (state.tags.isNotEmpty) {
-      final existingTags =
-          state.tags.where((String tag) => tag.contains(inputtingTag));
-      if (existingTags.isNotEmpty) {
-        return Expanded(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: ListView.builder(
-              itemCount: existingTags.length,
+  Widget _createExistingTagPanel(existingTags, inputtingTag) {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ListView.builder(
+          itemCount: existingTags.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8)),
-                            color: Theme.of(context).highlightColor,
-                          ),
-                          child: Text(
-                            existingTags.elementAt(index),
-                          ),
-                        ),
-                        onTap: () {
-                          context.read<ChatCubit>().onExistingTagTap(
-                              inputtingTag,
-                              existingTags.elementAt(index),
-                              _textFieldController);
-                        },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        color: Theme.of(context).highlightColor,
                       ),
-                    ],
+                      child: Text(
+                        existingTags.elementAt(index),
+                      ),
+                    ),
+                    onTap: () {
+                      context.read<ChatCubit>().onExistingTagTap(inputtingTag,
+                          existingTags.elementAt(index), _textFieldController);
+                    },
                   ),
-                );
-              },
-            ),
-          ),
-        );
-      }
-    }
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _createNewTagPanel(inputtingTag) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -488,6 +483,44 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Widget _createAddingTagPanel(ChatState state) {
+    final inputtingTag = extractHashTags(_textFieldController.text).last;
+    if (state.tags.isNotEmpty) {
+      final existingTags =
+          state.tags.where((String tag) => tag.contains(inputtingTag));
+      if (existingTags.isNotEmpty) {
+        return _createExistingTagPanel(existingTags, inputtingTag);
+      }
+    }
+    return _createNewTagPanel(inputtingTag);
+  }
+
+  Widget _createCameraButtonBottomBar() {
+    return IconButton(
+      onPressed: () {
+        context.read<ChatCubit>().toggleShowingImageOptions();
+      },
+      icon: Icon(
+        Icons.camera_alt_rounded,
+        color: Theme.of(context).primaryColorDark,
+      ),
+    );
+  }
+
+  Widget _createSendButton() {
+    return IconButton(
+      onPressed: () {
+        context.read<ChatCubit>().onEnterSubmitted(_textFieldController.text);
+        _focusNode.unfocus();
+        _clearTextInput();
+      },
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).primaryColorDark,
+      ),
+    );
+  }
+
   Widget _createBottomBar(ChatState state) {
     return SingleChildScrollView(
       child: Align(
@@ -503,7 +536,7 @@ class _ChatPageState extends State<ChatPage> {
               state.isChoosingCategory
                   ? _createCategoriesChoice()
                   : state.isAddingTag
-                      ? _createAddingTagPanel(state)
+                      ? _createNewTagPanel(state)
                       : Container(),
               Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -524,30 +557,8 @@ class _ChatPageState extends State<ChatPage> {
                       child: _createTextField(state),
                     ),
                     state.categoryIconIndex == 0 && state.isInputEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              context
-                                  .read<ChatCubit>()
-                                  .toggleShowingImageOptions();
-                            },
-                            icon: Icon(
-                              Icons.camera_alt_rounded,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: () {
-                              context
-                                  .read<ChatCubit>()
-                                  .onEnterSubmitted(_textFieldController.text);
-                              _focusNode.unfocus();
-                              _clearTextInput();
-                            },
-                            icon: Icon(
-                              Icons.send,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                          ),
+                        ? _createCameraButtonBottomBar()
+                        : _createSendButton(),
                   ],
                 ),
               ),

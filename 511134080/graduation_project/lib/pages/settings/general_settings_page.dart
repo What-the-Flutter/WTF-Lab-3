@@ -184,58 +184,66 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
+  AppBar _createAppBar(BuildContext context) {
+    return AppBar(
+      iconTheme: Theme.of(context).iconTheme,
+      title: Text(
+        'General',
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              color: Colors.white,
+            ),
+      ),
+      centerTitle: true,
+      backgroundColor: Theme.of(context).primaryColor,
+    );
+  }
+
+  Widget _createBody(BuildContext context, SettingsState state) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 8,
+      ),
+      child: ListView(
+        children: [
+          Text(
+            'Visuals',
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).disabledColor,
+                ),
+          ),
+          _createThemeTile(context),
+          const Divider(),
+          _createFontSizeTile(context),
+          const Divider(),
+          _createResetTile(context),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.only(top: 24.0),
+            child: Text(
+              'Chat Interface',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).disabledColor,
+                  ),
+            ),
+          ),
+          _createBubbleAlignmentTile(context, state),
+          const Divider(),
+          _createCenterDateTile(context, state),
+          const Divider(),
+          _createBackgroundImageTile(context),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            iconTheme: Theme.of(context).iconTheme,
-            title: Text(
-              'General',
-              style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: Colors.white,
-                  ),
-            ),
-            centerTitle: true,
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8,
-            ),
-            child: ListView(
-              children: [
-                Text(
-                  'Visuals',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).disabledColor,
-                      ),
-                ),
-                _createThemeTile(context),
-                const Divider(),
-                _createFontSizeTile(context),
-                const Divider(),
-                _createResetTile(context),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: Text(
-                    'Chat Interface',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context).disabledColor,
-                        ),
-                  ),
-                ),
-                _createBubbleAlignmentTile(context, state),
-                const Divider(),
-                _createCenterDateTile(context, state),
-                const Divider(),
-                _createBackgroundImageTile(context),
-              ],
-            ),
-          ),
+          appBar: _createAppBar(context),
+          body: _createBody(context, state),
         );
       },
     );

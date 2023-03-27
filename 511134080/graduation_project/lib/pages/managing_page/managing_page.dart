@@ -115,6 +115,29 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
+  Widget _createIconsGrid(ManagingPageState state) {
+    return Expanded(
+      flex: 10,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          bottom: 24,
+        ),
+        child: GridView.builder(
+          shrinkWrap: true,
+          itemCount: icons.length,
+          itemBuilder: (context, index) {
+            return _createIconButton(context, index, state);
+          },
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _controller.text = context.read<ManagingPageCubit>().state.inputText;
@@ -140,27 +163,7 @@ class ManagingPage extends StatelessWidget {
                 ),
               ),
               _createTextField(context),
-              Expanded(
-                flex: 10,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16.0,
-                    right: 16.0,
-                    bottom: 24,
-                  ),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    itemCount: icons.length,
-                    itemBuilder: (_, index) {
-                      return _createIconButton(context, index, state);
-                    },
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                    ),
-                  ),
-                ),
-              ),
+              _createIconsGrid(state),
             ],
           ),
           floatingActionButton: _createFloatingActionButton(context),
