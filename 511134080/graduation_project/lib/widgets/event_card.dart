@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtagable/hashtagable.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../models/event.dart';
 import '../pages/chat/chat_cubit.dart';
+import '../pages/settings/settings_cubit.dart';
 
 class EventCard extends StatelessWidget {
   final Event _cardModel;
@@ -15,6 +17,34 @@ class EventCard extends StatelessWidget {
   })  : _cardModel = cardModel,
         super(key: key);
 
+  Container _createCategory(BuildContext context) {
+    return Container(
+      child: _cardModel.categoryIndex != 0
+          ? Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    categoryIcons[_cardModel.categoryIndex],
+                    size: 32,
+                    color: Theme.of(context).primaryColorLight,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    categoryTitle[_cardModel.categoryIndex],
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
+                  ),
+                ),
+              ],
+            )
+          : null,
+    );
+  }
+
   Widget _createEventCardContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,9 +54,17 @@ class EventCard extends StatelessWidget {
             maxWidth: 240,
           ),
           child: _cardModel.title.isNotEmpty
-              ? Text(
-                  _cardModel.title,
-                  style: const TextStyle(),
+              ? HashTagText(
+                  text: _cardModel.title,
+                  basicStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                  decoratedStyle:
+                      Theme.of(context).textTheme.labelMedium!.copyWith(
+                            color: Theme.of(context).primaryColorDark,
+                            fontWeight: FontWeight.normal,
+                          ),
                 )
               : null,
         ),
@@ -60,6 +98,11 @@ class EventCard extends StatelessWidget {
             ),
             Text(
               DateFormat('hh:mm a').format(_cardModel.time),
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+                  ),
             ),
             const SizedBox(
               width: 5,
@@ -86,55 +129,68 @@ class EventCard extends StatelessWidget {
       onLongPress: () {
         context.read<ChatCubit>().manageLongPress(_cardModel);
       },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _cardModel.isSelected
-                  ? Theme.of(context).focusColor
-                  : Theme.of(context).cardColor,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(8),
-                topLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  child: _cardModel.categoryIndex != 0
-                      ? Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(
-                                categoryIcons[_cardModel.categoryIndex],
-                                size: 32,
-                                color: Theme.of(context).primaryColorLight,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                categoryTitle[_cardModel.categoryIndex],
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : null,
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: state.isRightToLeft
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _cardModel.isSelected
+                      ? Theme.of(context).focusColor
+                      : Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.only(
+                    topRight: const Radius.circular(8),
+                    topLeft: const Radius.circular(8),
+                    bottomRight: state.isRightToLeft
+                        ? const Radius.circular(0)
+                        : const Radius.circular(8),
+                    bottomLeft: state.isRightToLeft
+                        ? const Radius.circular(8)
+                        : const Radius.circular(0),
+                  ),
                 ),
-                _createEventCardContent(context),
-              ],
-            ),
-          ),
-        ],
+                child: Column(
+                  children: [
+                    Container(
+                      child: _cardModel.categoryIndex != 0
+                          ? Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    categoryIcons[_cardModel.categoryIndex],
+                                    size: 32,
+                                    color: Theme.of(context).primaryColorLight,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    categoryTitle[_cardModel.categoryIndex],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : null,
+                    ),
+                    _createEventCardContent(context),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

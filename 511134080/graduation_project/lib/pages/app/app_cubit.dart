@@ -12,7 +12,7 @@ class AppCubit extends Cubit<AppState> {
     init();
   }
 
-  void init() {
-    firebaseAuthentication.authenticateAnonymously();
+  Future<void> init() async {
+    await firebaseAuthentication.authenticateAnonymously();
   }
 }

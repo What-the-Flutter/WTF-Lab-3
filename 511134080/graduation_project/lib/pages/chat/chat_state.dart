@@ -8,6 +8,8 @@ class ChatState {
   final bool isSelectionMode;
   final bool isInputEmpty;
   final bool isChoosingImageOptions;
+  final bool isAddingTag;
+  final Set<String> tags;
   late final List<String> _hintMessages;
   final List<Event> chatEvents;
 
@@ -25,6 +27,8 @@ class ChatState {
     this.isInputEmpty = true,
     this.isChoosingImageOptions = false,
     this.chatEvents = const [],
+    this.isAddingTag = false,
+    this.tags = const {},
   }) {
     _hintMessages = [
       'This is the page where you can track everything about "${chat.title}"!\n',
@@ -57,6 +61,8 @@ class ChatState {
     bool? inputEmpty,
     bool? choosingImageOptions,
     List<Event>? newEvents,
+    bool? addingTag,
+    Set<String>? newTags,
   }) =>
       ChatState(
         chat: newChat ?? chat,
@@ -67,5 +73,7 @@ class ChatState {
         isInputEmpty: inputEmpty ?? isInputEmpty,
         isChoosingImageOptions: choosingImageOptions ?? isChoosingImageOptions,
         chatEvents: newEvents ?? chatEvents,
+        isAddingTag: addingTag ?? isAddingTag,
+        tags: newTags ?? tags,
       );
 }

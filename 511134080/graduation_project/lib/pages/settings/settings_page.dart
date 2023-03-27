@@ -1,57 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'settings_cubit.dart';
+import 'general_settings_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
+
+  ListTile _createGeneralTile(BuildContext context) {
+    return ListTile(
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Padding(
+        padding: EdgeInsets.only(right: 16.0),
+        child: Icon(
+          Icons.nature_people,
+        ),
+      ),
+      title: Text(
+        'General',
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      subtitle: Text(
+        'Themes & Interface settings',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+            ),
+      ),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const GeneralSettingsPage(),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
-        title: const Text(
+        title: Text(
           'Settings',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                color: Colors.white,
+              ),
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 8,
+          horizontal: 16,
+          vertical: 16,
         ),
         child: ListView(
           children: [
-            Text(
-              'Visuals',
-              style: TextStyle(
-                color: Theme.of(context).disabledColor,
-                fontSize: 16,
-              ),
-            ),
-            ListTile(
-              iconColor: Theme.of(context).disabledColor,
-              leading: const Padding(
-                padding: EdgeInsets.only(right: 16.0),
-                child: Icon(
-                  Icons.invert_colors,
-                ),
-              ),
-              title: const Text(
-                'Theme',
-              ),
-              subtitle: const Text(
-                'Light / Dark',
-              ),
-              onTap: () {
-                context.read<SettingsCubit>().toggleTheme();
-              },
-            ),
+            _createGeneralTile(context),
             const Divider(),
           ],
         ),

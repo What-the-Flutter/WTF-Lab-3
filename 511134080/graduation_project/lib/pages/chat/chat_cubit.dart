@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtagable/functions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -27,9 +28,16 @@ class ChatCubit extends Cubit<ChatState> {
           final chatEvents = List<Event>.from(
               events.where((event) => event.chatId == state.chat.id))
             ..sort((a, b) => a.time.compareTo(b.time));
+          final tags = <String>{};
+          for (final event in events) {
+            if (hasHashTags(event.title)) {
+              tags.addAll(extractHashTags(event.title));
+            }
+          }
           emit(
             state.copyWith(
               newEvents: chatEvents,
+              newTags: tags,
             ),
           );
         }
@@ -52,8 +60,8 @@ class ChatCubit extends Cubit<ChatState> {
     emit(
       state.copyWith(
         choosingImageOptions: !state.isChoosingImageOptions,
-        choosingCategory:
-            isChoosing == false ? false : state.isChoosingCategory,
+        choosingCategory: !isChoosing ? false : state.isChoosingCategory,
+        addingTag: !isChoosing ? false : state.isAddingTag,
       ),
     );
   }
@@ -108,7 +116,8 @@ class ChatCubit extends Cubit<ChatState> {
       state.copyWith(
         choosingCategory: choosingCategory,
         choosingImageOptions:
-            choosingCategory == true ? false : state.isChoosingImageOptions,
+            choosingCategory ? false : state.isChoosingImageOptions,
+        addingTag: choosingCategory ? false : state.isAddingTag,
       ),
     );
   }
@@ -335,6 +344,28 @@ class ChatCubit extends Cubit<ChatState> {
     emit(
       state.copyWith(
         selectionMode: false,
+      ),
+    );
+  }
+
+  void toggleAddingTagMode(bool isAdding) {
+    emit(
+      state.copyWith(
+        addingTag: isAdding,
+        choosingCategory: isAdding ? false : state.isChoosingCategory,
+        choosingImageOptions: isAdding ? false : state.isChoosingImageOptions,
+      ),
+    );
+  }
+
+  void onExistingTagTap(String inputtingTag, String existingTag,
+      TextEditingController inputController) {
+    final input = inputController.text;
+    inputController.text = input.replaceFirst(
+        inputtingTag, existingTag, input.length - inputtingTag.length);
+    emit(
+      state.copyWith(
+        addingTag: false,
       ),
     );
   }
