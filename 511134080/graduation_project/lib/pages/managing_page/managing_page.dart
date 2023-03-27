@@ -21,8 +21,7 @@ class ManagingPage extends StatelessWidget {
     context.read<ManagingPageCubit>().initState(_editingPage);
   }
 
-  Widget _createIconButton(
-      BuildContext context, int index, ManagingPageState state) {
+  Widget _iconButton(BuildContext context, int index, ManagingPageState state) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -64,7 +63,7 @@ class ManagingPage extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  Widget _createTextField(BuildContext context) {
+  Widget _textField(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -93,7 +92,7 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  FloatingActionButton _createFloatingActionButton(BuildContext context) {
+  FloatingActionButton _floatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
         if (_controller.text == '') {
@@ -115,7 +114,7 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  Widget _createIconsGrid(ManagingPageState state) {
+  Widget _iconsGrid(ManagingPageState state) {
     return Expanded(
       flex: 10,
       child: Padding(
@@ -128,7 +127,7 @@ class ManagingPage extends StatelessWidget {
           shrinkWrap: true,
           itemCount: icons.length,
           itemBuilder: (context, index) {
-            return _createIconButton(context, index, state);
+            return _iconButton(context, index, state);
           },
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
@@ -162,11 +161,11 @@ class ManagingPage extends StatelessWidget {
                   ),
                 ),
               ),
-              _createTextField(context),
-              _createIconsGrid(state),
+              _textField(context),
+              _iconsGrid(state),
             ],
           ),
-          floatingActionButton: _createFloatingActionButton(context),
+          floatingActionButton: _floatingActionButton(context),
         );
       },
     );

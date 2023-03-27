@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../models/chat.dart';
 import '../../repositories/chat_repository.dart';
@@ -26,9 +27,8 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  Future<void> deleteChat(String chatId) async {
-    await chatsRepository.deleteChatById(chatId);
-  }
+  Future<void> deleteChat(String chatId) async =>
+      await chatsRepository.deleteChatById(chatId);
 
   Future<void> togglePinState(String chatId) async {
     final chat = state.chats.where((Chat chat) => chat.id == chatId).first;
@@ -39,4 +39,11 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
   }
+
+  Future<void> share() async =>
+      await Share.share('Keep track of your life with Chat Journal, '
+          'a simple and elegant chat-based journal/notes'
+          ' application that makes journaling/note-taking fun, '
+          'easy, quick and effortless.\nhttps://play.google.com/'
+          'store/apps/details?id=com.agiletelescope.chatjournal');
 }

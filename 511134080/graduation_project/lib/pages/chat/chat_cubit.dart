@@ -358,8 +358,11 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void onExistingTagTap(String inputtingTag, String existingTag,
-      TextEditingController inputController) {
+  void onExistingTagTap({
+    required String inputtingTag,
+    required String existingTag,
+    required TextEditingController inputController,
+  }) {
     final input = inputController.text;
     inputController.text = input.replaceFirst(
         inputtingTag, existingTag, input.length - inputtingTag.length);

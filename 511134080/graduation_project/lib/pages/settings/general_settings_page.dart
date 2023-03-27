@@ -7,96 +7,89 @@ import 'settings_cubit.dart';
 class GeneralSettingsPage extends StatelessWidget {
   const GeneralSettingsPage({Key? key}) : super(key: key);
 
-  ListTile _createThemeTile(BuildContext context) {
-    return ListTile(
-      iconColor: Theme.of(context).disabledColor,
-      leading: const Padding(
-        padding: EdgeInsets.only(right: 16.0),
-        child: Icon(
-          Icons.invert_colors,
+  ListTile _themeTile(BuildContext context) => ListTile(
+        iconColor: Theme.of(context).disabledColor,
+        leading: const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: Icon(
+            Icons.invert_colors,
+          ),
         ),
-      ),
-      title: Text(
-        'Theme',
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-      ),
-      subtitle: Text(
-        'Light / Dark',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
-            ),
-      ),
-      onTap: () {
-        context.read<SettingsCubit>().toggleTheme();
-      },
-    );
-  }
-
-  ListTile _createFontSizeTile(BuildContext context) {
-    return ListTile(
-      iconColor: Theme.of(context).disabledColor,
-      leading: const Padding(
-        padding: EdgeInsets.only(right: 16.0),
-        child: Icon(
-          Icons.text_fields,
+        title: Text(
+          'Theme',
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
         ),
-      ),
-      title: Text(
-        'Font Size',
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-      ),
-      subtitle: Text(
-        'Small / Default / Large',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
-            ),
-      ),
-      onTap: () {
-        context.read<SettingsCubit>().toggleFontSize();
-      },
-    );
-  }
-
-  ListTile _createResetTile(BuildContext context) {
-    return ListTile(
-      iconColor: Theme.of(context).disabledColor,
-      leading: const Padding(
-        padding: EdgeInsets.only(right: 16.0),
-        child: Icon(
-          Icons.settings_backup_restore,
+        subtitle: Text(
+          'Light / Dark',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+              ),
         ),
-      ),
-      title: Text(
-        'Reset All Preferences',
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-      ),
-      subtitle: Text(
-        'Reset all Visual Customizations',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
-            ),
-      ),
-      onTap: () {
-        context.read<SettingsCubit>().resetAllPreferences();
-      },
-    );
-  }
+        onTap: () {
+          context.read<SettingsCubit>().toggleTheme();
+        },
+      );
 
-  ListTile _createBubbleAlignmentTile(
-      BuildContext context, SettingsState state) {
-    return ListTile(
+  ListTile _fontSizeTile(BuildContext context) => ListTile(
+        iconColor: Theme.of(context).disabledColor,
+        leading: const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: Icon(
+            Icons.text_fields,
+          ),
+        ),
+        title: Text(
+          'Font Size',
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+        ),
+        subtitle: Text(
+          'Small / Default / Large',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+              ),
+        ),
+        onTap: () {
+          context.read<SettingsCubit>().toggleFontSize();
+        },
+      );
+
+  ListTile _resetTile(BuildContext context) => ListTile(
+        iconColor: Theme.of(context).disabledColor,
+        leading: const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: Icon(
+            Icons.settings_backup_restore,
+          ),
+        ),
+        title: Text(
+          'Reset All Preferences',
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+        ),
+        subtitle: Text(
+          'Reset all Visual Customizations',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+              ),
+        ),
+        onTap: () {
+          context.read<SettingsCubit>().resetAllPreferences();
+        },
+      );
+
+  ListTile _bubbleAlignmentTile(BuildContext context, SettingsState state) =>
+      ListTile(
         iconColor: Theme.of(context).disabledColor,
         leading: Padding(
           padding: const EdgeInsets.only(right: 16.0),
@@ -124,11 +117,11 @@ class GeneralSettingsPage extends StatelessWidget {
           value: state.isRightToLeft,
           onChanged: context.read<SettingsCubit>().toggleBubbleAlignment,
           activeColor: Theme.of(context).primaryColorLight,
-        ));
-  }
+        ),
+      );
 
-  ListTile _createCenterDateTile(BuildContext context, SettingsState state) {
-    return ListTile(
+  ListTile _centerDateTile(BuildContext context, SettingsState state) =>
+      ListTile(
         iconColor: Theme.of(context).disabledColor,
         leading: const Padding(
           padding: EdgeInsets.only(right: 16.0),
@@ -147,105 +140,96 @@ class GeneralSettingsPage extends StatelessWidget {
           value: state.isCenterDate,
           onChanged: context.read<SettingsCubit>().toggleCenterDate,
           activeColor: Theme.of(context).primaryColorLight,
-        ));
-  }
-
-  ListTile _createBackgroundImageTile(BuildContext context) {
-    return ListTile(
-      iconColor: Theme.of(context).disabledColor,
-      leading: const Padding(
-        padding: EdgeInsets.only(right: 16.0),
-        child: Icon(
-          Icons.wallpaper,
         ),
-      ),
-      title: Text(
-        'Background Image',
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-      ),
-      subtitle: Text(
-        'Chat background image',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
-            ),
-      ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ChoosingBackgroundImage(),
-          ),
-        );
-      },
-    );
-  }
+      );
 
-  AppBar _createAppBar(BuildContext context) {
-    return AppBar(
-      iconTheme: Theme.of(context).iconTheme,
-      title: Text(
-        'General',
-        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-              color: Colors.white,
-            ),
-      ),
-      centerTitle: true,
-      backgroundColor: Theme.of(context).primaryColor,
-    );
-  }
-
-  Widget _createBody(BuildContext context, SettingsState state) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8,
-      ),
-      child: ListView(
-        children: [
-          Text(
-            'Visuals',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).disabledColor,
-                ),
+  ListTile _backgroundImageTile(BuildContext context) => ListTile(
+        iconColor: Theme.of(context).disabledColor,
+        leading: const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: Icon(
+            Icons.wallpaper,
           ),
-          _createThemeTile(context),
-          const Divider(),
-          _createFontSizeTile(context),
-          const Divider(),
-          _createResetTile(context),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.only(top: 24.0),
-            child: Text(
-              'Chat Interface',
+        ),
+        title: Text(
+          'Background Image',
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+        ),
+        subtitle: Text(
+          'Chat background image',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+              ),
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChoosingBackgroundImage(),
+            ),
+          );
+        },
+      );
+
+  AppBar _appBar(BuildContext context) => AppBar(
+        iconTheme: Theme.of(context).iconTheme,
+        title: Text(
+          'General',
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                color: Colors.white,
+              ),
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+
+  Widget _body(BuildContext context, SettingsState state) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 8,
+        ),
+        child: ListView(
+          children: [
+            Text(
+              'Visuals',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Theme.of(context).disabledColor,
                   ),
             ),
-          ),
-          _createBubbleAlignmentTile(context, state),
-          const Divider(),
-          _createCenterDateTile(context, state),
-          const Divider(),
-          _createBackgroundImageTile(context),
-        ],
-      ),
-    );
-  }
+            _themeTile(context),
+            const Divider(),
+            _fontSizeTile(context),
+            const Divider(),
+            _resetTile(context),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 24.0),
+              child: Text(
+                'Chat Interface',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).disabledColor,
+                    ),
+              ),
+            ),
+            _bubbleAlignmentTile(context, state),
+            const Divider(),
+            _centerDateTile(context, state),
+            const Divider(),
+            _backgroundImageTile(context),
+          ],
+        ),
+      );
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: _createAppBar(context),
-          body: _createBody(context, state),
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) =>
+      BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) => Scaffold(
+          appBar: _appBar(context),
+          body: _body(context, state),
+        ),
+      );
 }

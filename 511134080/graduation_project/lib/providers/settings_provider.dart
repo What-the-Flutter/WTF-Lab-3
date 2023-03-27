@@ -1,59 +1,68 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider {
+  final _isLight = 'is_light';
+  final _fontSize = 'font_size';
+  final _isRightToLeft = 'is_right_to_left';
+  final _isCenterDate = 'is_center_date';
+  final _backgroundImage = 'background_image';
+
+  Future<SharedPreferences> get sharedPreferencesInstance =>
+      SharedPreferences.getInstance();
+
   Future<void> saveTheme(bool isLight) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_light', isLight);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setBool(_isLight, isLight);
   }
 
   Future<void> saveFontSize(int fontSize) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('font_size', fontSize);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setInt(_fontSize, fontSize);
   }
 
   Future<void> saveBubbleAlignment(bool isRightToLeft) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_right_to_left', isRightToLeft);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setBool(_isRightToLeft, isRightToLeft);
   }
 
   Future<void> saveDateAlignment(bool isCenterDate) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_center_date', isCenterDate);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setBool(_isCenterDate, isCenterDate);
   }
 
   Future<void> saveDefaultPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_light', true);
-    await prefs.setInt('font_size', 0);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setBool(_isLight, true);
+    await prefs.setInt(_fontSize, 0);
   }
 
   Future<void> saveBackgroundImage(String path) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('background_image', path);
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setString(_backgroundImage, path);
   }
 
   Future<bool?> get theme async {
-    final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool('is_light');
+    final prefs = await sharedPreferencesInstance;
+    return await prefs.getBool(_isLight);
   }
 
   Future<int?> get fontSize async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getInt('font_size');
+    return await prefs.getInt(_fontSize);
   }
 
   Future<bool?> get bubbleAlignment async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool('is_right_to_left');
+    return await prefs.getBool(_isRightToLeft);
   }
 
   Future<bool?> get dateAlignment async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool('is_center_date');
+    return await prefs.getBool(_isCenterDate);
   }
 
   Future<String?> get backgroundImage async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getString('background_image');
+    return await prefs.getString(_backgroundImage);
   }
 }

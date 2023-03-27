@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../dao/chat_dao.dart';
 import '../../dao/event_dao.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../repositories/chat_repository.dart';
 import '../../repositories/event_repository.dart';
 import '../chat/chat_cubit.dart';
@@ -25,6 +26,7 @@ class _ChatJournalState extends State<ChatJournal> {
   late final EventDao eventDao;
   late final ChatRepository chatRepository;
   late final EventRepository eventRepository;
+  late final SettingsProvider settingsProvider;
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _ChatJournalState extends State<ChatJournal> {
     eventDao = EventDao(dbProvider: dbProvider);
     chatRepository = ChatRepository(chatDao: chatDao);
     eventRepository = EventRepository(eventDao: eventDao);
+    settingsProvider = SettingsProvider();
   }
 
   @override
@@ -59,24 +62,24 @@ class _ChatJournalState extends State<ChatJournal> {
           ),
         ),
         BlocProvider(
-          create: (_) => SettingsCubit(),
+          create: (_) => SettingsCubit(
+            provider: settingsProvider,
+          ),
         ),
         BlocProvider(
           create: (_) => SearchingPageCubit(),
         ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return MaterialApp(
-            title: 'Chat Journal',
-            theme: state.currentTheme,
-            debugShowCheckedModeBanner: false,
-            initialRoute: '/',
-            routes: {
-              '/': (_) => const HomePage(),
-            },
-          );
-        },
+        builder: (context, state) => MaterialApp(
+          title: 'Chat Journal',
+          theme: state.currentTheme,
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          routes: {
+            '/': (_) => const HomePage(),
+          },
+        ),
       ),
     );
   }

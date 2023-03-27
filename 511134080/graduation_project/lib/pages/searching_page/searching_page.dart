@@ -25,7 +25,7 @@ class SearchingPage extends StatelessWidget {
     context.read<SearchingPageCubit>().init(tags, cards);
   }
 
-  Widget _createListViewItem(index, cards) {
+  Widget _listViewItem(index, cards) {
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
@@ -52,184 +52,168 @@ class SearchingPage extends StatelessWidget {
     }
   }
 
-  Widget _createTextField(BuildContext context) {
-    return TextField(
-      style: Theme.of(context).textTheme.displayMedium!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.normal,
-          ),
-      controller: _controller,
-      focusNode: _focusNode,
-      decoration: InputDecoration(
-        hintText: 'Search in \'$chatTitle\'',
-        hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+  Widget _textField(BuildContext context) => TextField(
+        style: Theme.of(context).textTheme.displayMedium!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.normal,
             ),
-        filled: true,
-        fillColor: Theme.of(context).primaryColorLight,
-      ),
-      onChanged: (value) {
-        context.read<SearchingPageCubit>().updateInput(value);
-      },
-    );
-  }
+        controller: _controller,
+        focusNode: _focusNode,
+        decoration: InputDecoration(
+          hintText: 'Search in \'$chatTitle\'',
+          hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+              ),
+          filled: true,
+          fillColor: Theme.of(context).primaryColorLight,
+        ),
+        onChanged: context.read<SearchingPageCubit>().updateInput,
+      );
 
-  AppBar _createAppBar(BuildContext context, SearchingPageState state) {
-    return AppBar(
-      iconTheme: Theme.of(context).iconTheme,
-      backgroundColor: Theme.of(context).primaryColor,
-      title: _createTextField(context),
-      actions: state.input != ''
-          ? [
-              IconButton(
-                onPressed: () {
-                  context.read<SearchingPageCubit>().updateInput('');
-                  _controller.text = '';
-                },
-                icon: const Icon(
-                  Icons.cancel,
-                ),
-              )
-            ]
-          : null,
-    );
-  }
+  AppBar _appBar(BuildContext context, SearchingPageState state) => AppBar(
+        iconTheme: Theme.of(context).iconTheme,
+        backgroundColor: Theme.of(context).primaryColor,
+        title: _textField(context),
+        actions: state.input != ''
+            ? [
+                IconButton(
+                  onPressed: () {
+                    context.read<SearchingPageCubit>().updateInput('');
+                    _controller.text = '';
+                  },
+                  icon: const Icon(
+                    Icons.cancel,
+                  ),
+                )
+              ]
+            : null,
+      );
 
-  Widget _createAddingSearchQueryHintMessage(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      margin: const EdgeInsets.all(16),
-      color: Theme.of(context).primaryColorDark.withAlpha(30),
-      child: Column(
-        children: [
-          Icon(
-            Icons.search,
-            size: 64,
-            color: Theme.of(context).dividerColor,
+  Widget _addingSearchQueryHintMessage(BuildContext context) => Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.all(16),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        child: Column(
+          children: [
+            Icon(
+              Icons.search,
+              size: 64,
+              color: Theme.of(context).dividerColor,
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            Text(
+              'Please enter a search query to begin searching',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _noFoundHintMessage(BuildContext context) => Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.all(16),
+        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        child: Column(
+          children: [
+            Text(
+              'No search results available\n',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
+            ),
+            Text(
+              'No entries match the given search query. Please try again.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color:
+                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                  ),
+            )
+          ],
+        ),
+      );
+
+  Widget _hintMessage(BuildContext context, SearchingPageState state) =>
+      state.input == ''
+          ? _addingSearchQueryHintMessage(context)
+          : _noFoundHintMessage(context);
+
+  Widget _listViewBuilder(List<Event> cards) => ListView.builder(
+        reverse: true,
+        itemCount: cards.length,
+        itemBuilder: (_, index) => _listViewItem(index, cards),
+      );
+
+  Widget _tagCard(BuildContext context, int index, SearchingPageState state) =>
+      Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).highlightColor,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              8,
+            ),
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Text(
-            'Please enter a search query to begin searching',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color:
-                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+        ),
+        child: GestureDetector(
+          child: Row(
+            children: [
+              Container(
+                child: state.selectedTags.elementAt(index)
+                    ? const Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.black,
+                          size: 16,
+                        ),
+                      )
+                    : null,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  '${tags.elementAt(index)}',
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                 ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+          onTap: () {
+            context.read<SearchingPageCubit>().toggleTag(index);
+          },
+        ),
+      );
 
-  Widget _createNoFoundHintMessage(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      margin: const EdgeInsets.all(16),
-      color: Theme.of(context).primaryColorDark.withAlpha(30),
-      child: Column(
-        children: [
-          Text(
-            'No search results available\n',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color:
-                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                ),
-          ),
-          Text(
-            'No entries match the given search query. Please try again.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w400,
-                  color:
-                      Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _createHintMessage(BuildContext context, SearchingPageState state) {
-    return state.input == ''
-        ? _createAddingSearchQueryHintMessage(context)
-        : _createNoFoundHintMessage(context);
-  }
-
-  Widget _createListViewBuilder(List<Event> cards) {
-    return ListView.builder(
-      reverse: true,
-      itemCount: cards.length,
-      itemBuilder: (_, index) => _createListViewItem(index, cards),
-    );
-  }
-
-  Widget _createBody(BuildContext context, SearchingPageState state) {
+  Widget _body(BuildContext context, SearchingPageState state) {
     final foundCards = state.foundedEvents;
-
     return Column(
       children: [
         Expanded(
           child: ListView.builder(
             itemCount: tags.length,
             scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).highlightColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(
-                      8,
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  child: Row(
-                    children: [
-                      Container(
-                        child: state.selectedTags.elementAt(index)
-                            ? const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Icon(
-                                  Icons.check,
-                                  color: Colors.black,
-                                  size: 16,
-                                ),
-                              )
-                            : null,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          '${tags.elementAt(index)}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelMedium!
-                              .copyWith(
-                                color: Theme.of(context).secondaryHeaderColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    context.read<SearchingPageCubit>().toggleTag(index);
-                  },
-                ),
-              );
-            },
+            itemBuilder: (context, index) => _tagCard(context, index, state),
           ),
         ),
         foundCards.isEmpty
-            ? Expanded(flex: 10, child: _createHintMessage(context, state))
+            ? Expanded(flex: 10, child: _hintMessage(context, state))
             : Expanded(
                 flex: 10,
-                child: _createListViewBuilder(foundCards),
+                child: _listViewBuilder(foundCards),
               ),
       ],
     );
@@ -239,12 +223,10 @@ class SearchingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _focusNode.requestFocus();
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: _createAppBar(context, state),
-          body: _createBody(context, state),
-        );
-      },
+      builder: (context, state) => Scaffold(
+        appBar: _appBar(context, state),
+        body: _body(context, state),
+      ),
     );
   }
 }
