@@ -158,68 +158,69 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
+  Widget _createBody(BuildContext context, SearchingPageState state) {
+    final foundCards = state.input == ''
+        ? <Event>[]
+        : List<Event>.from(
+            _cards.reversed.where(
+              (Event event) => event.title.contains(state.input),
+            ),
+          );
+
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: tags.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).highlightColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      8,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check,
+                      color: Colors.black,
+                    ),
+                    Text(
+                      '${tags.elementAt(index)}',
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                            color: Theme.of(context).secondaryHeaderColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        foundCards.isEmpty
+            ? Expanded(flex: 10, child: _createHintMessage(context, state))
+            : Expanded(
+                flex: 10,
+                child: _createListViewBuilder(foundCards),
+              ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _focusNode.requestFocus();
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
       builder: (context, state) {
-        final foundCards = state.input == ''
-            ? <Event>[]
-            : List<Event>.from(
-                _cards.reversed.where(
-                  (Event event) => event.title.contains(state.input),
-                ),
-              );
         return Scaffold(
           appBar: _createAppBar(context, state),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: tags.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).highlightColor,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(
-                            8,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check,
-                            color: Colors.black,
-                          ),
-                          Text(
-                            '${tags.elementAt(index)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium!
-                                .copyWith(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              foundCards.isEmpty
-                  ? Expanded(
-                      flex: 10, child: _createHintMessage(context, state))
-                  : Expanded(
-                      flex: 10,
-                      child: _createListViewBuilder(foundCards),
-                    ),
-            ],
-          ),
+          body: _createBody(context, state),
         );
       },
     );
