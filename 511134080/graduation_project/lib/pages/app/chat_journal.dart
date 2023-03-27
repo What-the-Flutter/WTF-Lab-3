@@ -12,10 +12,9 @@ import '../home/home_page.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
-import 'app_cubit.dart';
 
 class ChatJournal extends StatefulWidget {
-  ChatJournal();
+  const ChatJournal();
   @override
   State<ChatJournal> createState() => _ChatJournalState();
 }
@@ -26,9 +25,11 @@ class _ChatJournalState extends State<ChatJournal> {
   late final EventDao eventDao;
   late final ChatRepository chatRepository;
   late final EventRepository eventRepository;
+
   @override
   void initState() {
     super.initState();
+
     dbProvider = DatabaseProvider();
     chatDao = ChatDao(dbProvider: dbProvider);
     eventDao = EventDao(dbProvider: dbProvider);
@@ -40,9 +41,6 @@ class _ChatJournalState extends State<ChatJournal> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => AppCubit(),
-        ),
         BlocProvider(
           create: (_) => HomeCubit(
             chatsRepository: chatRepository,

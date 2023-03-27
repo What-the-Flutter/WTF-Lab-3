@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hashtagable/functions.dart';
+import 'package:hashtagable/widgets/hashtag_text_field.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants.dart';
@@ -9,6 +13,7 @@ import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
 import '../home/home_cubit.dart';
 import '../searching_page/searching_page.dart';
+import '../settings/settings_cubit.dart';
 import 'chat_cubit.dart';
 
 class ChatPage extends StatefulWidget {
@@ -50,29 +55,37 @@ class _ChatPageState extends State<ChatPage> {
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateCard(date: current.time),
-          EventCard(
-            cardModel: current,
-            key: UniqueKey(),
-          )
-        ],
+      return BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DateCard(date: current.time),
+              EventCard(
+                cardModel: current,
+                key: UniqueKey(),
+              )
+            ],
+          );
+        },
       );
     } else {
       final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DateCard(date: current.time),
-            EventCard(
-              cardModel: current,
-              key: UniqueKey(),
-            ),
-          ],
+        return BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DateCard(date: current.time),
+                EventCard(
+                  cardModel: current,
+                  key: UniqueKey(),
+                ),
+              ],
+            );
+          },
         );
       }
       return EventCard(
@@ -88,44 +101,55 @@ class _ChatPageState extends State<ChatPage> {
     _clearTextInput();
   }
 
-  Widget _returnEvents(ChatState state) {
-    return Expanded(
-      flex: 10,
-      child: ListView.builder(
-        itemCount: state.eventsLength,
-        reverse: true,
-        itemBuilder: (_, index) {
-          return _createListViewItem(index, state);
-        },
-      ),
+  Widget _returnEvents(ChatState chatState) {
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) {
+        return Expanded(
+          flex: 10,
+          child: ListView.builder(
+            itemCount: chatState.eventsLength,
+            reverse: true,
+            itemBuilder: (_, index) {
+              return _createListViewItem(index, chatState);
+            },
+          ),
+        );
+      },
     );
   }
 
   Widget _returnHintMessage(Chat chat, ChatState state) {
     final messages = state.hintMessages;
-    return Expanded(
-      flex: 9,
+    return Align(
+      alignment: Alignment.topCenter,
       child: Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColorLight,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              8,
+            ),
+          ),
+        ),
         child: Column(
           children: [
             Text(
               messages[0],
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
             ),
             Text(
               messages[1],
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
             )
           ],
         ),
@@ -263,11 +287,10 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Theme.of(context).primaryColor,
       title: Text(
         '$length',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w300,
-          fontSize: 24,
-        ),
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+            ),
       ),
       iconTheme: const IconThemeData(
         color: Colors.white,
@@ -290,9 +313,9 @@ class _ChatPageState extends State<ChatPage> {
       iconTheme: Theme.of(context).iconTheme,
       title: Text(
         chat.title,
-        style: const TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              color: Colors.white,
+            ),
       ),
       leading: IconButton(
         icon: const Icon(
@@ -309,8 +332,11 @@ class _ChatPageState extends State<ChatPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => SearchingPage(
+                builder: (context) => SearchingPage(
                   cards: chatState.chatEvents,
+                  chatTitle: chat.title,
+                  tags: chatState.tags,
+                  context: context,
                 ),
               ),
             );
@@ -378,6 +404,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   Text(
                     categoryTitle[index + 1],
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).secondaryHeaderColor,
+                          fontWeight: FontWeight.normal,
+                        ),
                   ),
                 ],
               ),
@@ -388,11 +418,115 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Widget _createExistingTagPanel(existingTags, inputtingTag) {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ListView.builder(
+          itemCount: existingTags.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        color: Theme.of(context).highlightColor,
+                      ),
+                      child: Text(
+                        existingTags.elementAt(index),
+                      ),
+                    ),
+                    onTap: () {
+                      context.read<ChatCubit>().onExistingTagTap(inputtingTag,
+                          existingTags.elementAt(index), _textFieldController);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _createNewTagPanel(inputtingTag) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              color: Theme.of(context).highlightColor,
+            ),
+            child: Text(
+              'Adding Tag: $inputtingTag',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createAddingTagPanel(ChatState state) {
+    final inputtingTag = extractHashTags(_textFieldController.text).last;
+    if (state.tags.isNotEmpty) {
+      final existingTags =
+          state.tags.where((String tag) => tag.contains(inputtingTag));
+      if (existingTags.isNotEmpty) {
+        return _createExistingTagPanel(existingTags, inputtingTag);
+      }
+    }
+    return _createNewTagPanel(inputtingTag);
+  }
+
+  Widget _createCameraButtonBottomBar() {
+    return IconButton(
+      onPressed: () {
+        context.read<ChatCubit>().toggleShowingImageOptions();
+      },
+      icon: Icon(
+        Icons.camera_alt_rounded,
+        color: Theme.of(context).primaryColorDark,
+      ),
+    );
+  }
+
+  Widget _createSendButton() {
+    return IconButton(
+      onPressed: () {
+        context.read<ChatCubit>().onEnterSubmitted(_textFieldController.text);
+        _focusNode.unfocus();
+        _clearTextInput();
+      },
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).primaryColorDark,
+      ),
+    );
+  }
+
   Widget _createBottomBar(ChatState state) {
     return SingleChildScrollView(
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
           constraints: const BoxConstraints(
             maxHeight: 200,
           ),
@@ -401,7 +535,9 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               state.isChoosingCategory
                   ? _createCategoriesChoice()
-                  : Container(),
+                  : state.isAddingTag
+                      ? _createNewTagPanel(state)
+                      : Container(),
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
@@ -421,28 +557,8 @@ class _ChatPageState extends State<ChatPage> {
                       child: _createTextField(state),
                     ),
                     state.categoryIconIndex == 0 && state.isInputEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              context
-                                  .read<ChatCubit>()
-                                  .toggleShowingImageOptions();
-                            },
-                            icon: Icon(
-                              Icons.camera_alt_rounded,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: () {
-                              context
-                                  .read<ChatCubit>()
-                                  .onEnterSubmitted(_textFieldController.text);
-                            },
-                            icon: Icon(
-                              Icons.send,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                          ),
+                        ? _createCameraButtonBottomBar()
+                        : _createSendButton(),
                   ],
                 ),
               ),
@@ -453,25 +569,38 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  TextField _createTextField(ChatState state) {
-    return TextField(
-        controller: _textFieldController,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          hintText: 'Enter event',
-          filled: true,
-          fillColor: Theme.of(context).disabledColor.withAlpha(24),
-        ),
-        onSubmitted: (value) {
-          _onEnterEvent(value, state);
-        },
-        onTap: () {
-          context.read<ChatCubit>().toggleChoosingCategory();
-        },
-        onChanged: (value) {
-          context.read<ChatCubit>().inputChanged(value);
-        });
+  Widget _createTextField(ChatState state) {
+    return HashTagTextField(
+      controller: _textFieldController,
+      focusNode: _focusNode,
+      decoratedStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).primaryColorDark,
+          ),
+      basicStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+          ),
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        hintText: 'Enter event',
+        hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+            ),
+        filled: true,
+        fillColor: Theme.of(context).disabledColor.withAlpha(24),
+      ),
+      onSubmitted: (value) {
+        _onEnterEvent(value, state);
+      },
+      onChanged: (value) {
+        context.read<ChatCubit>().inputChanged(value);
+      },
+      onDetectionTyped: (_) {
+        context.read<ChatCubit>().toggleAddingTagMode(true);
+      },
+      onDetectionFinished: () {
+        context.read<ChatCubit>().toggleAddingTagMode(false);
+      },
+    );
   }
 
   Container _createCameraButton() {
@@ -485,8 +614,12 @@ class _ChatPageState extends State<ChatPage> {
           Icons.camera_enhance,
           color: Colors.black,
         ),
-        title: const Text(
+        title: Text(
           'Open Camera',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
         onTap: () {
           context.read<ChatCubit>().pickImage(false);
@@ -506,8 +639,12 @@ class _ChatPageState extends State<ChatPage> {
           Icons.photo,
           color: Colors.black,
         ),
-        title: const Text(
+        title: Text(
           'Open Gallery',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
         onTap: () {
           context.read<ChatCubit>().pickImage(true);
@@ -535,27 +672,46 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
-        final chat = state.chat;
-        final favourites = state.chatEvents.where((Event e) => e.isFavourite);
+      builder: (context, chatState) {
+        final chat = chatState.chat;
+        final favourites =
+            chatState.chatEvents.where((Event e) => e.isFavourite);
 
-        final shouldShowMessage = state.chatEvents.isEmpty ||
+        final shouldShowMessage = chatState.chatEvents.isEmpty ||
             chat.isShowingFavourites && favourites.isEmpty;
 
         return Scaffold(
           appBar: _createAppBar(
-              context, chat, context.read<HomeCubit>().state, state),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              shouldShowMessage
-                  ? _returnHintMessage(chat, state)
-                  : _returnEvents(state),
-              state.isChoosingImageOptions
-                  ? _createImageOptions()
-                  : Container(),
-              _createBottomBar(state),
-            ],
+              context, chat, context.read<HomeCubit>().state, chatState),
+          body: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, state) {
+              return Container(
+                decoration: state.backgroundImage != ''
+                    ? BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(
+                            File(
+                              state.backgroundImage,
+                            ),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : null,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    shouldShowMessage
+                        ? _returnHintMessage(chat, chatState)
+                        : _returnEvents(chatState),
+                    chatState.isChoosingImageOptions
+                        ? _createImageOptions()
+                        : Container(),
+                    _createBottomBar(chatState),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },

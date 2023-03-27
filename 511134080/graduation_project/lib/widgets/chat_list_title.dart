@@ -20,11 +20,11 @@ class EventListTile extends StatelessWidget {
         color: Colors.yellow,
         size: 24,
       ),
-      title: const Text(
+      title: Text(
         'Info',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+            ),
       ),
       onTap: () {
         Navigator.pop(context);
@@ -41,23 +41,26 @@ class EventListTile extends StatelessWidget {
   AlertDialog _createAlertDialog(BuildContext context, Chat chat) {
     return AlertDialog(
       title: Center(
-        child: _createAlertDialogTitle(chat),
+        child: _createAlertDialogTitle(chat, context),
       ),
-      content: _createAlertDialogContent(chat),
+      content: _createAlertDialogContent(chat, context),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text(
+          child: Text(
             'OK',
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.white,
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _createAlertDialogTitle(Chat chat) {
+  Widget _createAlertDialogTitle(Chat chat, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -74,10 +77,9 @@ class EventListTile extends StatelessWidget {
               ? Center(
                   child: Text(
                     chat.title[0].toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
+                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                          color: Colors.white,
+                        ),
                   ),
                 )
               : icons[chat.iconId],
@@ -90,39 +92,31 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget _createAlertDialogContent(Chat chat) {
+  Widget _createAlertDialogContent(Chat chat, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Created',
-          style: TextStyle(
-            fontSize: 24,
-          ),
+          style: Theme.of(context).textTheme.headlineLarge!,
         ),
         Text(
           DateFormat('dd.MM.yyyy').format(chat.date!),
-          style: const TextStyle(
-            fontSize: 18,
-          ),
+          style: Theme.of(context).textTheme.titleLarge!,
         ),
         const SizedBox(
           height: 16,
         ),
-        const Text(
+        Text(
           'Last event',
-          style: TextStyle(
-            fontSize: 24,
-          ),
+          style: Theme.of(context).textTheme.headlineLarge!,
         ),
         Text(
           chat.lastEventTime != null
               ? '${DateFormat('dd.MM.yyyy').format(chat.lastEventTime!)} at ${DateFormat('hh:mm a').format(chat.lastEventTime!)}'
               : 'No events yet.',
-          style: const TextStyle(
-            fontSize: 18,
-          ),
+          style: Theme.of(context).textTheme.titleLarge!,
         ),
       ],
     );
@@ -135,11 +129,11 @@ class EventListTile extends StatelessWidget {
         color: Colors.greenAccent,
         size: 24,
       ),
-      title: const Text(
+      title: Text(
         'Pin/Unpin Page',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+            ),
       ),
       onTap: () {
         Navigator.pop(context);
@@ -155,11 +149,11 @@ class EventListTile extends StatelessWidget {
         color: Colors.cyan,
         size: 24,
       ),
-      title: const Text(
+      title: Text(
         'Edit Page',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+            ),
       ),
       onTap: () async {
         await Navigator.push(
@@ -173,6 +167,7 @@ class EventListTile extends StatelessWidget {
                       .first;
                   return ManagingPage(
                     editingPage: chat,
+                    context: context,
                   );
                 },
               );
@@ -191,11 +186,11 @@ class EventListTile extends StatelessWidget {
         color: Colors.redAccent,
         size: 24,
       ),
-      title: const Text(
+      title: Text(
         'Delete Page',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+            ),
       ),
       onTap: () {
         context.read<HomeCubit>().deleteChat(_chatId);
@@ -243,9 +238,10 @@ class EventListTile extends StatelessWidget {
                 ),
                 Text(
                   DateFormat('hh:mm a').format(chat.lastEventTime!),
-                  style: TextStyle(
-                    color: Theme.of(context).disabledColor,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).disabledColor,
+                        fontSize: 14,
+                      ),
                 ),
               ]
             : [
@@ -253,19 +249,20 @@ class EventListTile extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 32.0),
                   child: Text(
                     DateFormat('hh:mm a').format(chat.lastEventTime!),
-                    style: TextStyle(
-                      color: Theme.of(context).disabledColor,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).disabledColor,
+                          fontSize: 14,
+                        ),
                   ),
                 ),
               ],
       );
     }
     return chat.isPinned
-        ? const Column(
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.attach_file,
                 color: Colors.deepPurple,
               ),
@@ -288,28 +285,36 @@ class EventListTile extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColorLight,
-              borderRadius: const BorderRadius.all(
-                Radius.circular(24),
+              borderRadius: BorderRadius.all(
+                Radius.circular(
+                  Theme.of(context).textTheme.headlineLarge!.fontSize!,
+                ),
               ),
             ),
             child: chat.iconId == 0
                 ? Center(
                     child: Text(
                       chat.title[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineLarge!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   )
                 : icons[chat.iconId],
           ),
-          title: Text(chat.title),
+          title: Text(
+            chat.title,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+          ),
           subtitle: Text(
             chat.lastEventTitle != '' ? chat.lastEventTitle : 'Label Entry',
-            style: TextStyle(
-              color: Theme.of(context).disabledColor,
-            ),
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).disabledColor,
+                ),
           ),
           hoverColor: Colors.deepPurple.shade100,
           trailing: _createTrailing(chat, context),

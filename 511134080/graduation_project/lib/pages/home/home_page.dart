@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../models/chat.dart';
-import '../../widgets/event_list_title.dart';
+import '../../widgets/chat_list_title.dart';
 import '../managing_page/managing_page.dart';
 import '../settings/settings_cubit.dart';
 import '../settings/settings_page.dart';
@@ -26,20 +27,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<HomeCubit>().init();
-  }
-
   AppBar _createAppBar() {
     return AppBar(
-      title: const Text(
+      title: Text(
         'Home',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 24,
-        ),
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
       ),
       centerTitle: true,
       backgroundColor: Theme.of(context).canvasColor,
@@ -76,11 +70,11 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(
           width: 16,
         ),
-        const Text(
+        Text(
           'Questionnaire Bot',
-          style: TextStyle(
-            fontSize: 20,
-          ),
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
         ),
       ],
     );
@@ -103,10 +97,10 @@ class _HomePageState extends State<HomePage> {
         ),
         Expanded(
           child: BlocBuilder<HomeCubit, HomeState>(
-            builder: (_, state) {
+            builder: (context, state) {
               return ListView.separated(
                 itemCount: state.chats.length,
-                itemBuilder: (_, index) {
+                itemBuilder: (context, index) {
                   return _createListTile(index, state.chats);
                 },
                 separatorBuilder: (_, __) {
@@ -152,56 +146,89 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _createDrawerHeader() {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Text(
+          DateFormat('MMM dd, yyyy').format(
+            DateTime.now(),
+          ),
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _createDrawerSpreadingTile() {
+    return ListTile(
+      onTap: () async {
+        await Share.share('Keep track of your life with Chat Journal, '
+            'a simple and elegant chat-based journal/notes'
+            ' application that makes journaling/note-taking fun, '
+            'easy, quick and effortless.\nhttps://play.google.com/'
+            'store/apps/details?id=com.agiletelescope.chatjournal');
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.redeem,
+      ),
+      title: Text(
+        'Help spread the word',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
+
+  Widget _createDrawerSettingTile() {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SettingsPage(),
+          ),
+        );
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.settings,
+      ),
+      title: Text(
+        'Settings',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
+
+  Widget _createDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _createDrawerHeader(),
+          _createDrawerSpreadingTile(),
+          _createDrawerSettingTile(),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _createAppBar(),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-              ),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  DateFormat('MMM dd, yyyy').format(
-                    DateTime.now(),
-                  ),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-                Navigator.pop(context);
-              },
-              iconColor: Theme.of(context).disabledColor,
-              leading: const Icon(
-                Icons.settings,
-              ),
-              title: Text(
-                'Settings',
-                style: TextStyle(
-                  color: Theme.of(context).disabledColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: _createDrawer(),
       body: _createBody(),
       floatingActionButton: SizedBox(
         width: 64,
@@ -211,10 +238,11 @@ class _HomePageState extends State<HomePage> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ManagingPage(),
+                builder: (context) => ManagingPage(
+                  context: context,
+                ),
               ),
             );
-            // context.read<HomeCubit>().updateChats(chat);
           },
           elevation: 16,
           child: const Icon(

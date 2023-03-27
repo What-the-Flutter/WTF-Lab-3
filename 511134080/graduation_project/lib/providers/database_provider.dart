@@ -83,7 +83,7 @@ class DatabaseProvider {
 
       final pathToEvents = '${_user!.uid}/events';
       final updates = <String, dynamic>{};
-      final events = await queryAllEvents(chatId);
+      final events = await queryChatEvents(chatId);
       for (var element in events.children) {
         final event = Event.fromDatabaseMap(
             Map<String, dynamic>.from(element.value as Map));
@@ -96,7 +96,7 @@ class DatabaseProvider {
   }
 
   Future<void> updateChatLastEvent(String chatId) async {
-    final snapshot = await queryAllEvents(chatId);
+    final snapshot = await queryChatEvents(chatId);
     if (snapshot.exists) {
       final events = snapshot.children
           .map((event) => Event.fromDatabaseMap(
@@ -122,7 +122,17 @@ class DatabaseProvider {
     }
   }
 
-  Future<DataSnapshot> queryAllEvents(String chatId) async {
+  Future<DataSnapshot> queryAllEvents() async {
+    if (_user != null) {
+      final snapshot =
+          await _databaseReference.child('${_user!.uid}').child('events').get();
+      return snapshot;
+    } else {
+      throw Exception('Not signed in!!!');
+    }
+  }
+
+  Future<DataSnapshot> queryChatEvents(String chatId) async {
     if (_user != null) {
       final snapshot = await _databaseReference
           .child('${_user!.uid}')

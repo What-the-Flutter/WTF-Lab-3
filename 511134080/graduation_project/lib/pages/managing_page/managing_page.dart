@@ -15,8 +15,11 @@ class ManagingPage extends StatelessWidget {
   ManagingPage({
     Key? key,
     Chat? editingPage,
+    required BuildContext context,
   })  : _editingPage = editingPage,
-        super(key: key);
+        super(key: key) {
+    context.read<ManagingPageCubit>().initState(_editingPage);
+  }
 
   Widget _createIconButton(
       BuildContext context, int index, ManagingPageState state) {
@@ -42,10 +45,10 @@ class ManagingPage extends StatelessWidget {
             ? Center(
                 child: Text(
                   state.inputText[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white,
+                      ),
                 ),
               )
             : icons[index],
@@ -66,6 +69,10 @@ class ManagingPage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
+                fontWeight: FontWeight.normal,
+              ),
           onChanged: (value) {
             context.read<ManagingPageCubit>().updateInput(value);
           },
@@ -108,12 +115,33 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
+  Widget _createIconsGrid(ManagingPageState state) {
+    return Expanded(
+      flex: 10,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          bottom: 24,
+        ),
+        child: GridView.builder(
+          shrinkWrap: true,
+          itemCount: icons.length,
+          itemBuilder: (context, index) {
+            return _createIconButton(context, index, state);
+          },
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    context.read<ManagingPageCubit>().initState(_editingPage);
     _controller.text = context.read<ManagingPageCubit>().state.inputText;
     _focusNode.requestFocus();
-
     return BlocBuilder<ManagingPageCubit, ManagingPageState>(
       builder: (context, state) {
         return Scaffold(
@@ -127,34 +155,15 @@ class ManagingPage extends StatelessWidget {
                 child: Center(
                   child: Text(
                     state.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                    ),
+                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
                   ),
                 ),
               ),
               _createTextField(context),
-              Expanded(
-                flex: 10,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16.0,
-                    right: 16.0,
-                    bottom: 24,
-                  ),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    itemCount: icons.length,
-                    itemBuilder: (_, index) {
-                      return _createIconButton(context, index, state);
-                    },
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                    ),
-                  ),
-                ),
-              ),
+              _createIconsGrid(state),
             ],
           ),
           floatingActionButton: _createFloatingActionButton(context),
