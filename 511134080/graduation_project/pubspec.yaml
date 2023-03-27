@@ -50,6 +50,10 @@ dependencies:
   permission_handler: ^10.2.0
   share_plus: ^6.3.1
   hashtagable: ^2.1.0
+  flutter_native_splash: ^2.2.19
+
+flutter_native_splash:
+  color: "#9575CD"
 
 dev_dependencies:
   flutter_test:

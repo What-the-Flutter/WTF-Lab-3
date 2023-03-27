@@ -174,9 +174,50 @@ class SearchingPage extends StatelessWidget {
           appBar: _createAppBar(context, state),
           body: Column(
             children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: tags.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).highlightColor,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(
+                            8,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check,
+                            color: Colors.black,
+                          ),
+                          Text(
+                            '${tags.elementAt(index)}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .copyWith(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
               foundCards.isEmpty
-                  ? _createHintMessage(context, state)
-                  : _createListViewBuilder(foundCards),
+                  ? Expanded(
+                      flex: 10, child: _createHintMessage(context, state))
+                  : Expanded(
+                      flex: 10,
+                      child: _createListViewBuilder(foundCards),
+                    ),
             ],
           ),
         );

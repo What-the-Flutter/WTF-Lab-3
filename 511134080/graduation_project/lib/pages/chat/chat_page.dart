@@ -480,7 +480,7 @@ class _ChatPageState extends State<ChatPage> {
               color: Theme.of(context).highlightColor,
             ),
             child: Text(
-              'Adding Tag: #$inputtingTag',
+              'Adding Tag: $inputtingTag',
             ),
           ),
         ],
