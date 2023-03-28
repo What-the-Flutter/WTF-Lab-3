@@ -62,6 +62,12 @@ class _ChatPageState extends State<ChatPage> {
             DateCard(date: current.time),
             EventCard(
               cardModel: current,
+              onTap: () {
+                context.read<ChatCubit>().manageTapEvent(current);
+              },
+              onLongPress: () {
+                context.read<ChatCubit>().manageLongPress(current);
+              },
               key: UniqueKey(),
             )
           ],
@@ -78,6 +84,12 @@ class _ChatPageState extends State<ChatPage> {
               DateCard(date: current.time),
               EventCard(
                 cardModel: current,
+                onTap: () {
+                  context.read<ChatCubit>().manageTapEvent(current);
+                },
+                onLongPress: () {
+                  context.read<ChatCubit>().manageLongPress(current);
+                },
                 key: UniqueKey(),
               ),
             ],
@@ -86,6 +98,12 @@ class _ChatPageState extends State<ChatPage> {
       }
       return EventCard(
         cardModel: current,
+        onTap: () {
+          context.read<ChatCubit>().manageTapEvent(current);
+        },
+        onLongPress: () {
+          context.read<ChatCubit>().manageLongPress(current);
+        },
         key: UniqueKey(),
       );
     }
@@ -97,18 +115,14 @@ class _ChatPageState extends State<ChatPage> {
     _clearTextInput();
   }
 
-  Widget _events(ChatState chatState) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) => Expanded(
+  Widget _events(ChatState chatState) => Expanded(
         flex: 10,
         child: ListView.builder(
           itemCount: chatState.eventsLength,
           reverse: true,
           itemBuilder: (_, index) => _listViewItem(index, chatState),
         ),
-      ),
-    );
-  }
+      );
 
   Widget _hintMessage(Chat chat, ChatState state) {
     final messages = state.hintMessages;
@@ -280,9 +294,10 @@ class _ChatPageState extends State<ChatPage> {
   AppBar _defaultAppBar(Chat chat, ChatState chatState) => AppBar(
         centerTitle: true,
         iconTheme: Theme.of(context).iconTheme,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           chat.title,
-          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
                 color: Colors.white,
               ),
         ),
@@ -303,7 +318,7 @@ class _ChatPageState extends State<ChatPage> {
                 MaterialPageRoute(
                   builder: (context) => SearchingPage(
                     cards: chatState.chatEvents,
-                    chatTitle: chat.title,
+                    chatTitle: '\'${chat.title}\'',
                     tags: chatState.tags,
                     context: context,
                   ),
@@ -320,7 +335,6 @@ class _ChatPageState extends State<ChatPage> {
             },
           ),
         ],
-        backgroundColor: Theme.of(context).primaryColor,
       );
 
   AppBar _appBar(

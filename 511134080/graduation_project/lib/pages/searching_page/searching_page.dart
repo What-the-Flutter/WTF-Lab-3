@@ -74,12 +74,14 @@ class SearchingPage extends StatelessWidget {
         controller: _controller,
         focusNode: _focusNode,
         decoration: InputDecoration(
-          hintText: 'Search in \'$chatTitle\'',
+          hintText: 'Search in $chatTitle',
           hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
               ),
           filled: true,
-          fillColor: Theme.of(context).primaryColorLight,
+          fillColor: context.read<SettingsCubit>().state.isLight
+              ? Theme.of(context).primaryColorLight
+              : Colors.grey[850],
         ),
         onChanged: context.read<SearchingPageCubit>().updateInput,
       );
@@ -167,7 +169,7 @@ class SearchingPage extends StatelessWidget {
       );
 
   Widget _hintMessage(BuildContext context, SearchingPageState state) =>
-      state.input == ''
+      state.input == '' && !state.selectedTags.contains(true)
           ? _addingSearchQueryHintMessage(context)
           : _noFoundHintMessage(context);
 
@@ -223,6 +225,7 @@ class SearchingPage extends StatelessWidget {
 
   Widget _body(BuildContext context, SearchingPageState state) {
     final foundCards = state.foundedEvents;
+    print(foundCards.length);
     return Column(
       children: [
         Expanded(
@@ -233,7 +236,10 @@ class SearchingPage extends StatelessWidget {
           ),
         ),
         foundCards.isEmpty
-            ? Expanded(flex: 10, child: _hintMessage(context, state))
+            ? Expanded(
+                flex: 10,
+                child: _hintMessage(context, state),
+              )
             : Expanded(
                 flex: 10,
                 child: _listViewBuilder(foundCards),

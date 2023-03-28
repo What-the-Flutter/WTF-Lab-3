@@ -32,6 +32,7 @@ class AppTheme {
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
     hoverColor: Colors.grey[850],
+    highlightColor: Colors.grey[700],
     disabledColor: Colors.grey[700],
     textTheme: defaultTextTheme,
     secondaryHeaderColor: Colors.white,

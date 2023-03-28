@@ -9,10 +9,12 @@ import '../../repositories/chat_repository.dart';
 import '../../repositories/event_repository.dart';
 import '../chat/chat_cubit.dart';
 import '../home/home_cubit.dart';
-import '../home/home_page.dart';
+import '../main/main_page.dart';
+import '../main/main_page_cubit.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
+import '../timaline/timeline_page_cubit.dart';
 
 class ChatJournal extends StatefulWidget {
   const ChatJournal();
@@ -69,6 +71,14 @@ class _ChatJournalState extends State<ChatJournal> {
         BlocProvider(
           create: (_) => SearchingPageCubit(),
         ),
+        BlocProvider(
+          create: (_) => MainPageCubit(),
+        ),
+        BlocProvider(
+          create: (_) => TimelinePageCubit(
+            eventsRepository: eventRepository,
+          ),
+        ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) => MaterialApp(
@@ -77,7 +87,7 @@ class _ChatJournalState extends State<ChatJournal> {
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: {
-            '/': (_) => const HomePage(),
+            '/': (_) => const MainPage(),
           },
         ),
       ),

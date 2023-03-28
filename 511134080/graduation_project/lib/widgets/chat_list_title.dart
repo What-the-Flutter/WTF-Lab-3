@@ -50,6 +50,7 @@ class EventListTile extends StatelessWidget {
               'OK',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.normal,
                   ),
             ),
           ),

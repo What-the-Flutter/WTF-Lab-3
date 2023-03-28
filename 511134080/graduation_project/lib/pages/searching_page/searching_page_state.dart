@@ -20,7 +20,7 @@ class SearchingPageState {
         for (var i = 0; i < tags.length; i++) {
           if (selectedTags[i]) {
             founded.addAll(
-              events.reversed.where(
+              events.where(
                 (Event event) =>
                     event.title.contains(tags.elementAt(i)) &&
                     !founded.contains(event),

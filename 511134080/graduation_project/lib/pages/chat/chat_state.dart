@@ -40,12 +40,12 @@ class ChatState {
 
   List<Event> get events => chat.isShowingFavourites
       ? List<Event>.from(
-          chatEvents.reversed.where((card) => card.isFavourite),
+          chatEvents.reversed.where((event) => event.isFavourite),
         )
       : List<Event>.from(chatEvents.reversed);
 
   int get eventsLength => chat.isShowingFavourites
-      ? chatEvents.where((card) => card.isFavourite).length
+      ? chatEvents.where((event) => event.isFavourite).length
       : chatEvents.length;
 
   List<String> get hintMessages => chat.isShowingFavourites

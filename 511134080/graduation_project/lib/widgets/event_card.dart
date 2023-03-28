@@ -5,14 +5,17 @@ import 'package:intl/intl.dart';
 
 import '../constants.dart';
 import '../models/event.dart';
-import '../pages/chat/chat_cubit.dart';
 import '../pages/settings/settings_cubit.dart';
 
 class EventCard extends StatelessWidget {
   final Event _cardModel;
+  final void Function()? onTap;
+  final void Function()? onLongPress;
 
   const EventCard({
     required Event cardModel,
+    this.onTap,
+    this.onLongPress,
     required Key key,
   })  : _cardModel = cardModel,
         super(key: key);
@@ -120,12 +123,8 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () {
-          context.read<ChatCubit>().manageTapEvent(_cardModel);
-        },
-        onLongPress: () {
-          context.read<ChatCubit>().manageLongPress(_cardModel);
-        },
+        onTap: onTap,
+        onLongPress: onLongPress,
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) => Row(
             mainAxisSize: MainAxisSize.min,
@@ -154,6 +153,20 @@ class EventCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
+                    /*Container(
+                      child: chatTitle == null
+                          ? null
+                          : Text(
+                              chatTitle!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
+                                  .copyWith(
+                                    color: Colors.grey[800],
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                            ),
+                    ),*/
                     Container(
                       child: _cardModel.categoryIndex != 0
                           ? Row(

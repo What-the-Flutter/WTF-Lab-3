@@ -262,9 +262,8 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> manageFavouriteEvent(Event event) async {
-    final index = state.chatEvents.indexOf(event);
     await eventsRepository.updateEvent(
-      state.chatEvents[index].copyWith(
+      event.copyWith(
         isFavourite: !event.isFavourite,
       ),
     );
