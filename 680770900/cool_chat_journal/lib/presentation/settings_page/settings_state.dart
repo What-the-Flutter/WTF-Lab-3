@@ -1,7 +1,9 @@
 part of 'settings_cubit.dart';
 
 enum ThemeType { light, dark }
+
 enum FontSizeType { small, medium, large }
+
 enum BubbleAlignmentType { left, right }
 
 class SettingsState extends Equatable {
@@ -28,17 +30,17 @@ class SettingsState extends Equatable {
         fontSizeType: fontSizeType ?? this.fontSizeType,
         bubbleAlignmentType: bubbleAlignmentType ?? this.bubbleAlignmentType,
         backgroundImage: backgroundImage != null
-          ? backgroundImage.value
-          : this.backgroundImage,
+            ? backgroundImage.value
+            : this.backgroundImage,
       );
 
   @override
   List<Object?> get props => [
-    themeType,
-    fontSizeType,
-    bubbleAlignmentType,
-    backgroundImage,
-  ];
+        themeType,
+        fontSizeType,
+        bubbleAlignmentType,
+        backgroundImage,
+      ];
 }
 
 class _Converter<T extends Enum> {
@@ -50,7 +52,7 @@ class _Converter<T extends Enum> {
     required this.defaultValue,
   });
 
-  T fromString(String value) => 
+  T fromString(String value) =>
       values.firstWhereOrNull((e) => e.name == value) ?? defaultValue;
 }
 

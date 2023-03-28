@@ -2,12 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
-import 'presentation/home_page/home_page.dart';
-import 'presentation/settings_page/settings_cubit.dart';
+import 'data/data.dart';
+import 'presentation/presentation.dart';
 
 class CoolChatJournalApp extends StatefulWidget {
-  final User? user;
+  final User user;
 
   const CoolChatJournalApp({
     super.key,
@@ -19,9 +20,8 @@ class CoolChatJournalApp extends StatefulWidget {
 }
 
 class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
-  
-  TextTheme _generateTextTheme(BuildContext context) {
-    final fontSizeType = context.read<SettingsCubit>().state.fontSizeType;
+  TextTheme _generateTextTheme(SettingsState state) {
+    final fontSizeType = state.fontSizeType;
 
     final double defaultSize;
     switch (fontSizeType) {
@@ -54,9 +54,9 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
       labelSmall: TextStyle(fontSize: defaultSize),
     );
   }
-  
-  ThemeData _generateTheme(BuildContext context) {
-    final themeKey = context.read<SettingsCubit>().state.themeType;
+
+  ThemeData _generateTheme(SettingsState state) {
+    final themeKey = state.themeType;
 
     switch (themeKey) {
       case ThemeType.light:
@@ -64,32 +64,85 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
           useMaterial3: true,
           surface: const Color(0xffff7373),
           scheme: FlexScheme.mandyRed,
-          textTheme: _generateTextTheme(context),
+          textTheme: _generateTextTheme(state),
         );
       case ThemeType.dark:
         return FlexThemeData.dark(
           useMaterial3: true,
           scheme: FlexScheme.mandyRed,
-          textTheme: _generateTextTheme(context),
+          textTheme: _generateTextTheme(state),
         );
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    GetIt.I.registerSingleton<User>(widget.user);
+
+    // Providers.
+    GetIt.I.registerSingleton<DatabaseProvider>(DatabaseProvider(
+      defaultJsonCategories: _DefaultCategories.jsonList,
+    ));
+    GetIt.I.registerSingleton<SettingsProvider>(SettingsProvider());
+    GetIt.I.registerSingleton<StorageProvider>(StorageProvider());
+
+    // Repositories.
+    GetIt.I
+        .registerSingleton<CategoriesRepository>(const CategoriesRepository());
+    GetIt.I.registerSingleton<ChatsRepository>(const ChatsRepository());
+    GetIt.I.registerSingleton<EventsRepository>(EventsRepository());
+    GetIt.I.registerSingleton<SettingsRepository>(const SettingsRepository());
+    GetIt.I.registerSingleton<TagsRepository>(const TagsRepository());
+
+    // Cubits.
+    GetIt.I.registerSingleton<SettingsCubit>(SettingsCubit());
+    GetIt.I.registerSingleton<HomeCubit>(HomeCubit());
+    GetIt.I.registerSingleton<ChatCubit>(ChatCubit());
+    GetIt.I.registerSingleton<ChatEditorCubit>(ChatEditorCubit());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SettingsCubit(user: widget.user),
-      child: Builder(builder: (context) {
-        return BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SettingsCubit>(
+          create: (_) => GetIt.I<SettingsCubit>(),
+        ),
+        BlocProvider<HomeCubit>(
+          create: (_) => GetIt.I<HomeCubit>(),
+        ),
+        BlocProvider<ChatCubit>(
+          create: (_) => GetIt.I<ChatCubit>(),
+        ),
+        BlocProvider<ChatEditorCubit>(
+          create: (_) => GetIt.I<ChatEditorCubit>(),
+        ),
+      ],
+      child: Builder(
+        builder: (_) => BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (_, state) {
             return MaterialApp(
               title: 'Cool Chat Journal',
-              theme: _generateTheme(context),
+              theme: _generateTheme(state),
               home: HomePage(user: widget.user),
             );
           },
-        );
-      }),
+        ),
+      ),
     );
   }
+}
+
+class _DefaultCategories {
+  static List<JsonMap> get jsonList => list.map((e) => e.toJson()).toList();
+
+  static List<Category> get list => [
+        Category(
+          title: 'test',
+          icon: Icons.fitness_center.codePoint,
+          isCustom: false,
+        ),
+      ];
 }

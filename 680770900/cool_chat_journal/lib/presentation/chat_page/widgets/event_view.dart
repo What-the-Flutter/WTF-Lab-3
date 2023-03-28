@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../data/models/models.dart';
 import '../../settings_page/settings_cubit.dart';
+import '../chat_cubit.dart';
 
 class EventView extends StatefulWidget {
   final Event event;
@@ -65,8 +66,14 @@ class _EventViewState extends State<EventView> {
           height: 200.0,
         ),
       );
-    } else {
+    } else if (widget.event.content != null) {
       eventContent = Text(widget.event.content!);
+    } else {
+      context.read<ChatCubit>().readImage(widget.event);
+      eventContent = const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: CircularProgressIndicator(color: Colors.white),
+      );
     }
 
     final theme = Theme.of(context);

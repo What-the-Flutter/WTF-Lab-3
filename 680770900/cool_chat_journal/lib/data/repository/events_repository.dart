@@ -1,101 +1,88 @@
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
+import 'package:hashtagable/functions.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
 import '../provider/database_provider.dart';
 import '../provider/storage_provider.dart';
+import 'tags_repository.dart';
 
 class EventsRepository {
-  final DatabaseProvider _databaseProvider;
-  final StorageProvider _storageProvider;
+  final _imageCache = <String, Uint8List>{};
+  final _eventsSubject = BehaviorSubject<List<Event>>();
 
-  final imageCache = <String, Uint8List>{};
+  EventsRepository();
 
-  EventsRepository({required User? user})
-      : _databaseProvider = DatabaseProvider(user: user),
-        _storageProvider = StorageProvider(user: user);
+  Stream<List<Event>> get eventsStream =>
+      GetIt.I<DatabaseProvider>().eventsStream;
 
-  Future<List<Event>> readEvents(String chatId) async {
-    final jsonEvents = await _databaseProvider.read<Event>(
-      tableName: '${DatabaseProvider.eventsRoot}/$chatId',
-    );
+  Future<Uint8List> readImage(Event event) async {
+    if (_imageCache.keys.contains(event.id)) {
+      return _imageCache[event.id]!;
+    } else {
+      final image = await GetIt.I<StorageProvider>()
+          .download(filename: _generateImagePath(event));
+      _imageCache[event.id] = image;
 
-    final allEvents = jsonEvents.map(Event.fromJson);
-
-    final images = allEvents.where((event) => event.content == null);
-    final events = allEvents.where((event) => event.content != null).toList();
-
-    for (final imageEvent in images) {
-      final Uint8List image;
-
-      if (imageCache.keys.contains(imageEvent.id)) {
-        image = imageCache[imageEvent.id]!;
-      } else {
-        image = await _storageProvider.download(
-            filename: '${imageEvent.chatId}/${imageEvent.id}');
-        imageCache[imageEvent.id] = image;
-      }
-
-      events.add(imageEvent.copyWith(
-        image: NullWrapper<Uint8List?>(image),
-      ));
+      return image;
     }
-
-    return events;
   }
 
   Future<void> addEvent(Event event) async {
-    await _databaseProvider.add(
+    await GetIt.I<DatabaseProvider>().add(
       json: event.toJson(),
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
+      tableName: '${DatabaseProvider.eventsRoot}',
     );
 
     if (event.image != null) {
-      await _storageProvider.upload(
-        filename: '${event.chatId}/${event.id}',
+      await GetIt.I<StorageProvider>().upload(
+        filename: _generateImagePath(event),
         data: event.image!,
       );
+    }
+
+    if (event.content != null) {
+      final tags = extractHashTags(event.content!);
+
+      for (final tag in tags) {
+        await GetIt.I<TagsRepository>().addTag(tag);
+      }
     }
   }
 
   Future<void> deleteEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.delete(filename: '${event.chatId}/${event.id}');
+      await GetIt.I<StorageProvider>()
+          .delete(filename: _generateImagePath(event));
     }
 
-    await _databaseProvider.delete(
+    if (event.content != null) {
+      final tags = extractHashTags(event.content!);
+
+      for (final tag in tags) {
+        await GetIt.I<TagsRepository>().deleteLink(tag.substring(1));
+      }
+    }
+
+    await GetIt.I<DatabaseProvider>().delete(
       id: event.id,
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
+      tableName: _generateEventPath(event),
     );
   }
 
   Future<void> updateEvent(Event event) async {
     if (event.image != null) {
-      await _storageProvider.upload(
-        filename: '${event.chatId}/${event.id}',
+      await GetIt.I<StorageProvider>().upload(
+        filename: _generateImagePath(event),
         data: event.image!,
       );
     }
 
-    await _databaseProvider.delete(
-      id: event.id,
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
-    );
-    await _databaseProvider.add(
+    await GetIt.I<DatabaseProvider>().add(
       json: event.toJson(),
-      tableName: '${DatabaseProvider.eventsRoot}/${event.chatId}',
-    );
-  }
-
-  Future<void> deleteEventsFromChat(String chatId) async {
-    await _storageProvider.delete(
-      filename: chatId,
-    );
-
-    await _databaseProvider.delete(
-      id: chatId,
-      tableName: DatabaseProvider.eventsRoot,
+      tableName: _generateEventPath(event),
     );
   }
 
@@ -109,5 +96,28 @@ class EventsRepository {
     for (final event in events) {
       await updateEvent(event);
     }
+  }
+
+  Future<void> deleteEventsFromChat(String chatId) async {
+    final jsonEvents = await GetIt.I<DatabaseProvider>().read<Event>(
+      tableName: DatabaseProvider.eventsRoot,
+    );
+
+    final deletedEvents = jsonEvents
+        .map(Event.fromJson)
+        .where((event) => event.chatId == chatId)
+        .toList();
+
+    for (final event in deletedEvents) {
+      await deleteEvent(event);
+    }
+  }
+
+  String _generateImagePath(Event event) {
+    return event.id;
+  }
+
+  String _generateEventPath(Event event) {
+    return '${DatabaseProvider.eventsRoot}';
   }
 }

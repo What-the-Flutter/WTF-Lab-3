@@ -13,5 +13,8 @@ void main() async {
   );
 
   final userCredential = await FirebaseAuth.instance.signInAnonymously();
-  runApp(CoolChatJournalApp(user: userCredential.user));
+
+  if (userCredential.user != null) {
+    runApp(CoolChatJournalApp(user: userCredential.user!));
+  }
 }

@@ -1,32 +1,29 @@
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 
 import '../models/models.dart';
 import '../provider/settings_provider.dart';
 import '../provider/storage_provider.dart';
 
 class SettingsRepository {
-  final _settingsProvider = SettingsProvider();
-  final StorageProvider _storageProvider;
-
-  SettingsRepository(User? user) 
-    : _storageProvider = StorageProvider(user: user);
+  const SettingsRepository();
 
   Future<void> saveThemeInfo(ThemeInfo themeInfo) async =>
-      await _settingsProvider.save(themeInfo);
+      await GetIt.I<SettingsProvider>().save(themeInfo);
 
-  Future<ThemeInfo> updateThemeInfo() async => await _settingsProvider.read();
+  Future<ThemeInfo> updateThemeInfo() async =>
+      await GetIt.I<SettingsProvider>().read();
 
   Future<void> saveBackgroundImage(Uint8List image) async =>
-      await _storageProvider.upload(
+      await GetIt.I<StorageProvider>().upload(
         filename: 'background_image',
         data: image,
       );
 
-  Future<Uint8List> downloadBackgroundImage() async => 
-      await _storageProvider.download(filename: 'background_image');
+  Future<Uint8List> downloadBackgroundImage() async =>
+      await GetIt.I<StorageProvider>().download(filename: 'background_image');
 
   Future<void> deleteBackgroundImage() async =>
-      await _storageProvider.delete(filename: 'background_image');
+      await GetIt.I<StorageProvider>().delete(filename: 'background_image');
 }
