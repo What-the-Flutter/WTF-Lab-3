@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:get_it/get_it.dart';
+import 'package:hashtagable/functions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
 import '../provider/database_provider.dart';
 import '../provider/storage_provider.dart';
+import 'tags_repository.dart';
 
 class EventsRepository {
   final _imageCache = <String, Uint8List>{};
@@ -40,12 +42,28 @@ class EventsRepository {
         data: event.image!,
       );
     }
+
+    if (event.content != null) {
+      final tags = extractHashTags(event.content!);
+
+      for (final tag in tags) {
+        await GetIt.I<TagsRepository>().addTag(tag);
+      }
+    }
   }
 
   Future<void> deleteEvent(Event event) async {
     if (event.image != null) {
       await GetIt.I<StorageProvider>()
           .delete(filename: _generateImagePath(event));
+    }
+
+    if (event.content != null) {
+      final tags = extractHashTags(event.content!);
+
+      for (final tag in tags) {
+        await GetIt.I<TagsRepository>().deleteLink(tag.substring(1));
+      }
     }
 
     await GetIt.I<DatabaseProvider>().delete(

@@ -32,6 +32,7 @@ dependencies:
   share_plus: ^6.3.1
   rxdart: ^0.27.7
   get_it: ^7.2.0
+  hashtagable: ^2.1.0
 
 dev_dependencies:
   flutter_test:

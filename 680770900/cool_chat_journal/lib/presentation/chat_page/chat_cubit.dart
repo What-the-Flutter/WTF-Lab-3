@@ -101,13 +101,6 @@ class ChatCubit extends Cubit<ChatState> {
     await GetIt.I<EventsRepository>().addEvent(event);
   }
 
-  void addNewTag(Tag tag) async {
-    await GetIt.I<TagsRepository>().addTag(tag);
-    final tags = List<Tag>.from(state.tags);
-    tags.add(tag);
-    emit(state.copyWith(tags: tags));
-  }
-
   void deleteEvent(Event event) async {
     final events = state.events.where((e) => e.id != event.id).toList();
     _sortEvents(events);
@@ -182,6 +175,14 @@ class ChatCubit extends Cubit<ChatState> {
         .toList();
 
     emit(state.copyWith(events: events));
+  }
+
+  void addNewTag(String tag) async {
+    await GetIt.I<TagsRepository>().addTag(tag);
+  }
+
+  void deleteTag(Tag tag) async {
+    await GetIt.I<TagsRepository>().deleteLink(tag.id);
   }
 
   void switchSelectStatus(String eventId) {
