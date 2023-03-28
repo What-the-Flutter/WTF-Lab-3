@@ -37,4 +37,12 @@ class SearchingPageCubit extends Cubit<SearchingPageState> {
       ),
     );
   }
+
+  void clearFoundedEvents() {
+    emit(
+      state.copyWith(
+        newInput: '',
+      ),
+    );
+  }
 }

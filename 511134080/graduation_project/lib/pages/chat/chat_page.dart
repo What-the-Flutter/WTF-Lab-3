@@ -384,7 +384,9 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
 
-  Widget _existingTagPanel(existingTags, inputtingTag) => Expanded(
+  Widget _existingTagPanel(
+          Iterable<String> existingTags, String inputtingTag) =>
+      Expanded(
         child: Align(
           alignment: Alignment.bottomCenter,
           child: ListView.builder(
@@ -409,6 +411,13 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         child: Text(
                           existingTags.elementAt(index),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                color: Theme.of(context).secondaryHeaderColor,
+                                fontWeight: FontWeight.normal,
+                              ),
                         ),
                       ),
                       onTap: () {
@@ -427,7 +436,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
 
-  Widget _newTagPanel(inputtingTag) => Padding(
+  Widget _newTagPanel(String inputtingTag) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -442,6 +451,10 @@ class _ChatPageState extends State<ChatPage> {
               ),
               child: Text(
                 'Adding Tag: $inputtingTag',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).secondaryHeaderColor,
+                      fontWeight: FontWeight.normal,
+                    ),
               ),
             ),
           ],
@@ -496,7 +509,7 @@ class _ChatPageState extends State<ChatPage> {
                 state.isChoosingCategory
                     ? _categoriesChoice()
                     : state.isAddingTag
-                        ? _newTagPanel(state)
+                        ? _addingTagPanel(state)
                         : Container(),
                 Padding(
                   padding: const EdgeInsets.all(4.0),

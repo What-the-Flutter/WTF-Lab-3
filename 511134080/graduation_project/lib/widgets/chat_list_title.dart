@@ -49,7 +49,7 @@ class EventListTile extends StatelessWidget {
             child: Text(
               'OK',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).secondaryHeaderColor,
                   ),
             ),
           ),
@@ -83,7 +83,12 @@ class EventListTile extends StatelessWidget {
           const SizedBox(
             width: 16,
           ),
-          Text(chat.title),
+          Text(
+            chat.title,
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+          ),
         ],
       );
 
@@ -93,24 +98,36 @@ class EventListTile extends StatelessWidget {
         children: [
           Text(
             'Created',
-            style: Theme.of(context).textTheme.headlineLarge!,
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           Text(
             DateFormat('dd.MM.yyyy').format(chat.date!),
-            style: Theme.of(context).textTheme.titleLarge!,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.normal,
+                ),
           ),
           const SizedBox(
             height: 16,
           ),
           Text(
             'Last event',
-            style: Theme.of(context).textTheme.headlineLarge!,
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           Text(
             chat.lastEventTime != null
                 ? '${DateFormat('dd.MM.yyyy').format(chat.lastEventTime!)} at ${DateFormat('hh:mm a').format(chat.lastEventTime!)}'
                 : 'No events yet.',
-            style: Theme.of(context).textTheme.titleLarge!,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.normal,
+                ),
           ),
         ],
       );

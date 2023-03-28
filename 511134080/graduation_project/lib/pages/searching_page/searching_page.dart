@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../models/event.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
+import '../settings/settings_cubit.dart';
 import 'searching_page_cubit.dart';
 
 class SearchingPage extends StatelessWidget {
@@ -29,26 +30,39 @@ class SearchingPage extends StatelessWidget {
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateCard(date: current.time),
-          EventCard(cardModel: current, key: UniqueKey()),
-        ],
+      return BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DateCard(date: current.time),
+            EventCard(
+              cardModel: current,
+              key: UniqueKey(),
+            )
+          ],
+        ),
       );
     } else {
       final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DateCard(date: current.time),
-            EventCard(cardModel: current, key: UniqueKey()),
-          ],
+        return BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DateCard(date: current.time),
+              EventCard(
+                cardModel: current,
+                key: UniqueKey(),
+              ),
+            ],
+          ),
         );
       }
-      return EventCard(cardModel: current, key: UniqueKey());
+      return EventCard(
+        cardModel: current,
+        key: UniqueKey(),
+      );
     }
   }
 
@@ -73,6 +87,15 @@ class SearchingPage extends StatelessWidget {
   AppBar _appBar(BuildContext context, SearchingPageState state) => AppBar(
         iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Theme.of(context).primaryColor,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            context.read<SearchingPageCubit>().clearFoundedEvents();
+            Navigator.pop(context);
+          },
+        ),
         title: _textField(context),
         actions: state.input != ''
             ? [
