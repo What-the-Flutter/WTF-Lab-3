@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../data/models/chat.dart';
@@ -130,14 +130,24 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (_, state) => ListView.builder(
-          itemCount: state.chats.length,
-          itemBuilder: (context, index) => _chatCard(
-            context: context,
-            chats: state.chats, 
-            chat: state.chats[index],
-          ),
-        ),
+        builder: (_, state) {
+          if (state.chats.isNotEmpty) {
+            return ListView.builder(
+              itemCount: state.chats.length,
+              itemBuilder: (context, index) => _chatCard(
+                context: context,
+                chats: state.chats, 
+                chat: state.chats[index],
+              ),
+            );
+          } else {
+            return Lottie.asset(
+              'assets/animations/pencil.json',
+              repeat: true,
+            );
+          }
+          
+        }
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),

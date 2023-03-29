@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hashtagable/widgets/hashtag_text.dart';
@@ -48,10 +50,18 @@ class _EventViewState extends State<EventView> {
             ),
           ),
           if (widget.event.isFavorite)
-            const Icon(
-              Icons.bookmark,
-              color: Colors.deepOrange,
-              size: 15.0,
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: 2 * pi),
+              curve: Curves.bounceOut,
+              duration: const Duration(seconds: 2),
+              builder: (_, angle, __) => Transform.rotate(
+                angle: angle,
+                child: const Icon(
+                  Icons.bookmark,
+                  color: Colors.deepOrange,
+                  size: 15.0,
+                ),
+              ),
             ),
         ],
       ),

@@ -25,8 +25,11 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage>  
+  with SingleTickerProviderStateMixin {
   final _cubit = GetIt.I<ChatCubit>(); 
+
+  late AnimationController _arrowAnimationController;
 
   late VoidCallback _unsubscribeEventsStream;
 
@@ -95,8 +98,12 @@ class _ChatPageState extends State<ChatPage> {
   }) {
     if (selectedEventsIds.isEmpty) {
       return IconButton(
-        icon: const Icon(Icons.arrow_back),
         onPressed: () => Navigator.pop(context),
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.arrow_menu,
+          progress: Tween<double>(begin: 1.0, end: 0.0)
+              .animate(_arrowAnimationController),
+        ),
       );
     } else if (isEditMode) {
       return IconButton(
@@ -375,11 +382,17 @@ class _ChatPageState extends State<ChatPage> {
     _cubit.loadChat(widget.chatId);
     _cubit.subscribeStreams();
     _unsubscribeEventsStream = _cubit.unsubscribeStreams;
+
+    _arrowAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..forward();
   }
 
   @override
   void dispose() {
     _unsubscribeEventsStream();
+    _arrowAnimationController.dispose();
     super.dispose();
   }
 
