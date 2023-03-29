@@ -93,4 +93,24 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
           ignoreSelectedPages: value,
         ),
       );
+
+  void toggleSelectedTag(String tag) {
+    final List<String> tags;
+    if (state.selectedTags.contains(tag)) {
+      tags = List<String>.from(state.selectedTags)
+        ..remove(
+          tag,
+        );
+    } else {
+      tags = List<String>.from(state.selectedTags)
+        ..add(
+          tag,
+        );
+    }
+    emit(
+      state.copyWith(
+        changesSelectedTags: tags,
+      ),
+    );
+  }
 }

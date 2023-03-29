@@ -8,6 +8,7 @@ class TimelinePageState {
   final List<String> selectedPages;
   final bool isIgnoreSelectedPages;
   final List<String> _hintMessages;
+  final List<String> selectedTags;
 
   TimelinePageState({
     List<Event> events = const [],
@@ -16,6 +17,7 @@ class TimelinePageState {
     this.isShowingFavourites = false,
     this.selectedPages = const [],
     this.isIgnoreSelectedPages = true,
+    this.selectedTags = const [],
   })  : _events = events,
         _chats = chats,
         _hintMessages = [
@@ -49,6 +51,7 @@ class TimelinePageState {
     Set<String>? newTags,
     List<String>? changedSelectedPages,
     bool? ignoreSelectedPages,
+    List<String>? changesSelectedTags,
   }) =>
       TimelinePageState(
         events: newEvents ?? _events,
@@ -57,6 +60,7 @@ class TimelinePageState {
         tags: newTags ?? tags,
         selectedPages: changedSelectedPages ?? selectedPages,
         isIgnoreSelectedPages: ignoreSelectedPages ?? isIgnoreSelectedPages,
+        selectedTags: changesSelectedTags ?? selectedTags,
       );
 
   List<Event> _filteredEvents() {
@@ -71,6 +75,19 @@ class TimelinePageState {
                 event.chatId,
               ),
       );
+
+    allEvents = List<Event>.from(allEvents)
+      ..removeWhere((event) {
+        final tags = extractHashTags(event.title);
+        var notContains = true;
+        for (final tag in tags) {
+          if (selectedTags.contains(tag)) {
+            notContains = false;
+            break;
+          }
+        }
+        return notContains;
+      });
 
     return allEvents
       ..sort(
