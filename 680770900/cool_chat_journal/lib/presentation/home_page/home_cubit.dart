@@ -2,59 +2,60 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../../data/models/chat.dart';
 import '../../../data/repository/chats_repository.dart';
 import '../../../data/repository/events_repository.dart';
+import '../presentation.dart';
 
 part 'home_state.dart';
 
 typedef ChatsSubscription = StreamSubscription<List<Chat>>;
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeState());
+  StreamSubscription<List<Chat>>? _chatsSubscription;
+
+  final ChatsRepository chatsRepository;
+  final EventsRepository eventsRepository;
+
+  final SettingsCubit settingsCubit;
+
+  HomeCubit({
+    required this.chatsRepository,
+    required this.eventsRepository,
+    required this.settingsCubit,
+  }) : super(const HomeState());
 
   void subscribeChatsStream() {
-    final subscription =
-        GetIt.I<ChatsRepository>().chatsStream.listen(_setChats);
-
-    emit(
-      state.copyWith(
-        streamSubscription: _NullWrapper<ChatsSubscription?>(subscription),
-      ),
-    );
+    _chatsSubscription =
+        chatsRepository.chatsStream.listen(_setChats);
   }
 
   void unsubscribeChatsStream() {
-    if (state.streamSubscription != null) {
-      state.streamSubscription!.cancel();
-
-      emit(
-        state.copyWith(
-          streamSubscription: const _NullWrapper<ChatsSubscription?>(null),
-        ),
-      );
-    }
+    _chatsSubscription?.cancel(); 
   }
 
   void addChat(Chat chat) async {
-    await GetIt.I<ChatsRepository>().addChat(chat);
+    await chatsRepository.addChat(chat);
   }
 
   void deleteChat(String chatId) async {
-    await GetIt.I<ChatsRepository>().deleteChat(chatId);
-    await GetIt.I<EventsRepository>().deleteEventsFromChat(chatId);
+    await chatsRepository.deleteChat(chatId);
+    await eventsRepository.deleteEventsFromChat(chatId);
   }
 
   void editChat(Chat chat) async {
-    await GetIt.I<ChatsRepository>().updateChat(chat);
+    await chatsRepository.updateChat(chat);
   }
 
   void switchChatPinning(Chat chat) async {
-    await GetIt.I<ChatsRepository>()
+    await chatsRepository
         .updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
+
+  void switchThemeType() => settingsCubit.switchThemeType();
+
+  void initSettings() => settingsCubit.initSettings();
 
   void _sortChats(List<Chat> chats) {
     chats.sort((a, b) {

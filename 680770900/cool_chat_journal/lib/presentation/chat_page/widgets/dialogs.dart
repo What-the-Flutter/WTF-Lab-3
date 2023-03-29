@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../../data/models/chat.dart';
+import '../../../utils/custom_theme.dart';
 
 class DeleteDialog extends StatelessWidget {
   final int countSelectedEvents;
 
-  const DeleteDialog(this.countSelectedEvents);
+  const DeleteDialog({
+    required this.countSelectedEvents,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +65,7 @@ class _TransferDialogState extends State<TransferDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = CustomTheme.of(context).themeData;
     return Center(
       child: Container(
         margin: const EdgeInsets.all(40.0),
@@ -81,7 +84,7 @@ class _TransferDialogState extends State<TransferDialog> {
               Expanded(
                 child: ListView.builder(
                   itemCount: widget.chats.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (_, index) {
                     return RadioListTile(
                       title: Text(widget.chats[index].name),
                       activeColor: theme.backgroundColor,

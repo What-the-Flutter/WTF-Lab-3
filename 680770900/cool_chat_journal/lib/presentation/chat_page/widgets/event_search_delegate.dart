@@ -10,7 +10,7 @@ class EventSearchDelegate extends SearchDelegate {
     required this.events,
   });
 
-  List<Event> _createEventsList() {
+  List<Event> _eventsList() {
     final fondedNotes = <Event>[];
 
     for (final event in events) {
@@ -23,7 +23,8 @@ class EventSearchDelegate extends SearchDelegate {
     return fondedNotes;
   }
 
-  Widget _createSearchResult(List<Event> result) {
+  Widget _searchResult() {
+    final result = _eventsList();
     return ListView.builder(
       itemCount: result.length,
       itemBuilder: (context, index) => EventView(
@@ -51,12 +52,8 @@ class EventSearchDelegate extends SearchDelegate {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
-    return _createSearchResult(_createEventsList());
-  }
+  Widget buildResults(BuildContext context) => _searchResult();
 
   @override
-  Widget buildSuggestions(BuildContext context) {
-    return _createSearchResult(_createEventsList());
-  }
+  Widget buildSuggestions(BuildContext context) => _searchResult();
 }

@@ -4,19 +4,21 @@ import 'package:get_it/get_it.dart';
 
 import '../../../data/models/event.dart';
 import '../../data/models/category.dart';
-import '../home_page/home_cubit.dart';
-import '../settings_page/settings_cubit.dart';
+import '../../data/models/chat.dart';
+import '../../utils/custom_theme.dart';
 import 'chat_cubit.dart';
 import 'widgets/widgets.dart';
 
 class ChatPage extends StatefulWidget {
   final String chatId;
   final String chatName;
+  final List<Chat> chats;
 
   const ChatPage({
     super.key,
     required this.chatId,
     required this.chatName,
+    required this.chats,
   });
 
   @override
@@ -24,106 +26,138 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final _cubit = GetIt.I<ChatCubit>(); 
+
   late VoidCallback _unsubscribeEventsStream;
 
-  bool _isHasImage(BuildContext context) {
-    return GetIt.I<ChatCubit>()
-        .state
-        .events
-        .where(
-          (event) =>
-              GetIt.I<ChatCubit>().state.selectedEventsIds.contains(event.id) &&
-              event.image != null,
-        )
-        .isNotEmpty;
-  }
+  bool _isHasImage({
+    required List<Event> events,
+    required List<String> selectedEventsIds,
+  }) => events
+      .where((e) => selectedEventsIds.contains(e.id) && e.image != null)
+      .isNotEmpty;
 
-  void _searchEvents(BuildContext context) async {
+  void _onSearchEvents({
+    required BuildContext context,
+    required List<Event> events,
+  }) async {
     await showSearch(
       context: context,
       delegate: EventSearchDelegate(
-        events: GetIt.I<ChatCubit>().state.events,
+        events: events,
       ),
     );
   }
 
-  void _transferEvents(BuildContext context) async {
+  void _onTransferEvents({
+    required BuildContext context,
+    required List<Chat> chats,
+  }) async {
     final destinationChat = await showDialog<String>(
       context: context,
-      builder: (context) => TransferDialog(
-          chats: GetIt.I<HomeCubit>()
-              .state
-              .chats
-              .where(
-                (chat) => chat.id != widget.chatId,
-              )
-              .toList()),
+      builder: (_) => 
+        TransferDialog(
+          chats: chats
+              .where((chat) => chat.id != widget.chatId)
+              .toList(),
+        ),
     );
+
     if (destinationChat != null) {
-      GetIt.I<ChatCubit>().transferSelectedEvents(destinationChat);
+      _cubit.transferSelectedEvents(destinationChat);
     }
 
-    GetIt.I<ChatCubit>().resetSelection();
+    _cubit.resetSelection();
   }
 
-  void _deleteEvents(BuildContext context) async {
+  void _onDeleteEvents({
+    required BuildContext context,
+    required List<String> selectedEventsIds,
+  }) async {
     final value = await showModalBottomSheet<bool>(
       context: context,
-      builder: (context) => DeleteDialog(
-        GetIt.I<ChatCubit>().state.selectedEventsIds.length,
+      builder: (_) => DeleteDialog(
+        countSelectedEvents: selectedEventsIds.length,
       ),
     );
 
     if (value == true) {
-      GetIt.I<ChatCubit>().deleteSelectedEvents();
+      _cubit.deleteSelectedEvents();
     }
 
-    GetIt.I<ChatCubit>().resetSelection();
+    _cubit.resetSelection();
   }
 
-  Widget _createAppBarLeading(BuildContext context) {
-    if (GetIt.I<ChatCubit>().state.selectedEventsIds.isEmpty) {
+  Widget _appBarLeading({
+    required BuildContext context,
+    required List<String> selectedEventsIds,
+    required bool isEditMode,
+  }) {
+    if (selectedEventsIds.isEmpty) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () => Navigator.pop(context),
       );
-    } else if (GetIt.I<ChatCubit>().state.isEditMode) {
+    } else if (isEditMode) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: GetIt.I<ChatCubit>().toggleEditMode,
+        onPressed: _cubit.toggleEditMode,
       );
     } else {
       return IconButton(
         icon: const Icon(Icons.close),
-        onPressed: GetIt.I<ChatCubit>().resetSelection,
+        onPressed: _cubit.resetSelection,
       );
     }
   }
 
-  Widget _createAppBarTitle(BuildContext context) {
-    final selectedEvents = GetIt.I<ChatCubit>().state.selectedEventsIds;
-    if (selectedEvents.isEmpty) {
+  Widget _appBarTitle({
+    required List<String> selectedEventsIds,
+    required bool isEditMode,
+  }) {
+    if (selectedEventsIds.isEmpty) {
       return Text(widget.chatName);
-    } else if (GetIt.I<ChatCubit>().state.isEditMode) {
+    } else if (isEditMode) {
       return const Text('Edit mode');
     } else {
-      return Text(selectedEvents.length.toString());
+      return Text(selectedEventsIds.length.toString());
     }
   }
 
-  List<Widget> _createActions(BuildContext context) {
-    if (GetIt.I<ChatCubit>().state.selectedEventsIds.isEmpty) {
-      return _createActionsForNotSelectionMode(context);
-    } else if (GetIt.I<ChatCubit>().state.isEditMode) {
-      return _createActionsForEditMode(context);
+  
+  List<Widget> _actions({
+    required BuildContext context,
+    required List<String> selectedEventsIds,
+    required List<Chat> chats,
+    required List<Event> events,
+    required bool isFavoriteMode,
+    required bool isEditMode,
+  }) {
+    if (selectedEventsIds.isEmpty) {
+      return _actionsForNotSelectionMode(
+        context: context,
+        events: events,
+        isFavoriteMode: isFavoriteMode,
+      );
+    } else if (isEditMode) {
+      return _actionsForEditMode();
     } else {
-      return _createActionsForSelectionMode(context);
+      return _actionsForSelectionMode(
+        context: context,
+        selectedEventsIds: selectedEventsIds,
+        chats: chats,
+        events: events,
+      );
     }
   }
 
-  List<Widget> _createActionsForNotSelectionMode(BuildContext context) {
+  List<Widget> _actionsForNotSelectionMode({
+    required BuildContext context,
+    required List<Event> events,
+    required bool isFavoriteMode,
+  }) {
     final Icon bookmarkIcon;
-    if (GetIt.I<ChatCubit>().state.isFavoriteMode) {
+    if (isFavoriteMode) {
       bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
     } else {
       bookmarkIcon = const Icon(Icons.bookmark_border);
@@ -132,74 +166,102 @@ class _ChatPageState extends State<ChatPage> {
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.search),
-        onPressed: () => _searchEvents(context),
+        onPressed: () => _onSearchEvents(
+          context: context,
+          events: events,
+        ),
       ),
       IconButton(
         icon: bookmarkIcon,
-        onPressed: GetIt.I<ChatCubit>().toggleFavoriteMode,
+        onPressed: _cubit.toggleFavoriteMode,
       ),
     ];
   }
 
-  List<Widget> _createActionsForEditMode(BuildContext context) {
+  List<Widget> _actionsForEditMode() {
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.close),
-        onPressed: context.read<ChatCubit>().toggleEditMode,
+        onPressed: _cubit.toggleEditMode,
       ),
     ];
   }
 
-  List<Widget> _createActionsForSelectionMode(BuildContext context) {
-    final selectedEventsCount =
-        GetIt.I<ChatCubit>().state.selectedEventsIds.length;
+  List<Widget> _actionsForSelectionMode({
+    required BuildContext context,
+    required List<String> selectedEventsIds,
+    required List<Chat> chats,
+    required List<Event> events,
+  }) {
+    final isHasImage = _isHasImage(
+      events: events, 
+      selectedEventsIds: selectedEventsIds
+    );
+
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.reply),
-        onPressed: () => _transferEvents(context),
+        onPressed: () => _onTransferEvents(
+          context: context,
+          chats: chats,
+        ),
       ),
-      if (!_isHasImage(context) && selectedEventsCount == 1)
+      if (!isHasImage && selectedEventsIds.length == 1)
         IconButton(
           icon: const Icon(Icons.edit),
-          onPressed: GetIt.I<ChatCubit>().toggleEditMode,
+          onPressed: _cubit.toggleEditMode,
         ),
-      if (!_isHasImage(context))
+      if (!isHasImage)
         IconButton(
           icon: const Icon(Icons.copy),
           onPressed: () {
-            GetIt.I<ChatCubit>().copySelectedEvents();
-            GetIt.I<ChatCubit>().resetSelection();
+            _cubit.copySelectedEvents();
+            _cubit.resetSelection();
           },
         ),
       IconButton(
         icon: const Icon(Icons.bookmark_border),
         onPressed: () {
-          GetIt.I<ChatCubit>().switchSelectedEventsFavorite();
-          GetIt.I<ChatCubit>().resetSelection();
+          _cubit.switchSelectedEventsFavorite();
+          _cubit.resetSelection();
         },
       ),
       IconButton(
         icon: const Icon(Icons.delete),
-        onPressed: () => _deleteEvents(context),
+        onPressed: () => _onDeleteEvents(
+          context: context,
+          selectedEventsIds: selectedEventsIds,
+        ),
       ),
     ];
   }
 
-  Widget _createScaffoldBody(BuildContext context) {
-    final selectedEvents = GetIt.I<ChatCubit>().state.selectedEventsIds;
+  Widget _scaffoldBody({
+    required List<Event> events,
+    required List<Category> categories,
+    required List<String> selectedEventsIds,
+    required bool isFavoriteMode,
+    required bool isEditMode,
+  }) {
     final Event? selectedEvent;
-    if (selectedEvents.length != 1) {
+    if (selectedEventsIds.length != 1) {
       selectedEvent = null;
     } else {
-      selectedEvent = GetIt.I<ChatCubit>().state.events.firstWhere(
-            (event) => selectedEvents.contains(event.id),
-          );
+      selectedEvent = events.firstWhere(
+        (event) => selectedEventsIds.contains(event.id),
+      );
     }
 
     return Column(
       children: [
         Expanded(
-          child: _createEventsView(),
+          child: _eventsView(
+            events: events,
+            categories: categories,
+            selectedEventsIds: selectedEventsIds,
+            isFavoriteMode: isFavoriteMode,
+            isEditMode: isEditMode,
+          ),
         ),
         BottomPanel(
           chatId: widget.chatId,
@@ -209,10 +271,12 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  List<Event> _generateEventsList(ChatState state) {
-    final events = state.events;
+  List<Event> _eventsList({
+    required List<Event> events,
+    required bool isFavoriteMode,
+  }) {
     final List<Event> favorites;
-    if (state.isFavoriteMode) {
+    if (isFavoriteMode) {
       favorites = events.where((event) => event.isFavorite).toList();
 
       if (favorites.isNotEmpty) return favorites;
@@ -221,69 +285,73 @@ class _ChatPageState extends State<ChatPage> {
     return events;
   }
 
-  Widget _createEventsView() {
-    final events = _generateEventsList(GetIt.I<ChatCubit>().state);
+  Widget _eventsView({
+    required List<Event> events,
+    required List<Category> categories,
+    required List<String> selectedEventsIds,
+    required bool isFavoriteMode,
+    required bool isEditMode,
+  }) {
+    final eventsList = _eventsList(
+      events: events,
+      isFavoriteMode: isFavoriteMode,
+    );
 
-    if (events.isNotEmpty) {
+    if (eventsList.isNotEmpty) {
       return ListView.builder(
-          reverse: true,
-          itemCount: events.length,
-          itemBuilder: (_, index) {
-            final viewIndex = events.length - index - 1;
-            final event = events[viewIndex];
+        reverse: true,
+        itemCount: eventsList.length,
+        itemBuilder: (_, index) {
+          final viewIndex = eventsList.length - index - 1;
+          final event = eventsList[viewIndex];
 
-            final Category? category;
-            if (event.categoryId != null) {
-              category = GetIt.I<ChatCubit>()
-                  .state
-                  .categories
-                  .firstWhere((e) => e.id == event.categoryId);
-            } else {
-              category = null;
-            }
+          final Category? category;
+          if (event.categoryId != null) {
+            category = categories
+                .firstWhere((e) => e.id == event.categoryId);
+          } else {
+            category = null;
+          }
 
-            return Dismissible(
-              background: Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(15.0),
-                child: const Icon(Icons.edit),
-              ),
-              secondaryBackground: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.all(15.0),
-                child: const Icon(Icons.delete),
-              ),
-              key: ValueKey<int>(viewIndex),
-              child: EventView(
-                event: event,
-                category: category,
-                isSelected: GetIt.I<ChatCubit>()
-                    .state
-                    .selectedEventsIds
-                    .contains(event.id),
-                onTap: () {
-                  if (GetIt.I<ChatCubit>().state.selectedEventsIds.isNotEmpty) {
-                    GetIt.I<ChatCubit>().switchSelectStatus(event.id);
-                  } else {
-                    GetIt.I<ChatCubit>().switchEventFavorite(event.id);
-                  }
-                },
-                onLongPress: () =>
-                    GetIt.I<ChatCubit>().switchSelectStatus(event.id),
-              ),
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.endToStart) {
-                  return true;
-                } else if (!GetIt.I<ChatCubit>().state.isEditMode) {
-                  GetIt.I<ChatCubit>().switchSelectStatus(widget.chatId);
-                  GetIt.I<ChatCubit>().toggleEditMode();
+          return Dismissible(
+            background: Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(15.0),
+              child: const Icon(Icons.edit),
+            ),
+            secondaryBackground: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.all(15.0),
+              child: const Icon(Icons.delete),
+            ),
+            key: ValueKey<int>(viewIndex),
+            child: EventView(
+              event: event,
+              category: category,
+              isSelected: selectedEventsIds.contains(event.id),
+              onTap: () {
+                if (selectedEventsIds.isNotEmpty) {
+                  _cubit.switchSelectStatus(event.id);
+                } else {
+                  _cubit.switchEventFavorite(event.id);
                 }
-
-                return false;
               },
-              onDismissed: (_) => GetIt.I<ChatCubit>().deleteEvent(event),
-            );
-          });
+              onLongPress: () => _cubit.switchSelectStatus(event.id),
+            ),
+            confirmDismiss: (direction) async {
+              if (!isEditMode) {
+                _cubit.switchSelectStatus(widget.chatId);
+                _cubit.toggleEditMode();
+              } else if (direction == DismissDirection.endToStart) {
+                return true;
+              }
+
+              return false;
+            },
+            onDismissed: (_) => _cubit.deleteEvent(event),
+          );
+        },
+      );
     } else {
       return Align(
         alignment: Alignment.topCenter,
@@ -304,9 +372,9 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
 
-    GetIt.I<ChatCubit>().loadChat(widget.chatId);
-    GetIt.I<ChatCubit>().subscribeStreams();
-    _unsubscribeEventsStream = GetIt.I<ChatCubit>().unsubscribeStreams;
+    _cubit.loadChat(widget.chatId);
+    _cubit.subscribeStreams();
+    _unsubscribeEventsStream = _cubit.unsubscribeStreams;
   }
 
   @override
@@ -319,9 +387,15 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        final body = _createScaffoldBody(context);
+        final body = _scaffoldBody(
+          events: state.events,
+          categories: state.categories,
+          selectedEventsIds: state.selectedEventsIds,
+          isFavoriteMode: state.isFavoriteMode,
+          isEditMode: state.isEditMode,
+        );
 
-        final backgroundImage = GetIt.I<SettingsCubit>().state.backgroundImage;
+        final backgroundImage = CustomTheme.of(context).backgroundImage;
         final BoxDecoration? boxDecoration;
         if (backgroundImage != null) {
           boxDecoration = BoxDecoration(
@@ -336,9 +410,23 @@ class _ChatPageState extends State<ChatPage> {
 
         return Scaffold(
           appBar: AppBar(
-            leading: _createAppBarLeading(context),
-            title: _createAppBarTitle(context),
-            actions: _createActions(context),
+            leading: _appBarLeading(
+              context: context,
+              selectedEventsIds: state.selectedEventsIds,
+              isEditMode: state.isEditMode,
+            ),
+            title: _appBarTitle(
+              selectedEventsIds: state.selectedEventsIds,
+              isEditMode: state.isEditMode,
+            ),
+            actions: _actions(
+              context: context,
+              selectedEventsIds: state.selectedEventsIds,
+              chats: widget.chats,
+              events: state.events,
+              isFavoriteMode: state.isFavoriteMode,
+              isEditMode: state.isEditMode,
+            ),
           ),
           body: Container(
             decoration: boxDecoration,

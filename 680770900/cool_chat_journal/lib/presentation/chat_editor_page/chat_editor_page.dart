@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../data/models/chat.dart';
-import '../home_page/home_cubit.dart';
+import '../../utils/custom_theme.dart';
 import 'chat_editor_cubit.dart';
 import 'widgets/chat_icons.dart';
 
-class ChatEditorPage extends StatelessWidget {
+class ChatEditorPage extends StatefulWidget {
   final Chat? sourceChat;
 
   const ChatEditorPage({
@@ -15,30 +15,40 @@ class ChatEditorPage extends StatelessWidget {
     this.sourceChat,
   });
 
-  void _saveChat(BuildContext context) {
-    if (GetIt.I<ChatEditorCubit>().state.title.isNotEmpty) {
-      final iconIndex = GetIt.I<ChatEditorCubit>().state.iconIndex;
+  @override
+  State<ChatEditorPage> createState() => _ChatEditorPageState();
+}
+
+class _ChatEditorPageState extends State<ChatEditorPage> {
+  final _cubit = GetIt.I<ChatEditorCubit>();
+
+  void _saveChat({
+    required BuildContext context,
+    required ChatEditorState state,
+  }) {
+    if (state.title.isNotEmpty) {
+      final iconIndex = state.iconIndex;
       final chat = Chat(
-        id: sourceChat?.id,
+        id: widget.sourceChat?.id,
         iconCode: ChatIcons.icons[iconIndex].codePoint,
-        name: GetIt.I<ChatEditorCubit>().state.title,
-        createdTime: sourceChat?.createdTime ?? DateTime.now(),
+        name: state.title,
+        createdTime: widget.sourceChat?.createdTime ?? DateTime.now(),
         isPinned: false,
       );
 
-      if (sourceChat != null) {
-        GetIt.I<HomeCubit>().editChat(chat);
+      if (widget.sourceChat != null) {
+        _cubit.editChat(chat);
       } else {
-        GetIt.I<HomeCubit>().addChat(chat);
+        _cubit.addChat(chat);
       }
     }
 
     Navigator.pop(context);
   }
 
-  Widget _createTitle() {
+  Widget _title() {
     final String titleText;
-    if (sourceChat == null) {
+    if (widget.sourceChat == null) {
       titleText = 'Create a new page';
     } else {
       titleText = 'Edit Page';
@@ -58,10 +68,10 @@ class ChatEditorPage extends StatelessWidget {
     );
   }
 
-  Widget _createTitleField(BuildContext context) {
-    final initialValue = sourceChat?.name;
+  Widget _titleField() {
+    final initialValue = widget.sourceChat?.name;
     if (initialValue != null) {
-      GetIt.I<ChatEditorCubit>().changeTitle(initialValue);
+      _cubit.changeTitle(initialValue);
     }
 
     return Padding(
@@ -74,12 +84,12 @@ class ChatEditorPage extends StatelessWidget {
             borderSide: BorderSide(width: 3),
           ),
         ),
-        onChanged: GetIt.I<ChatEditorCubit>().changeTitle,
+        onChanged: _cubit.changeTitle,
       ),
     );
   }
 
-  Widget _createIconsView() {
+  Widget _iconsView() {
     final icons = ChatIcons.icons;
 
     return Padding(
@@ -90,12 +100,12 @@ class ChatEditorPage extends StatelessWidget {
           return BlocBuilder<ChatEditorCubit, ChatEditorState>(
             buildWhen: (previous, current) =>
                 previous.iconIndex != current.iconIndex,
-            builder: (context, state) {
+            builder: (_, state) {
               return IconView(
                 icon: icons[index],
                 isSelected: index == state.iconIndex,
                 size: 80,
-                onTap: () => GetIt.I<ChatEditorCubit>().selectIcon(index),
+                onTap: () => _cubit.selectIcon(index),
               );
             },
           );
@@ -107,7 +117,7 @@ class ChatEditorPage extends StatelessWidget {
     );
   }
 
-  Widget _createFloatingActionButton(BuildContext context) {
+  Widget _floatingActionButton() {
     return BlocBuilder<ChatEditorCubit, ChatEditorState>(
       buildWhen: (prev, current) =>
           (prev.title.isEmpty && current.title.isNotEmpty) ||
@@ -117,7 +127,10 @@ class ChatEditorPage extends StatelessWidget {
         final icon = state.title.isNotEmpty ? Icons.done : Icons.close;
         return FloatingActionButton(
           child: Icon(icon),
-          onPressed: () => _saveChat(context),
+          onPressed: () => _saveChat(
+            context: context,
+            state: state,
+          ),
         );
       },
     );
@@ -128,12 +141,12 @@ class ChatEditorPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          _createTitle(),
-          _createTitleField(context),
-          Expanded(child: _createIconsView()),
+          _title(),
+          _titleField(),
+          Expanded(child: _iconsView()),
         ],
       ),
-      floatingActionButton: _createFloatingActionButton(context),
+      floatingActionButton: _floatingActionButton(),
     );
   }
 }
@@ -152,7 +165,7 @@ class IconView extends StatelessWidget {
     this.size,
   });
 
-  Widget _createIconView(ColorScheme colorScheme) {
+  Widget _iconView(ColorScheme colorScheme) {
     return Container(
       width: size,
       height: size,
@@ -169,7 +182,7 @@ class IconView extends StatelessWidget {
     );
   }
 
-  Widget _createSelectionIcon(ColorScheme colorScheme) {
+  Widget _selectionIcon(ColorScheme colorScheme) {
     return Container(
       margin: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
@@ -190,13 +203,13 @@ class IconView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = CustomTheme.of(context).themeData.colorScheme;
 
     return GestureDetector(
       onTap: onTap,
       child: Stack(alignment: Alignment.bottomRight, children: [
-        _createIconView(colorScheme),
-        if (isSelected) _createSelectionIcon(colorScheme),
+        _iconView(colorScheme),
+        if (isSelected) _selectionIcon(colorScheme),
       ]),
     );
   }

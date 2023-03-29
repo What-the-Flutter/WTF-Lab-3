@@ -3,14 +3,10 @@ import 'dart:typed_data';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'json_kit.dart';
+import '../../utils/null_wrapper.dart';
+import '../json_kit.dart';
 
 part 'event.g.dart';
-
-class NullWrapper<T> {
-  final T value;
-  const NullWrapper(this.value);
-}
 
 @JsonSerializable()
 class Event {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:hashtagable/widgets/hashtag_text.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../data/models/models.dart';
-import '../../settings_page/settings_cubit.dart';
+import '../../../data/models/theme_enums.dart';
+import '../../../utils/custom_theme.dart';
 import '../chat_cubit.dart';
 
 class EventView extends StatefulWidget {
@@ -27,9 +29,10 @@ class EventView extends StatefulWidget {
 }
 
 class _EventViewState extends State<EventView> {
+  final _cubit = GetIt.I<ChatCubit>();
   final _dateFormat = DateFormat('hh:mm');
 
-  Widget _createEventSubtitle() {
+  Widget _eventSubtitle() {
     return UnconstrainedBox(
       child: Row(
         children: [
@@ -55,7 +58,11 @@ class _EventViewState extends State<EventView> {
     );
   }
 
-  Widget _createEventContent(BuildContext context) {
+  Widget _eventContent({
+    required BuildContext context,
+  }) {
+    final textStyle = CustomTheme.of(context).themeData.textTheme.bodyMedium!;
+
     final Widget eventContent;
     if (widget.event.image != null) {
       eventContent = Padding(
@@ -67,23 +74,28 @@ class _EventViewState extends State<EventView> {
         ),
       );
     } else if (widget.event.content != null) {
-      eventContent = Text(widget.event.content!);
+      eventContent = HashTagText(
+        text: widget.event.content!,
+        basicStyle: textStyle,
+        decoratedStyle: textStyle.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Colors.yellow,
+        ),
+      );
     } else {
-      context.read<ChatCubit>().readImage(widget.event);
+      _cubit.readImage(widget.event);
       eventContent = const Padding(
         padding: EdgeInsets.all(8.0),
         child: CircularProgressIndicator(color: Colors.white),
       );
     }
 
-    final theme = Theme.of(context);
-
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary,
+          color: CustomTheme.of(context).themeData.colorScheme.primary,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         margin: const EdgeInsets.all(4.0),
@@ -110,7 +122,7 @@ class _EventViewState extends State<EventView> {
               ),
             eventContent,
             const SizedBox(height: 10.0),
-            _createEventSubtitle(),
+            _eventSubtitle(),
           ],
         ),
       ),
@@ -120,7 +132,8 @@ class _EventViewState extends State<EventView> {
   @override
   Widget build(BuildContext context) {
     final AlignmentGeometry alignment;
-    if (context.read<SettingsCubit>().state.bubbleAlignmentType.isLeft) {
+
+    if (CustomTheme.of(context).bubbleAlignmentType.isLeft) {
       alignment = Alignment.bottomLeft;
     } else {
       alignment = Alignment.bottomRight;
@@ -128,7 +141,7 @@ class _EventViewState extends State<EventView> {
 
     return Align(
       alignment: alignment,
-      child: _createEventContent(context),
+      child: _eventContent(context: context),
     );
   }
 }

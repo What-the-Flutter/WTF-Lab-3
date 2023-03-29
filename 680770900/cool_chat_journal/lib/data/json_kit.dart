@@ -8,6 +8,6 @@ class BooleanConverter implements JsonConverter<bool, int> {
   @override
   bool fromJson(int json) => json != 0;
 
-  @override
+  @override 
   int toJson(bool object) => object ? 1 : 0;
 }

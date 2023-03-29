@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../data/models/chat.dart';
+import '../../../utils/custom_theme.dart';
 
 class ManagePanelDialog extends StatelessWidget {
   final Chat chat;
@@ -19,12 +20,14 @@ class ManagePanelDialog extends StatelessWidget {
     this.onEditChat,
   });
 
-  void _deleteChat(BuildContext context) async {
+  void _onDeleteChatDialog({
+    required BuildContext context,
+  }) async {
     Navigator.pop(context);
 
     final isDelete = await showModalBottomSheet<bool>(
       context: context,
-      builder: (context) => const DeleteDialog(),
+      builder: (_) => const DeleteDialog(),
     );
 
     if (isDelete == true) {
@@ -32,7 +35,9 @@ class ManagePanelDialog extends StatelessWidget {
     }
   }
 
-  void _showInfo(BuildContext context) {
+  void _onShowInfoDialog({
+    required BuildContext context,
+  }) {
     Navigator.pop(context);
 
     showDialog(
@@ -41,17 +46,23 @@ class ManagePanelDialog extends StatelessWidget {
     );
   }
 
-  void _switchChatPinning(BuildContext context) {
+  void _onSwitchChatPinning({
+    required BuildContext context,
+  }) {
     Navigator.pop(context);
     onSwitchChatPinning?.call();
   }
 
-  void _archiveChat(BuildContext context) {
+  void _onArchiveChat({
+    required BuildContext context,
+  }) {
     Navigator.pop(context);
     onArchiveChat?.call();
   }
 
-  void _editChat(BuildContext context) {
+  void _onEditChat({
+    required BuildContext context,
+  }) {
     Navigator.pop(context);
     onEditChat?.call();
   }
@@ -64,27 +75,27 @@ class ManagePanelDialog extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.info),
           title: const Text('Info'),
-          onTap: () => _showInfo(context),
+          onTap: () => _onShowInfoDialog(context: context),
         ),
         ListTile(
           leading: const Icon(Icons.attach_file),
           title: const Text('Pin/Unpin Page'),
-          onTap: () => _switchChatPinning(context),
+          onTap: () => _onSwitchChatPinning(context: context),
         ),
         ListTile(
           leading: const Icon(Icons.archive),
           title: const Text('Archive Page'),
-          onTap: () => _archiveChat(context),
+          onTap: () => _onArchiveChat(context: context),
         ),
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text('Edit Page'),
-          onTap: () => _editChat(context),
+          onTap: () => _onEditChat(context: context),
         ),
         ListTile(
           leading: const Icon(Icons.delete, color: Colors.red),
           title: const Text('Delete Page'),
-          onTap: () => _deleteChat(context),
+          onTap: () => _onDeleteChatDialog(context: context),
         ),
       ],
     );
@@ -143,7 +154,7 @@ class InfoDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formatter = DateFormat.yMd().add_jm();
-    final theme = Theme.of(context);
+    final theme = CustomTheme.of(context).themeData;
 
     return Center(
       child: Container(

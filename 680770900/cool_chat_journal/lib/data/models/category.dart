@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'json_kit.dart';
+import '../json_kit.dart';
 
 part 'category.g.dart';
 

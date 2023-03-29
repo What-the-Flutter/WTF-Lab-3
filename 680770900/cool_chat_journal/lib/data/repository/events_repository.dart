@@ -1,28 +1,32 @@
 import 'dart:typed_data';
 
-import 'package:get_it/get_it.dart';
 import 'package:hashtagable/functions.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../models/models.dart';
-import '../provider/database_provider.dart';
-import '../provider/storage_provider.dart';
+import '../provider/provider.dart';
 import 'tags_repository.dart';
 
 class EventsRepository {
   final _imageCache = <String, Uint8List>{};
-  final _eventsSubject = BehaviorSubject<List<Event>>();
 
-  EventsRepository();
+  final DatabaseProvider databaseProvider;
+  final StorageProvider storageProvider;
+  final TagsRepository tagsRepository;
+
+  EventsRepository({
+    required this.databaseProvider,
+    required this.storageProvider,
+    required this.tagsRepository,
+  });
 
   Stream<List<Event>> get eventsStream =>
-      GetIt.I<DatabaseProvider>().eventsStream;
+      databaseProvider.eventsStream;
 
   Future<Uint8List> readImage(Event event) async {
     if (_imageCache.keys.contains(event.id)) {
       return _imageCache[event.id]!;
     } else {
-      final image = await GetIt.I<StorageProvider>()
+      final image = await storageProvider
           .download(filename: _generateImagePath(event));
       _imageCache[event.id] = image;
 
@@ -31,13 +35,13 @@ class EventsRepository {
   }
 
   Future<void> addEvent(Event event) async {
-    await GetIt.I<DatabaseProvider>().add(
+    await databaseProvider.add(
       json: event.toJson(),
       tableName: '${DatabaseProvider.eventsRoot}',
     );
 
     if (event.image != null) {
-      await GetIt.I<StorageProvider>().upload(
+      await storageProvider.upload(
         filename: _generateImagePath(event),
         data: event.image!,
       );
@@ -47,14 +51,14 @@ class EventsRepository {
       final tags = extractHashTags(event.content!);
 
       for (final tag in tags) {
-        await GetIt.I<TagsRepository>().addTag(tag);
+        await tagsRepository.addTag(tag);
       }
     }
   }
 
   Future<void> deleteEvent(Event event) async {
     if (event.image != null) {
-      await GetIt.I<StorageProvider>()
+      await storageProvider
           .delete(filename: _generateImagePath(event));
     }
 
@@ -62,11 +66,11 @@ class EventsRepository {
       final tags = extractHashTags(event.content!);
 
       for (final tag in tags) {
-        await GetIt.I<TagsRepository>().deleteLink(tag.substring(1));
+        await tagsRepository.deleteLink(tag.substring(1));
       }
     }
 
-    await GetIt.I<DatabaseProvider>().delete(
+    await databaseProvider.delete(
       id: event.id,
       tableName: _generateEventPath(event),
     );
@@ -74,13 +78,13 @@ class EventsRepository {
 
   Future<void> updateEvent(Event event) async {
     if (event.image != null) {
-      await GetIt.I<StorageProvider>().upload(
+      await storageProvider.upload(
         filename: _generateImagePath(event),
         data: event.image!,
       );
     }
 
-    await GetIt.I<DatabaseProvider>().add(
+    await databaseProvider.add(
       json: event.toJson(),
       tableName: _generateEventPath(event),
     );
@@ -99,7 +103,7 @@ class EventsRepository {
   }
 
   Future<void> deleteEventsFromChat(String chatId) async {
-    final jsonEvents = await GetIt.I<DatabaseProvider>().read<Event>(
+    final jsonEvents = await databaseProvider.read<Event>(
       tableName: DatabaseProvider.eventsRoot,
     );
 

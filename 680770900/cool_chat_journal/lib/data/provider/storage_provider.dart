@@ -2,10 +2,15 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:get_it/get_it.dart';
 
 class StorageProvider {
   final _storageInstance = FirebaseStorage.instance;
+
+  final User user;
+
+  StorageProvider({
+    required this.user,
+  });
 
   Future<void> upload({
     required String filename,
@@ -13,7 +18,7 @@ class StorageProvider {
     String directory = 'images',
   }) async {
     final ref =
-        _storageInstance.ref('${GetIt.I<User>().uid}/$directory/$filename');
+        _storageInstance.ref('${user.uid}/$directory/$filename');
     await ref.putData(data);
   }
 
@@ -22,7 +27,7 @@ class StorageProvider {
     String directory = 'images',
   }) async {
     final ref =
-        _storageInstance.ref('${GetIt.I<User>().uid}/$directory/$filename');
+        _storageInstance.ref('${user.uid}/$directory/$filename');
 
     const oneMegabyte = 1024 * 1024;
     final data = await ref.getData(oneMegabyte);
@@ -36,7 +41,7 @@ class StorageProvider {
   }) async {
     try {
       await _storageInstance
-          .ref('${GetIt.I<User>().uid}/$directory/$filename')
+          .ref('${user.uid}/$directory/$filename')
           .delete();
     } on FirebaseException catch (_) {
       print("Storage hasn't images");
