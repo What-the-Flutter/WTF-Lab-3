@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../models/event.dart';
 import '../../widgets/date_card.dart';
@@ -24,6 +25,7 @@ class SearchingPage extends StatelessWidget {
   })  : _cards = cards,
         super(key: key) {
     context.read<SearchingPageCubit>().init(tags, cards);
+    _focusNode.requestFocus();
   }
 
   Widget _listViewItem(index, cards) {
@@ -87,6 +89,9 @@ class SearchingPage extends StatelessWidget {
               : Colors.grey[850],
         ),
         onChanged: context.read<SearchingPageCubit>().updateInput,
+        onSubmitted: (_) {
+          context.read<SearchingPageCubit>().startLoading();
+        },
       );
 
   AppBar _appBar(BuildContext context, SearchingPageState state) => AppBar(
@@ -122,6 +127,7 @@ class SearchingPage extends StatelessWidget {
         margin: const EdgeInsets.all(16),
         color: Theme.of(context).primaryColorDark.withAlpha(30),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.search,
@@ -183,54 +189,59 @@ class SearchingPage extends StatelessWidget {
       );
 
   Widget _tagCard(BuildContext context, int index, SearchingPageState state) =>
-      Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).highlightColor,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(
-              8,
+      SingleChildScrollView(
+        child: Container(
+          height: 32,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).highlightColor,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(
+                8,
+              ),
             ),
           ),
-        ),
-        child: GestureDetector(
-          child: Row(
-            children: [
-              Container(
-                child: state.selectedTags.elementAt(index)
-                    ? const Padding(
-                        padding: EdgeInsets.only(left: 8.0),
-                        child: Icon(
-                          Icons.check,
-                          color: Colors.black,
-                          size: 16,
-                        ),
-                      )
-                    : null,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  '${tags.elementAt(index)}',
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: Theme.of(context).secondaryHeaderColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+          child: GestureDetector(
+            child: Row(
+              children: [
+                Container(
+                  child: state.selectedTags.elementAt(index)
+                      ? const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Icon(
+                            Icons.check,
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        )
+                      : null,
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    '${tags.elementAt(index)}',
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: Theme.of(context).secondaryHeaderColor,
+                          fontWeight: FontWeight.normal,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              context.read<SearchingPageCubit>().toggleTag(index);
+            },
           ),
-          onTap: () {
-            context.read<SearchingPageCubit>().toggleTag(index);
-          },
         ),
       );
 
   Widget _body(BuildContext context, SearchingPageState state) {
     final foundCards = state.foundedEvents;
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        Container(
+          height: 54,
           child: ListView.builder(
             itemCount: tags.length,
             scrollDirection: Axis.horizontal,
@@ -238,12 +249,8 @@ class SearchingPage extends StatelessWidget {
           ),
         ),
         foundCards.isEmpty
-            ? Expanded(
-                flex: 10,
-                child: _hintMessage(context, state),
-              )
+            ? _hintMessage(context, state)
             : Expanded(
-                flex: 10,
                 child: _listViewBuilder(foundCards),
               ),
       ],
@@ -252,11 +259,18 @@ class SearchingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _focusNode.requestFocus();
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
       builder: (context, state) => Scaffold(
         appBar: _appBar(context, state),
-        body: _body(context, state),
+        body: state.isLoaded
+            ? SingleChildScrollView(
+                child: Center(
+                  child: Lottie.network(
+                    'https://assets1.lottiefiles.com/packages/lf20_rlmdrwm8.json',
+                  ),
+                ),
+              )
+            : _body(context, state),
       ),
     );
   }

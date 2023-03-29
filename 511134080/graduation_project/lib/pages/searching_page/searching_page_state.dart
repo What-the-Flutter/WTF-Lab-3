@@ -5,12 +5,14 @@ class SearchingPageState {
   final List<bool> selectedTags;
   final Set<String> tags;
   final List<Event> events;
+  final bool isLoaded;
 
   const SearchingPageState({
     this.input = '',
     this.selectedTags = const [],
     this.tags = const {},
     this.events = const [],
+    this.isLoaded = false,
   });
 
   List<Event> get foundedEvents {
@@ -39,17 +41,18 @@ class SearchingPageState {
     }
   }
 
-  SearchingPageState copyWith({
-    String? newInput,
-    List<bool>? newTagsSelected,
-    Set<String>? newTags,
-    List<Event>? newEvents,
-  }) {
+  SearchingPageState copyWith(
+      {String? newInput,
+      List<bool>? newTagsSelected,
+      Set<String>? newTags,
+      List<Event>? newEvents,
+      bool? loaded}) {
     return SearchingPageState(
       input: newInput ?? input,
       selectedTags: newTagsSelected ?? selectedTags,
       tags: newTags ?? tags,
       events: newEvents ?? events,
+      isLoaded: loaded ?? isLoaded,
     );
   }
 }
