@@ -7,6 +7,7 @@ import '../../widgets/drawer.dart';
 import '../../widgets/event_card.dart';
 import '../searching_page/searching_page.dart';
 import '../settings/settings_cubit.dart';
+import 'filter_page.dart';
 import 'timeline_page_cubit.dart';
 
 class TimelinePage extends StatelessWidget {
@@ -122,11 +123,18 @@ class TimelinePage extends StatelessWidget {
     }
   }
 
-  Widget _floatingActionButton() => SizedBox(
+  Widget _floatingActionButton(BuildContext context) => SizedBox(
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => FilterPage(),
+              ),
+            );
+          },
           elevation: 16,
           child: const Icon(
             Icons.filter_list,
@@ -142,7 +150,7 @@ class TimelinePage extends StatelessWidget {
           return Scaffold(
             appBar: _appBar(context, state),
             drawer: const CustomDrawer(),
-            floatingActionButton: _floatingActionButton(),
+            floatingActionButton: _floatingActionButton(context),
             body: _body(state),
           );
         },

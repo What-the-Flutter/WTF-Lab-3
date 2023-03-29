@@ -8,10 +8,10 @@ import '../pages/chat/chat_page.dart';
 import '../pages/home/home_cubit.dart';
 import '../pages/managing_page/managing_page.dart';
 
-class EventListTile extends StatelessWidget {
+class ChatListTile extends StatelessWidget {
   final dynamic _chatId;
 
-  const EventListTile({super.key, required chatId}) : _chatId = chatId;
+  const ChatListTile({super.key, required chatId}) : _chatId = chatId;
 
   ListTile _infoOption(BuildContext context, Chat chat) => ListTile(
         leading: const Icon(

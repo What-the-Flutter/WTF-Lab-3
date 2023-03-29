@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
     final sortedChats =
         List<Chat>.from(chats.where((chatModel) => chatModel.isPinned))
           ..addAll(chats.where((chatModel) => !chatModel.isPinned));
-    return EventListTile(
+    return ChatListTile(
       chatId: sortedChats[index].id,
     );
   }
@@ -113,8 +113,8 @@ class _HomePageState extends State<HomePage> {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(
+          onPressed: () {
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ManagingPage(

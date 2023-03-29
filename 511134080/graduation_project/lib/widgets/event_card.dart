@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../constants.dart';
 import '../models/event.dart';
+import '../pages/chat/image_page.dart';
 import '../pages/settings/settings_cubit.dart';
 
 class EventCard extends StatelessWidget {
@@ -74,12 +75,24 @@ class EventCard extends StatelessWidget {
           ),
           Container(
             child: _cardModel.imagePath != null
-                ? Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 240,
-                    ),
-                    child: Image.network(
-                      _cardModel.imagePath!,
+                ? GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ImagePage(
+                            imageSource: _cardModel.imagePath!,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxWidth: 240,
+                      ),
+                      child: Image.network(
+                        _cardModel.imagePath!,
+                      ),
                     ),
                   )
                 : null,

@@ -14,23 +14,23 @@ import '../models/event.dart';
 class DatabaseProvider {
   final DatabaseReference _databaseReference;
   final Reference _storageRef;
-  final User? _user;
 
   DatabaseProvider()
       : _databaseReference = FirebaseDatabase.instance.ref('users'),
-        _user = FirebaseAuth.instance.currentUser,
         _storageRef = FirebaseStorage.instance.ref('users');
 
+  User? get user => FirebaseAuth.instance.currentUser;
+
   Stream<DatabaseEvent> get chatsStream =>
-      _databaseReference.child('${_user!.uid}').child('chats').onValue;
+      _databaseReference.child('${user!.uid}').child('chats').onValue;
 
   Stream<DatabaseEvent> get eventsStream =>
-      _databaseReference.child('${_user!.uid}').child('events').onValue;
+      _databaseReference.child('${user!.uid}').child('events').onValue;
 
   Future<String> uploadImage(File file) async {
-    if (_user != null) {
+    if (user != null) {
       final fileName = '${DateTime.now().toString()}.jpg';
-      final reference = _storageRef.child('${_user!.uid}').child(fileName);
+      final reference = _storageRef.child('${user!.uid}').child(fileName);
       final metadata = SettableMetadata(contentType: 'image/jpeg');
       final uploadTask = reference.putFile(file, metadata);
       final snapshot = await uploadTask.whenComplete(() {});
@@ -42,9 +42,9 @@ class DatabaseProvider {
   }
 
   Future<DataSnapshot> queryAllChats() async {
-    if (_user != null) {
+    if (user != null) {
       final snapshot =
-          await _databaseReference.child('${_user!.uid}').child('chats').get();
+          await _databaseReference.child('${user!.uid}').child('chats').get();
       return snapshot;
     } else {
       throw Exception('Not signed in!!!');
@@ -52,9 +52,9 @@ class DatabaseProvider {
   }
 
   Future<void> insertChat(Map<String, dynamic> chat) async {
-    if (_user != null) {
+    if (user != null) {
       final chatsReference =
-          _databaseReference.child('${_user!.uid}').child('chats');
+          _databaseReference.child('${user!.uid}').child('chats');
       final chatIdRef = chatsReference.push();
       final id = chatIdRef.key;
       chat['id'] = id;
@@ -65,10 +65,9 @@ class DatabaseProvider {
   }
 
   Future<void> updateChat(Map<String, dynamic> chat) async {
-    if (_user != null) {
-      final chatReference = _databaseReference
-          .child('${_user!.uid}')
-          .child('chats/${chat['id']}');
+    if (user != null) {
+      final chatReference =
+          _databaseReference.child('${user!.uid}').child('chats/${chat['id']}');
       await chatReference.update(chat);
     } else {
       throw Exception('Not signed in!!!');
@@ -76,12 +75,12 @@ class DatabaseProvider {
   }
 
   Future<void> deleteChat(String chatId) async {
-    if (_user != null) {
+    if (user != null) {
       final chatReference =
-          _databaseReference.child('${_user!.uid}').child('chats/$chatId');
+          _databaseReference.child('${user!.uid}').child('chats/$chatId');
       await chatReference.remove();
 
-      final pathToEvents = '${_user!.uid}/events';
+      final pathToEvents = '${user!.uid}/events';
       final updates = <String, dynamic>{};
       final events = await queryChatEvents(chatId);
       for (var element in events.children) {
@@ -116,16 +115,16 @@ class DatabaseProvider {
       }
 
       final chatReference =
-          _databaseReference.child('${_user!.uid}').child('chats/$chatId');
+          _databaseReference.child('${user!.uid}').child('chats/$chatId');
 
       await chatReference.update(updates);
     }
   }
 
   Future<DataSnapshot> queryAllEvents() async {
-    if (_user != null) {
+    if (user != null) {
       final snapshot =
-          await _databaseReference.child('${_user!.uid}').child('events').get();
+          await _databaseReference.child('${user!.uid}').child('events').get();
       return snapshot;
     } else {
       throw Exception('Not signed in!!!');
@@ -133,9 +132,9 @@ class DatabaseProvider {
   }
 
   Future<DataSnapshot> queryChatEvents(String chatId) async {
-    if (_user != null) {
+    if (user != null) {
       final snapshot = await _databaseReference
-          .child('${_user!.uid}')
+          .child('${user!.uid}')
           .child('events')
           .orderByChild('chat_id')
           .equalTo(chatId)
@@ -147,9 +146,9 @@ class DatabaseProvider {
   }
 
   Future<void> insertEvent(Event event) async {
-    if (_user != null) {
+    if (user != null) {
       final eventsReference =
-          _databaseReference.child('${_user!.uid}').child('events');
+          _databaseReference.child('${user!.uid}').child('events');
       final eventIdRef = eventsReference.push();
       final id = eventIdRef.key;
       if (event.imagePath != null) {
@@ -175,9 +174,9 @@ class DatabaseProvider {
   }
 
   Future<void> updateEvent(Map<String, dynamic> event) async {
-    if (_user != null) {
+    if (user != null) {
       final eventReference = _databaseReference
-          .child('${_user!.uid}')
+          .child('${user!.uid}')
           .child('events/${event['id']}');
       await eventReference.update(event);
       updateChatLastEvent(event['chat_id']);
@@ -187,9 +186,9 @@ class DatabaseProvider {
   }
 
   Future<void> deleteEvent(Event event) async {
-    if (_user != null) {
+    if (user != null) {
       final eventReference =
-          _databaseReference.child('${_user!.uid}').child('events/${event.id}');
+          _databaseReference.child('${user!.uid}').child('events/${event.id}');
       await eventReference.remove();
       updateChatLastEvent(event.chatId);
     } else {

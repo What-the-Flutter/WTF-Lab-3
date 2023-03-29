@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+final imageHeroTag = 'image_hero_tag';
+
 const icons = [
   Icon(
     Icons.title,
