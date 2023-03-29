@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../widgets/drawer.dart';
 import '../home/home_page.dart';
-import '../timaline/timeline_page.dart';
+import '../timeline/timeline_page.dart';
 import 'main_page_cubit.dart';
 
 class MainPage extends StatelessWidget {

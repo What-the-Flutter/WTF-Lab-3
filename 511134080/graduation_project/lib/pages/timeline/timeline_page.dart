@@ -126,6 +126,40 @@ class TimelinePage extends StatelessWidget {
     }
   }
 
+  Widget _hintMessage(context, TimelinePageState state) => Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColorLight,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              8,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.hintMessages[0],
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+            ),
+            Text(
+              state.hintMessages[1],
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+            ),
+          ],
+        ),
+      );
+
   Widget _floatingActionButton(BuildContext context) => SizedBox(
         width: 64,
         height: 64,
@@ -153,8 +187,10 @@ class TimelinePage extends StatelessWidget {
           return Scaffold(
             appBar: _appBar(context, state),
             drawer: const CustomDrawer(),
+            body: state.events.isNotEmpty
+                ? _body(state)
+                : _hintMessage(context, state),
             floatingActionButton: _floatingActionButton(context),
-            body: _body(state),
           );
         },
       );

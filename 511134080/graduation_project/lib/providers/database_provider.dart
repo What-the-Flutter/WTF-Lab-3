@@ -96,6 +96,7 @@ class DatabaseProvider {
 
   Future<void> updateChatLastEvent(String chatId) async {
     final snapshot = await queryChatEvents(chatId);
+    final updates = <String, dynamic>{};
     if (snapshot.exists) {
       final events = snapshot.children
           .map((event) => Event.fromDatabaseMap(
@@ -103,22 +104,20 @@ class DatabaseProvider {
           .toList()
         ..sort((a, b) => a.time.compareTo(b.time));
 
-      final updates = <String, dynamic>{};
-
       if (events.isNotEmpty) {
         final lastEvent = events.last;
         updates['last_event_title'] = lastEvent.title;
         updates['last_event_time'] = lastEvent.time.toString();
-      } else {
-        updates['last_event_title'] = 'No events. Click here to create one.';
-        updates['last_event_time'] = null;
       }
-
-      final chatReference =
-          _databaseReference.child('${user!.uid}').child('chats/$chatId');
-
-      await chatReference.update(updates);
+    } else {
+      updates['last_event_title'] = 'No events. Click here to create one.';
+      updates['last_event_time'] = null;
     }
+
+    final chatReference =
+        _databaseReference.child('${user!.uid}').child('chats/$chatId');
+
+    await chatReference.update(updates);
   }
 
   Future<DataSnapshot> queryAllEvents() async {
@@ -167,7 +166,7 @@ class DatabaseProvider {
             )
             .toDatabaseMap());
       }
-      updateChatLastEvent(event.chatId);
+      await updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -179,7 +178,7 @@ class DatabaseProvider {
           .child('${user!.uid}')
           .child('events/${event['id']}');
       await eventReference.update(event);
-      updateChatLastEvent(event['chat_id']);
+      await updateChatLastEvent(event['chat_id']);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -190,7 +189,7 @@ class DatabaseProvider {
       final eventReference =
           _databaseReference.child('${user!.uid}').child('events/${event.id}');
       await eventReference.remove();
-      updateChatLastEvent(event.chatId);
+      await updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }

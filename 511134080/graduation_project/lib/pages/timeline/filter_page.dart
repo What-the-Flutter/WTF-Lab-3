@@ -107,28 +107,34 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _pagesTabView(BuildContext context) => Column(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(
-              vertical: 24,
-              horizontal: 40,
+  Widget _pagesTabView(BuildContext context) =>
+      BlocBuilder<TimelinePageCubit, TimelinePageState>(
+        builder: (context, state) => Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(
+                vertical: 24,
+                horizontal: 40,
+              ),
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 32,
+              ),
+              height: 104,
+              color: Colors.grey[
+                  context.read<SettingsCubit>().state.isLight ? 300 : 800],
+              child: state.selectedPages.isEmpty
+                  ? _pagesHintText(context)
+                  : _pagesSelectedText(context, state),
             ),
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 32,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _ignorePagesTile(context, state),
             ),
-            color: Colors
-                .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
-            child: _pagesHintText(context),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: _ignorePagesTile(context),
-          ),
-          _allPages(context),
-        ],
+            _allPages(context, state),
+          ],
+        ),
       );
 
   Text _pagesHintText(BuildContext context) => Text(
@@ -141,7 +147,18 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Widget _ignorePagesTile(BuildContext context) => Padding(
+  Text _pagesSelectedText(BuildContext context, TimelinePageState state) =>
+      Text(
+        '${state.selectedPages.length} page(s) ${state.isIgnoreSelectedPages ? 'ignored' : 'included'}',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Colors.grey[
+                  context.read<SettingsCubit>().state.isLight ? 800 : 300],
+            ),
+      );
+
+  Widget _ignorePagesTile(BuildContext context, TimelinePageState state) =>
+      Padding(
         padding: const EdgeInsets.only(
           bottom: 16,
         ),
@@ -159,44 +176,49 @@ class FilterPage extends StatelessWidget {
                   color: Colors.grey[600],
                 ),
           ),
-          trailing: _pagesSwitch(context),
+          trailing: _pagesSwitch(context, state),
         ),
       );
 
-  Switch _pagesSwitch(BuildContext context) => Switch(
-        value: true,
-        onChanged: (_) {},
+  Switch _pagesSwitch(BuildContext context, TimelinePageState state) => Switch(
+        value: state.isIgnoreSelectedPages,
+        onChanged: context.read<TimelinePageCubit>().togglePagesSwitch,
         activeColor: Theme.of(context).primaryColorLight,
       );
 
-  Widget _allPages(BuildContext context) =>
-      BlocBuilder<TimelinePageCubit, TimelinePageState>(
-        builder: (context, state) {
-          return Wrap(
-            spacing: 16,
-            runSpacing: 24,
-            children: [
-              for (final chat in state.allChats)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).highlightColor,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(
-                        16,
-                      ),
+  Widget _allPages(BuildContext context, TimelinePageState state) => Wrap(
+        spacing: 16,
+        runSpacing: 24,
+        children: [
+          for (final chat in state.allChats)
+            GestureDetector(
+              onTap: () {
+                context.read<TimelinePageCubit>().toggleSelectedChat(chat.id);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).highlightColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      16,
                     ),
                   ),
-                  child: Text(
-                    chat.title,
-                  ),
-                )
-            ],
-          );
-        },
+                  border: state.selectedPages.contains(chat.id)
+                      ? Border.all(
+                          color: Colors.deepPurple,
+                        )
+                      : null,
+                ),
+                child: Text(
+                  chat.title,
+                ),
+              ),
+            )
+        ],
       );
 
   Widget _tagsTabView(BuildContext context) => Column(
@@ -231,32 +253,34 @@ class FilterPage extends StatelessWidget {
 
   Widget _allTags(BuildContext context) =>
       BlocBuilder<TimelinePageCubit, TimelinePageState>(
-        builder: (context, state) {
-          return Wrap(
-            spacing: 16,
-            runSpacing: 24,
-            children: [
-              for (final tag in state.tags)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).highlightColor,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(
-                        16,
+        builder: (context, state) => state.tags.isNotEmpty
+            ? Wrap(
+                spacing: 16,
+                runSpacing: 24,
+                children: [
+                  for (final tag in state.tags)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                    ),
-                  ),
-                  child: Text(
-                    tag,
-                  ),
-                )
-            ],
-          );
-        },
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).highlightColor,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(
+                            16,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        tag,
+                      ),
+                    )
+                ],
+              )
+            : Container(
+                child: Text(''),
+              ),
       );
 
   Widget _labelsTabView(BuildContext context) => Column(

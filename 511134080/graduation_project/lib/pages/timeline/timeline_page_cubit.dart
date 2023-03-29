@@ -67,4 +67,30 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
       ),
     );
   }
+
+  void toggleSelectedChat(String chatId) {
+    final List<String> pagesId;
+    if (state.selectedPages.contains(chatId)) {
+      pagesId = List<String>.from(state.selectedPages)
+        ..remove(
+          chatId,
+        );
+    } else {
+      pagesId = List<String>.from(state.selectedPages)
+        ..add(
+          chatId,
+        );
+    }
+    emit(
+      state.copyWith(
+        changedSelectedPages: pagesId,
+      ),
+    );
+  }
+
+  void togglePagesSwitch(bool value) => emit(
+        state.copyWith(
+          ignoreSelectedPages: value,
+        ),
+      );
 }

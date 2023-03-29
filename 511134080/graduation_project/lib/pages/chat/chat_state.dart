@@ -10,7 +10,7 @@ class ChatState {
   final bool isChoosingImageOptions;
   final bool isAddingTag;
   final Set<String> tags;
-  late final List<String> _hintMessages;
+  final List<String> _hintMessages;
   final List<Event> chatEvents;
 
   ChatState({
@@ -29,14 +29,12 @@ class ChatState {
     this.chatEvents = const [],
     this.isAddingTag = false,
     this.tags = const {},
-  }) {
-    _hintMessages = [
-      'This is the page where you can track everything about "${chat.title}"!\n',
-      'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
-      'This is the page where you can track everything about "${chat.title}"!\n',
-      'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
-    ];
-  }
+  }) : _hintMessages = [
+          'This is the page where you can track everything about "${chat.title}"!\n',
+          'You don\'t seem to have any bookmarked events yet. You can bookmark an event by single tapping the event',
+          'This is the page where you can track everything about "${chat.title}"!\n',
+          'Add your first event to "${chat.title}" page by entering some text in the text box below and hitting the send button. Long tap the send button to align the event in the opposite direction. Tap on the bookmark icon on the top right corner to show the bookmarked events only.',
+        ];
 
   List<Event> get events => chat.isShowingFavourites
       ? List<Event>.from(

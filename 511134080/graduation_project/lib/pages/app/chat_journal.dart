@@ -14,7 +14,7 @@ import '../main/main_page_cubit.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
-import '../timaline/timeline_page_cubit.dart';
+import '../timeline/timeline_page_cubit.dart';
 
 class ChatJournal extends StatefulWidget {
   const ChatJournal();
