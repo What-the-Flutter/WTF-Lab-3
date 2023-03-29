@@ -131,7 +131,7 @@ class TimelinePage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => FilterPage(),
+                builder: (_) => const FilterPage(),
               ),
             );
           },

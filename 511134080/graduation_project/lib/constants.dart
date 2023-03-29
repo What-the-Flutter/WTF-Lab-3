@@ -165,7 +165,7 @@ const icons = [
   ),
 ];
 
-const categoryIcons = [
+const allCategoryIcons = [
   Icons.bubble_chart,
   Icons.cancel,
   Icons.local_movies,
@@ -176,9 +176,27 @@ const categoryIcons = [
   Icons.local_laundry_service,
 ];
 
-const categoryTitle = [
+const allCategoryTitles = [
   '',
   'Cancel',
+  'Movie',
+  'FastFood',
+  'Workout',
+  'Running',
+  'Sports',
+  'Laundry',
+];
+
+const categoryIcons = [
+  Icons.local_movies,
+  Icons.fastfood,
+  Icons.fitness_center,
+  Icons.directions_run,
+  Icons.sports_basketball_rounded,
+  Icons.local_laundry_service,
+];
+
+const categoryTitles = [
   'Movie',
   'FastFood',
   'Workout',

@@ -28,7 +28,7 @@ class EventCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
-                      categoryIcons[_cardModel.categoryIndex],
+                      allCategoryIcons[_cardModel.categoryIndex],
                       size: 32,
                       color: Theme.of(context).primaryColorLight,
                     ),
@@ -36,7 +36,7 @@ class EventCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      categoryTitle[_cardModel.categoryIndex],
+                      allCategoryTitles[_cardModel.categoryIndex],
                       style: Theme.of(context).textTheme.labelLarge!.copyWith(
                             color: Theme.of(context).secondaryHeaderColor,
                           ),
@@ -187,7 +187,7 @@ class EventCard extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Icon(
-                                    categoryIcons[_cardModel.categoryIndex],
+                                    allCategoryIcons[_cardModel.categoryIndex],
                                     size: 32,
                                     color: Theme.of(context).primaryColorLight,
                                   ),
@@ -195,7 +195,7 @@ class EventCard extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    categoryTitle[_cardModel.categoryIndex],
+                                    allCategoryTitles[_cardModel.categoryIndex],
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w500,

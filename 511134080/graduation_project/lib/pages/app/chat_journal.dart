@@ -77,6 +77,7 @@ class _ChatJournalState extends State<ChatJournal> {
         BlocProvider(
           create: (_) => TimelinePageCubit(
             eventsRepository: eventRepository,
+            chatsRepository: chatRepository,
           ),
         ),
       ],

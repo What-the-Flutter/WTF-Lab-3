@@ -352,7 +352,7 @@ class _ChatPageState extends State<ChatPage> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: ListView.builder(
-            itemCount: categoryIcons.length - 1,
+            itemCount: allCategoryIcons.length - 1,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return SingleChildScrollView(
@@ -373,7 +373,7 @@ class _ChatPageState extends State<ChatPage> {
                               : Theme.of(context).hoverColor,
                         ),
                         child: Icon(
-                          categoryIcons[index + 1],
+                          allCategoryIcons[index + 1],
                           size: 32,
                           color: index == 0 ? Colors.red : Colors.white,
                         ),
@@ -384,7 +384,7 @@ class _ChatPageState extends State<ChatPage> {
                       },
                     ),
                     Text(
-                      categoryTitle[index + 1],
+                      allCategoryTitles[index + 1],
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Theme.of(context).secondaryHeaderColor,
                             fontWeight: FontWeight.normal,
@@ -536,7 +536,7 @@ class _ChatPageState extends State<ChatPage> {
                               );
                         },
                         icon: Icon(
-                          categoryIcons[state.categoryIconIndex],
+                          allCategoryIcons[state.categoryIconIndex],
                           color: Theme.of(context).primaryColorDark,
                         ),
                       ),

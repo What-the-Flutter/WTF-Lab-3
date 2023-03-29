@@ -225,7 +225,6 @@ class SearchingPage extends StatelessWidget {
 
   Widget _body(BuildContext context, SearchingPageState state) {
     final foundCards = state.foundedEvents;
-    print(foundCards.length);
     return Column(
       children: [
         Expanded(
