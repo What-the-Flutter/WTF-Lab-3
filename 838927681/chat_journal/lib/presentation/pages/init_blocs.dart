@@ -19,6 +19,7 @@ import 'main_page/app_cubit.dart';
 import 'main_page/app_state.dart';
 import 'settings_page/settings_cubit.dart';
 import 'settings_page/settings_state.dart';
+import 'statistics/statistics_cubit.dart';
 import 'timeline_page/timeline_cubit.dart';
 
 class InitBlocs extends StatelessWidget {
@@ -101,6 +102,11 @@ class InitBlocs extends StatelessWidget {
             create: (context) => FilterCubit(
               chatRepository: context.read<ChatRepository>(),
               eventRepository: context.read<EventRepository>(),
+            ),
+          ),
+          BlocProvider<StatisticsCubit>(
+            create: (context) => StatisticsCubit(
+              context.read<EventRepository>(),
             ),
           ),
         ],

@@ -12,7 +12,6 @@ import 'create_chat_state.dart';
 class CreateChatPage extends StatelessWidget {
   final _controller = TextEditingController();
   final Chat? chat;
-  late final CreateChatCubit createChatCubit;
 
   CreateChatPage({
     this.chat,
@@ -33,7 +32,7 @@ class CreateChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    createChatCubit = BlocProvider.of<CreateChatCubit>(context);
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
     return BlocBuilder<CreateChatCubit, CreateChatState>(
       builder: (context, state) {
         if (chat != null && !state.isChanged) {
@@ -103,6 +102,7 @@ class CreateChatPage extends StatelessWidget {
   }
 
   Widget _textField(CreateChatState state, BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
     if (!state.isChanged && !state.isCreatingMode && chat != null) {
       _controller.text = chat!.name;
     }
@@ -121,6 +121,7 @@ class CreateChatPage extends StatelessWidget {
   }
 
   Widget _iconGrid(CreateChatState state, BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
     final selectedIndex = state.selectedIconIndex;
     return Flexible(
       child: GridView.builder(
@@ -184,6 +185,7 @@ class CreateChatPage extends StatelessWidget {
   }
 
   Widget _floatingActionButton(CreateChatState state, BuildContext context) {
+    final createChatCubit = BlocProvider.of<CreateChatCubit>(context);
     final isDone = _controller.text.isNotEmpty && state.isChanged;
     return AnimatedPositioned(
       child: FloatingActionButton(

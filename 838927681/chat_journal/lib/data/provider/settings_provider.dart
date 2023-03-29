@@ -12,6 +12,8 @@ abstract class SettingsKeys {
 }
 
 class SettingsProvider extends ApiSettingsProvider {
+  const SettingsProvider() : super();
+
   @override
   Future<bool> get theme async {
     final prefs = await SharedPreferences.getInstance();

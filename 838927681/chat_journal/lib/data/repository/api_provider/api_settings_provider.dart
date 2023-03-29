@@ -1,4 +1,5 @@
 abstract class ApiSettingsProvider {
+  const ApiSettingsProvider();
   Future<void> setTheme(bool isLight);
 
   Future<void> setIsLocked(bool value);
