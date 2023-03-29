@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:hashtagable/functions.dart';
 
+import '../../constants.dart';
 import '../../models/chat.dart';
 import '../../models/event.dart';
 import '../../repositories/chat_repository.dart';
@@ -110,6 +111,26 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
     emit(
       state.copyWith(
         changesSelectedTags: tags,
+      ),
+    );
+  }
+
+  void toggleSelectedCategory(String category) {
+    final List<String> categories;
+    if (state.selectedCategories.contains(category)) {
+      categories = List<String>.from(state.selectedCategories)
+        ..remove(
+          category,
+        );
+    } else {
+      categories = List<String>.from(state.selectedCategories)
+        ..add(
+          category,
+        );
+    }
+    emit(
+      state.copyWith(
+        changedSelectedCategories: categories,
       ),
     );
   }

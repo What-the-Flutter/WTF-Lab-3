@@ -33,7 +33,10 @@ class EventCard extends StatelessWidget {
                     child: Icon(
                       allCategoryIcons[_cardModel.categoryIndex],
                       size: 32,
-                      color: Theme.of(context).primaryColorLight,
+                      color: Colors.grey[
+                          context.read<SettingsCubit>().state.isLight
+                              ? 200
+                              : 400],
                     ),
                   ),
                   Padding(
@@ -41,7 +44,10 @@ class EventCard extends StatelessWidget {
                     child: Text(
                       allCategoryTitles[_cardModel.categoryIndex],
                       style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: Theme.of(context).secondaryHeaderColor,
+                            color: Colors.grey[
+                                context.read<SettingsCubit>().state.isLight
+                                    ? 200
+                                    : 400],
                           ),
                     ),
                   ),
@@ -53,19 +59,6 @@ class EventCard extends StatelessWidget {
   Widget _eventCardContent(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            child: _shouldShowChatTitle
-                ? Text(
-                    _cardModel.chatTitle,
-                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color: Colors.grey[
-                              context.read<SettingsCubit>().state.isLight
-                                  ? 600
-                                  : 400],
-                        ),
-                  )
-                : null,
-          ),
           Container(
             constraints: const BoxConstraints(
               maxWidth: 240,
@@ -80,7 +73,9 @@ class EventCard extends StatelessWidget {
                             ),
                     decoratedStyle:
                         Theme.of(context).textTheme.labelMedium!.copyWith(
-                              color: Theme.of(context).primaryColorDark,
+                              color: context.read<SettingsCubit>().state.isLight
+                                  ? Theme.of(context).primaryColorDark
+                                  : Colors.black,
                               fontWeight: FontWeight.normal,
                             ),
                   )
@@ -182,46 +177,25 @@ class EventCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    /*Container(
-                      child: chatTitle == null
-                          ? null
-                          : Text(
-                              chatTitle!,
+                    Container(
+                      child: _shouldShowChatTitle
+                          ? Text(
+                              _cardModel.chatTitle,
                               style: Theme.of(context)
                                   .textTheme
                                   .labelMedium!
                                   .copyWith(
-                                    color: Colors.grey[800],
-                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey[context
+                                            .read<SettingsCubit>()
+                                            .state
+                                            .isLight
+                                        ? 600
+                                        : 400],
                                   ),
-                            ),
-                    ),*/
-                    Container(
-                      child: _cardModel.categoryIndex != 0
-                          ? Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    allCategoryIcons[_cardModel.categoryIndex],
-                                    size: 32,
-                                    color: Theme.of(context).primaryColorLight,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    allCategoryTitles[_cardModel.categoryIndex],
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             )
                           : null,
                     ),
+                    _category(context),
                     _eventCardContent(context),
                   ],
                 ),

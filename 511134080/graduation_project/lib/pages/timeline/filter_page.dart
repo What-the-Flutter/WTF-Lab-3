@@ -101,7 +101,7 @@ class FilterPage extends StatelessWidget {
           children: [
             _pagesTabView(context, state),
             _tagsTabView(context, state),
-            _labelsTabView(context, state),
+            _categoriesTabView(context, state),
             _otherTabView(context),
           ],
         ),
@@ -307,7 +307,7 @@ class FilterPage extends StatelessWidget {
         ],
       );
 
-  Widget _labelsTabView(BuildContext context, TimelinePageState state) =>
+  Widget _categoriesTabView(BuildContext context, TimelinePageState state) =>
       Column(
         children: [
           Container(
@@ -323,13 +323,15 @@ class FilterPage extends StatelessWidget {
             height: 104,
             color: Colors
                 .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
-            child: _labelsHintText(context),
+            child: state.selectedCategories.isEmpty
+                ? _categoriesHintText(context)
+                : _categorySelectedText(context, state),
           ),
-          _allLabels(context, state),
+          _allCategories(context, state),
         ],
       );
 
-  Text _labelsHintText(BuildContext context) => Text(
+  Text _categoriesHintText(BuildContext context) => Text(
         'Tap to select a label you want to include to the '
         'filter. All labels are included by default.',
         textAlign: TextAlign.center,
@@ -339,48 +341,72 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Widget _allLabels(BuildContext context, TimelinePageState state) => Wrap(
+  Text _categorySelectedText(BuildContext context, TimelinePageState state) =>
+      Text(
+        '${state.selectedCategories.length} label(s) selected',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Colors.grey[
+                  context.read<SettingsCubit>().state.isLight ? 800 : 300],
+            ),
+      );
+
+  Widget _allCategories(BuildContext context, TimelinePageState state) => Wrap(
         spacing: 16,
         runSpacing: 24,
         children: [
-          for (final categoryIcon in categoryIcons)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).highlightColor,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(
-                    16,
-                  ),
+          for (final categoryTitle in categoryTitles)
+            GestureDetector(
+              onTap: () {
+                context
+                    .read<TimelinePageCubit>()
+                    .toggleSelectedCategory(categoryTitle);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    categoryIcon,
-                    color:
-                        Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    categoryTitles.elementAt(
-                      categoryIcons.indexOf(
-                        categoryIcon,
-                      ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).highlightColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      16,
                     ),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          color: Theme.of(context)
-                              .secondaryHeaderColor
-                              .withOpacity(0.7),
-                        ),
                   ),
-                ],
+                  border: state.selectedCategories.contains(categoryTitle)
+                      ? Border.all(
+                          color: Colors.deepPurple,
+                          width: 2,
+                        )
+                      : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      categoryIcons.elementAt(
+                        categoryTitles.indexOf(
+                          categoryTitle,
+                        ),
+                      ),
+                      color: Theme.of(context)
+                          .secondaryHeaderColor
+                          .withOpacity(0.7),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      categoryTitle,
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context)
+                                .secondaryHeaderColor
+                                .withOpacity(0.7),
+                          ),
+                    ),
+                  ],
+                ),
               ),
             )
         ],
