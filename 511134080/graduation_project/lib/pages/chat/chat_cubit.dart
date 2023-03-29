@@ -84,6 +84,7 @@ class ChatCubit extends Cubit<ChatState> {
           time: DateTime.now(),
           id: '',
           chatId: state.chat.id,
+          chatTitle: state.chat.title,
           imagePath: pickedFile.path,
         );
         addEvent(event);
@@ -146,6 +147,7 @@ class ChatCubit extends Cubit<ChatState> {
       if (title.isNotEmpty || state.categoryIconIndex != 0) {
         final event = Event(
           chatId: state.chat.id,
+          chatTitle: state.chat.title,
           title: title,
           time: DateTime.now(),
           id: '',
@@ -335,6 +337,7 @@ class ChatCubit extends Cubit<ChatState> {
       await eventsRepository.updateEvent(
         event.copyWith(
           newChatId: destinationChat.id,
+          newChatTitle: destinationChat.title,
           isSelected: false,
         ),
       );

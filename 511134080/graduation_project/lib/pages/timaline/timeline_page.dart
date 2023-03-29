@@ -93,6 +93,7 @@ class TimelinePage extends StatelessWidget {
           children: [
             DateCard(date: current.time),
             EventCard(
+              shouldShowChatTitle: true,
               cardModel: current,
               key: UniqueKey(),
             )
@@ -109,6 +110,7 @@ class TimelinePage extends StatelessWidget {
             children: [
               DateCard(date: current.time),
               EventCard(
+                shouldShowChatTitle: true,
                 cardModel: current,
                 key: UniqueKey(),
               ),
@@ -117,6 +119,7 @@ class TimelinePage extends StatelessWidget {
         );
       }
       return EventCard(
+        shouldShowChatTitle: true,
         cardModel: current,
         key: UniqueKey(),
       );

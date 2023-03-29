@@ -36,6 +36,7 @@ class SearchingPage extends StatelessWidget {
           children: [
             DateCard(date: current.time),
             EventCard(
+              shouldShowChatTitle: true,
               cardModel: current,
               key: UniqueKey(),
             )
@@ -52,6 +53,7 @@ class SearchingPage extends StatelessWidget {
             children: [
               DateCard(date: current.time),
               EventCard(
+                shouldShowChatTitle: true,
                 cardModel: current,
                 key: UniqueKey(),
               ),
@@ -60,6 +62,7 @@ class SearchingPage extends StatelessWidget {
         );
       }
       return EventCard(
+        shouldShowChatTitle: true,
         cardModel: current,
         key: UniqueKey(),
       );

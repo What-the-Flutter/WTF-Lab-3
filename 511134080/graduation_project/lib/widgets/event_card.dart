@@ -12,13 +12,16 @@ class EventCard extends StatelessWidget {
   final Event _cardModel;
   final void Function()? onTap;
   final void Function()? onLongPress;
+  final bool _shouldShowChatTitle;
 
   const EventCard({
     required Event cardModel,
+    bool shouldShowChatTitle = false,
     this.onTap,
     this.onLongPress,
     required Key key,
-  })  : _cardModel = cardModel,
+  })  : _shouldShowChatTitle = shouldShowChatTitle,
+        _cardModel = cardModel,
         super(key: key);
 
   Container _category(BuildContext context) => Container(
@@ -50,6 +53,19 @@ class EventCard extends StatelessWidget {
   Widget _eventCardContent(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+            child: _shouldShowChatTitle
+                ? Text(
+                    _cardModel.chatTitle,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: Colors.grey[
+                              context.read<SettingsCubit>().state.isLight
+                                  ? 600
+                                  : 400],
+                        ),
+                  )
+                : null,
+          ),
           Container(
             constraints: const BoxConstraints(
               maxWidth: 240,
