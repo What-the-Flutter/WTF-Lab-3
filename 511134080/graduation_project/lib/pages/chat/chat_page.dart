@@ -45,6 +45,13 @@ class _ChatPageState extends State<ChatPage> {
     context.read<ChatCubit>().init(chat);
   }
 
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _textFieldController.dispose();
+    super.dispose();
+  }
+
   void _clearTextInput() {
     _textFieldController.clear();
   }

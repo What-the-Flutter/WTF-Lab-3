@@ -145,7 +145,7 @@ class TimelinePage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).secondaryHeaderColor,
+                    color: Colors.white,
                   ),
             ),
             Text(
@@ -153,7 +153,7 @@ class TimelinePage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.w400,
-                    color: Theme.of(context).secondaryHeaderColor,
+                    color: Colors.white,
                   ),
             ),
           ],
@@ -168,7 +168,9 @@ class TimelinePage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const FilterPage(),
+                builder: (context) => FilterPage(
+                  context: context,
+                ),
               ),
             );
           },

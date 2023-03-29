@@ -10,6 +10,7 @@ class TimelinePageState {
   final List<String> _hintMessages;
   final List<String> selectedTags;
   final List<String> selectedCategories;
+  final String input;
 
   TimelinePageState({
     List<Event> events = const [],
@@ -20,6 +21,7 @@ class TimelinePageState {
     this.isIgnoreSelectedPages = true,
     this.selectedTags = const [],
     this.selectedCategories = const [],
+    this.input = '',
   })  : _events = events,
         _chats = chats,
         _hintMessages = [
@@ -55,6 +57,7 @@ class TimelinePageState {
     bool? ignoreSelectedPages,
     List<String>? changesSelectedTags,
     List<String>? changedSelectedCategories,
+    String? changedInput,
   }) =>
       TimelinePageState(
         events: newEvents ?? _events,
@@ -65,6 +68,7 @@ class TimelinePageState {
         isIgnoreSelectedPages: ignoreSelectedPages ?? isIgnoreSelectedPages,
         selectedTags: changesSelectedTags ?? selectedTags,
         selectedCategories: changedSelectedCategories ?? selectedCategories,
+        input: changedInput ?? input,
       );
 
   List<Event> _filteredEvents() {
@@ -105,6 +109,15 @@ class TimelinePageState {
         ..removeWhere(
           (event) => !selectedCategories.contains(
             allCategoryTitles[event.categoryIndex],
+          ),
+        );
+    }
+
+    if (input != '') {
+      allEvents = List<Event>.from(allEvents)
+        ..removeWhere(
+          (event) => !event.title.contains(
+            input,
           ),
         );
     }

@@ -6,7 +6,14 @@ import '../settings/settings_cubit.dart';
 import 'timeline_page_cubit.dart';
 
 class FilterPage extends StatelessWidget {
-  const FilterPage({Key? key}) : super(key: key);
+  final TextEditingController _textFieldController;
+  FilterPage({
+    required BuildContext context,
+    Key? key,
+  })  : _textFieldController = TextEditingController(),
+        super(key: key) {
+    context.read<TimelinePageCubit>().setInput(_textFieldController);
+  }
 
   AppBar _appBar(BuildContext context) => AppBar(
         centerTitle: true,
@@ -20,22 +27,43 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _search(BuildContext context) => Expanded(
+  Widget _search(BuildContext context, TimelinePageState state) => Expanded(
         flex: 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16.0,
           ),
-          child: _textField(context),
+          child: _textField(context, state),
         ),
       );
 
-  TextField _textField(BuildContext context) => TextField(
+  Widget _textField(BuildContext context, TimelinePageState state) => TextField(
+        controller: _textFieldController,
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
         decoration: InputDecoration(
+          isDense: true,
+          labelStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+              ),
           prefixIcon: Icon(
             Icons.search,
             color: Theme.of(context).primaryColor,
           ),
+          suffixIcon: state.input != ''
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    context
+                        .read<TimelinePageCubit>()
+                        .changeInput('', _textFieldController);
+                  },
+                )
+              : null,
           hintText: 'Search Query',
           hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                 color: Colors.grey[
@@ -45,25 +73,35 @@ class FilterPage extends StatelessWidget {
           fillColor: Colors
               .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
         ),
+        onChanged: (value) {
+          context
+              .read<TimelinePageCubit>()
+              .changeInput(value, _textFieldController);
+        },
       );
 
   Widget _tabBar(BuildContext context) => Expanded(
         flex: 1,
-        child: TabBar(
-          indicatorColor: Colors.deepPurple,
-          labelColor: Colors.deepPurple,
-          isScrollable: true,
-          indicatorSize: TabBarIndicatorSize.tab,
-          labelStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontWeight: FontWeight.w400,
-              ),
-          padding: const EdgeInsets.all(8),
-          tabs: [
-            _pagesTab(),
-            _tagsTab(),
-            _labelsTag(),
-            _othersTag(),
-          ],
+        child: SingleChildScrollView(
+          child: Container(
+            height: 64,
+            child: TabBar(
+              indicatorColor: Colors.deepPurple,
+              labelColor: Colors.deepPurple,
+              isScrollable: true,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
+              padding: const EdgeInsets.all(8),
+              tabs: [
+                _pagesTab(),
+                _tagsTab(),
+                _labelsTag(),
+                _othersTag(),
+              ],
+            ),
+          ),
         ),
       );
 
@@ -120,8 +158,9 @@ class FilterPage extends StatelessWidget {
               horizontal: 32,
             ),
             height: 104,
-            color: Colors
-                .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
+            color: context.read<SettingsCubit>().state.isLight
+                ? Colors.grey[300]
+                : Colors.deepPurple[300],
             child: state.selectedPages.isEmpty
                 ? _pagesHintText(context)
                 : _pagesSelectedText(context, state),
@@ -237,8 +276,9 @@ class FilterPage extends StatelessWidget {
               horizontal: 32,
             ),
             height: 104,
-            color: Colors
-                .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
+            color: context.read<SettingsCubit>().state.isLight
+                ? Colors.grey[300]
+                : Colors.deepPurple[300],
             child: state.selectedTags.isEmpty
                 ? _tagsHintText(context)
                 : _tagsSelectedText(context, state),
@@ -321,8 +361,9 @@ class FilterPage extends StatelessWidget {
               horizontal: 32,
             ),
             height: 104,
-            color: Colors
-                .grey[context.read<SettingsCubit>().state.isLight ? 300 : 800],
+            color: context.read<SettingsCubit>().state.isLight
+                ? Colors.grey[300]
+                : Colors.deepPurple[300],
             child: state.selectedCategories.isEmpty
                 ? _categoriesHintText(context)
                 : _categorySelectedText(context, state),
@@ -415,7 +456,6 @@ class FilterPage extends StatelessWidget {
   Widget _otherTabView(BuildContext context) => Column(
         children: [
           _dateTile(context),
-          _todoTile(context),
         ],
       );
 
@@ -440,31 +480,6 @@ class FilterPage extends StatelessWidget {
                   color: Colors.grey[600],
                 ),
           ),
-        ),
-      );
-
-  Widget _todoTile(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: ListTile(
-          iconColor: Colors
-              .grey[context.read<SettingsCubit>().state.isLight ? 600 : 300],
-          leading: const Icon(
-            Icons.check,
-          ),
-          title: Text(
-            'Show Todo items only',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Colors.grey[
-                      context.read<SettingsCubit>().state.isLight ? 800 : 400],
-                ),
-          ),
-          subtitle: Text(
-            'If enabled, displays events that are only checked',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-          trailing: _todoSwitch(context),
         ),
       );
 
@@ -498,7 +513,7 @@ class FilterPage extends StatelessWidget {
             length: 4,
             child: Column(
               children: [
-                _search(context),
+                _search(context, state),
                 _tabBar(context),
                 _tabBarView(context, state),
               ],

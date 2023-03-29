@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hashtagable/functions.dart';
 
 import '../../constants.dart';
@@ -59,6 +60,16 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
         newEvents: events,
       ),
     );
+  }
+
+  void setInput(TextEditingController controller) {
+    controller.text = state.input;
+    final selection = TextSelection.fromPosition(
+      TextPosition(
+        offset: controller.text.length,
+      ),
+    );
+    controller.selection = selection;
   }
 
   void toggleFavouriteMode() {
@@ -131,6 +142,21 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
     emit(
       state.copyWith(
         changedSelectedCategories: categories,
+      ),
+    );
+  }
+
+  void changeInput(String value, TextEditingController controller) {
+    controller.text = value;
+    final selection = TextSelection.fromPosition(
+      TextPosition(
+        offset: controller.text.length,
+      ),
+    );
+    controller.selection = selection;
+    emit(
+      state.copyWith(
+        changedInput: value,
       ),
     );
   }
