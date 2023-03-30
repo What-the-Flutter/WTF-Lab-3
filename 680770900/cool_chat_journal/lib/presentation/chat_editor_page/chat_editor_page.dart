@@ -24,14 +24,14 @@ class _ChatEditorPageState extends State<ChatEditorPage> {
 
   void _saveChat({
     required BuildContext context,
-    required ChatEditorState state,
+    required String title,
+    required int iconIndex,
   }) {
-    if (state.title.isNotEmpty) {
-      final iconIndex = state.iconIndex;
+    if (title.isNotEmpty) {
       final chat = Chat(
         id: widget.sourceChat?.id,
         iconCode: ChatIcons.icons[iconIndex].codePoint,
-        name: state.title,
+        name: title,
         createdTime: widget.sourceChat?.createdTime ?? DateTime.now(),
         isPinned: false,
       );
@@ -91,27 +91,20 @@ class _ChatEditorPageState extends State<ChatEditorPage> {
     );
   }
 
-  Widget _iconsView() {
+  Widget _iconsView({
+    required int iconIndex,
+  }) {
     final icons = ChatIcons.icons;
-
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: GridView.builder(
         itemCount: icons.length,
-        itemBuilder: (_, index) {
-          return BlocBuilder<ChatEditorCubit, ChatEditorState>(
-            buildWhen: (previous, current) =>
-                previous.iconIndex != current.iconIndex,
-            builder: (_, state) {
-              return IconView(
-                icon: icons[index],
-                isSelected: index == state.iconIndex,
-                size: 80,
-                onTap: () => _cubit.selectIcon(index),
-              );
-            },
-          );
-        },
+        itemBuilder: (_, index) => IconView(
+          icon: icons[index],
+          isSelected: index == iconIndex,
+          size: 80,
+          onTap: () => _cubit.selectIcon(index),
+        ),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
         ),
@@ -119,36 +112,41 @@ class _ChatEditorPageState extends State<ChatEditorPage> {
     );
   }
 
-  Widget _floatingActionButton() {
-    return BlocBuilder<ChatEditorCubit, ChatEditorState>(
-      buildWhen: (prev, current) =>
-          (prev.title.isEmpty && current.title.isNotEmpty) ||
-          (prev.title.isNotEmpty && current.title.isEmpty) ||
-          (prev.title.isNotEmpty && prev.iconIndex != current.iconIndex),
-      builder: (context, state) {
-        final icon = state.title.isNotEmpty ? Icons.done : Icons.close;
-        return FloatingActionButton(
-          child: Icon(icon),
-          onPressed: () => _saveChat(
-            context: context,
-            state: state,
-          ),
-        );
-      },
+  Widget _floatingActionButton({
+    required BuildContext context,
+    required String title,
+    required int iconIndex,
+  }) {
+    final icon = title.isNotEmpty ? Icons.done : Icons.close;
+    return FloatingActionButton(
+      child: Icon(icon),
+      onPressed: () => _saveChat(
+        context: context,
+        title: title,
+        iconIndex: iconIndex,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          _title(),
-          _titleField(),
-          Expanded(child: _iconsView()),
-        ],
-      ),
-      floatingActionButton: _floatingActionButton(),
+    return BlocBuilder<ChatEditorCubit, ChatEditorState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Column(
+            children: [
+              _title(),
+              _titleField(),
+              Expanded(child: _iconsView(iconIndex: state.iconIndex)),
+            ],
+          ),
+          floatingActionButton: _floatingActionButton(
+            context: context,
+            iconIndex: state.iconIndex,
+            title: state.title,
+          ),
+        );
+      },
     );
   }
 }
@@ -174,7 +172,7 @@ class IconView extends StatelessWidget {
       margin: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.grey,
+        color: Colors.blue,
       ),
       child: Icon(
         icon,

@@ -8,8 +8,9 @@ class HomeState extends Equatable {
   });
 
   HomeState copyWith({
-    _NullWrapper<ChatsSubscription?>? streamSubscription,
     List<Chat>? chats,
+    List<Event>? events,
+    int? selectedTab,
   }) =>
       HomeState(
         chats: chats ?? this.chats,
@@ -17,10 +18,4 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [chats];
-}
-
-class _NullWrapper<T> {
-  final T value;
-
-  const _NullWrapper(this.value);
 }

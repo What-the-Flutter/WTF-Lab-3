@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import '../../../data/models/chat.dart';
 import '../../../data/repository/chats_repository.dart';
 import '../../../data/repository/events_repository.dart';
+import '../../data/models/event.dart';
 import '../presentation.dart';
 
 part 'home_state.dart';
@@ -51,6 +52,10 @@ class HomeCubit extends Cubit<HomeState> {
   void switchChatPinning(Chat chat) async {
     await chatsRepository
         .updateChat(chat.copyWith(isPinned: !chat.isPinned));
+  }
+
+  void changeSelectedTab(int tab) {
+    emit(state.copyWith(selectedTab: tab));
   }
 
   void switchThemeType() => settingsCubit.switchThemeType();

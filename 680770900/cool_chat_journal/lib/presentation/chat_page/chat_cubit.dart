@@ -9,6 +9,7 @@ import '../../data/repository/categories_repository.dart';
 import '../../data/repository/events_repository.dart';
 import '../../data/repository/tags_repository.dart';
 import '../../utils/null_wrapper.dart';
+import '../chat_editor_page/chat_editor_cubit.dart';
 
 part 'chat_state.dart';
 
@@ -218,8 +219,8 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void loadChat(String chatId) {
-    emit(state.copyWith(chatId: chatId));
+  void loadChat(String? chatId) {
+    emit(state.copyWith(chatId: NullWrapper(chatId)));
   }
 
   void resetSelection() {
@@ -241,12 +242,9 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void _setEvents(List<Event> events) async {
-    final chatsEvents =
-        events.where((event) => event.chatId == state.chatId).toList();
-    _sortEvents(chatsEvents);
-
-    if (_isUpdate(chatsEvents)) {
-      emit(state.copyWith(events: chatsEvents));
+    _sortEvents(events);
+    if (_isUpdate(events)) {
+      emit(state.copyWith(events: events));
     }
   }
 

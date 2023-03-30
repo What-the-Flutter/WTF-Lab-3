@@ -10,14 +10,14 @@ import 'chat_cubit.dart';
 import 'widgets/widgets.dart';
 
 class ChatPage extends StatefulWidget {
-  final String chatId;
-  final String chatName;
+  final String? chatId;
+  final String? chatName;
   final List<Chat> chats;
 
   const ChatPage({
     super.key,
-    required this.chatId,
-    required this.chatName,
+    this.chatId,
+    this.chatName,
     required this.chats,
   });
 
@@ -123,7 +123,7 @@ class _ChatPageState extends State<ChatPage>
     required bool isEditMode,
   }) {
     if (selectedEventsIds.isEmpty) {
-      return Text(widget.chatName);
+      return Text(widget.chatName ?? 'Timeline');
     } else if (isEditMode) {
       return const Text('Edit mode');
     } else {
@@ -244,6 +244,7 @@ class _ChatPageState extends State<ChatPage>
   }
 
   Widget _scaffoldBody({
+    required BuildContext context,
     required List<Event> events,
     required List<Category> categories,
     required List<String> selectedEventsIds,
@@ -259,6 +260,33 @@ class _ChatPageState extends State<ChatPage>
       );
     }
 
+    final Widget bottomPanel;
+    if (widget.chatId != null) {
+      bottomPanel = BottomPanel(
+        chatId: widget.chatId!,
+        sourceEvent: selectedEvent,
+      );
+    } else {
+      bottomPanel = BottomNavigationBar(
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.timeline),
+            label: 'Timeline',
+          ),
+        ],
+        currentIndex: 1,
+        onTap: (value) {
+          if (value == 0) {
+            Navigator.pop(context);
+          } 
+        },
+      );
+    }
+
     return Column(
       children: [
         Expanded(
@@ -270,10 +298,7 @@ class _ChatPageState extends State<ChatPage>
             isEditMode: isEditMode,
           ),
         ),
-        BottomPanel(
-          chatId: widget.chatId,
-          sourceEvent: selectedEvent,
-        ),
+        bottomPanel,
       ],
     );
   }
@@ -347,7 +372,7 @@ class _ChatPageState extends State<ChatPage>
             ),
             confirmDismiss: (direction) async {
               if (!isEditMode) {
-                _cubit.switchSelectStatus(widget.chatId);
+                _cubit.switchSelectStatus(event.id);
                 _cubit.toggleEditMode();
               } else if (direction == DismissDirection.endToStart) {
                 return true;
@@ -400,8 +425,17 @@ class _ChatPageState extends State<ChatPage>
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
+        final List<Event> events;
+        if (widget.chatId != null) {
+          events = 
+              state.events.where((e) => e.chatId == widget.chatId!).toList();
+        } else {
+          events = List<Event>.from(state.events);
+        }
+
         final body = _scaffoldBody(
-          events: state.events,
+          context: context,
+          events: events,
           categories: state.categories,
           selectedEventsIds: state.selectedEventsIds,
           isFavoriteMode: state.isFavoriteMode,
@@ -436,7 +470,7 @@ class _ChatPageState extends State<ChatPage>
               context: context,
               selectedEventsIds: state.selectedEventsIds,
               chats: widget.chats,
-              events: state.events,
+              events: events,
               isFavoriteMode: state.isFavoriteMode,
               isEditMode: state.isEditMode,
             ),

@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     required Chat chat,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
       color: CustomTheme.of(context).themeData.primaryColor,
       child: InkWell(
         onLongPress: () => _onOpenManagePanel(
@@ -120,76 +120,103 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const _CustomDrawer(),
-      appBar: AppBar(
-        title: const Text('Cool Chat Journal'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.color_lens_outlined),
-            onPressed: _cubit.switchThemeType,
-          ),
-        ],
-      ),
-      body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
-          if (state.chats.isNotEmpty) {
-            return ListView.builder(
-              itemCount: state.chats.length,
-              itemBuilder: (context, index) => _chatCard(
-                context: context,
-                chats: state.chats, 
-                chat: state.chats[index],
-              ),
-            );
-          } else {
-            return Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/animations/pencil.json',
-                    repeat: true,
-                  ),
-              
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: CustomTheme.of(context).themeData.backgroundColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ChatEditorPage(),
-                        ),
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        final Widget body;
+        if (state.chats.isNotEmpty) {
+          body = ListView.builder(
+            itemCount: state.chats.length,
+            itemBuilder: (context, index) => _chatCard(
+              context: context,
+              chats: state.chats,
+              chat: state.chats[index],
+            ),
+          );
+        } else {
+          body = Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/animations/pencil.json',
+                  repeat: true,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color:
+                        CustomTheme.of(context).themeData.backgroundColor,
+                    borderRadius:
+                        const BorderRadius.all(Radius.circular(10.0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        blurRadius: 10,
                       ),
-                      child: const Text('Click to add your life'),
+                    ],
+                  ),
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ChatEditorPage(),
+                      ),
                     ),
-                  )
-                ],
-              ),
-            );
-          }
-          
+                    child: const Text('Click to add your life'),
+                  ),
+                )
+              ],
+            ),
+          );
         }
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const ChatEditorPage(),
+        return Scaffold(
+          drawer: const _CustomDrawer(),
+          appBar: AppBar(
+            title: const Text('Cool Chat Journal'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.color_lens_outlined),
+                onPressed: _cubit.switchThemeType,
+              ),
+            ],
           ),
-        ),
-      ),
+          body: body,
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ChatEditorPage(),
+              ),
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.timeline),
+                label: 'Timeline',
+              ),
+            ],
+            currentIndex: 0,
+            onTap: (value) {
+              if (value == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChatPage(
+                      chats: state.chats,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

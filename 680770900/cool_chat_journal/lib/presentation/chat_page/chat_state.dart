@@ -1,7 +1,7 @@
 part of 'chat_cubit.dart';
 
 class ChatState extends Equatable {
-  final String chatId;
+  final String? chatId;
   final Map<String, Uint8List>? images;
 
   final List<Event> events;
@@ -33,7 +33,7 @@ class ChatState extends Equatable {
   });
 
   ChatState copyWith({
-    String? chatId,
+    NullWrapper<String?>? chatId,
     NullWrapper<Map<String, Uint8List>?>? images,
     List<Event>? events,
     List<String>? selectedEventsIds,
@@ -47,7 +47,7 @@ class ChatState extends Equatable {
     String? text,
   }) =>
       ChatState(
-        chatId: chatId ?? this.chatId,
+        chatId: chatId != null ? chatId.value : this.chatId,
         events: events ?? this.events,
         selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
         categories: categories ?? this.categories,
