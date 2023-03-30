@@ -205,8 +205,8 @@ const categoryTitles = [
   'Laundry',
 ];
 
-const searchingAnimationLottie =
-    'https://assets1.lottiefiles.com/packages/lf20_rlmdrwm8.json';
+const searchingAnimationLottie = 'lottie/search_animation.json';
 
-const settingsAnimationLottie =
-    'https://assets10.lottiefiles.com/packages/lf20_vaulkzeq.json';
+const settingsAnimationLottie = 'lottie/settings_animation.json';
+
+const homeAnimationLottie = 'lottie/dancing_book.json';

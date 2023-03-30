@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         ],
       );
 
-  Widget _body() => Column(
+  Widget _body(HomeState state) => Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8),
@@ -90,18 +90,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) {
-                return ListView.separated(
-                  itemCount: state.chats.length,
-                  itemBuilder: (context, index) {
-                    return _listTile(index, state.chats);
-                  },
-                  separatorBuilder: (_, __) {
-                    return const Divider(
-                      thickness: 2,
-                    );
-                  },
+            child: ListView.separated(
+              itemCount: state.chats.length,
+              itemBuilder: (context, index) {
+                return _listTile(index, state.chats);
+              },
+              separatorBuilder: (_, __) {
+                return const Divider(
+                  thickness: 2,
                 );
               },
             ),
@@ -132,10 +128,14 @@ class _HomePageState extends State<HomePage> {
       );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: _appBar(context),
-        drawer: const CustomDrawer(),
-        body: _body(),
-        floatingActionButton: _floatingActionButton(),
+  Widget build(BuildContext context) => BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: _appBar(context),
+            drawer: const CustomDrawer(),
+            body: _body(state),
+            floatingActionButton: _floatingActionButton(),
+          );
+        },
       );
 }

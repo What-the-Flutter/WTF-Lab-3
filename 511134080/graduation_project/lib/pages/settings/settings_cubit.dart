@@ -10,8 +10,10 @@ part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   final SettingsProvider _settingsProvider;
-  SettingsCubit({required SettingsProvider provider})
-      : _settingsProvider = provider,
+
+  SettingsCubit({
+    required SettingsProvider provider,
+  })  : _settingsProvider = provider,
         super(SettingsState()) {
     init();
   }

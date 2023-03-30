@@ -52,6 +52,7 @@ dependencies:
   hashtagable: ^2.1.0
   flutter_native_splash: ^2.2.19
   lottie: ^2.3.1
+  animated_text_kit: ^4.2.2
 
 flutter_native_splash:
   color: "#9575CD"
@@ -62,3 +63,5 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 flutter:
   uses-material-design: true
+  assets:
+    - lottie/

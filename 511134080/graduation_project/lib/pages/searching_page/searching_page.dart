@@ -126,7 +126,7 @@ class SearchingPage extends StatelessWidget {
   Widget _addingSearchQueryHintMessage(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        color: Theme.of(context).primaryColorLight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -153,7 +153,7 @@ class SearchingPage extends StatelessWidget {
   Widget _noFoundHintMessage(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
         margin: const EdgeInsets.all(16),
-        color: Theme.of(context).primaryColorDark.withAlpha(30),
+        color: Theme.of(context).primaryColorLight,
         child: Column(
           children: [
             Text(
@@ -260,7 +260,7 @@ class SearchingPage extends StatelessWidget {
 
   Widget _searchingAnimation() => SingleChildScrollView(
         child: Center(
-          child: Lottie.network(
+          child: Lottie.asset(
             searchingAnimationLottie,
           ),
         ),

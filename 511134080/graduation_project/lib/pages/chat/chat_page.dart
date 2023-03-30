@@ -210,6 +210,9 @@ class _ChatPageState extends State<ChatPage> {
                 ? 'Choose the chat you want to relocate selected events:'
                 : 'Error!',
             textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
           ),
           children: state.chats.length > 1
               ? _options(state, context)
@@ -230,7 +233,12 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.pop(context);
                 context.read<ChatCubit>().moveSelectedEvents(chat);
               },
-              child: Text(chat.title),
+              child: Text(
+                chat.title,
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+              ),
             ),
       ];
 

@@ -228,10 +228,8 @@ class GeneralSettingsPage extends StatelessWidget {
 
   Widget _settingsAnimation() => SingleChildScrollView(
         child: Center(
-          child: Lottie.network(
+          child: Lottie.asset(
             settingsAnimationLottie,
-            repeat: true,
-            fit: BoxFit.fill,
           ),
         ),
       );

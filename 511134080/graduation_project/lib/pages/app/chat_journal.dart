@@ -67,6 +67,7 @@ class _ChatJournalState extends State<ChatJournal> {
           create: (_) => SettingsCubit(
             provider: settingsProvider,
           ),
+          lazy: false,
         ),
         BlocProvider(
           create: (_) => SearchingPageCubit(),
