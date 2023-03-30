@@ -12,23 +12,4 @@ class MainPageCubit extends Cubit<MainPageState> {
       ),
     );
   }
-
-  void startLoading() {
-    emit(
-      state.copyWith(
-        loaded: true,
-      ),
-    );
-    Future.delayed(
-      const Duration(
-        seconds: 5,
-      ),
-    ).then(
-      (_) => emit(
-        state.copyWith(
-          loaded: false,
-        ),
-      ),
-    );
-  }
 }

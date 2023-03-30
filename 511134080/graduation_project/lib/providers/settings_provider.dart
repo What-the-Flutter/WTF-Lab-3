@@ -6,6 +6,7 @@ class SettingsProvider {
   final _isRightToLeft = 'is_right_to_left';
   final _isCenterDate = 'is_center_date';
   final _backgroundImage = 'background_image';
+  final _useFingerPrint = 'use_fingerprint';
 
   Future<SharedPreferences> get sharedPreferencesInstance =>
       SharedPreferences.getInstance();
@@ -41,6 +42,11 @@ class SettingsProvider {
     await prefs.setString(_backgroundImage, path);
   }
 
+  Future<void> saveUsingFingerprint(bool useFingerprint) async {
+    final prefs = await sharedPreferencesInstance;
+    await prefs.setBool(_useFingerPrint, useFingerprint);
+  }
+
   Future<bool?> get theme async {
     final prefs = await sharedPreferencesInstance;
     return await prefs.getBool(_isLight);
@@ -64,5 +70,10 @@ class SettingsProvider {
   Future<String?> get backgroundImage async {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.getString(_backgroundImage);
+  }
+
+  Future<bool?> get useFingerprint async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.getBool(_useFingerPrint);
   }
 }

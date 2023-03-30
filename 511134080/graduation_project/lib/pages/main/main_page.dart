@@ -1,10 +1,8 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lottie/lottie.dart';
 
-import '../../constants.dart';
 import '../../widgets/drawer.dart';
+import '../app/app_cubit.dart';
 import '../home/home_page.dart';
 import '../timeline/timeline_page.dart';
 import 'main_page_cubit.dart';
@@ -19,8 +17,14 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   void initState() {
+    context.read<AppCubit>().authenticateLocal();
     super.initState();
-    context.read<MainPageCubit>().startLoading();
+  }
+
+  @override
+  void dispose() {
+    context.read<AppCubit>().logout();
+    super.dispose();
   }
 
   Widget _body(BuildContext context, int index) {
@@ -69,50 +73,55 @@ class _MainPageState extends State<MainPage> {
         onTap: context.read<MainPageCubit>().changeSelectedIndex,
       );
 
-  Widget _homeAnimation() => SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 128,
-            ),
-            AnimatedTextKit(
-              animatedTexts: [
-                TyperAnimatedText(
-                  'Chat Journal',
-                  textStyle: Theme.of(context).textTheme.displayLarge!.copyWith(
-                        fontSize: 48,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 4,
-                      ),
-                  speed: const Duration(
-                    milliseconds: 300,
-                  ),
+  Widget _authenticatedScaffold(BuildContext context) =>
+      BlocBuilder<MainPageCubit, MainPageState>(
+        builder: (context, state) {
+          return Scaffold(
+            drawer: const CustomDrawer(),
+            body: _body(context, state.selectedIndex),
+            bottomNavigationBar: _bottomNavigationBar(context, state),
+          );
+        },
+      );
+
+  Widget _nonAuthenticatedScaffold(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Authentication',
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  color: Colors.white,
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 64,
-            ),
-            Lottie.asset(
-              homeAnimationLottie,
-            ),
-          ],
+          ),
+          backgroundColor: Theme.of(context).primaryColor,
+          automaticallyImplyLeading: false,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 80,
+                  bottom: 48,
+                ),
+                child: Text(
+                  'Waiting for authentication...',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                ),
+              ),
+              const CircularProgressIndicator(),
+            ],
+          ),
         ),
       );
 
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<MainPageCubit, MainPageState>(
-        builder: (context, state) => Scaffold(
-          drawer: state.isLoaded ? null : const CustomDrawer(),
-          body: state.isLoaded
-              ? _homeAnimation()
-              : _body(context, state.selectedIndex),
-          bottomNavigationBar:
-              state.isLoaded ? null : _bottomNavigationBar(context, state),
-        ),
+  Widget build(BuildContext context) => BlocBuilder<AppCubit, AppState>(
+        builder: (_, state) => state.isAuthenticated
+            ? _authenticatedScaffold(context)
+            : _nonAuthenticatedScaffold(context),
       );
 }

@@ -24,6 +24,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final bubbleAlignment = await _settingsProvider.bubbleAlignment ?? false;
     final centerDate = await _settingsProvider.dateAlignment ?? false;
     final backgroundImage = await _settingsProvider.backgroundImage ?? '';
+    final useFingerprint = await _settingsProvider.useFingerprint ?? false;
     emit(
       state.copyWith(
         light: isLight,
@@ -31,6 +32,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         rightToLeft: bubbleAlignment,
         centerDate: centerDate,
         newBackgroundImage: backgroundImage,
+        useFingerprint: useFingerprint,
       ),
     );
   }
@@ -112,6 +114,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         newBackgroundImage: '',
+      ),
+    );
+  }
+
+  Future<void> toggleUsingFingerprint(bool value) async {
+    await _settingsProvider.saveUsingFingerprint(value);
+    emit(
+      state.copyWith(
+        useFingerprint: value,
       ),
     );
   }
