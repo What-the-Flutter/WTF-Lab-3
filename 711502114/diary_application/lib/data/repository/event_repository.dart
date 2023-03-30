@@ -40,8 +40,9 @@ class EventRepository extends EventRepositoryApi {
   }
 
   @override
-  Stream<List<Event>> get eventStream =>
-      _provider.eventsStream.map<List<Event>>(_transformToListEvent);
+  Stream<List<Event>> get eventStream => _provider.eventsStream
+      .map<List<Event>>(_transformToListEvent)
+      .asBroadcastStream();
 
   List<Event> _transformToListEvent(List<EventDB> dbEvents) {
     final result = <Event>[];

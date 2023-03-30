@@ -12,6 +12,7 @@ import 'package:diary_application/presentation/widgets/event_page/event_box.dart
 import 'package:diary_application/presentation/widgets/event_page/event_keyboard.dart';
 import 'package:diary_application/presentation/widgets/event_page/info_box.dart';
 import 'package:diary_application/presentation/widgets/event_page/migration_events_dialog.dart';
+import 'package:diary_application/presentation/widgets/event_page/tag_panel.dart';
 import 'package:diary_application/presentation/widgets/event_page/tool_menu_icon.dart';
 import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +84,12 @@ class _MessengerPageState extends State<MessengerPage> {
                         children: [
                           if (cubit.categoryMode && checkOrientation(context))
                             CategoryBox(setCategory: cubit.setCategory),
+                          if (state.isHashTag)
+                            TagPanel(
+                              controller: _fieldText,
+                              state: state,
+                            ),
+
                           EventKeyboard(
                             width: size.width,
                             fieldText: _fieldText,

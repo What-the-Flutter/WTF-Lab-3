@@ -4,6 +4,7 @@ import 'package:diary_application/presentation/pages/settings/settings_cubit.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hashtager/widgets/hashtag_text_field.dart';
 
 import 'attach_dialog.dart';
 import 'keyboard_icon.dart';
@@ -38,7 +39,7 @@ class EventKeyboard extends StatelessWidget {
             onPressed: _openCloseCategoryList,
           ),
           Expanded(
-            child: TextField(
+            child: HashTagTextField(
               controller: fieldText,
               keyboardType: TextInputType.multiline,
               minLines: 1,
@@ -55,7 +56,8 @@ class EventKeyboard extends StatelessWidget {
                       : Colors.white,
                 ),
               ),
-              style: textTheme(context).bodyText2!,
+              onDetectionTyped: (_) => cubit.changeTagStatus(true),
+              onDetectionFinished: () => cubit.changeTagStatus(false),
             ),
           ),
           if (checkOrientation(context))

@@ -19,7 +19,7 @@ class ChatRepository extends ChatRepositoryApi {
 
   @override
   Stream<List<Chat>> get chatsStream =>
-      _provider.chatsStream.map<List<Chat>>(_dbList2chats);
+      _provider.chatsStream.map<List<Chat>>(_dbList2chats).asBroadcastStream();
 
   List<Chat> _dbList2chats(List<ChatDB> dbChats) {
     final result = <Chat>[];

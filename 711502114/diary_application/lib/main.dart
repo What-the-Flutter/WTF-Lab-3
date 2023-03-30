@@ -1,3 +1,4 @@
+import 'package:diary_application/data/repository/tag_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,9 @@ class ChatJournalApplication extends StatelessWidget {
     final provider = FirebaseProvider(user: user);
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<TagRepository>(
+          create: (context) => TagRepository(provider: provider),
+        ),
         RepositoryProvider<EventRepository>(
           create: (context) => EventRepository(provider: provider),
           lazy: false,
@@ -85,6 +89,7 @@ class ChatJournalApplication extends StatelessWidget {
             create: (context) => EventCubit(
               chatRepository: context.read<ChatRepository>(),
               eventRepository: context.read<EventRepository>(),
+              tagRepository: context.read<TagRepository>(),
             ),
           ),
         ],
