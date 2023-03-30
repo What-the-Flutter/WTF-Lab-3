@@ -63,14 +63,13 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
       case ThemeType.light:
         return FlexThemeData.light(
           useMaterial3: true,
-          surface: const Color(0xffff7373),
-          scheme: FlexScheme.mandyRed,
+          scheme: FlexScheme.blue,
           textTheme: _generateTextTheme(state),
         );
       case ThemeType.dark:
         return FlexThemeData.dark(
           useMaterial3: true,
-          scheme: FlexScheme.mandyRed,
+          scheme: FlexScheme.blue,
           textTheme: _generateTextTheme(state),
         );
     }

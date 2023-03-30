@@ -51,6 +51,8 @@ class _HomePageState extends State<HomePage> {
     required Chat chat,
   }) {
     return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      color: CustomTheme.of(context).themeData.primaryColor,
       child: InkWell(
         onLongPress: () => _onOpenManagePanel(
           context: context,
@@ -130,7 +132,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (_, state) {
+        builder: (context, state) {
           if (state.chats.isNotEmpty) {
             return ListView.builder(
               itemCount: state.chats.length,
@@ -141,9 +143,39 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else {
-            return Lottie.asset(
-              'assets/animations/pencil.json',
-              repeat: true,
+            return Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/animations/pencil.json',
+                    repeat: true,
+                  ),
+              
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: CustomTheme.of(context).themeData.backgroundColor,
+                      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ChatEditorPage(),
+                        ),
+                      ),
+                      child: const Text('Click to add your life'),
+                    ),
+                  )
+                ],
+              ),
             );
           }
           

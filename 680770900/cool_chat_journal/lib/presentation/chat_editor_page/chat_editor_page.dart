@@ -43,6 +43,8 @@ class _ChatEditorPageState extends State<ChatEditorPage> {
       }
     }
 
+    _cubit.changeTitle('');
+
     Navigator.pop(context);
   }
 
