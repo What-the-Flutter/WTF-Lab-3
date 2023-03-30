@@ -113,4 +113,23 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
   }
+
+  void startLoading() {
+    emit(
+      state.copyWith(
+        loaded: true,
+      ),
+    );
+    Future.delayed(
+      const Duration(
+        milliseconds: 3000,
+      ),
+    ).then(
+      (_) => emit(
+        state.copyWith(
+          loaded: false,
+        ),
+      ),
+    );
+  }
 }

@@ -6,6 +6,7 @@ class SettingsState {
   final bool isRightToLeft;
   final bool isCenterDate;
   final String backgroundImage;
+  final bool isLoaded;
 
   SettingsState({
     this.isLight = true,
@@ -13,6 +14,7 @@ class SettingsState {
     this.isRightToLeft = false,
     this.isCenterDate = false,
     this.backgroundImage = '',
+    this.isLoaded = false,
   });
 
   ThemeData get currentTheme => isLight
@@ -41,6 +43,7 @@ class SettingsState {
     bool? rightToLeft,
     bool? centerDate,
     String? newBackgroundImage,
+    bool? loaded,
   }) =>
       SettingsState(
         isLight: light ?? isLight,
@@ -48,5 +51,6 @@ class SettingsState {
         isRightToLeft: rightToLeft ?? isRightToLeft,
         isCenterDate: centerDate ?? isCenterDate,
         backgroundImage: newBackgroundImage ?? backgroundImage,
+        isLoaded: loaded ?? isLoaded,
       );
 }

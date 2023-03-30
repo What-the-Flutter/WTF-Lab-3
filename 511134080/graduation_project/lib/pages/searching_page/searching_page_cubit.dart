@@ -58,7 +58,7 @@ class SearchingPageCubit extends Cubit<SearchingPageState> {
     );
     Future.delayed(
       const Duration(
-        milliseconds: 3000,
+        seconds: 3,
       ),
     ).then(
       (_) => emit(

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'general_settings_page.dart';
+import 'settings_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({
+    Key? key,
+  }) : super(key: key);
 
   ListTile _generalTile(BuildContext context) => ListTile(
         iconColor: Theme.of(context).disabledColor,
@@ -31,6 +35,7 @@ class SettingsPage extends StatelessWidget {
           Icons.arrow_forward_ios,
         ),
         onTap: () {
+          context.read<SettingsCubit>().startLoading();
           Navigator.push(
             context,
             MaterialPageRoute(

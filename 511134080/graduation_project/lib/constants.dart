@@ -204,3 +204,9 @@ const categoryTitles = [
   'Sports',
   'Laundry',
 ];
+
+const searchingAnimationLottie =
+    'https://assets1.lottiefiles.com/packages/lf20_rlmdrwm8.json';
+
+const settingsAnimationLottie =
+    'https://assets10.lottiefiles.com/packages/lf20_vaulkzeq.json';

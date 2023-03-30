@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../constants.dart';
 import '../../models/event.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
@@ -257,20 +258,20 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
+  Widget _searchingAnimation() => SingleChildScrollView(
+        child: Center(
+          child: Lottie.network(
+            searchingAnimationLottie,
+          ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
       builder: (context, state) => Scaffold(
         appBar: _appBar(context, state),
-        body: state.isLoaded
-            ? SingleChildScrollView(
-                child: Center(
-                  child: Lottie.network(
-                    'https://assets1.lottiefiles.com/packages/lf20_rlmdrwm8.json',
-                  ),
-                ),
-              )
-            : _body(context, state),
+        body: state.isLoaded ? _searchingAnimation() : _body(context, state),
       ),
     );
   }
