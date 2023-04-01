@@ -114,7 +114,7 @@ class _MessengerPageState extends State<MessengerPage> {
     return AppBar(
       title: selected
           ? null
-          : Text(widget.chat.title, style: textTheme(context).headline1!),
+          : Text(widget.chat.title, style: textTheme(context).headline2!),
       centerTitle: !selected,
       leading: selected
           ? ToolMenuIcon(

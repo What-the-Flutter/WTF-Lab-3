@@ -66,6 +66,16 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(chatId: chatId, events: events, tags: tags));
   }
 
+  void initAll() async {
+    final allEvents = await eventRepository.getAllEvents();
+    final tags = await tagRepository.tags;
+    emit(state.copyWith(events: allEvents, tags: tags));
+  }
+
+  void updateEvents(List<Event> events) {
+    emit(state.copyWith(events: events));
+  }
+
   void changeFavorite() {
     state.isFavoriteMode = !state.isFavoriteMode;
 
@@ -91,9 +101,9 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(events: state.events));
   }
 
-  void startEditMode(TextEditingController fieldText) {
+  void startEditMode([TextEditingController? fieldText]) {
     state.isEditMode = true;
-    fieldText.text = state.events[state.selectedIndexes.last].message;
+    fieldText?.text = state.events[state.selectedIndexes.last].message;
 
     emit(state.copyWith(events: state.events));
   }

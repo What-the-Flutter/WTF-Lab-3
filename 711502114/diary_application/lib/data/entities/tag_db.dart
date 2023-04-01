@@ -1,14 +1,15 @@
 import 'package:equatable/equatable.dart';
 
 class TagDB extends Equatable {
-  final String id, title;
+  final String id;
+  final String title;
 
   TagDB({required this.id, required this.title});
 
   Map<String, dynamic> get map {
     return {
-      TagFields.id: id,
-      TagFields.title: title,
+      'id': id,
+      'title': title,
     };
   }
 
@@ -21,16 +22,11 @@ class TagDB extends Equatable {
 
   static TagDB map2Json(Map<dynamic, dynamic> map) {
     return TagDB(
-      id: map[TagFields.id] as String,
-      title: map[TagFields.title] as String,
+      id: (map['id'] ?? '').toString(),
+      title: (map['title'] ?? '').toString(),
     );
   }
 
   @override
   List<Object?> get props => [id, title];
-}
-
-class TagFields {
-  static String id = 'id';
-  static String title = 'title';
 }
