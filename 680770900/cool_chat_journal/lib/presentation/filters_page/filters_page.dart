@@ -42,6 +42,12 @@ class _FiltersPageState extends State<FiltersPage> {
                 onPressed: () => Navigator.pop(context),
               ),
               title: const Text('Filters'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.filter_alt_off_outlined),
+                  onPressed: _cubit.resetFilter,
+                ),
+              ],
               bottom: const TabBar(
                 tabs: [
                   Tab(

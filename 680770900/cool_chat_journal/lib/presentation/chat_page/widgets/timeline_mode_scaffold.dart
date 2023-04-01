@@ -5,6 +5,7 @@ import 'package:hashtagable/functions.dart';
 import '../../../data/models/models.dart';
 import '../../filters_page/filters_cubit.dart';
 import '../../filters_page/filters_page.dart';
+import '../chat_cubit.dart';
 import 'widgets.dart';
 
 class TimelineModeScaffold extends StatelessWidget {
@@ -13,6 +14,7 @@ class TimelineModeScaffold extends StatelessWidget {
   final List<Category> categories;
   final BoxDecoration? chatDecoration;
   final bool isFavoriteMode;
+  final ChatCubit cubit;
   final VoidCallback? onShowFavorites;
   final VoidCallback? onSearch;
 
@@ -22,6 +24,7 @@ class TimelineModeScaffold extends StatelessWidget {
     required this.chats,
     required this.categories,
     required this.isFavoriteMode,
+    required this.cubit,
     this.chatDecoration,
     this.onShowFavorites,
     this.onSearch,
@@ -64,6 +67,7 @@ class TimelineModeScaffold extends StatelessWidget {
                 events: events,
                 chats: chats,
                 categories: categories,
+                cubit: cubit,
               ),
             ),
           ],
@@ -104,22 +108,29 @@ class _EventsView extends StatelessWidget {
   final List<Event> events;
   final List<Chat> chats;
   final List<Category> categories;
+  final ChatCubit cubit;
 
   const _EventsView({
     super.key,
     required this.events,
     required this.chats,
     required this.categories,
+    required this.cubit,
   });
 
   List<Event> _chatsFilteredEvents({
     required List<Event> events,
     required List<String> chatsId,
+    required bool ignoreChats,
   }) {
-    return chatsId.isNotEmpty
-        ? events.where((e) => chatsId.contains(e.chatId)).toList()
-        : events;
-  } 
+    if (!ignoreChats) {
+      return chatsId.isNotEmpty
+          ? events.where((e) => chatsId.contains(e.chatId)).toList()
+          : events;
+    } else {
+      return events.where((e) => chatsId.contains(e.chatId)).toList();
+    }
+    } 
 
   List<Event> _categoriesFilteredEvents({
     required List<Event> events,
@@ -149,21 +160,6 @@ class _EventsView extends StatelessWidget {
               return false;
             },
           ).toList();
-  }
-
-  List<String> _chatFilter({
-    required List<Chat> chats,
-    required List<Chat> selectedChats,
-    required bool ignoreSelected,
-  }) {
-    if (selectedChats.isEmpty) return [];
-
-    if (!ignoreSelected) return selectedChats.map((chat) => chat.id).toList();
-
-    return chats
-        .where((chat) => !selectedChats.contains(chat))
-        .map((chat) => chat.id)
-        .toList();
   }
 
   List<String> _filter({
@@ -207,9 +203,25 @@ class _EventsView extends StatelessWidget {
             events: _chatsFilteredEvents(
               events: events,
               chatsId: chatFilter,
+              ignoreChats: state.ignoreSelected,
             ),
           )
         );
+
+        if (filteredEvents.isEmpty) {
+          return const Align(
+            alignment: Alignment.topCenter,
+            child: Card(
+              child: ListTile(
+                title: Text(
+                  'There are no events to be displayed on your timeline, '
+                  'or you have filtered out all your pages in the filter menu.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ); 
+        }
 
         return ListView.builder(
           reverse: true,
@@ -231,6 +243,7 @@ class _EventsView extends StatelessWidget {
                 chats.firstWhere((chat) => chat.id == event.chatId).name,
               event: event,
               category: category,
+              onTap: () => cubit.switchEventFavorite(event.id),
             );
           }
         );

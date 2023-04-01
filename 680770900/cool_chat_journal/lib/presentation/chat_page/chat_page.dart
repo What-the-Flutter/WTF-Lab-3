@@ -184,6 +184,7 @@ class _ChatPageState extends State<ChatPage>
 
         if (widget.chatId == null) {
           return TimelineModeScaffold(
+            cubit: _cubit,
             events: events,
             chats: widget.chats,
             categories: state.categories,

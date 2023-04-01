@@ -40,6 +40,15 @@ class FiltersCubit extends Cubit<FiltersState> {
     _categoriesSubscription?.cancel(); 
   } 
 
+  void resetFilter() {
+    emit(state.copyWith(
+      selectedCategories: [],
+      selectedChats: [],
+      selectedTags: [],
+      ignoreSelected: true,
+    ));
+  }
+
   void changeChatSelection(Chat chat) {
     final List<Chat> selectedChats;
     if (state.selectedChats.contains(chat)) {
