@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
 import '../data/data.dart';
+import '../presentation/filters_page/filters_cubit.dart';
 import '../presentation/presentation.dart';
 import 'default_categories.dart';
 
@@ -50,8 +51,14 @@ void initGetIt({required User user}) {
     categoriesRepository: GetIt.I<CategoriesRepository>(),
     eventsRepository: GetIt.I<EventsRepository>(),
     tagsRepository: GetIt.I<TagsRepository>(),
+    homeCubit: GetIt.I<HomeCubit>(),
   ));
   GetIt.I.registerSingleton<ChatEditorCubit>(ChatEditorCubit(
     homeCubit: GetIt.I<HomeCubit>(),
+  ));
+  GetIt.I.registerSingleton<FiltersCubit>(FiltersCubit(
+    chatsRepository: GetIt.I<ChatsRepository>(), 
+    tagsRepository: GetIt.I<TagsRepository>(),
+    categoriesRepository: GetIt.I<CategoriesRepository>(),
   ));
 }

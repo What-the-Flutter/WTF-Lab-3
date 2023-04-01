@@ -11,6 +11,7 @@ import '../../../utils/custom_theme.dart';
 import '../chat_cubit.dart';
 
 class EventView extends StatefulWidget {
+  final String? chatName;
   final Event event;
   final Category? category;
   final bool isSelected;
@@ -19,6 +20,7 @@ class EventView extends StatefulWidget {
 
   const EventView({
     super.key,
+    this.chatName,
     required this.event,
     this.category,
     this.isSelected = false,
@@ -113,6 +115,13 @@ class _EventViewState extends State<EventView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.chatName != null)
+              Text(
+                widget.chatName!,
+                style: const TextStyle(
+                  color: Colors.grey
+                ),
+              ),
             if (widget.category != null)
               Padding(
                 padding: const EdgeInsets.all(8.0),

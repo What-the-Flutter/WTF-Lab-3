@@ -105,6 +105,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _chatsList({
+    required List<Chat> chats,
+  }) {
+    if (chats.isNotEmpty) {
+      return ListView.builder(
+        itemCount: chats.length,
+        itemBuilder: (context, index) => _chatCard(
+          context: context,
+          chats: chats,
+          chat: chats[index],
+        ),
+      );
+    } else {
+      return Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Lottie.asset(
+              'assets/animations/pencil.json',
+              repeat: true,
+            ),
+            Container(
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                color:
+                    CustomTheme.of(context).themeData.backgroundColor,
+                borderRadius:
+                    const BorderRadius.all(Radius.circular(10.0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ChatEditorPage(),
+                  ),
+                ),
+                child: const Text('Click to add your life'),
+              ),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -122,53 +173,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final Widget body;
-        if (state.chats.isNotEmpty) {
-          body = ListView.builder(
-            itemCount: state.chats.length,
-            itemBuilder: (context, index) => _chatCard(
-              context: context,
-              chats: state.chats,
-              chat: state.chats[index],
-            ),
-          );
-        } else {
-          body = Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Lottie.asset(
-                  'assets/animations/pencil.json',
-                  repeat: true,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color:
-                        CustomTheme.of(context).themeData.backgroundColor,
-                    borderRadius:
-                        const BorderRadius.all(Radius.circular(10.0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ChatEditorPage(),
-                      ),
-                    ),
-                    child: const Text('Click to add your life'),
-                  ),
-                )
-              ],
-            ),
-          );
-        }
         return Scaffold(
           drawer: const _CustomDrawer(),
           appBar: AppBar(
@@ -180,7 +184,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          body: body,
+          body: _chatsList(chats: state.chats),
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () => Navigator.push(

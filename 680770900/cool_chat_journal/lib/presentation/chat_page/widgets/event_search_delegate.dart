@@ -28,6 +28,7 @@ class EventSearchDelegate extends SearchDelegate {
     return ListView.builder(
       itemCount: result.length,
       itemBuilder: (context, index) => EventView(
+        chatName: null,
         event: result[index],
       ),
     );

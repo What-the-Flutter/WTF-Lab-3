@@ -9,7 +9,7 @@ import '../../data/repository/categories_repository.dart';
 import '../../data/repository/events_repository.dart';
 import '../../data/repository/tags_repository.dart';
 import '../../utils/null_wrapper.dart';
-import '../chat_editor_page/chat_editor_cubit.dart';
+import '../home_page/home_cubit.dart';
 
 part 'chat_state.dart';
 
@@ -26,7 +26,10 @@ class ChatCubit extends Cubit<ChatState> {
   final CategoriesRepository categoriesRepository;
   final TagsRepository tagsRepository;
 
+  final HomeCubit homeCubit;
+
   ChatCubit({
+    required this.homeCubit,
     required this.eventsRepository,
     required this.categoriesRepository,
     required this.tagsRepository,
@@ -113,14 +116,14 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void deleteSelectedEvents() {
-    for (final eventId in state.selectedEventsIds) {
-      deleteEvent(state.events.firstWhere((e) => e.id == eventId));
+    for (final event in state.selectedEvents) {
+      deleteEvent(state.events.firstWhere((e) => e == event));
     }
   }
 
   void transferSelectedEvents(String destinationChat) async {
     final events = state.events
-        .where((event) => state.selectedEventsIds.contains(event.id))
+        .where((event) => state.selectedEvents.contains(event))
         .map(
           (event) => event.copyWith(
             chatId: destinationChat,
@@ -138,7 +141,7 @@ class ChatCubit extends Cubit<ChatState> {
 
     final selectedEvents = state.events.where(
       (event) =>
-          state.selectedEventsIds.contains(event.id) && event.image == null,
+          state.selectedEvents.contains(event) && event.image == null,
     );
 
     for (final event in selectedEvents) {
@@ -162,7 +165,7 @@ class ChatCubit extends Cubit<ChatState> {
   void switchSelectedEventsFavorite() {
     final events = state.events
         .map(
-          (event) => state.selectedEventsIds.contains(event.id)
+          (event) => state.selectedEvents.contains(event)
               ? event.copyWith(isFavorite: !event.isFavorite)
               : event,
         )
@@ -179,20 +182,24 @@ class ChatCubit extends Cubit<ChatState> {
     await tagsRepository.deleteLink(tag.id);
   }
 
-  void switchSelectStatus(String eventId) {
-    final selectedEventsIds = List<String>.from(state.selectedEventsIds);
+  void switchSelectStatus(Event event) {
+    final selectedEvents = List<Event>.from(state.selectedEvents);
 
-    if (selectedEventsIds.contains(eventId)) {
-      selectedEventsIds.remove(eventId);
+    if (selectedEvents.contains(event)) {
+      selectedEvents.remove(event);
     } else {
-      selectedEventsIds.add(eventId);
+      selectedEvents.add(event);
     }
 
-    emit(state.copyWith(selectedEventsIds: selectedEventsIds));
+    emit(state.copyWith(selectedEvents: selectedEvents));
   }
 
-  void toggleEditMode() {
-    emit(state.copyWith(isEditMode: !state.isEditMode));
+  void addEditedEvent(Event event) {
+    emit(state.copyWith(editedEvent: NullWrapper(event)));
+  }
+
+  void removeEditedEvent() {
+    emit(state.copyWith(editedEvent: const NullWrapper(null)));
   }
 
   void toggleFavoriteMode() {
@@ -224,8 +231,10 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void resetSelection() {
-    emit(state.copyWith(selectedEventsIds: const []));
+    emit(state.copyWith(selectedEvents: const []));
   }
+
+  void changeCurrentTab(int tab) => homeCubit.changeCurrentTab(tab);
 
   void _sortEvents(List<Event> events) {
     events.sort((a, b) => a.changeTime.compareTo(b.changeTime));

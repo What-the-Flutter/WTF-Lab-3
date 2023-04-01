@@ -5,11 +5,11 @@ class ChatState extends Equatable {
   final Map<String, Uint8List>? images;
 
   final List<Event> events;
-  final List<String> selectedEventsIds;
+  final List<Event> selectedEvents;
   final List<Category> categories;
   final List<Tag> tags;
 
-  final bool isEditMode;
+  final Event? editedEvent;
   final bool isFavoriteMode;
   final bool showTags;
   final bool showCategories;
@@ -21,10 +21,10 @@ class ChatState extends Equatable {
     required this.chatId,
     this.images,
     this.events = const [],
-    this.selectedEventsIds = const [],
+    this.selectedEvents = const [],
     this.categories = const [],
     this.tags = const [],
-    this.isEditMode = false,
+    this.editedEvent,
     this.isFavoriteMode = false,
     this.showTags = false,
     this.showCategories = false,
@@ -36,10 +36,10 @@ class ChatState extends Equatable {
     NullWrapper<String?>? chatId,
     NullWrapper<Map<String, Uint8List>?>? images,
     List<Event>? events,
-    List<String>? selectedEventsIds,
+    List<Event>? selectedEvents,
     List<Category>? categories,
     List<Tag>? tags,
-    bool? isEditMode,
+    NullWrapper<Event?>? editedEvent,
     bool? isFavoriteMode,
     bool? showTags,
     bool? showCategories,
@@ -49,10 +49,9 @@ class ChatState extends Equatable {
       ChatState(
         chatId: chatId != null ? chatId.value : this.chatId,
         events: events ?? this.events,
-        selectedEventsIds: selectedEventsIds ?? this.selectedEventsIds,
+        selectedEvents: selectedEvents ?? this.selectedEvents,
         categories: categories ?? this.categories,
         tags: tags ?? this.tags,
-        isEditMode: isEditMode ?? this.isEditMode,
         isFavoriteMode: isFavoriteMode ?? this.isFavoriteMode,
         showTags: showTags ?? this.showTags,
         showCategories: showCategories ?? this.showCategories,
@@ -61,6 +60,9 @@ class ChatState extends Equatable {
         selectedCategoryId: selectedCategoryId != null
             ? selectedCategoryId.value
             : this.selectedCategoryId,
+        editedEvent: editedEvent != null 
+            ? editedEvent.value 
+            : this.editedEvent,
       );
 
   @override
@@ -68,10 +70,10 @@ class ChatState extends Equatable {
         chatId,
         events,
         images,
-        selectedEventsIds,
+        selectedEvents,
         categories,
         tags,
-        isEditMode,
+        editedEvent,
         isFavoriteMode,
         showTags,
         showCategories,

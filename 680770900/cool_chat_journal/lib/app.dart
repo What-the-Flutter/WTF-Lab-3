@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'data/models/theme_enums.dart';
+import 'presentation/filters_page/filters_cubit.dart';
 import 'presentation/presentation.dart';
 import 'utils/custom_theme.dart';
 
@@ -90,6 +91,9 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
         ),
         BlocProvider<ChatEditorCubit>(
           create: (_) => GetIt.I<ChatEditorCubit>(),
+        ),
+        BlocProvider<FiltersCubit>(
+          create: (_) => GetIt.I<FiltersCubit>(),
         ),
       ],
       child: Builder(

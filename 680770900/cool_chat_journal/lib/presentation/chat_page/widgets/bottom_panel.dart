@@ -105,7 +105,7 @@ class _BottomPanelState extends State<BottomPanel> {
     required bool isEditMode,
   }) {
     if (isEditMode) {
-      _cubit.toggleEditMode();
+      _cubit.removeEditedEvent();
     }
 
     _cubit.changeShowCategories(false);
@@ -158,22 +158,25 @@ class _BottomPanelState extends State<BottomPanel> {
     required String? selectedCategoryId,
     required bool isEditMode,
   }) {
-    if (_textController.text.isNotEmpty) {
-      return IconButton(
+    return AnimatedCrossFade(
+      crossFadeState: _textController.text.isNotEmpty 
+        ? CrossFadeState.showFirst
+        : CrossFadeState.showSecond,
+      firstChild: IconButton(
         icon: const Icon(Icons.send_rounded),
         onPressed: () => _onEnterText(
           selectedCategoryId: selectedCategoryId,
           isEditMode: isEditMode,
         ),
-      );
-    } else {
-      return IconButton(
+      ),
+      secondChild: IconButton(
         icon: const Icon(Icons.add_a_photo_outlined),
         onPressed: () => _onAddImage(
           selectedCategoryId: selectedCategoryId,
         ),
-      );
-    }
+      ),
+      duration: const Duration(milliseconds: 200),
+    );
   }
 
   void _onChangeText() {
@@ -217,11 +220,11 @@ class _BottomPanelState extends State<BottomPanel> {
                   const _CategoriesButton(),
                   _textField(
                     selectedCategoryId: state.selectedCategoryId,
-                    isEditMode: state.isEditMode,
+                    isEditMode: state.editedEvent != null,
                   ),
                   _sendButton(
                     selectedCategoryId: state.selectedCategoryId,
-                    isEditMode: state.isEditMode,
+                    isEditMode: state.editedEvent != null,
                   ),
                 ],
               ),
