@@ -50,7 +50,7 @@ class FilterPage extends StatelessWidget {
             body: TabBarView(
               children: [_pages(state, context), _tags(), _labels(), _other()],
             ),
-            floatingActionButton: _floatingActionButton(context),
+            floatingActionButton: _applyFilterFAB(context),
           ),
         );
       },
@@ -156,7 +156,7 @@ class FilterPage extends StatelessWidget {
                     .read<FilterCubit>()
                     .addOrDeleteFilterSettings(chat.id),
                 child: UnconstrainedBox(
-                  child: Container(
+                  child: AnimatedContainer(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15.0,
                       vertical: 8.0,
@@ -169,6 +169,8 @@ class FilterPage extends StatelessWidget {
                         Radius.circular(20.0),
                       ),
                     ),
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeInOutQuint,
                     child: Row(
                       children: [
                         if (state.chatTitles.contains(chat.id)) ...[
@@ -204,7 +206,7 @@ class FilterPage extends StatelessWidget {
     return const Center(child: Text(':-)'));
   }
 
-  Widget _floatingActionButton(BuildContext context) {
+  Widget _applyFilterFAB(BuildContext context) {
     return FloatingActionButton(
       child: const Icon(Icons.done, size: 30),
       onPressed: () async {

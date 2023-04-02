@@ -106,10 +106,9 @@ class _TimelinePageState extends State<TimelinePage> {
     return FloatingActionButton(
       child: const Icon(Icons.filter_list),
       onPressed: () async {
-        final events = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => FilterPage(events: state.events),
-          ),
+        final events = await openNewPage(
+          context,
+          FilterPage(events: state.events),
         );
         context.read<EventCubit>().updateEvents(events);
       },

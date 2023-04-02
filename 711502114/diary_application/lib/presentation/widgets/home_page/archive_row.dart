@@ -29,7 +29,10 @@ class ArchiveRow extends StatelessWidget {
           _initArchiveBox(child: Text(archivedInfo)),
         ],
       ),
-      onTap: () => openNewPage(context, const ArchivePage()),
+      onTap: () => openNewPageWithAnim(
+        const ArchivePage(),
+        AnimationType.fade,
+      ),
     );
   }
 

@@ -89,7 +89,6 @@ class _MessengerPageState extends State<MessengerPage> {
                               controller: _fieldText,
                               state: state,
                             ),
-
                           EventKeyboard(
                             width: size.width,
                             fieldText: _fieldText,

@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 class MenuDrawer extends StatelessWidget {
   final AppLocalizations? local;
+
   const MenuDrawer({Key? key, this.local}) : super(key: key);
 
   @override
@@ -31,7 +32,7 @@ class MenuDrawer extends StatelessWidget {
             leading: const Icon(Icons.card_giftcard),
             onTap: () async {
               final text =
-              '''${local?.appShare}\n${local?.applicationProjectLink}''';
+                  '''${local?.appShare}\n${local?.applicationProjectLink}''';
               await Share.share(text);
             },
           ),
@@ -63,7 +64,7 @@ class MenuDrawer extends StatelessWidget {
               style: textTheme(context).bodyText1!,
             ),
             onTap: () {
-              openNewPage(context, const Settings());
+              openNewPageWithAnim(const Settings(), AnimationType.fadeIn);
             },
           ),
           ListTile(
@@ -74,7 +75,10 @@ class MenuDrawer extends StatelessWidget {
             ),
             onTap: () {
               closePage(context);
-              openNewPage(context, const AddChatPage(isCategoryMode: true));
+              openNewPageWithAnim(
+                const AddChatPage(isCategoryMode: true),
+                AnimationType.zoom,
+              );
             },
           ),
           ListTile(

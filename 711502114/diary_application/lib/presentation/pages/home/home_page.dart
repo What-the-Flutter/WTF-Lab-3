@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title:
@@ -57,7 +56,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => openNewPage(context, const AddChatPage()),
+        onPressed: () => openNewPageWithAnim(
+          const AddChatPage(),
+          AnimationType.zoom,
+        ),
         tooltip: local?.add,
         child: const Icon(Icons.add),
       ),
@@ -77,8 +79,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index) {
             if (index < chats.length) {
               return InkWell(
-                onTap: () => openNewPage(
-                  context,
+                onTap: () => openNewPageWithAnim(
                   MessengerPage(chat: chats[index]),
                 ),
                 onLongPress: () => _showMenu(cubit, chats[index]),

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:diary_application/domain/models/category.dart';
 import 'package:diary_application/domain/models/chat.dart';
 import 'package:diary_application/domain/utils/icons.dart';
@@ -27,17 +29,29 @@ class AddChatPage extends StatefulWidget {
   State<AddChatPage> createState() => _AddChatPageState();
 }
 
-class _AddChatPageState extends State<AddChatPage> {
+class _AddChatPageState extends State<AddChatPage>
+    with SingleTickerProviderStateMixin {
   String _title = '';
   bool _isExit = false;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 4),
+      vsync: this,
+    )..repeat();
 
     if (widget.editChat != null) {
       _title = widget.editChat?.title ?? '';
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,7 +90,7 @@ class _AddChatPageState extends State<AddChatPage> {
                         : widget.editChat == null
                             ? local?.addNewChat ?? ''
                             : local?.editChat ?? '',
-                    style: textTheme(context).headline1!
+                    style: textTheme(context).headline1!,
                   ),
                   const SizedBox(height: 10),
                   AddChatKeyboard(
@@ -130,10 +144,22 @@ class _AddChatPageState extends State<AddChatPage> {
           return InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
-            child: ChatIcon(
-              child: Icon(IconMap.data[index]),
-              index: index,
-              pageIndex: cubit.state.index,
+            child: AnimatedBuilder(
+              builder: (context, child) {
+                if (cubit.state.index != index) {
+                  return child ?? const SizedBox();
+                }
+                return Transform.rotate(
+                  angle: _controller.value * 2 * math.pi,
+                  child: child,
+                );
+              },
+              animation: _controller,
+              child: ChatIcon(
+                child: Icon(IconMap.data[index]),
+                index: index,
+                pageIndex: cubit.state.index,
+              ),
             ),
             onTap: () {
               cubit.changeIndex(index);

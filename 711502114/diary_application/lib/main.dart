@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 import 'data/provider/firebase_provider.dart';
 import 'data/provider/settings_provider.dart';
@@ -101,7 +102,7 @@ class ChatJournalApplication extends StatelessWidget {
           ),
         ],
         child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (_, state) => MaterialApp(
+          builder: (_, state) => GetMaterialApp(
             theme: state.theme,
             debugShowCheckedModeBanner: false,
             supportedLocales: L10n.all,
