@@ -16,6 +16,7 @@ class AppThemeState {
     textColor: const Color(0xff545F66),
     iconColor: const Color(0xff829399),
     actionColor: const Color(0xffD0F4EA),
+    contrastColor: const Color(0xFFFEC260),
   );
   static final CustomTheme blackTheme = CustomTheme(
     name: 'black',
@@ -26,6 +27,7 @@ class AppThemeState {
     textColor: const Color(0xffffffff),
     iconColor: const Color(0xffffffff),
     actionColor: const Color(0xff1E5128),
+    contrastColor: const Color(0xFFFEC260),
   );
 
   AppThemeState({
@@ -47,7 +49,8 @@ class AppThemeState {
   }
 
   Future<AppThemeState> loadTheme() async {
-    final isDefaultTheme = await sharedPreferencesService.loadPreferences();
+    final isDefaultTheme =
+        await sharedPreferencesService.loadThemePreferences();
     final theme = !isDefaultTheme ? blackTheme : lightTheme;
     return copyWith(
       isDefaultTheme: isDefaultTheme,
@@ -57,7 +60,7 @@ class AppThemeState {
 
   AppThemeState changeTheme() {
     final theme = isDefaultTheme ? blackTheme : lightTheme;
-    sharedPreferencesService.update(!isDefaultTheme);
+    sharedPreferencesService.updateTheme(!isDefaultTheme);
     return copyWith(
       isDefaultTheme: !isDefaultTheme,
       customTheme: theme,

@@ -6,7 +6,9 @@ import '../entities/event_dto.dart';
 import '../services/database_service.dart';
 
 class EventRepositoryImpl extends EventRepository {
-  final DataBaseService dataBaseService = DataBaseService();
+  final DataBaseService dataBaseService;
+
+  EventRepositoryImpl({required this.dataBaseService});
 
   @override
   Future<List<Event>> getEvents(String chatId) async {
@@ -23,7 +25,7 @@ class EventRepositoryImpl extends EventRepository {
   @override
   Future<void> insertEvent(Event event) async {
     String? fileUrl;
-    if (event.imageData != null){
+    if (event.imageData != null) {
       fileUrl = await dataBaseService.loadImage(File(event.imageData!));
     }
     final eventDTO = EventDTO(
@@ -34,6 +36,7 @@ class EventRepositoryImpl extends EventRepository {
       textData: event.textData,
       imageData: fileUrl ?? event.imageData,
       category: event.category,
+      tags: event.tags,
     );
     dataBaseService.insertEvent(eventDTO.toJson());
   }
@@ -49,6 +52,7 @@ class EventRepositoryImpl extends EventRepository {
       textData: event.textData,
       imageData: event.imageData,
       category: event.category,
+      tags: event.tags,
     );
     dataBaseService.updateEvent(
       event.id!,
@@ -59,5 +63,16 @@ class EventRepositoryImpl extends EventRepository {
   @override
   Future<void> deleteEvent(Event event) async {
     dataBaseService.deleteEvent(event.id!);
+  }
+
+  @override
+  void initListener(Function updateChat) {
+    dataBaseService.databaseRef
+        .child(dataBaseService.fireBaseAuth.currentUser!.uid)
+        .child('events')
+        .onValue
+        .listen((event) {
+      updateChat();
+    });
   }
 }

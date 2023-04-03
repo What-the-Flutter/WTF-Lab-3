@@ -11,15 +11,7 @@ class HomeCubit extends Cubit<HomeState> {
       : _chatRepository = chatRepository,
         super(HomeState()) {
     loadChats();
-    _chatRepository.dataBaseService.databaseRef
-        .child(_chatRepository.dataBaseService.fireBaseAuth.currentUser!.uid)
-        .child('chats')
-        .onValue
-        .listen(
-      (event) {
-        loadChats(); //TODO peredelat
-      },
-    );
+    _chatRepository.initListener(loadChats);
   }
 
   Future<void> addChat({required Chat chat}) async {
@@ -42,7 +34,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> loadChats() async {
     final chats = await _chatRepository.getChats();
-    state.chats.addAll(chats);
     emit(HomeState(chats: chats));
   }
 

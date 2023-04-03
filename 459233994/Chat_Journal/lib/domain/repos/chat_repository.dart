@@ -8,4 +8,6 @@ abstract class ChatRepository{
   Future<void> changeChat(Chat chat);
 
   Future<void> deleteChat(Chat chat);
+
+  void initListener(Function updateChats);
 }
