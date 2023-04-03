@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../widgets/drawer.dart';
-import '../app/app_cubit.dart';
 import '../home/home_page.dart';
 import '../timeline/timeline_page.dart';
 import 'main_page_cubit.dart';
@@ -17,13 +16,13 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   void initState() {
-    context.read<AppCubit>().authenticateLocal();
+    context.read<MainPageCubit>().authenticateLocal();
     super.initState();
   }
 
   @override
   void dispose() {
-    context.read<AppCubit>().logout();
+    context.read<MainPageCubit>().logout();
     super.dispose();
   }
 
@@ -32,9 +31,7 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return const HomePage();
       case 2:
-        return TimelinePage(
-          context: context,
-        );
+        return const TimelinePage();
       default:
         throw Exception('Invalid index!');
     }
@@ -73,15 +70,11 @@ class _MainPageState extends State<MainPage> {
         onTap: context.read<MainPageCubit>().changeSelectedIndex,
       );
 
-  Widget _authenticatedScaffold(BuildContext context) =>
-      BlocBuilder<MainPageCubit, MainPageState>(
-        builder: (context, state) {
-          return Scaffold(
-            drawer: const CustomDrawer(),
-            body: _body(context, state.selectedIndex),
-            bottomNavigationBar: _bottomNavigationBar(context, state),
-          );
-        },
+  Widget _authenticatedScaffold(BuildContext context, MainPageState state) =>
+      Scaffold(
+        drawer: const CustomDrawer(),
+        body: _body(context, state.selectedIndex),
+        bottomNavigationBar: _bottomNavigationBar(context, state),
       );
 
   Widget _nonAuthenticatedScaffold(BuildContext context) => Scaffold(
@@ -119,9 +112,10 @@ class _MainPageState extends State<MainPage> {
       );
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<AppCubit, AppState>(
+  Widget build(BuildContext context) =>
+      BlocBuilder<MainPageCubit, MainPageState>(
         builder: (_, state) => state.isAuthenticated
-            ? _authenticatedScaffold(context)
+            ? _authenticatedScaffold(context, state)
             : _nonAuthenticatedScaffold(context),
       );
 }

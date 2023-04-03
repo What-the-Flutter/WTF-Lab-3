@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../widgets/settings_animation.dart';
 import 'settings_cubit.dart';
 
 class FingerprintProtectionPage extends StatelessWidget {
@@ -66,7 +67,7 @@ class FingerprintProtectionPage extends StatelessWidget {
       BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) => Scaffold(
           appBar: _appBar(context),
-          body: _body(context, state),
+          body: state.isLoaded ? settingsAnimation : _body(context, state),
         ),
       );
 }

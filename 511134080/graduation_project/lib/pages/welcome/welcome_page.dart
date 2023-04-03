@@ -8,6 +8,35 @@ import '../main/main_page.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({Key? key}) : super(key: key);
 
+  Widget _animatedText(BuildContext context) => AnimatedTextKit(
+        totalRepeatCount: 1,
+        pause: const Duration(
+          milliseconds: 0,
+        ),
+        onFinished: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const MainPage(),
+            ),
+          );
+        },
+        animatedTexts: [
+          TyperAnimatedText(
+            'Chat Journal',
+            textStyle: Theme.of(context).textTheme.displayLarge!.copyWith(
+                  fontSize: 48,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 4,
+                ),
+            speed: const Duration(
+              milliseconds: 300,
+            ),
+          ),
+        ],
+      );
+
   Widget _welcomeAnimation(BuildContext context) => SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -16,34 +45,7 @@ class WelcomePage extends StatelessWidget {
             const SizedBox(
               height: 128,
             ),
-            AnimatedTextKit(
-              totalRepeatCount: 1,
-              pause: const Duration(
-                milliseconds: 0,
-              ),
-              onFinished: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const MainPage(),
-                  ),
-                );
-              },
-              animatedTexts: [
-                TyperAnimatedText(
-                  'Chat Journal',
-                  textStyle: Theme.of(context).textTheme.displayLarge!.copyWith(
-                        fontSize: 48,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 4,
-                      ),
-                  speed: const Duration(
-                    milliseconds: 300,
-                  ),
-                ),
-              ],
-            ),
+            _animatedText(context),
             const SizedBox(
               height: 64,
             ),

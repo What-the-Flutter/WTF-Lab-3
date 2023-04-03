@@ -3,22 +3,50 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../constants.dart';
 import '../settings/settings_cubit.dart';
-import 'timeline_page_cubit.dart';
+import 'filter_page_cubit.dart';
 
-class FilterPage extends StatelessWidget {
-  final TextEditingController _textFieldController;
-  FilterPage({
-    required BuildContext context,
+class FilterPage extends StatefulWidget {
+  const FilterPage({
     Key? key,
-  })  : _textFieldController = TextEditingController(),
-        super(key: key) {
-    context.read<TimelinePageCubit>().setInput(_textFieldController);
+  }) : super(key: key);
+
+  @override
+  State<FilterPage> createState() => _FilterPageState();
+}
+
+class _FilterPageState extends State<FilterPage> {
+  late final TextEditingController _textFieldController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textFieldController = TextEditingController();
+    context.read<FilterPageCubit>().init();
+    context.read<FilterPageCubit>().setInput(_textFieldController);
   }
 
-  AppBar _appBar(BuildContext context) => AppBar(
+  @override
+  void dispose() {
+    super.dispose();
+    _textFieldController.dispose();
+  }
+
+  void _applyFilters(FilterPageState state) {
+    Navigator.pop(context, state.events);
+  }
+
+  AppBar _appBar(BuildContext context, FilterPageState state) => AppBar(
         centerTitle: true,
         iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Theme.of(context).primaryColor,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            _applyFilters(state);
+          },
+        ),
         title: Text(
           'Filters',
           style: Theme.of(context).textTheme.displayLarge!.copyWith(
@@ -27,7 +55,7 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _search(BuildContext context, TimelinePageState state) => Expanded(
+  Widget _search(BuildContext context, FilterPageState state) => Expanded(
         flex: 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -37,7 +65,7 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _textField(BuildContext context, TimelinePageState state) => TextField(
+  Widget _textField(BuildContext context, FilterPageState state) => TextField(
         controller: _textFieldController,
         style: Theme.of(context).textTheme.labelLarge!.copyWith(
               color: Theme.of(context).secondaryHeaderColor,
@@ -59,7 +87,7 @@ class FilterPage extends StatelessWidget {
                   ),
                   onPressed: () {
                     context
-                        .read<TimelinePageCubit>()
+                        .read<FilterPageCubit>()
                         .changeInput('', _textFieldController);
                   },
                 )
@@ -75,7 +103,7 @@ class FilterPage extends StatelessWidget {
         ),
         onChanged: (value) {
           context
-              .read<TimelinePageCubit>()
+              .read<FilterPageCubit>()
               .changeInput(value, _textFieldController);
         },
       );
@@ -133,7 +161,7 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _tabBarView(BuildContext context, TimelinePageState state) => Expanded(
+  Widget _tabBarView(BuildContext context, FilterPageState state) => Expanded(
         flex: 9,
         child: TabBarView(
           children: [
@@ -145,7 +173,7 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Widget _pagesTabView(BuildContext context, TimelinePageState state) => Column(
+  Widget _pagesTabView(BuildContext context, FilterPageState state) => Column(
         children: [
           Container(
             alignment: Alignment.center,
@@ -183,8 +211,7 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Text _pagesSelectedText(BuildContext context, TimelinePageState state) =>
-      Text(
+  Text _pagesSelectedText(BuildContext context, FilterPageState state) => Text(
         '${state.selectedPages.length} page(s) ${state.isIgnoreSelectedPages ? 'ignored' : 'included'}',
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -193,7 +220,7 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Widget _ignorePagesTile(BuildContext context, TimelinePageState state) =>
+  Widget _ignorePagesTile(BuildContext context, FilterPageState state) =>
       Padding(
         padding: const EdgeInsets.only(
           bottom: 16,
@@ -216,20 +243,20 @@ class FilterPage extends StatelessWidget {
         ),
       );
 
-  Switch _pagesSwitch(BuildContext context, TimelinePageState state) => Switch(
+  Switch _pagesSwitch(BuildContext context, FilterPageState state) => Switch(
         value: state.isIgnoreSelectedPages,
-        onChanged: context.read<TimelinePageCubit>().togglePagesSwitch,
+        onChanged: context.read<FilterPageCubit>().togglePagesSwitch,
         activeColor: Theme.of(context).primaryColorLight,
       );
 
-  Widget _allPages(BuildContext context, TimelinePageState state) => Wrap(
+  Widget _allPages(BuildContext context, FilterPageState state) => Wrap(
         spacing: 16,
         runSpacing: 24,
         children: [
-          for (final chat in state.allChats)
+          for (final chat in state.chats)
             GestureDetector(
               onTap: () {
-                context.read<TimelinePageCubit>().toggleSelectedChat(chat.id);
+                context.read<FilterPageCubit>().toggleSelectedChat(chat.id);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -263,7 +290,7 @@ class FilterPage extends StatelessWidget {
         ],
       );
 
-  Widget _tagsTabView(BuildContext context, TimelinePageState state) => Column(
+  Widget _tagsTabView(BuildContext context, FilterPageState state) => Column(
         children: [
           Container(
             alignment: Alignment.center,
@@ -297,7 +324,7 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Text _tagsSelectedText(BuildContext context, TimelinePageState state) => Text(
+  Text _tagsSelectedText(BuildContext context, FilterPageState state) => Text(
         '${state.selectedTags.length} tag(s) selected',
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -306,14 +333,14 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Widget _allTags(BuildContext context, TimelinePageState state) => Wrap(
+  Widget _allTags(BuildContext context, FilterPageState state) => Wrap(
         spacing: 16,
         runSpacing: 24,
         children: [
           for (final tag in state.tags)
             GestureDetector(
               onTap: () {
-                context.read<TimelinePageCubit>().toggleSelectedTag(tag);
+                context.read<FilterPageCubit>().toggleSelectedTag(tag);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -347,7 +374,7 @@ class FilterPage extends StatelessWidget {
         ],
       );
 
-  Widget _categoriesTabView(BuildContext context, TimelinePageState state) =>
+  Widget _categoriesTabView(BuildContext context, FilterPageState state) =>
       Column(
         children: [
           Container(
@@ -382,7 +409,7 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Text _categorySelectedText(BuildContext context, TimelinePageState state) =>
+  Text _categorySelectedText(BuildContext context, FilterPageState state) =>
       Text(
         '${state.selectedCategories.length} label(s) selected',
         textAlign: TextAlign.center,
@@ -392,7 +419,7 @@ class FilterPage extends StatelessWidget {
             ),
       );
 
-  Widget _allCategories(BuildContext context, TimelinePageState state) => Wrap(
+  Widget _allCategories(BuildContext context, FilterPageState state) => Wrap(
         spacing: 16,
         runSpacing: 24,
         children: [
@@ -400,7 +427,7 @@ class FilterPage extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 context
-                    .read<TimelinePageCubit>()
+                    .read<FilterPageCubit>()
                     .toggleSelectedCategory(categoryTitle);
               },
               child: Container(
@@ -489,12 +516,12 @@ class FilterPage extends StatelessWidget {
         activeColor: Theme.of(context).primaryColorLight,
       );
 
-  Widget _appplyButton(BuildContext context) => SizedBox(
+  Widget _appplyButton(BuildContext context, FilterPageState state) => SizedBox(
         height: 64,
         width: 64,
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.pop(context);
+            _applyFilters(state);
           },
           elevation: 16,
           child: const Icon(
@@ -506,9 +533,9 @@ class FilterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      BlocBuilder<TimelinePageCubit, TimelinePageState>(
+      BlocBuilder<FilterPageCubit, FilterPageState>(
         builder: (context, state) => Scaffold(
-          appBar: _appBar(context),
+          appBar: _appBar(context, state),
           body: DefaultTabController(
             length: 4,
             child: Column(
@@ -519,7 +546,7 @@ class FilterPage extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButton: _appplyButton(context),
+          floatingActionButton: _appplyButton(context, state),
         ),
       );
 }

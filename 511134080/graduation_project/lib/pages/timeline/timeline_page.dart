@@ -5,13 +5,22 @@ import 'package:intl/intl.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/drawer.dart';
 import '../../widgets/event_card.dart';
+import '../filter_page/filter_page.dart';
 import '../searching_page/searching_page.dart';
 import '../settings/settings_cubit.dart';
-import 'filter_page.dart';
 import 'timeline_page_cubit.dart';
 
-class TimelinePage extends StatelessWidget {
-  TimelinePage({required BuildContext context, Key? key}) : super(key: key) {
+class TimelinePage extends StatefulWidget {
+  const TimelinePage({Key? key}) : super(key: key);
+
+  @override
+  State<TimelinePage> createState() => _TimelinePageState();
+}
+
+class _TimelinePageState extends State<TimelinePage> {
+  @override
+  void initState() {
+    super.initState();
     context.read<TimelinePageCubit>().init();
   }
 
@@ -164,15 +173,14 @@ class TimelinePage extends StatelessWidget {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            final events = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FilterPage(
-                  context: context,
-                ),
+                builder: (_) => const FilterPage(),
               ),
             );
+            context.read<TimelinePageCubit>().updateEvents(events);
           },
           elevation: 16,
           child: const Icon(

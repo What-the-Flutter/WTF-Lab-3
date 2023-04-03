@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 
-import '../../constants.dart';
 import '../../models/event.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
+import '../../widgets/search_animation.dart';
 import '../settings/settings_cubit.dart';
 import 'searching_page_cubit.dart';
 
@@ -258,20 +257,12 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
-  Widget _searchingAnimation() => SingleChildScrollView(
-        child: Center(
-          child: Lottie.asset(
-            searchingAnimationLottie,
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
       builder: (context, state) => Scaffold(
         appBar: _appBar(context, state),
-        body: state.isLoaded ? _searchingAnimation() : _body(context, state),
+        body: state.isLoaded ? searchingAnimation : _body(context, state),
       ),
     );
   }

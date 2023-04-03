@@ -7,8 +7,8 @@ import '../../providers/database_provider.dart';
 import '../../repositories/chat_repository.dart';
 import '../../repositories/event_repository.dart';
 import '../chat/chat_cubit.dart';
+import '../filter_page/filter_page_cubit.dart';
 import '../home/home_cubit.dart';
-import '../main/main_page_cubit.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
@@ -64,10 +64,13 @@ class _ChatJournalState extends State<ChatJournal> {
           create: (_) => SearchingPageCubit(),
         ),
         BlocProvider(
-          create: (_) => MainPageCubit(),
+          create: (_) => TimelinePageCubit(
+            eventsRepository: eventRepository,
+            chatsRepository: chatRepository,
+          ),
         ),
         BlocProvider(
-          create: (_) => TimelinePageCubit(
+          create: (_) => FilterPageCubit(
             eventsRepository: eventRepository,
             chatsRepository: chatRepository,
           ),

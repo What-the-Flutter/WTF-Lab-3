@@ -205,8 +205,8 @@ const categoryTitles = [
   'Laundry',
 ];
 
-const searchingAnimationLottie = 'lottie/search_animation.json';
+const searchingAnimationLottie = 'assets/lottie/search_animation.json';
 
-const settingsAnimationLottie = 'lottie/settings_animation.json';
+const settingsAnimationLottie = 'assets/lottie/settings_animation.json';
 
-const homeAnimationLottie = 'lottie/dancing_book.json';
+const homeAnimationLottie = 'assets/lottie/dancing_book.json';

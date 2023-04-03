@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lottie/lottie.dart';
 
-import '../../constants.dart';
+import '../../widgets/settings_animation.dart';
 import 'choosing_background_image.dart';
 import 'settings_cubit.dart';
 
@@ -226,20 +225,12 @@ class GeneralSettingsPage extends StatelessWidget {
         ),
       );
 
-  Widget _settingsAnimation() => SingleChildScrollView(
-        child: Center(
-          child: Lottie.asset(
-            settingsAnimationLottie,
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) => Scaffold(
           appBar: _appBar(context),
-          body: state.isLoaded ? _settingsAnimation() : _body(context, state),
+          body: state.isLoaded ? settingsAnimation : _body(context, state),
         ),
       );
 }

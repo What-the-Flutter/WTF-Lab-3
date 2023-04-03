@@ -56,93 +56,114 @@ class EventCard extends StatelessWidget {
             : null,
       );
 
+  Widget _eventTitle(BuildContext context) => Container(
+        constraints: const BoxConstraints(
+          maxWidth: 240,
+        ),
+        child: _cardModel.title.isNotEmpty
+            ? HashTagText(
+                text: _cardModel.title,
+                basicStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: Theme.of(context).secondaryHeaderColor,
+                      fontWeight: FontWeight.normal,
+                    ),
+                decoratedStyle:
+                    Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: context.read<SettingsCubit>().state.isLight
+                              ? Theme.of(context).primaryColorDark
+                              : Colors.black,
+                          fontWeight: FontWeight.normal,
+                        ),
+              )
+            : null,
+      );
+
+  Widget _eventImage(BuildContext context) => Container(
+        child: _cardModel.imagePath != null
+            ? GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ImagePage(
+                        imageSource: _cardModel.imagePath!,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 240,
+                  ),
+                  child: Image.network(
+                    _cardModel.imagePath!,
+                  ),
+                ),
+              )
+            : null,
+      );
+
+  Widget _checkIconButton(BuildContext context) => Icon(
+        Icons.check_circle,
+        size: 16,
+        color: _cardModel.isSelected
+            ? Colors.black38
+            : Theme.of(context).primaryColor.withAlpha(0),
+      );
+
+  Widget _eventTime(BuildContext context) => Text(
+        DateFormat('hh:mm a').format(_cardModel.time),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              fontWeight: FontWeight.w400,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+            ),
+      );
+
+  Widget _bookmarkIconButton(BuildContext context) => Icon(
+        Icons.bookmark,
+        size: 16,
+        color: _cardModel.isFavourite
+            ? Colors.black38
+            : Theme.of(context).primaryColor.withAlpha(0),
+      );
+
   Widget _eventCardContent(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            constraints: const BoxConstraints(
-              maxWidth: 240,
-            ),
-            child: _cardModel.title.isNotEmpty
-                ? HashTagText(
-                    text: _cardModel.title,
-                    basicStyle:
-                        Theme.of(context).textTheme.labelMedium!.copyWith(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontWeight: FontWeight.normal,
-                            ),
-                    decoratedStyle:
-                        Theme.of(context).textTheme.labelMedium!.copyWith(
-                              color: context.read<SettingsCubit>().state.isLight
-                                  ? Theme.of(context).primaryColorDark
-                                  : Colors.black,
-                              fontWeight: FontWeight.normal,
-                            ),
-                  )
-                : null,
-          ),
+          _eventTitle(context),
           const SizedBox(
             height: 5,
           ),
-          Container(
-            child: _cardModel.imagePath != null
-                ? GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ImagePage(
-                            imageSource: _cardModel.imagePath!,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      constraints: const BoxConstraints(
-                        maxWidth: 240,
-                      ),
-                      child: Image.network(
-                        _cardModel.imagePath!,
-                      ),
-                    ),
-                  )
-                : null,
-          ),
+          _eventImage(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.check_circle,
-                size: 16,
-                color: _cardModel.isSelected
-                    ? Colors.black38
-                    : Theme.of(context).primaryColor.withAlpha(0),
-              ),
+              _checkIconButton(context),
               const SizedBox(
                 width: 5,
               ),
-              Text(
-                DateFormat('hh:mm a').format(_cardModel.time),
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context)
-                          .secondaryHeaderColor
-                          .withOpacity(0.8),
-                    ),
-              ),
+              _eventTime(context),
               const SizedBox(
                 width: 5,
               ),
-              Icon(
-                Icons.bookmark,
-                size: 16,
-                color: _cardModel.isFavourite
-                    ? Colors.black38
-                    : Theme.of(context).primaryColor.withAlpha(0),
-              ),
+              _bookmarkIconButton(context),
             ],
           ),
         ],
+      );
+
+  Widget _chatTitle(BuildContext context) => Container(
+        child: _shouldShowChatTitle
+            ? Text(
+                _cardModel.chatTitle,
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: Colors.grey[
+                          context.read<SettingsCubit>().state.isLight
+                              ? 600
+                              : 400],
+                    ),
+              )
+            : null,
       );
 
   @override
@@ -177,24 +198,7 @@ class EventCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Container(
-                      child: _shouldShowChatTitle
-                          ? Text(
-                              _cardModel.chatTitle,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelMedium!
-                                  .copyWith(
-                                    color: Colors.grey[context
-                                            .read<SettingsCubit>()
-                                            .state
-                                            .isLight
-                                        ? 600
-                                        : 400],
-                                  ),
-                            )
-                          : null,
-                    ),
+                    _chatTitle(context),
                     _category(context),
                     _eventCardContent(context),
                   ],

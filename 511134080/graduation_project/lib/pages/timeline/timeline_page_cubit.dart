@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:hashtagable/functions.dart';
 
-import '../../constants.dart';
 import '../../models/chat.dart';
 import '../../models/event.dart';
 import '../../repositories/chat_repository.dart';
@@ -62,101 +60,16 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
     );
   }
 
-  void setInput(TextEditingController controller) {
-    controller.text = state.input;
-    final selection = TextSelection.fromPosition(
-      TextPosition(
-        offset: controller.text.length,
-      ),
-    );
-    controller.selection = selection;
-  }
+  void updateEvents(List<Event> events) => emit(
+        state.copyWith(
+          newEvents: events,
+        ),
+      );
 
   void toggleFavouriteMode() {
     emit(
       state.copyWith(
         showingFavourites: !state.isShowingFavourites,
-      ),
-    );
-  }
-
-  void toggleSelectedChat(String chatId) {
-    final List<String> pagesId;
-    if (state.selectedPages.contains(chatId)) {
-      pagesId = List<String>.from(state.selectedPages)
-        ..remove(
-          chatId,
-        );
-    } else {
-      pagesId = List<String>.from(state.selectedPages)
-        ..add(
-          chatId,
-        );
-    }
-    emit(
-      state.copyWith(
-        changedSelectedPages: pagesId,
-      ),
-    );
-  }
-
-  void togglePagesSwitch(bool value) => emit(
-        state.copyWith(
-          ignoreSelectedPages: value,
-        ),
-      );
-
-  void toggleSelectedTag(String tag) {
-    final List<String> tags;
-    if (state.selectedTags.contains(tag)) {
-      tags = List<String>.from(state.selectedTags)
-        ..remove(
-          tag,
-        );
-    } else {
-      tags = List<String>.from(state.selectedTags)
-        ..add(
-          tag,
-        );
-    }
-    emit(
-      state.copyWith(
-        changesSelectedTags: tags,
-      ),
-    );
-  }
-
-  void toggleSelectedCategory(String category) {
-    final List<String> categories;
-    if (state.selectedCategories.contains(category)) {
-      categories = List<String>.from(state.selectedCategories)
-        ..remove(
-          category,
-        );
-    } else {
-      categories = List<String>.from(state.selectedCategories)
-        ..add(
-          category,
-        );
-    }
-    emit(
-      state.copyWith(
-        changedSelectedCategories: categories,
-      ),
-    );
-  }
-
-  void changeInput(String value, TextEditingController controller) {
-    controller.text = value;
-    final selection = TextSelection.fromPosition(
-      TextPosition(
-        offset: controller.text.length,
-      ),
-    );
-    controller.selection = selection;
-    emit(
-      state.copyWith(
-        changedInput: value,
       ),
     );
   }
