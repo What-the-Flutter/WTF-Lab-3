@@ -1,11 +1,11 @@
 import 'package:local_auth/local_auth.dart';
 
 class FingerprintAuthentication {
+  final localAuth = LocalAuthentication();
+
   FingerprintAuthentication();
 
   Future<bool> authenticate() async {
-    final localAuth = LocalAuthentication();
-
     final canAuthenticateWithBiometrics = await localAuth.canCheckBiometrics;
     final isDeviceSupported = await localAuth.isDeviceSupported();
     if (canAuthenticateWithBiometrics && isDeviceSupported) {

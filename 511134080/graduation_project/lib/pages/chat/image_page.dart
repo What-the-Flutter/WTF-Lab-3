@@ -9,33 +9,35 @@ class ImagePage extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  imageSource,
-                ),
-                fit: BoxFit.fitWidth,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(
+                imageSource,
               ),
+              fit: BoxFit.fitWidth,
             ),
           ),
         ),
-        floatingActionButton: SizedBox(
-          width: 64,
-          height: 64,
-          child: FloatingActionButton(
-            elevation: 16,
-            child: const Icon(
-              Icons.arrow_back,
-              size: 32,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+      ),
+      floatingActionButton: SizedBox(
+        width: 64,
+        height: 64,
+        child: FloatingActionButton(
+          elevation: 16,
+          child: const Icon(
+            Icons.arrow_back,
+            size: 32,
           ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-      );
+      ),
+    );
+  }
 }

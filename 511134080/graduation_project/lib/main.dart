@@ -16,14 +16,14 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AppCubit(),
+          create: (_) => AppCubit(),
           lazy: false,
         ),
         BlocProvider(
           create: (_) => MainPageCubit(provider: settingsProvider),
         ),
         BlocProvider(
-          create: (context) => SettingsCubit(provider: settingsProvider),
+          create: (_) => SettingsCubit(provider: settingsProvider),
           lazy: false,
         ),
       ],

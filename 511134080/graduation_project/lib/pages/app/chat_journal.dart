@@ -50,12 +50,12 @@ class _ChatJournalState extends State<ChatJournal> {
           ),
         ),
         BlocProvider(
-          create: (context) => ChatCubit(
+          create: (_) => ChatCubit(
             eventsRepository: eventRepository,
           ),
         ),
         BlocProvider(
-          create: (context) => ManagingPageCubit(
+          create: (_) => ManagingPageCubit(
             chatsRepository: chatRepository,
             initState: ManagingPageState(),
           ),
@@ -77,7 +77,7 @@ class _ChatJournalState extends State<ChatJournal> {
         ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) => MaterialApp(
+        builder: (_, state) => MaterialApp(
           title: 'Chat Journal',
           theme: state.currentTheme,
           debugShowCheckedModeBanner: false,

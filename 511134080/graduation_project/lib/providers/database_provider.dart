@@ -1,8 +1,3 @@
-/*
-final eventTable = 'Event';
-final chatTable = 'Chat';
-*/
-
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +9,8 @@ import '../models/event.dart';
 class DatabaseProvider {
   final DatabaseReference _databaseReference;
   final Reference _storageRef;
+  final _chats = 'chats';
+  final _events = 'events';
 
   DatabaseProvider()
       : _databaseReference = FirebaseDatabase.instance.ref('users'),
@@ -22,10 +19,10 @@ class DatabaseProvider {
   User? get user => FirebaseAuth.instance.currentUser;
 
   Stream<DatabaseEvent> get chatsStream =>
-      _databaseReference.child('${user!.uid}').child('chats').onValue;
+      _databaseReference.child('${user!.uid}').child(_chats).onValue;
 
   Stream<DatabaseEvent> get eventsStream =>
-      _databaseReference.child('${user!.uid}').child('events').onValue;
+      _databaseReference.child('${user!.uid}').child(_events).onValue;
 
   Future<String> uploadImage(File file) async {
     if (user != null) {
@@ -34,8 +31,7 @@ class DatabaseProvider {
       final metadata = SettableMetadata(contentType: 'image/jpeg');
       final uploadTask = reference.putFile(file, metadata);
       final snapshot = await uploadTask.whenComplete(() {});
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
+      return snapshot.ref.getDownloadURL();
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -43,9 +39,7 @@ class DatabaseProvider {
 
   Future<DataSnapshot> queryAllChats() async {
     if (user != null) {
-      final snapshot =
-          await _databaseReference.child('${user!.uid}').child('chats').get();
-      return snapshot;
+      return _databaseReference.child('${user!.uid}').child(_chats).get();
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -54,11 +48,11 @@ class DatabaseProvider {
   Future<void> insertChat(Map<String, dynamic> chat) async {
     if (user != null) {
       final chatsReference =
-          _databaseReference.child('${user!.uid}').child('chats');
+          _databaseReference.child('${user!.uid}').child(_chats);
       final chatIdRef = chatsReference.push();
       final id = chatIdRef.key;
       chat['id'] = id;
-      await chatIdRef.set(chat);
+      chatIdRef.set(chat);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -66,9 +60,10 @@ class DatabaseProvider {
 
   Future<void> updateChat(Map<String, dynamic> chat) async {
     if (user != null) {
-      final chatReference =
-          _databaseReference.child('${user!.uid}').child('chats/${chat['id']}');
-      await chatReference.update(chat);
+      final chatReference = _databaseReference
+          .child('${user!.uid}')
+          .child('$_chats/${chat['id']}');
+      chatReference.update(chat);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -77,10 +72,10 @@ class DatabaseProvider {
   Future<void> deleteChat(String chatId) async {
     if (user != null) {
       final chatReference =
-          _databaseReference.child('${user!.uid}').child('chats/$chatId');
-      await chatReference.remove();
+          _databaseReference.child('${user!.uid}').child('$_chats/$chatId');
+      chatReference.remove();
 
-      final pathToEvents = '${user!.uid}/events';
+      final pathToEvents = '${user!.uid}/$_events';
       final updates = <String, dynamic>{};
       final events = await queryChatEvents(chatId);
       for (var element in events.children) {
@@ -115,16 +110,14 @@ class DatabaseProvider {
     }
 
     final chatReference =
-        _databaseReference.child('${user!.uid}').child('chats/$chatId');
+        _databaseReference.child('${user!.uid}').child('$_chats/$chatId');
 
-    await chatReference.update(updates);
+    chatReference.update(updates);
   }
 
   Future<DataSnapshot> queryAllEvents() async {
     if (user != null) {
-      final snapshot =
-          await _databaseReference.child('${user!.uid}').child('events').get();
-      return snapshot;
+      return _databaseReference.child('${user!.uid}').child(_events).get();
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -132,13 +125,12 @@ class DatabaseProvider {
 
   Future<DataSnapshot> queryChatEvents(String chatId) async {
     if (user != null) {
-      final snapshot = await _databaseReference
+      return _databaseReference
           .child('${user!.uid}')
-          .child('events')
+          .child(_events)
           .orderByChild('chat_id')
           .equalTo(chatId)
           .get();
-      return snapshot;
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -147,26 +139,26 @@ class DatabaseProvider {
   Future<void> insertEvent(Event event) async {
     if (user != null) {
       final eventsReference =
-          _databaseReference.child('${user!.uid}').child('events');
+          _databaseReference.child('${user!.uid}').child(_events);
       final eventIdRef = eventsReference.push();
       final id = eventIdRef.key;
       if (event.imagePath != null) {
         final url = await uploadImage(File(event.imagePath!));
 
-        await eventIdRef.set(event
+        eventIdRef.set(event
             .copyWith(
               newImagePath: url,
               newId: id,
             )
             .toDatabaseMap());
       } else {
-        await eventIdRef.set(event
+        eventIdRef.set(event
             .copyWith(
               newId: id,
             )
             .toDatabaseMap());
       }
-      await updateChatLastEvent(event.chatId);
+      updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -176,9 +168,9 @@ class DatabaseProvider {
     if (user != null) {
       final eventReference = _databaseReference
           .child('${user!.uid}')
-          .child('events/${event['id']}');
+          .child('$_events/${event['id']}');
       await eventReference.update(event);
-      await updateChatLastEvent(event['chat_id']);
+      updateChatLastEvent(event['chat_id']);
     } else {
       throw Exception('Not signed in!!!');
     }
@@ -186,10 +178,11 @@ class DatabaseProvider {
 
   Future<void> deleteEvent(Event event) async {
     if (user != null) {
-      final eventReference =
-          _databaseReference.child('${user!.uid}').child('events/${event.id}');
+      final eventReference = _databaseReference
+          .child('${user!.uid}')
+          .child('$_events/${event.id}');
       await eventReference.remove();
-      await updateChatLastEvent(event.chatId);
+      updateChatLastEvent(event.chatId);
     } else {
       throw Exception('Not signed in!!!');
     }

@@ -10,30 +10,32 @@ import '../../repositories/event_repository.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final ChatRepository chatsRepository;
-  final EventRepository eventsRepository;
-  late final StreamSubscription<List<Chat>> chatsSubscription;
+  final ChatRepository _chatsRepository;
+  final EventRepository _eventsRepository;
+  late final StreamSubscription<List<Chat>> _chatsSubscription;
 
   HomeCubit({
-    required this.chatsRepository,
-    required this.eventsRepository,
-  }) : super(HomeState()) {
-    init();
+    required ChatRepository chatsRepository,
+    required EventRepository eventsRepository,
+  })  : _eventsRepository = eventsRepository,
+        _chatsRepository = chatsRepository,
+        super(HomeState()) {
+    _init();
   }
 
-  void init() {
-    chatsSubscription = chatsRepository.chatsStream.listen((chats) async {
+  void _init() {
+    _chatsSubscription = _chatsRepository.chatsStream.listen((chats) async {
       emit(state.copyWith(newChats: chats));
     });
   }
 
   Future<void> deleteChat(String chatId) async =>
-      await chatsRepository.deleteChatById(chatId);
+      await _chatsRepository.deleteChatById(chatId);
 
   Future<void> togglePinState(String chatId) async {
     final chat = state.chats.where((Chat chat) => chat.id == chatId).first;
 
-    await chatsRepository.updateChat(
+    await _chatsRepository.updateChat(
       chat.copyWith(
         pinned: !chat.isPinned,
       ),

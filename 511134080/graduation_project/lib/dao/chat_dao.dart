@@ -29,10 +29,10 @@ class ChatDao {
   }
 
   Future<void> createChat(Chat chat) async =>
-      await _dbProvider.insertChat(chat.toDatabaseMap());
+      _dbProvider.insertChat(chat.toDatabaseMap());
 
   Future<void> updateChat(Chat chat) async =>
-      await _dbProvider.updateChat(chat.toDatabaseMap());
+      _dbProvider.updateChat(chat.toDatabaseMap());
 
-  Future<void> deleteChat(String id) async => await _dbProvider.deleteChat(id);
+  Future<void> deleteChat(String id) async => _dbProvider.deleteChat(id);
 }

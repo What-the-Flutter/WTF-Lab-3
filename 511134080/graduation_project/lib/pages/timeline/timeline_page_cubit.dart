@@ -11,20 +11,22 @@ import '../../repositories/event_repository.dart';
 part 'timeline_page_state.dart';
 
 class TimelinePageCubit extends Cubit<TimelinePageState> {
-  final EventRepository eventsRepository;
-  final ChatRepository chatsRepository;
-  late final StreamSubscription<List<Event>> eventsSubscription;
-  late final StreamSubscription<List<Chat>> chatsSubscription;
+  final EventRepository _eventsRepository;
+  final ChatRepository _chatsRepository;
+  late final StreamSubscription<List<Event>> _eventsSubscription;
+  late final StreamSubscription<List<Chat>> _chatsSubscription;
 
   TimelinePageCubit({
-    required this.eventsRepository,
-    required this.chatsRepository,
-  }) : super(TimelinePageState()) {
+    required EventRepository eventsRepository,
+    required ChatRepository chatsRepository,
+  })  : _chatsRepository = chatsRepository,
+        _eventsRepository = eventsRepository,
+        super(TimelinePageState()) {
     initSubscriptions();
   }
 
   void initSubscriptions() {
-    eventsSubscription = eventsRepository.eventsStream.listen(
+    _eventsSubscription = _eventsRepository.eventsStream.listen(
       (events) {
         final tags = <String>{};
         for (final event in events) {
@@ -40,7 +42,7 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
         );
       },
     );
-    chatsSubscription = chatsRepository.chatsStream.listen(
+    _chatsSubscription = _chatsRepository.chatsStream.listen(
       (chats) {
         emit(
           state.copyWith(
@@ -52,7 +54,7 @@ class TimelinePageCubit extends Cubit<TimelinePageState> {
   }
 
   Future<void> init() async {
-    final events = await eventsRepository.receiveAllEvents();
+    final events = await _eventsRepository.receiveAllEvents();
     emit(
       state.copyWith(
         newEvents: events,

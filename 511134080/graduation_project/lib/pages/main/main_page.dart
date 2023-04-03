@@ -16,8 +16,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   void initState() {
-    context.read<MainPageCubit>().authenticateLocal();
     super.initState();
+    context.read<MainPageCubit>().authenticateLocal();
   }
 
   @override
@@ -38,37 +38,40 @@ class _MainPageState extends State<MainPage> {
   }
 
   BottomNavigationBar _bottomNavigationBar(
-          BuildContext context, MainPageState state) =>
-      BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-            ),
-            label: 'Home',
+    BuildContext context,
+    MainPageState state,
+  ) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.home,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.assignment,
-            ),
-            label: 'Daily',
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.assignment,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.map,
-            ),
-            label: 'Timeline',
+          label: 'Daily',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.map,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
-          )
-        ],
-        selectedItemColor: Colors.deepPurple,
-        currentIndex: state.selectedIndex,
-        onTap: context.read<MainPageCubit>().changeSelectedIndex,
-      );
+          label: 'Timeline',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.explore),
+          label: 'Explore',
+        )
+      ],
+      selectedItemColor: Colors.deepPurple,
+      currentIndex: state.selectedIndex,
+      onTap: context.read<MainPageCubit>().changeSelectedIndex,
+    );
+  }
 
   Widget _authenticatedScaffold(BuildContext context, MainPageState state) =>
       Scaffold(
@@ -77,39 +80,41 @@ class _MainPageState extends State<MainPage> {
         bottomNavigationBar: _bottomNavigationBar(context, state),
       );
 
-  Widget _nonAuthenticatedScaffold(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            'Authentication',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  color: Colors.white,
-                ),
-          ),
-          backgroundColor: Theme.of(context).primaryColor,
-          automaticallyImplyLeading: false,
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 80,
-                  bottom: 48,
-                ),
-                child: Text(
-                  'Waiting for authentication...',
-                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).secondaryHeaderColor,
-                      ),
-                ),
+  Widget _nonAuthenticatedScaffold(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Authentication',
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                color: Colors.white,
               ),
-              const CircularProgressIndicator(),
-            ],
-          ),
         ),
-      );
+        backgroundColor: Theme.of(context).primaryColor,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 80,
+                bottom: 48,
+              ),
+              child: Text(
+                'Waiting for authentication...',
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.normal,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+              ),
+            ),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) =>

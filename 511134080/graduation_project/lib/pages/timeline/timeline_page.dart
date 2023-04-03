@@ -24,71 +24,77 @@ class _TimelinePageState extends State<TimelinePage> {
     context.read<TimelinePageCubit>().init();
   }
 
-  AppBar _appBar(BuildContext context, TimelinePageState state) => AppBar(
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: Theme.of(context).iconTheme,
-        title: Text(
-          'Timeline',
-          style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                color: Colors.white,
-              ),
-        ),
-        actions: [
-          _searchButton(context, state),
-          _favouriteButton(context, state),
-        ],
-      );
-
-  IconButton _searchButton(BuildContext context, TimelinePageState state) =>
-      IconButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SearchingPage(
-                cards: state.allEvents,
-                chatTitle: 'all pages',
-                tags: state.tags,
-                context: context,
-              ),
+  AppBar _appBar(TimelinePageState state) {
+    return AppBar(
+      centerTitle: true,
+      backgroundColor: Theme.of(context).primaryColor,
+      iconTheme: Theme.of(context).iconTheme,
+      title: Text(
+        'Timeline',
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              color: Colors.white,
             ),
-          );
-        },
-        icon: const Icon(
-          Icons.search,
-        ),
-      );
+      ),
+      actions: [
+        _searchButton(state),
+        _favouriteButton(state),
+      ],
+    );
+  }
 
-  IconButton _favouriteButton(BuildContext context, TimelinePageState state) =>
-      IconButton(
-        onPressed: () {
-          context.read<TimelinePageCubit>().toggleFavouriteMode();
-        },
-        icon: state.isShowingFavourites
-            ? const Icon(
-                Icons.bookmark,
-              )
-            : const Icon(
-                Icons.bookmark_border_outlined,
-              ),
-      );
-
-  Widget _body(TimelinePageState state) => Column(
-        children: [
-          Expanded(
-            flex: 10,
-            child: ListView.builder(
-              itemCount: state.eventsLength,
-              reverse: true,
-              itemBuilder: (_, index) => _listViewItem(index, state),
+  IconButton _searchButton(TimelinePageState state) {
+    return IconButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SearchingPage(
+              cards: state.allEvents,
+              chatTitle: 'all pages',
+              tags: state.tags,
+              context: context,
             ),
           ),
-          const SizedBox(
-            height: 80,
+        );
+      },
+      icon: const Icon(
+        Icons.search,
+      ),
+    );
+  }
+
+  IconButton _favouriteButton(TimelinePageState state) {
+    return IconButton(
+      onPressed: () {
+        context.read<TimelinePageCubit>().toggleFavouriteMode();
+      },
+      icon: state.isShowingFavourites
+          ? const Icon(
+              Icons.bookmark,
+            )
+          : const Icon(
+              Icons.bookmark_border_outlined,
+            ),
+    );
+  }
+
+  Widget _body(TimelinePageState state) {
+    return Column(
+      children: [
+        Expanded(
+          flex: 10,
+          child: ListView.builder(
+            itemCount: state.eventsLength,
+            reverse: true,
+            itemBuilder: (_, index) => _listViewItem(index, state),
           ),
-        ],
-      );
+        ),
+        const SizedBox(
+          height: 80,
+        ),
+      ],
+    );
+  }
 
   Widget _listViewItem(index, TimelinePageState state) {
     final events = state.events;
@@ -135,73 +141,74 @@ class _TimelinePageState extends State<TimelinePage> {
     }
   }
 
-  Widget _hintMessage(context, TimelinePageState state) => Container(
-        padding: const EdgeInsets.all(24),
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColorLight,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(
-              8,
-            ),
+  Widget _hintMessage(TimelinePageState state) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            8,
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              state.hintMessages[0],
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-            ),
-            Text(
-              state.hintMessages[1],
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
-                  ),
-            ),
-          ],
-        ),
-      );
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            state.hintMessages[0],
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+          ),
+          Text(
+            state.hintMessages[1],
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _floatingActionButton(BuildContext context) => SizedBox(
-        width: 64,
-        height: 64,
-        child: FloatingActionButton(
-          onPressed: () async {
-            final events = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const FilterPage(),
-              ),
-            );
-            context.read<TimelinePageCubit>().updateEvents(events);
-          },
-          elevation: 16,
-          child: const Icon(
-            Icons.filter_list,
-            size: 32,
-          ),
+  Widget _floatingActionButton() {
+    return SizedBox(
+      width: 64,
+      height: 64,
+      child: FloatingActionButton(
+        onPressed: () async {
+          final events = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const FilterPage(),
+            ),
+          );
+          context.read<TimelinePageCubit>().updateEvents(events);
+        },
+        elevation: 16,
+        child: const Icon(
+          Icons.filter_list,
+          size: 32,
         ),
-      );
+      ),
+    );
+  }
 
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<TimelinePageCubit, TimelinePageState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: _appBar(context, state),
-            drawer: const CustomDrawer(),
-            body: state.events.isNotEmpty
-                ? _body(state)
-                : _hintMessage(context, state),
-            floatingActionButton: _floatingActionButton(context),
-          );
-        },
-      );
+  Widget build(BuildContext context) {
+    return BlocBuilder<TimelinePageCubit, TimelinePageState>(
+      builder: (context, state) => Scaffold(
+        appBar: _appBar(state),
+        drawer: const CustomDrawer(),
+        body: state.events.isNotEmpty ? _body(state) : _hintMessage(state),
+        floatingActionButton: _floatingActionButton(),
+      ),
+    );
+  }
 }

@@ -8,60 +8,66 @@ import '../pages/settings/settings_page.dart';
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({Key? key}) : super(key: key);
 
-  Widget _drawerHeader(BuildContext context) => DrawerHeader(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-        ),
-        child: Align(
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            DateFormat('MMM dd, yyyy').format(
-              DateTime.now(),
-            ),
-            style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
+  Widget _drawerHeader(BuildContext context) {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+      ),
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Text(
+          DateFormat('MMM dd, yyyy').format(
+            DateTime.now(),
           ),
-        ),
-      );
-
-  Widget _drawerSpreadingTile(BuildContext context) => ListTile(
-        onTap: () {
-          context.read<HomeCubit>().share();
-        },
-        iconColor: Theme.of(context).disabledColor,
-        leading: const Icon(
-          Icons.redeem,
-        ),
-        title: Text(
-          'Help spread the word',
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).disabledColor,
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
               ),
         ),
-      );
+      ),
+    );
+  }
 
-  Widget _drawerSettingTile(BuildContext context) => ListTile(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const SettingsPage(),
+  Widget _drawerSpreadingTile(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        context.read<HomeCubit>().share();
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.redeem,
+      ),
+      title: Text(
+        'Help spread the word',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
             ),
-          );
-        },
-        iconColor: Theme.of(context).disabledColor,
-        leading: const Icon(
-          Icons.settings,
-        ),
-        title: Text(
-          'Settings',
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).disabledColor,
-              ),
-        ),
-      );
+      ),
+    );
+  }
+
+  Widget _drawerSettingTile(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SettingsPage(),
+          ),
+        );
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.settings,
+      ),
+      title: Text(
+        'Settings',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Drawer(
