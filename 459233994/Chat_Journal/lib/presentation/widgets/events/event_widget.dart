@@ -4,14 +4,18 @@ import 'package:intl/intl.dart';
 
 import '../../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
+import '../../screens/settings/settings_cubit.dart';
 import '../app_theme/app_theme_cubit.dart';
 
 class EventWidget extends StatefulWidget {
   final Event _event;
+  final DateTime _previousEventSendTime;
 
   EventWidget({
     required event,
-  }) : _event = event;
+    required previousEventSendTime,
+  })  : _event = event,
+        _previousEventSendTime = previousEventSendTime;
 
   @override
   State<EventWidget> createState() => _EventWidgetState(
@@ -22,7 +26,10 @@ class EventWidget extends StatefulWidget {
 class _EventWidgetState extends State<EventWidget> {
   Event _event;
   double _leftPositionValue = 10;
-  final DateFormat formatter = DateFormat('Hm');
+  double _rightPositionValue = 10;
+  late final double _screenSize;
+  final DateFormat eventFormatter = DateFormat('Hm');
+  final DateFormat dateBubbleFormatter = DateFormat('MMM d,y');
   final GlobalKey _widgetKey = GlobalKey();
   late BuildContext _buildContext; //TODO check context
 
@@ -32,29 +39,58 @@ class _EventWidgetState extends State<EventWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Stack(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 10, top: 10),
-              child: Icon(
-                Icons.check_circle,
-                color: Color(0xff545F66),
-                size: 25,
-              ),
-            ),
-            Padding(
-              key: _widgetKey,
-              padding: EdgeInsets.only(left: _leftPositionValue),
-              child: GestureDetector(
-                onHorizontalDragUpdate: _horizontalDragUpdateHandler,
-                onHorizontalDragEnd: (details) {
-                  _horizontalDragEndHandler(details, _buildContext);
-                },
-                onTap: _tapHandler,
-                child: _messageContent(),
-              ),
+    return Column(
+      children: [
+        Align(
+          alignment: ReadContext(context)
+                  .read<SettingsCubit>()
+                  .state
+                  .isCenterDateBubble
+              ? Alignment.center
+              : (ReadContext(context)
+                      .read<SettingsCubit>()
+                      .state
+                      .isRightBubbleAlignment
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft),
+          child: _dateBubble(),
+        ),
+        Row(
+          mainAxisAlignment: ReadContext(context)
+                  .read<SettingsCubit>()
+                  .state
+                  .isRightBubbleAlignment
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: <Widget>[
+            Stack(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 10, top: 10),
+                  child: Icon(
+                    Icons.check_circle,
+                    color: Color(0xff545F66),
+                    size: 25,
+                  ),
+                ),
+                Padding(
+                  key: _widgetKey,
+                  padding: ReadContext(context)
+                          .read<SettingsCubit>()
+                          .state
+                          .isRightBubbleAlignment
+                      ? EdgeInsets.only(right: _rightPositionValue)
+                      : EdgeInsets.only(left: _leftPositionValue),
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: _horizontalDragUpdateHandler,
+                    onHorizontalDragEnd: (details) {
+                      _horizontalDragEndHandler(details, _buildContext);
+                    },
+                    onTap: _tapHandler,
+                    child: _messageContent(),
+                  ),
+                )
+              ],
             ),
           ],
         ),
@@ -85,6 +121,7 @@ class _EventWidgetState extends State<EventWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _tags(),
             _categoryIcon(),
             Text(
               _event.textData!,
@@ -95,7 +132,11 @@ class _EventWidgetState extends State<EventWidget> {
                     .state
                     .customTheme
                     .textColor,
-                fontSize: 16,
+                fontSize: ReadContext(context)
+                    .read<SettingsCubit>()
+                    .state
+                    .fontSize
+                    .toDouble(),
               ),
             ),
             _conditionString(),
@@ -144,13 +185,18 @@ class _EventWidgetState extends State<EventWidget> {
       width: 75,
       height: 20,
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: ReadContext(context)
+                .read<SettingsCubit>()
+                .state
+                .isRightBubbleAlignment
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text(
-              formatter.format(_event.createTime),
+              eventFormatter.format(_event.createTime),
               style: TextStyle(
                 color: ReadContext(context)
                     .read<AppThemeCubit>()
@@ -203,6 +249,28 @@ class _EventWidgetState extends State<EventWidget> {
     );
   }
 
+  Widget _tags() {
+    if (_event.tags!.isNotEmpty) {
+      var tags = _event.tags!.join(' ');
+      return Text(
+        tags,
+        softWrap: true,
+        style: TextStyle(
+          color: ReadContext(context)
+              .read<AppThemeCubit>()
+              .state
+              .customTheme
+              .contrastColor,
+          fontSize: 16,
+        ),
+      );
+    } else {
+      return Container(
+        width: 0,
+      );
+    }
+  }
+
   Widget _categoryIcon() {
     if (_event.category != null) {
       return Icon(
@@ -220,38 +288,96 @@ class _EventWidgetState extends State<EventWidget> {
     }
   }
 
+  Widget _dateBubble() {
+    if (dateBubbleFormatter.format(widget._previousEventSendTime) !=
+        dateBubbleFormatter.format(_event.createTime)) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: ReadContext(context)
+                .read<AppThemeCubit>()
+                .state
+                .customTheme
+                .actionColor,
+          ),
+          child: Text(
+            dateBubbleFormatter.format(_event.createTime),
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   void _horizontalDragUpdateHandler(DragUpdateDetails details) {
-    setState(
-      () {
-        if (_leftPositionValue + details.delta.dx + _getMessageWidth() <
-                MediaQuery.of(context).size.width &&
-            _leftPositionValue + details.delta.dx > 10) {
-          _leftPositionValue += details.delta.dx;
-        }
-      },
-    );
+    if (ReadContext(context)
+        .read<SettingsCubit>()
+        .state
+        .isRightBubbleAlignment) {
+      setState(
+        () {
+          if (_rightPositionValue - details.delta.dx > 10 &&
+              _rightPositionValue - details.delta.dx + _getMessageWidth() <
+                  MediaQuery.of(context).size.width - 10) {
+            _rightPositionValue -= details.delta.dx;
+          }
+        },
+      );
+    } else {
+      setState(
+        () {
+          if (_leftPositionValue + details.delta.dx + _getMessageWidth() <
+                  MediaQuery.of(context).size.width &&
+              _leftPositionValue + details.delta.dx > 10) {
+            _leftPositionValue += details.delta.dx;
+          }
+        },
+      );
+    }
   }
 
   void _horizontalDragEndHandler(
     DragEndDetails details,
     BuildContext buildContext,
   ) {
-    setState(
-      () {
-        if (_leftPositionValue >
-            MediaQuery.of(context).size.width - _getMessageWidth() - 10) {
-          final changedEvent = _event.isDone
-              ? _event.updateDoneState(_event, false)
-              : _event.updateDoneState(_event, true);
-          ReadContext(context)
-              .read<ChatCubit>()
-              .editEvent(editedEvent: changedEvent);
-          _event =
-              ReadContext(context).read<ChatCubit>().getEventById(_event.id!);
-        }
-        _leftPositionValue = 10;
-      },
-    );
+    ReadContext(context).read<SettingsCubit>().state.isRightBubbleAlignment
+        ? setState(
+            () {
+              if (_rightPositionValue < _getMessageWidth() + 10) {
+                final changedEvent = _event.isDone
+                    ? _event.updateDoneState(_event, false)
+                    : _event.updateDoneState(_event, true);
+                ReadContext(context)
+                    .read<ChatCubit>()
+                    .editEvent(editedEvent: changedEvent);
+                _event = ReadContext(context)
+                    .read<ChatCubit>()
+                    .getEventById(_event.id!);
+              }
+              _rightPositionValue = 10;
+            },
+          )
+        : setState(
+            () {
+              if (_leftPositionValue >
+                  MediaQuery.of(context).size.width - _getMessageWidth() - 10) {
+                final changedEvent = _event.isDone
+                    ? _event.updateDoneState(_event, false)
+                    : _event.updateDoneState(_event, true);
+                ReadContext(context)
+                    .read<ChatCubit>()
+                    .editEvent(editedEvent: changedEvent);
+                _event = ReadContext(context)
+                    .read<ChatCubit>()
+                    .getEventById(_event.id!);
+              }
+              _leftPositionValue = 10;
+            },
+          );
   }
 
   void _tapHandler() {

@@ -8,4 +8,6 @@ abstract class EventRepository{
   Future<void> changeEvent(Event event);
 
   Future<void> deleteEvent(Event event);
+
+  void initListener(Function updateChat);
 }

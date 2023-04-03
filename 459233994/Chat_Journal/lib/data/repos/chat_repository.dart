@@ -4,7 +4,22 @@ import '../entities/chat_dto.dart';
 import '../services/database_service.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
-  final DataBaseService dataBaseService = DataBaseService();
+  final DataBaseService dataBaseService;
+
+  ChatRepositoryImpl({required this.dataBaseService});
+
+  @override
+  void initListener(Function updateChats) {
+    dataBaseService.databaseRef
+        .child(dataBaseService.fireBaseAuth.currentUser!.uid)
+        .child('chats')
+        .onValue
+        .listen(
+      (event) {
+        updateChats();
+      },
+    );
+  }
 
   @override
   Future<List<Chat>> getChats() async {

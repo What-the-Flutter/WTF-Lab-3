@@ -8,7 +8,7 @@ class Chat {
   final DateTime createTime;
   final IconData pageIcon;
   final bool isPinned;
-  final List<Event> events = <Event>[];
+  final List<Event> events;
 
   Chat({
     required this.name,
@@ -18,15 +18,22 @@ class Chat {
     createTime,
     this.id,
   })  : isPinned = pinnedState ?? false,
+        events = events ?? <Event>[],
         createTime = (createTime != null) ? createTime : DateTime.now();
 
-  Chat copyWith({String? id,String? name, IconData? pageIcon, bool? isPinned}) {
+  Chat copyWith({
+    String? id,
+    String? name,
+    IconData? pageIcon,
+    bool? isPinned,
+    List<Event>? events,
+  }) {
     return Chat(
       id: id ?? this.id,
       name: name ?? this.name,
       pageIcon: pageIcon ?? this.pageIcon,
       pinnedState: isPinned ?? this.isPinned,
-      events: events,
+      events: events ?? this.events,
       createTime: createTime,
     );
   }

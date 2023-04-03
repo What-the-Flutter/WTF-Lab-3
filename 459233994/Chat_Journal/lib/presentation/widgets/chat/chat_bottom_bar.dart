@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/entities/event.dart';
+import '../../../domain/entities/tag.dart';
 import '../../screens/chat/chat_cubit.dart';
 import '../../screens/chat/chat_state.dart';
 import '../app_theme/app_theme_cubit.dart';
+import 'tags_selection_bar.dart';
 
 class ChatBottomBar extends StatefulWidget {
   final String chatId;
@@ -53,6 +55,9 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        TagSelectionBar(
+          textEditingController: _textController,
+        ),
         _selectableCategory(),
         Row(
           key: _globalKey,
@@ -70,29 +75,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
             Container(
               width: 300,
               padding: const EdgeInsets.all(10),
-              child: TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                    borderSide: BorderSide(
-                      color: ReadContext(context)
-                          .read<AppThemeCubit>()
-                          .state
-                          .customTheme
-                          .textColor,
-                    ),
-                  ),
-                  hintText: 'Enter event',
-                ),
-                onChanged: (value) {
-                  ReadContext(_globalKey.currentContext!)
-                      .read<ChatCubit>()
-                      .changeBottomBarState(value);
-                },
-              ),
+              child: _inputField(),
             ),
             _sendIcon(),
           ],
@@ -117,6 +100,38 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
     }
   }
 
+  Widget _inputField() {
+    return TextField(
+      controller: _textController,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(15),
+          ),
+          borderSide: BorderSide(
+            color: ReadContext(context)
+                .read<AppThemeCubit>()
+                .state
+                .customTheme
+                .textColor,
+          ),
+        ),
+        hintText: 'Enter event',
+      ),
+      onChanged: (value) {
+        if (value.endsWith('#')) {
+          ReadContext(context).read<ChatCubit>().changeTagSelectionBarState();
+        } else if (ReadContext(context).read<ChatCubit>().state.isFilledTag ==
+            true) {
+          ReadContext(context).read<ChatCubit>().changeTagSelectionBarState();
+        }
+        ReadContext(_globalKey.currentContext!)
+            .read<ChatCubit>()
+            .changeBottomBarState(value);
+      },
+    );
+  }
+
   Widget _sendIcon() {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
@@ -130,27 +145,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                   .customTheme
                   .iconColor,
             ),
-            onTap: () {
-              _pickedIcon == 0
-                  ? ReadContext(context).read<ChatCubit>().addEventToChat(
-                        Event(
-                          textData: _textController.text,
-                          chatId: widget.chatId,
-                        ),
-                      )
-                  : ReadContext(context).read<ChatCubit>().addEventToChat(
-                        Event(
-                          chatId: widget.chatId,
-                          textData: _textController.text,
-                          category: _icons[_pickedIcon],
-                        ),
-                      );
-              ReadContext(_globalKey.currentContext!)
-                  .read<ChatCubit>()
-                  .changeBottomBarState('');
-              _textController.clear();
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
+            onTap: sentEvent,
           );
         } else {
           return InkWell(
@@ -244,5 +239,45 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
         },
       ),
     );
+  }
+
+  void sentEvent() async {
+    var event = Event(
+      chatId: widget.chatId,
+    );
+    final eventTextData = _textController.text;
+    if (_pickedIcon != 0) {
+      event.copyWith(
+        category: _icons[_pickedIcon],
+      );
+    }
+    final tags = <String>[];
+    final textData = await checkEventForTags(eventTextData, tags);
+    event = event.copyWith(
+      textMessage: textData,
+      tags: tags,
+    );
+    ReadContext(context).read<ChatCubit>().addEventToChat(event);
+    ReadContext(_globalKey.currentContext!)
+        .read<ChatCubit>()
+        .changeBottomBarState('');
+    _textController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  Future<String> checkEventForTags(String event, List<String> tags) async {
+    final exp = RegExp(r'\B#\w\w+');
+    final matches = exp.allMatches(event);
+    for (final match in matches) {
+      tags.add(
+        await ReadContext(context).read<ChatCubit>().insertTag(
+              Tag(
+                name: match.group(0)!,
+              ),
+            ),
+      );
+      event = event.replaceAll(match.group(0)!, '');
+    }
+    return event;
   }
 }

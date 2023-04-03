@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,6 +7,7 @@ import '../../../domain/entities/chat.dart';
 import '../../widgets/app_theme/app_theme_cubit.dart';
 import '../../widgets/chat/chat_bottom_bar.dart';
 import '../../widgets/events/event_list.dart';
+import '../settings/settings_cubit.dart';
 import 'chat_cubit.dart';
 import 'chat_search_cubit..dart';
 import 'chat_search_state.dart';
@@ -33,98 +36,121 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(builder: (context, chatState) {
-      return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          leading: InkWell(
-            child: Icon(
-              Icons.arrow_back,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .keyColor,
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, chatState) {
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            leading: InkWell(
+              child: Icon(
+                Icons.arrow_back,
+                color: ReadContext(context)
+                    .read<AppThemeCubit>()
+                    .state
+                    .customTheme
+                    .keyColor,
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: Center(
-            child: Builder(
-              builder: (context) {
-                if (chatState.isSearched == true) {
-                  return _textField();
-                } else {
-                  return Text(
-                    widget.chat.name,
-                    style: TextStyle(
+            title: Center(
+              child: Builder(
+                builder: (context) {
+                  if (chatState.isSearched == true) {
+                    return _textField();
+                  } else {
+                    return Text(
+                      widget.chat.name,
+                      style: TextStyle(
                         color: ReadContext(context)
                             .read<AppThemeCubit>()
                             .state
                             .customTheme
-                            .keyColor),
-                  );
-                }
-              },
+                            .keyColor,
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
+            actions: _actionAppbarButtons(),
+            backgroundColor: ReadContext(context)
+                .read<AppThemeCubit>()
+                .state
+                .customTheme
+                .themeColor,
           ),
-          actions: _actionAppbarButtons(),
-          backgroundColor: ReadContext(context)
-              .read<AppThemeCubit>()
-              .state
-              .customTheme
-              .themeColor,
-        ),
-        body: Builder(
-          builder: (context) {
-            if (chatState.isLoaded) {
-              return SizedBox.expand(
-                child: Container(
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .backgroundColor,
-                  child: Column(
-                    children: <Widget>[
-                      BlocBuilder<ChatSearchCubit, ChatSearchState>(
-                        builder: (context, searchState) {
-                          if (searchState.isSearched == false) {
-                            return EventList(
-                              events: ReadContext(context)
-                                  .read<ChatCubit>()
-                                  .getEvents(),
-                              isFavoritesMode: chatState.isFavorite,
+          body: Builder(
+            builder: (context) {
+              if (chatState.isLoaded) {
+                return SizedBox.expand(
+                  child: Container(
+                    decoration: ReadContext(context)
+                                .read<SettingsCubit>()
+                                .state
+                                .backgroundImage !=
+                            null
+                        ? BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: FileImage(
+                                File(
+                                  ReadContext(context)
+                                      .read<SettingsCubit>()
+                                      .state
+                                      .backgroundImage!,
+                                ),
+                              ),
+                            ),
+                          )
+                        : BoxDecoration(
+                            color: ReadContext(context)
+                                .read<AppThemeCubit>()
+                                .state
+                                .customTheme
+                                .backgroundColor,
+                          ),
+                    child: Column(
+                      children: <Widget>[
+                        BlocBuilder<ChatSearchCubit, ChatSearchState>(
+                          builder: (context, searchState) {
+                            if (searchState.isSearched == false) {
+                              return EventList(
+                                events: ReadContext(context)
+                                    .read<ChatCubit>()
+                                    .getEvents(),
+                                isFavoritesMode: chatState.isFavorite,
+                              );
+                            } else if (searchState.isSearched == true) {
+                              return EventList(
+                                events: searchState.events,
+                                isFavoritesMode: chatState.isFavorite,
+                              );
+                            }
+                            return Expanded(
+                              child: Container(),
                             );
-                          } else if (searchState == true) {
-                            return EventList(
-                              events: searchState.events,
-                              isFavoritesMode: chatState.isFavorite,
-                            );
-                          }
-                          return Expanded(
-                            child: Container(),
-                          );
-                        },
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ChatBottomBar(
-                          chatId: widget.chat.id!,
+                          },
                         ),
-                      ),
-                    ],
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ChatBottomBar(
+                            chatId: widget.chat.id!,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
-      );
-    });
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
+          ),
+        );
+      },
+    );
   }
 
   Widget _textField() {
