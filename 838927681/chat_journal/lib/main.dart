@@ -15,7 +15,7 @@ Future<void> main() async {
   runApp(
     InitBlocs(
       user: await Authentication().getOrCreateUser(),
-      settingsProvider: SettingsProvider(),
+      settingsProvider: const SettingsProvider(),
     ),
   );
 }

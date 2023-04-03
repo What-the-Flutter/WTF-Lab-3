@@ -33,8 +33,9 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
-  Stream<List<DBChat>> get chatsStream =>
-      _dbChatStream.map<List<DBChat>>(_transformToListChats);
+  Stream<List<DBChat>> get chatsStream => _dbChatStream
+      .map<List<DBChat>>(_transformToListChats)
+      .asBroadcastStream();
 
   List<DBChat> _transformToListChats(DatabaseEvent data) {
     final result = <DBChat>[];
@@ -46,8 +47,9 @@ class FirebaseProvider extends ApiDataProvider {
   }
 
   @override
-  Stream<List<DBEvent>> get eventsStream =>
-      _dbEventStream.map<List<DBEvent>>(_transformToListEvents);
+  Stream<List<DBEvent>> get eventsStream => _dbEventStream
+      .map<List<DBEvent>>(_transformToListEvents)
+      .asBroadcastStream();
 
   List<DBEvent> _transformToListEvents(DatabaseEvent data) {
     final result = <DBEvent>[];
@@ -60,7 +62,7 @@ class FirebaseProvider extends ApiDataProvider {
 
   @override
   Stream<List<DBTag>> get tagsStream =>
-      _dbEventStream.map<List<DBTag>>(_transformToListTags);
+      _dbEventStream.map<List<DBTag>>(_transformToListTags).asBroadcastStream();
 
   List<DBTag> _transformToListTags(DatabaseEvent data) {
     final result = <DBTag>[];
