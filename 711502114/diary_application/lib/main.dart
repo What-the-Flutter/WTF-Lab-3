@@ -1,9 +1,12 @@
+import 'package:diary_application/data/repository/tag_repository.dart';
+import 'package:diary_application/presentation/pages/filter/filter_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 import 'data/provider/firebase_provider.dart';
 import 'data/provider/settings_provider.dart';
@@ -43,6 +46,9 @@ class ChatJournalApplication extends StatelessWidget {
     final provider = FirebaseProvider(user: user);
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<TagRepository>(
+          create: (context) => TagRepository(provider: provider),
+        ),
         RepositoryProvider<EventRepository>(
           create: (context) => EventRepository(provider: provider),
           lazy: false,
@@ -85,11 +91,18 @@ class ChatJournalApplication extends StatelessWidget {
             create: (context) => EventCubit(
               chatRepository: context.read<ChatRepository>(),
               eventRepository: context.read<EventRepository>(),
+              tagRepository: context.read<TagRepository>(),
+            ),
+          ),
+          BlocProvider<FilterCubit>(
+            create: (context) => FilterCubit(
+              chatRepositoryApi: context.read<ChatRepository>(),
+              eventRepositoryApi: context.read<EventRepository>(),
             ),
           ),
         ],
         child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (_, state) => MaterialApp(
+          builder: (_, state) => GetMaterialApp(
             theme: state.theme,
             debugShowCheckedModeBanner: false,
             supportedLocales: L10n.all,

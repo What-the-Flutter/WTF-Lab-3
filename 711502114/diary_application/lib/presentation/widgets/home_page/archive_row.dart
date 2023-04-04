@@ -1,10 +1,9 @@
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/archive/archive_page.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../domain/utils/utils.dart';
-import '../../../theme/colors.dart';
-import '../../pages/archive/archive_page.dart';
-import '../../pages/settings/settings_cubit.dart';
 
 class ArchiveRow extends StatelessWidget {
   final String archivedInfo;
@@ -30,7 +29,10 @@ class ArchiveRow extends StatelessWidget {
           _initArchiveBox(child: Text(archivedInfo)),
         ],
       ),
-      onTap: () => openNewPage(context, const ArchivePage()),
+      onTap: () => openNewPageWithAnim(
+        const ArchivePage(),
+        AnimationType.fade,
+      ),
     );
   }
 

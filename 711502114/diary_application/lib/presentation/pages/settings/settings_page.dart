@@ -1,11 +1,13 @@
+import 'package:diary_application/domain/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../domain/utils/utils.dart';
 import 'settings_background_chat_page.dart';
 import 'settings_cubit.dart';
 import 'settings_state.dart';
+
+enum FontSize { small, medium, big }
 
 class Settings extends StatelessWidget {
   const Settings({Key? key}) : super(key: key);
@@ -53,17 +55,15 @@ class Settings extends StatelessWidget {
               local.fontSizeState,
               Icons.format_size,
               onTap: () {
-                switch (state.fontSize) {
-                  case 0:
-                    context.read<SettingsCubit>().changeFontSize(1);
-                    break;
-                  case 1:
-                    context.read<SettingsCubit>().changeFontSize(-1);
-                    break;
-                  default:
-                    context.read<SettingsCubit>().changeFontSize(0);
-                    break;
+                final String font;
+                if (FontSize.medium.toString() == state.fontSize) {
+                  font = FontSize.big.toString();
+                } else if (FontSize.big.toString() == state.fontSize) {
+                  font = FontSize.small.toString();
+                } else {
+                  font = FontSize.medium.toString();
                 }
+                context.read<SettingsCubit>().setFontSize(font);
               },
             ),
             _listTile(
@@ -94,7 +94,7 @@ class Settings extends StatelessWidget {
             ),
             _listTile(context, local.backgroundImage, local.chatBackgroundImage,
                 Icons.image, onTap: () {
-              openNewPage(context, BackgroundChatImage(state: state));
+              openNewPage(context, const BackgroundChatImage());
             }),
             _listTile(
               context,

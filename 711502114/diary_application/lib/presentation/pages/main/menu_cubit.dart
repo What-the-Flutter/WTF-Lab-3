@@ -1,7 +1,7 @@
+import 'package:diary_application/domain/repository/settings_repository_api.dart';
+import 'package:diary_application/domain/utils/finger_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/repository/settings_repository_api.dart';
-import '../../../domain/utils/finger_auth.dart';
 import 'menu_state.dart';
 
 class MenuCubit extends Cubit<MenuState> {

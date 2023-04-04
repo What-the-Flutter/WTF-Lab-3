@@ -20,7 +20,6 @@ linter:
     - literal_only_boolean_expressions
     - no_adjacent_strings_in_list
     - no_duplicate_case_values
-    - prefer_relative_imports
     - prefer_void_to_null
     - unnecessary_statements
     - valid_regexps
@@ -56,7 +55,6 @@ linter:
     - library_prefixes
     - non_constant_identifier_names
     - null_closures
-    - omit_local_variable_types
     - prefer_adjacent_string_concatenation
     - prefer_collection_literals
     - prefer_conditional_assignment

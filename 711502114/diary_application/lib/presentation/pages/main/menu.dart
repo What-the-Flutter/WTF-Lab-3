@@ -1,11 +1,11 @@
+import 'package:diary_application/presentation/pages/daily/daily_page.dart';
+import 'package:diary_application/presentation/pages/explore/explore_page.dart';
+import 'package:diary_application/presentation/pages/home/home_page.dart';
+import 'package:diary_application/presentation/pages/timeline/timeline_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../daily/daily_page.dart';
-import '../explore/explore_page.dart';
-import '../home/home_page.dart';
-import '../timeline/timeline_page.dart';
 import 'menu_cubit.dart';
 import 'menu_state.dart';
 

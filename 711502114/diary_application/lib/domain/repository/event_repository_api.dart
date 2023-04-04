@@ -1,4 +1,4 @@
-import '../models/event.dart';
+import 'package:diary_application/domain/models/event.dart';
 
 abstract class EventRepositoryApi {
   Future<void> addEvent(Event event);

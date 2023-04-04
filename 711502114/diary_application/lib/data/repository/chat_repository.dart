@@ -1,13 +1,11 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'dart:async';
 
-import '../../domain/models/chat.dart';
-import '../../domain/repository/chat_repository_api.dart';
-import '../../domain/repository/event_repository_api.dart';
-import '../converter/converter_db.dart';
-import '../entities/chat_db.dart';
-import '../provider/api_firebase_provider.dart';
+import 'package:diary_application/data/converter/converter_db.dart';
+import 'package:diary_application/data/entities/chat_db.dart';
+import 'package:diary_application/data/provider/api_firebase_provider.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/repository/chat_repository_api.dart';
+import 'package:diary_application/domain/repository/event_repository_api.dart';
 
 class ChatRepository extends ChatRepositoryApi {
   final ApiDataProvider _provider;
@@ -21,7 +19,7 @@ class ChatRepository extends ChatRepositoryApi {
 
   @override
   Stream<List<Chat>> get chatsStream =>
-      _provider.chatsStream.map<List<Chat>>(_dbList2chats);
+      _provider.chatsStream.map<List<Chat>>(_dbList2chats).asBroadcastStream();
 
   List<Chat> _dbList2chats(List<ChatDB> dbChats) {
     final result = <Chat>[];

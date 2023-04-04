@@ -2,34 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'settings_cubit.dart';
-import 'settings_state.dart';
 
 class BackgroundChatImage extends StatelessWidget {
-  final SettingsState state;
-
-  const BackgroundChatImage({required this.state, Key? key}) : super(key: key);
+  const BackgroundChatImage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final local = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'Background Image',
-        ),
+        title: Text(local?.backgroundImage ?? ''),
       ),
       body: Center(
         child: context.watch<SettingsCubit>().state.backgroundImage == ''
-            ? _noBackgroundImage(context)
-            : _showBackgroundImage(context),
+            ? _noBackgroundImage(context, local)
+            : _showBackgroundImage(context, local),
       ),
     );
   }
 
-  Widget _noBackgroundImage(BuildContext context) {
+  Widget _noBackgroundImage(BuildContext context, AppLocalizations? local) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -37,16 +34,14 @@ class BackgroundChatImage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'Click the button below to set the Background Image',
+            local?.setBackgroundLabel ?? '',
             textAlign: TextAlign.center,
           ),
           const SizedBox(
             height: 20,
           ),
           MaterialButton(
-            child: Text(
-              'Pick an Image',
-            ),
+            child: Text(local?.setBackground ?? ''),
             onPressed: () async => await _pickImage(context),
           ),
         ],
@@ -54,7 +49,7 @@ class BackgroundChatImage extends StatelessWidget {
     );
   }
 
-  Widget _showBackgroundImage(BuildContext context) {
+  Widget _showBackgroundImage(BuildContext context, AppLocalizations? local) {
     return Column(
       children: [
         SizedBox(
@@ -66,14 +61,14 @@ class BackgroundChatImage extends StatelessWidget {
         ),
         ListTile(
           title: Text(
-            'Unset Image',
+              local?.cancelBackground ?? ''
           ),
           leading: const Icon(Icons.delete),
           onTap: () => context.read<SettingsCubit>().setBackgroundImage(''),
         ),
         ListTile(
           title: Text(
-            'Pick a new Image',
+              local?.setBackground ?? ''
           ),
           leading: const Icon(Icons.image),
           onTap: () async => await _pickImage(context),

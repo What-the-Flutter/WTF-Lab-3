@@ -1,9 +1,9 @@
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../../presentation/pages/settings/settings_cubit.dart';
-import '../../theme/colors.dart';
+import 'package:get/get.dart' as lib;
 
 String formatDate(BuildContext context, String date,
     {bool includeTime = false}) {
@@ -62,8 +62,33 @@ String _addSeconds(int seconds, bool include) {
   return ':$sec';
 }
 
-void openNewPage(BuildContext context, Widget page) {
-  Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+Future<dynamic> openNewPage(BuildContext context, Widget page) {
+  return Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+}
+
+void openNewPageWithAnim(
+  Widget page, [
+  AnimationType type = AnimationType.fade,
+]) {
+  final lib.Transition transition;
+  switch (type) {
+    case AnimationType.fade:
+      transition = lib.Transition.fade;
+      break;
+    case AnimationType.zoom:
+      transition = lib.Transition.zoom;
+      break;
+    case AnimationType.fadeIn:
+      transition = lib.Transition.fadeIn;
+      break;
+  }
+  lib.Get.to(() => page, transition: transition);
+}
+
+enum AnimationType {
+  zoom,
+  fade,
+  fadeIn;
 }
 
 void closePage(BuildContext context) {
@@ -93,13 +118,15 @@ int countOrientationCoefficient(BuildContext context) {
   }
 }
 
+enum FontSize { small, medium, big }
+
 TextTheme textTheme(BuildContext context) {
-  switch (context.read<SettingsCubit>().state.fontSize) {
-    case 1:
-      return CustomTheme.largeTextTheme;
-    case -1:
-      return CustomTheme.smallTextTheme;
-    default:
-      return CustomTheme.defaultTextTheme;
+  final fontSize = context.read<SettingsCubit>().state.fontSize;
+  if (FontSize.big.toString() == fontSize) {
+    return CustomTheme.largeTextTheme;
+  } else if (FontSize.small.toString() == fontSize) {
+    return CustomTheme.smallTextTheme;
+  } else {
+    return CustomTheme.defaultTextTheme;
   }
 }

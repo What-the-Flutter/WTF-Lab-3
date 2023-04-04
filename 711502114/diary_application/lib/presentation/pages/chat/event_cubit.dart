@@ -1,36 +1,45 @@
-// ignore_for_file: omit_local_variable_types
-
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/models/event.dart';
+import 'package:diary_application/domain/models/tag.dart';
+import 'package:diary_application/domain/repository/chat_repository_api.dart';
+import 'package:diary_application/domain/repository/event_repository_api.dart';
+import 'package:diary_application/domain/repository/tag_repository_api.dart';
+import 'package:diary_application/domain/utils/hash_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../domain/models/category.dart';
-import '../../../domain/models/chat.dart';
-import '../../../domain/models/event.dart';
-import '../../../domain/repository/chat_repository_api.dart';
-import '../../../domain/repository/event_repository_api.dart';
 import 'event_state.dart';
 
 class EventCubit extends Cubit<EventState> {
   final ChatRepositoryApi chatRepository;
   final EventRepositoryApi eventRepository;
+  final TagRepositoryApi tagRepository;
   late final StreamSubscription<List<Event>> eventStream;
+  late final StreamSubscription<List<Tag>> tagsStream;
 
   EventCubit({
     required this.chatRepository,
     required this.eventRepository,
+    required this.tagRepository,
     String id = '0',
   }) : super(EventState(chatId: '0', events: [], selectedIndexes: [])) {
     _initStream();
   }
 
-  void _initStream() {
+  void _initStream() async {
     eventStream = eventRepository.eventStream.listen((event) {
       final events = event.where((e) => e.chatId == state.chatId).toList();
       events.sort((a, b) => a.creationTime.compareTo(b.creationTime));
       emit(state.copyWith(events: events));
+    });
+
+    tagsStream = tagRepository.tagStream.listen((t) {
+      final tags = t.toList();
+      emit(state.copyWith(tags: tags));
     });
   }
 
@@ -53,7 +62,18 @@ class EventCubit extends Cubit<EventState> {
   void init(String chatId) async {
     final allEvents = await eventRepository.getEvents(chatId);
     final events = allEvents.where((e) => e.chatId == chatId).toList();
-    emit(state.copyWith(chatId: chatId, events: events));
+    final tags = await tagRepository.tags;
+    emit(state.copyWith(chatId: chatId, events: events, tags: tags));
+  }
+
+  void initAll() async {
+    final allEvents = await eventRepository.getAllEvents();
+    final tags = await tagRepository.tags;
+    emit(state.copyWith(events: allEvents, tags: tags));
+  }
+
+  void updateEvents(List<Event> events) {
+    emit(state.copyWith(events: events));
   }
 
   void changeFavorite() {
@@ -81,9 +101,9 @@ class EventCubit extends Cubit<EventState> {
     emit(state.copyWith(events: state.events));
   }
 
-  void startEditMode(TextEditingController fieldText) {
+  void startEditMode([TextEditingController? fieldText]) {
     state.isEditMode = true;
-    fieldText.text = state.events[state.selectedIndexes.last].message;
+    fieldText?.text = state.events[state.selectedIndexes.last].message;
 
     emit(state.copyWith(events: state.events));
   }
@@ -123,6 +143,13 @@ class EventCubit extends Cubit<EventState> {
     int shift = 0;
     for (int i in state.selectedIndexes) {
       final trashEvent = state.events[i + shift--];
+
+      final tagsList = HashTag.extract(trashEvent.message);
+      for (final tagText in tagsList) {
+        tagRepository
+            .deleteTag(state.tags.firstWhere((t) => t.title == tagText));
+      }
+
       eventRepository.deleteEvent(trashEvent);
       state.events.remove(trashEvent);
     }
@@ -130,7 +157,7 @@ class EventCubit extends Cubit<EventState> {
     finishEditMode(deleteMode: true);
   }
 
-  void addEvent(String message, [String? path]) {
+  void addEvent(String message, [String? path]) async {
     final event = Event(
       id: '',
       chatId: state.chatId,
@@ -143,6 +170,13 @@ class EventCubit extends Cubit<EventState> {
     eventRepository.addEvent(event);
 
     state.category = null;
+
+    if (HashTag.has(event.message)) {
+      final tagsList = HashTag.extract(event.message);
+      for (final tagText in tagsList) {
+        await tagRepository.addTag(Tag(id: '', title: tagText));
+      }
+    }
 
     emit(state.copyWith(events: state.events));
   }
@@ -191,6 +225,17 @@ class EventCubit extends Cubit<EventState> {
         message: fieldText.text,
       );
       eventRepository.changeEvent(state.events[index]);
+
+      if (HashTag.has(state.events[index].message)) {
+        final tagsList = HashTag.extract(state.events[index].message);
+        for (final tagText in tagsList) {
+          try {
+            tagRepository
+                .updateTag(state.tags.firstWhere((t) => t.title == tagText));
+            // ignore: empty_catches
+          } catch (e) {}
+        }
+      }
     }
 
     state.isEditMode = false;
@@ -222,9 +267,14 @@ class EventCubit extends Cubit<EventState> {
     closeCategory();
   }
 
+  void changeTagStatus(bool isHashTag) {
+    emit(state.copyWith(isHashTag: isHashTag));
+  }
+
   @override
   Future<void> close() {
     eventStream.cancel();
+    tagsStream.cancel();
     return super.close();
   }
 }

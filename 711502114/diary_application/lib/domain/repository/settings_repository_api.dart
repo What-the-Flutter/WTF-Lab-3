@@ -3,7 +3,7 @@ abstract class SettingsRepositoryApi {
 
   Future<bool> get isLocked;
 
-  Future<int> get fontSize;
+  Future<String> get fontSize;
 
   Future<bool> get alignment;
 
@@ -15,7 +15,7 @@ abstract class SettingsRepositoryApi {
 
   void setIsLocked(bool value);
 
-  void setFontSize(int size);
+  void setFontSize(String size);
 
   void setBubbleAlignment(bool alignment);
 

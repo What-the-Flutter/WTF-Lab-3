@@ -1,6 +1,5 @@
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
-
-import '../../../theme/colors.dart';
 
 class AddChatKeyboard extends StatelessWidget {
   final Function(String val) onTyping;

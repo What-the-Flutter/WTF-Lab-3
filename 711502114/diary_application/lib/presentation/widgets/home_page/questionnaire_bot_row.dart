@@ -1,8 +1,7 @@
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../../theme/colors.dart';
 
 class QuestionnaireBot extends StatelessWidget {
   const QuestionnaireBot({Key? key}) : super(key: key);

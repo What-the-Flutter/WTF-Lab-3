@@ -1,11 +1,10 @@
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
+import 'package:diary_application/presentation/pages/home/home_state.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/presentation/widgets/home_page/chat_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../../widgets/home_page/chat_card.dart';
-import '../home/home_cubit.dart';
-import '../home/home_state.dart';
-import '../settings/settings_cubit.dart';
 
 class ArchivePage extends StatefulWidget {
   const ArchivePage({super.key});

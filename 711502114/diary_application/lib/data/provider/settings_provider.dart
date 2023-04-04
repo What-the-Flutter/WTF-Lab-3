@@ -48,15 +48,15 @@ class SettingsProvider extends SettingsProviderApi {
   }
 
   @override
-  Future<int> get fontSize async {
+  Future<String> get fontSize async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(fontSizeKey) ?? 0;
+    return prefs.getString(fontSizeKey) ?? 'default';
   }
 
   @override
-  Future<void> setFontSize(int value) async {
+  Future<void> setFontSize(String value) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setInt(fontSizeKey, value);
+    prefs.setString(fontSizeKey, value);
   }
 
   @override

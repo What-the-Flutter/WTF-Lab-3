@@ -1,8 +1,11 @@
-import '../../data/entities/event_db.dart';
-import '../../domain/models/category.dart';
-import '../../domain/models/chat.dart';
-import '../../domain/models/event.dart';
-import '../entities/chat_db.dart';
+import 'package:diary_application/data/entities/chat_db.dart';
+import 'package:diary_application/data/entities/event_db.dart';
+import 'package:diary_application/data/entities/tag_db.dart';
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/models/event.dart';
+
+import 'package:diary_application/domain/models/tag.dart';
 
 class ConverterDB {
   static Chat entity2Chat(ChatDB chatDB) {
@@ -54,5 +57,13 @@ class ConverterDB {
       photoPath: event.photoPath ?? '',
       categoryName: event.category?.title ?? '',
     );
+  }
+
+  static Tag entity2Tag(TagDB tagDB) {
+    return Tag(id: tagDB.id, title: tagDB.title);
+  }
+
+  static TagDB tag2Entity(Tag tag) {
+    return TagDB(id: tag.id, title: tag.title);
   }
 }

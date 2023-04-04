@@ -1,23 +1,32 @@
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../pages/settings/settings_cubit.dart';
-
 class InfoBox extends StatelessWidget {
   final String mainTitle;
+  final bool isTimeline;
 
-  const InfoBox({Key? key, required this.mainTitle}) : super(key: key);
+  const InfoBox({
+    Key? key,
+    this.mainTitle = '',
+    this.isTimeline = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
     String title, desc;
     if (local != null) {
-      title = local.messageNotificationTitle;
-      title = title.replaceAll('{}', mainTitle);
-      desc = local.messageNotificationDesc;
-      desc = desc.replaceAll('{}', mainTitle);
+      if (!isTimeline) {
+        title = local.messageNotificationTitle;
+        title = title.replaceAll('{}', mainTitle);
+        desc = local.messageNotificationDesc;
+        desc = desc.replaceAll('{}', mainTitle);
+      } else {
+        title = local.emptyTimelineTitle;
+        desc = local.emptyTimelineDesc;
+      }
     } else {
       title = '';
       desc = '';

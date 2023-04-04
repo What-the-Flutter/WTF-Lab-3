@@ -3,7 +3,7 @@ abstract class SettingsProviderApi {
 
   Future<void> setIsLocked(bool value);
 
-  Future<void> setFontSize(int value);
+  Future<void> setFontSize(String value);
 
   Future<void> setBubbleAlignment(bool value);
 
@@ -17,7 +17,7 @@ abstract class SettingsProviderApi {
 
   Future<bool> get isLocked;
 
-  Future<int> get fontSize;
+  Future<String> get fontSize;
 
   Future<bool> get bubbleAlignment;
 

@@ -1,13 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:diary_application/domain/models/category.dart';
+import 'package:diary_application/domain/models/event.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../../../domain/models/category.dart';
-import '../../../domain/models/event.dart';
-import '../../../domain/utils/utils.dart';
-import '../../../theme/colors.dart';
-import '../../pages/settings/settings_cubit.dart';
 
 class EventBox extends StatelessWidget {
   final Event event;

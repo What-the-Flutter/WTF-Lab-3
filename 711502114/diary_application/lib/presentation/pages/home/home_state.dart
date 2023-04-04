@@ -1,4 +1,4 @@
-import '../../../domain/models/chat.dart';
+import 'package:diary_application/domain/models/chat.dart';
 
 class HomeState {
   final List<Chat> chats;

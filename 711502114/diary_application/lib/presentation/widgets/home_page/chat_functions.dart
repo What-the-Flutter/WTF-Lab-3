@@ -1,9 +1,9 @@
+import 'package:diary_application/domain/models/chat.dart';
+import 'package:diary_application/domain/utils/utils.dart';
+import 'package:diary_application/presentation/pages/creation/add_chat_page.dart';
+import 'package:diary_application/presentation/pages/home/home_cubit.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/chat.dart';
-import '../../../domain/utils/utils.dart';
-import '../../pages/creation/add_chat_page.dart';
-import '../../pages/home/home_cubit.dart';
 import 'info_chat_dialog.dart';
 
 class ChatFunctions {
