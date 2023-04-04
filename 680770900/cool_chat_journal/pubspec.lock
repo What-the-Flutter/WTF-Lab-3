@@ -527,6 +527,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  mockito:
+    dependency: "direct main"
+    description:
+      name: mockito
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.4.0"
   nested:
     dependency: transitive
     description:
