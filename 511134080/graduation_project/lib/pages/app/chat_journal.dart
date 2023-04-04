@@ -12,6 +12,9 @@ import '../home/home_cubit.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
+import '../statistics_page/label_statistics/label_statistics_cubit.dart';
+import '../statistics_page/statistics_page_cubit.dart';
+import '../statistics_page/summary_statistics/summary_statistics_cubit.dart';
 import '../timeline/timeline_page_cubit.dart';
 import '../welcome/welcome_page.dart';
 
@@ -73,6 +76,19 @@ class _ChatJournalState extends State<ChatJournal> {
           create: (_) => FilterPageCubit(
             eventsRepository: eventRepository,
             chatsRepository: chatRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => StatisticsPageCubit(),
+        ),
+        BlocProvider(
+          create: (_) => LabelStatisticsCubit(
+            eventsRepository: eventRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => SummaryStatisticsCubit(
+            eventsRepository: eventRepository,
           ),
         ),
       ],

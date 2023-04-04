@@ -53,6 +53,7 @@ dependencies:
   lottie: ^2.3.1
   animated_text_kit: ^4.2.2
   local_auth: ^2.1.6
+  fl_chart: ^0.61.0
 
 flutter_native_splash:
   color: "#9575CD"
