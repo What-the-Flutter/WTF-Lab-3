@@ -5,12 +5,8 @@ import '../../constants.dart';
 import '../../models/chat.dart';
 import 'managing_page_cubit.dart';
 
-class ManagingPage extends StatelessWidget {
+class ManagingPage extends StatefulWidget {
   final Chat? _editingPage;
-
-  final _controller = TextEditingController();
-
-  final FocusNode _focusNode = FocusNode();
 
   ManagingPage({
     Key? key,
@@ -21,8 +17,22 @@ class ManagingPage extends StatelessWidget {
     context.read<ManagingPageCubit>().initState(_editingPage);
   }
 
-  Widget _createIconButton(
-      BuildContext context, int index, ManagingPageState state) {
+  @override
+  State<ManagingPage> createState() => _ManagingPageState();
+}
+
+class _ManagingPageState extends State<ManagingPage> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _focusNode = FocusNode();
+  }
+
+  Widget _iconButton(int index, ManagingPageState state) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -56,15 +66,15 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  Future<void> _managingPage(BuildContext context) async {
+  Future<void> _managingPage() async {
     await context
         .read<ManagingPageCubit>()
-        .manageChat(_editingPage?.id, _controller.text);
+        .manageChat(widget._editingPage?.id, _controller.text);
 
     Navigator.pop(context);
   }
 
-  Widget _createTextField(BuildContext context) {
+  Widget _textField() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -93,13 +103,13 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  FloatingActionButton _createFloatingActionButton(BuildContext context) {
+  FloatingActionButton _floatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
         if (_controller.text == '') {
           Navigator.pop(context);
         } else {
-          _managingPage(context);
+          _managingPage();
         }
       },
       elevation: 16,
@@ -115,7 +125,7 @@ class ManagingPage extends StatelessWidget {
     );
   }
 
-  Widget _createIconsGrid(ManagingPageState state) {
+  Widget _iconsGrid(ManagingPageState state) {
     return Expanded(
       flex: 10,
       child: Padding(
@@ -127,8 +137,8 @@ class ManagingPage extends StatelessWidget {
         child: GridView.builder(
           shrinkWrap: true,
           itemCount: icons.length,
-          itemBuilder: (context, index) {
-            return _createIconButton(context, index, state);
+          itemBuilder: (_, index) {
+            return _iconButton(index, state);
           },
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
@@ -162,11 +172,11 @@ class ManagingPage extends StatelessWidget {
                   ),
                 ),
               ),
-              _createTextField(context),
-              _createIconsGrid(state),
+              _textField(),
+              _iconsGrid(state),
             ],
           ),
-          floatingActionButton: _createFloatingActionButton(context),
+          floatingActionButton: _floatingActionButton(),
         );
       },
     );

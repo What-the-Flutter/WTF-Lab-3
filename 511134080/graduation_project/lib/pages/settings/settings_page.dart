@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'fingerprint_protection_page.dart';
 import 'general_settings_page.dart';
+import 'settings_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({
+    Key? key,
+  }) : super(key: key);
 
-  ListTile _createGeneralTile(BuildContext context) {
+  ListTile _generalTile(BuildContext context) {
     return ListTile(
       iconColor: Theme.of(context).disabledColor,
       leading: const Padding(
@@ -32,10 +37,49 @@ class SettingsPage extends StatelessWidget {
         Icons.arrow_forward_ios,
       ),
       onTap: () {
+        context.read<SettingsCubit>().startLoading();
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const GeneralSettingsPage(),
+          ),
+        );
+      },
+    );
+  }
+
+  ListTile _securityTile(BuildContext context) {
+    return ListTile(
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Padding(
+        padding: EdgeInsets.only(right: 16.0),
+        child: Icon(
+          Icons.lock,
+        ),
+      ),
+      title: Text(
+        'Security',
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      subtitle: Text(
+        'Fingerprint protection',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+            ),
+      ),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+      ),
+      onTap: () {
+        context.read<SettingsCubit>().startLoading();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const FingerprintProtectionPage(),
           ),
         );
       },
@@ -63,7 +107,9 @@ class SettingsPage extends StatelessWidget {
         ),
         child: ListView(
           children: [
-            _createGeneralTile(context),
+            _generalTile(context),
+            const Divider(),
+            _securityTile(context),
             const Divider(),
           ],
         ),

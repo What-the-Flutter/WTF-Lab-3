@@ -32,6 +32,7 @@ class AppTheme {
     primaryColorLight: Colors.deepPurple,
     primaryColorDark: Colors.deepPurple.shade300,
     hoverColor: Colors.grey[850],
+    highlightColor: Colors.grey[700],
     disabledColor: Colors.grey[700],
     textTheme: defaultTextTheme,
     secondaryHeaderColor: Colors.white,
@@ -81,6 +82,9 @@ class AppTheme {
     bodyMedium: TextStyle(
       fontSize: 14.4,
     ),
+    displaySmall: TextStyle(
+      fontSize: 25.6,
+    ),
   );
 
   static final defaultTextTheme = const TextTheme(
@@ -126,6 +130,9 @@ class AppTheme {
     bodyMedium: TextStyle(
       fontSize: 18,
     ),
+    displaySmall: TextStyle(
+      fontSize: 32,
+    ),
   );
 
   static final largeTextTheme = const TextTheme(
@@ -170,6 +177,9 @@ class AppTheme {
     // navigation bar and modal bottom sheet
     bodyMedium: TextStyle(
       fontSize: 21.6,
+    ),
+    displaySmall: TextStyle(
+      fontSize: 38.4,
     ),
   );
 }

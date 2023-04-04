@@ -8,7 +8,7 @@ import 'settings_cubit.dart';
 class ChoosingBackgroundImage extends StatelessWidget {
   const ChoosingBackgroundImage({Key? key}) : super(key: key);
 
-  Widget _createSettingImage(BuildContext context) {
+  Widget _settingImage(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -53,8 +53,7 @@ class ChoosingBackgroundImage extends StatelessWidget {
     );
   }
 
-  Widget _createManagingBackgroundImage(
-      BuildContext context, SettingsState state) {
+  Widget _previewBackgroundImage(BuildContext context, SettingsState state) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -109,31 +108,33 @@ class ChoosingBackgroundImage extends StatelessWidget {
     );
   }
 
-  Widget _createBody(BuildContext context, SettingsState state) {
+  Widget _body(BuildContext context, SettingsState state) {
     if (state.backgroundImage == '') {
-      return _createSettingImage(context);
+      return _settingImage(context);
     } else {
-      return _createManagingBackgroundImage(context, state);
+      return _previewBackgroundImage(context, state);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(
-          iconTheme: Theme.of(context).iconTheme,
-          centerTitle: true,
-          title: Text(
-            'Background Image',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  color: Colors.white,
-                ),
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            iconTheme: Theme.of(context).iconTheme,
+            centerTitle: true,
+            title: Text(
+              'Background Image',
+              style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                    color: Colors.white,
+                  ),
+            ),
+            backgroundColor: Theme.of(context).primaryColor,
           ),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        body: _createBody(context, state),
-      ),
+          body: _body(context, state),
+        );
+      },
     );
   }
 }

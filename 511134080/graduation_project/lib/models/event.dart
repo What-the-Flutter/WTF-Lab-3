@@ -2,20 +2,22 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class Event {
+  final String id;
+  final int categoryIndex;
   final String title;
+  final String? imagePath;
   final DateTime time;
   final bool isFavourite;
   final bool isSelected;
-  final int categoryIndex;
-  final String id;
   final String chatId;
-  final String? imagePath;
+  final String chatTitle;
 
   const Event({
     required this.title,
     required this.time,
     required this.id,
     required this.chatId,
+    required this.chatTitle,
     this.isFavourite = false,
     this.isSelected = false,
     this.categoryIndex = 0,
@@ -31,6 +33,7 @@ class Event {
     bool? isSelected,
     int? newCategory,
     String? newImagePath,
+    String? newChatTitle,
   }) {
     return Event(
       title: newTitle ?? title,
@@ -41,6 +44,7 @@ class Event {
       isSelected: isSelected ?? this.isSelected,
       categoryIndex: newCategory ?? categoryIndex,
       imagePath: newImagePath ?? imagePath,
+      chatTitle: newChatTitle ?? chatTitle,
     );
   }
 
@@ -53,6 +57,7 @@ class Event {
         isFavourite: data['is_favourite'] == 1 ? true : false,
         isSelected: data['is_selected'] == 1 ? true : false,
         imagePath: data['image_path'],
+        chatTitle: data['chat_title'],
       );
 
   Map<String, dynamic> toDatabaseMap() => {
@@ -64,5 +69,6 @@ class Event {
         'is_favourite': isFavourite ? 1 : 0,
         'is_selected': isSelected ? 1 : 0,
         'image_path': imagePath,
+        'chat_title': chatTitle,
       };
 }

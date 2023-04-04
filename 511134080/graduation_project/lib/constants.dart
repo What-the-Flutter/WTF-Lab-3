@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+final imageHeroTag = 'image_hero_tag';
+
 const icons = [
   Icon(
     Icons.title,
@@ -163,7 +165,7 @@ const icons = [
   ),
 ];
 
-const categoryIcons = [
+const allCategoryIcons = [
   Icons.bubble_chart,
   Icons.cancel,
   Icons.local_movies,
@@ -174,7 +176,7 @@ const categoryIcons = [
   Icons.local_laundry_service,
 ];
 
-const categoryTitle = [
+const allCategoryTitles = [
   '',
   'Cancel',
   'Movie',
@@ -184,3 +186,27 @@ const categoryTitle = [
   'Sports',
   'Laundry',
 ];
+
+const categoryIcons = [
+  Icons.local_movies,
+  Icons.fastfood,
+  Icons.fitness_center,
+  Icons.directions_run,
+  Icons.sports_basketball_rounded,
+  Icons.local_laundry_service,
+];
+
+const categoryTitles = [
+  'Movie',
+  'FastFood',
+  'Workout',
+  'Running',
+  'Sports',
+  'Laundry',
+];
+
+const searchingAnimationLottie = 'assets/lottie/search_animation.json';
+
+const settingsAnimationLottie = 'assets/lottie/settings_animation.json';
+
+const homeAnimationLottie = 'assets/lottie/dancing_book.json';

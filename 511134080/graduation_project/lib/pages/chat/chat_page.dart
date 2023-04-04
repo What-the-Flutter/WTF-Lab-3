@@ -45,51 +45,70 @@ class _ChatPageState extends State<ChatPage> {
     context.read<ChatCubit>().init(chat);
   }
 
-  void _clearTextInput() {
-    _textFieldController.clear();
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _textFieldController.dispose();
+    super.dispose();
   }
 
-  Widget _createListViewItem(index, ChatState state) {
+  void _clearTextInput() => _textFieldController.clear();
+
+  Widget _listViewItem(index, ChatState state) {
     final cards = state.events;
 
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
       return BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DateCard(date: current.time),
-              EventCard(
-                cardModel: current,
-                key: UniqueKey(),
-              )
-            ],
-          );
-        },
+        builder: (context, state) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DateCard(date: current.time),
+            EventCard(
+              cardModel: current,
+              onTap: () {
+                context.read<ChatCubit>().manageTapEvent(current);
+              },
+              onLongPress: () {
+                context.read<ChatCubit>().manageLongPress(current);
+              },
+              key: UniqueKey(),
+            )
+          ],
+        ),
       );
     } else {
       final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
         return BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                DateCard(date: current.time),
-                EventCard(
-                  cardModel: current,
-                  key: UniqueKey(),
-                ),
-              ],
-            );
-          },
+          builder: (context, state) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DateCard(date: current.time),
+              EventCard(
+                cardModel: current,
+                onTap: () {
+                  context.read<ChatCubit>().manageTapEvent(current);
+                },
+                onLongPress: () {
+                  context.read<ChatCubit>().manageLongPress(current);
+                },
+                key: UniqueKey(),
+              ),
+            ],
+          ),
         );
       }
       return EventCard(
         cardModel: current,
+        onTap: () {
+          context.read<ChatCubit>().manageTapEvent(current);
+        },
+        onLongPress: () {
+          context.read<ChatCubit>().manageLongPress(current);
+        },
         key: UniqueKey(),
       );
     }
@@ -101,24 +120,18 @@ class _ChatPageState extends State<ChatPage> {
     _clearTextInput();
   }
 
-  Widget _returnEvents(ChatState chatState) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
-        return Expanded(
-          flex: 10,
-          child: ListView.builder(
-            itemCount: chatState.eventsLength,
-            reverse: true,
-            itemBuilder: (_, index) {
-              return _createListViewItem(index, chatState);
-            },
-          ),
-        );
-      },
+  Widget _events(ChatState chatState) {
+    return Expanded(
+      flex: 10,
+      child: ListView.builder(
+        itemCount: chatState.eventsLength,
+        reverse: true,
+        itemBuilder: (_, index) => _listViewItem(index, chatState),
+      ),
     );
   }
 
-  Widget _returnHintMessage(Chat chat, ChatState state) {
+  Widget _hintMessage(Chat chat, ChatState state) {
     final messages = state.hintMessages;
     return Align(
       alignment: Alignment.topCenter,
@@ -157,7 +170,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createCloseButton() {
+  IconButton _closeButton() {
     return IconButton(
       icon: const Icon(
         Icons.close,
@@ -172,7 +185,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createEditButton(Chat chat) {
+  IconButton _editButton(Chat chat) {
     return IconButton(
       icon: const Icon(
         Icons.edit,
@@ -184,7 +197,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createReplyButton(state) {
+  IconButton _replyButton(state) {
     return IconButton(
       icon: const Icon(
         Icons.reply,
@@ -198,31 +211,29 @@ class _ChatPageState extends State<ChatPage> {
   Future _onReplyChosen(HomeState state) async {
     return await showDialog(
       context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text(
-            state.chats.length > 1
-                ? 'Choose the chat you want to relocate selected events:'
-                : 'Error!',
-            textAlign: TextAlign.center,
-          ),
-          children: state.chats.length > 1
-              ? _createOptions(state, context)
-              : [
-                  const Text(
-                    'There is only one chat. Create a new one to move your events!',
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-        );
-      },
+      builder: (context) => SimpleDialog(
+        title: Text(
+          state.chats.length > 1
+              ? 'Choose the chat you want to relocate selected events:'
+              : 'Error!',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+        ),
+        children: state.chats.length > 1
+            ? _options(state, context)
+            : [
+                const Text(
+                  'There is only one chat. Create a new one to move your events!',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+      ),
     );
   }
 
-  List<SimpleDialogOption> _createOptions(
-    HomeState state,
-    BuildContext context,
-  ) {
+  List<SimpleDialogOption> _options(HomeState state, BuildContext context) {
     return [
       for (final chat in state.chats)
         if (chat.id != widget._chatId)
@@ -231,12 +242,17 @@ class _ChatPageState extends State<ChatPage> {
               Navigator.pop(context);
               context.read<ChatCubit>().moveSelectedEvents(chat);
             },
-            child: Text(chat.title),
+            child: Text(
+              chat.title,
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+            ),
           ),
     ];
   }
 
-  IconButton _createCopyButton() {
+  IconButton _copyButton() {
     return IconButton(
       icon: const Icon(
         Icons.copy,
@@ -255,7 +271,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createBookMarkButton() {
+  IconButton _bookMarkButton() {
     return IconButton(
       icon: const Icon(
         Icons.bookmark_border_outlined,
@@ -266,7 +282,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  IconButton _createDeleteButton() {
+  IconButton _deleteButton() {
     return IconButton(
       icon: const Icon(
         Icons.delete,
@@ -277,8 +293,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  AppBar _createSelectionModeAppBar(
-      Chat chat, HomeState state, ChatState chatState) {
+  AppBar _selectionModeAppBar(Chat chat, HomeState state, ChatState chatState) {
     final length = chatState.chatEvents
         .where((Event cardModel) => cardModel.isSelected)
         .length;
@@ -296,82 +311,92 @@ class _ChatPageState extends State<ChatPage> {
         color: Colors.white,
         size: 30,
       ),
-      leading: _createCloseButton(),
+      leading: _closeButton(),
       actions: [
-        _createEditButton(chat),
-        _createReplyButton(state),
-        _createCopyButton(),
-        _createBookMarkButton(),
-        _createDeleteButton(),
+        _editButton(chat),
+        _replyButton(state),
+        _copyButton(),
+        _bookMarkButton(),
+        _deleteButton(),
       ],
     );
   }
 
-  AppBar _createDefaultAppBar(Chat chat, ChatState chatState) {
+  Widget _leadingDefaultAppBar() {
+    return IconButton(
+      icon: const Icon(
+        Icons.arrow_back,
+      ),
+      onPressed: () {
+        Navigator.pop(context, context.read<ChatCubit>().state.chat);
+      },
+    );
+  }
+
+  Widget _searchIconButton(ChatState chatState, Chat chat) {
+    return IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SearchingPage(
+              cards: chatState.chatEvents,
+              chatTitle: '\'${chat.title}\'',
+              tags: chatState.tags,
+              context: context,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _bookmarkIconButton(Chat chat) {
+    return IconButton(
+      icon: chat.isShowingFavourites
+          ? const Icon(Icons.bookmark)
+          : const Icon(Icons.bookmark_border_outlined),
+      onPressed: context.read<ChatCubit>().toggleFavourites,
+    );
+  }
+
+  AppBar _defaultAppBar(Chat chat, ChatState chatState) {
     return AppBar(
       centerTitle: true,
       iconTheme: Theme.of(context).iconTheme,
+      backgroundColor: Theme.of(context).primaryColor,
       title: Text(
         chat.title,
-        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
               color: Colors.white,
             ),
       ),
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back,
-        ),
-        onPressed: () {
-          Navigator.pop(context, context.read<ChatCubit>().state.chat);
-        },
-      ),
+      leading: _leadingDefaultAppBar(),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SearchingPage(
-                  cards: chatState.chatEvents,
-                  chatTitle: chat.title,
-                  tags: chatState.tags,
-                  context: context,
-                ),
-              ),
-            );
-          },
-        ),
-        IconButton(
-          icon: chat.isShowingFavourites
-              ? const Icon(Icons.bookmark)
-              : const Icon(Icons.bookmark_border_outlined),
-          onPressed: () {
-            context.read<ChatCubit>().toggleFavourites();
-          },
-        ),
+        _searchIconButton(chatState, chat),
+        _bookmarkIconButton(chat),
       ],
-      backgroundColor: Theme.of(context).primaryColor,
     );
   }
 
-  AppBar _createAppBar(
+  AppBar _appBar(
       BuildContext context, Chat chat, HomeState state, ChatState chatState) {
     final isSelectionMode = context.read<ChatCubit>().state.isSelectionMode;
     if (isSelectionMode) {
-      return _createSelectionModeAppBar(chat, state, chatState);
+      return _selectionModeAppBar(chat, state, chatState);
     } else {
-      return _createDefaultAppBar(chat, chatState);
+      return _defaultAppBar(chat, chatState);
     }
   }
 
-  Widget _createCategoriesChoice() {
+  Widget _categoriesChoice() {
     return Expanded(
       flex: 2,
       child: Align(
         alignment: Alignment.bottomCenter,
         child: ListView.builder(
-          itemCount: categoryIcons.length - 1,
+          itemCount: allCategoryIcons.length - 1,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return SingleChildScrollView(
@@ -392,7 +417,7 @@ class _ChatPageState extends State<ChatPage> {
                             : Theme.of(context).hoverColor,
                       ),
                       child: Icon(
-                        categoryIcons[index + 1],
+                        allCategoryIcons[index + 1],
                         size: 32,
                         color: index == 0 ? Colors.red : Colors.white,
                       ),
@@ -403,7 +428,7 @@ class _ChatPageState extends State<ChatPage> {
                     },
                   ),
                   Text(
-                    categoryTitle[index + 1],
+                    allCategoryTitles[index + 1],
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).secondaryHeaderColor,
                           fontWeight: FontWeight.normal,
@@ -418,7 +443,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createExistingTagPanel(existingTags, inputtingTag) {
+  Widget _existingTagPanel(Iterable<String> existingTags, String inputtingTag) {
     return Expanded(
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -444,11 +469,19 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       child: Text(
                         existingTags.elementAt(index),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.normal,
+                                ),
                       ),
                     ),
                     onTap: () {
-                      context.read<ChatCubit>().onExistingTagTap(inputtingTag,
-                          existingTags.elementAt(index), _textFieldController);
+                      context.read<ChatCubit>().onExistingTagTap(
+                            inputtingTag: inputtingTag,
+                            existingTag: existingTags.elementAt(index),
+                            inputController: _textFieldController,
+                          );
                     },
                   ),
                 ],
@@ -460,7 +493,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createNewTagPanel(inputtingTag) {
+  Widget _newTagPanel(String inputtingTag) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -476,6 +509,10 @@ class _ChatPageState extends State<ChatPage> {
             ),
             child: Text(
               'Adding Tag: $inputtingTag',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.normal,
+                  ),
             ),
           ),
         ],
@@ -483,19 +520,19 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createAddingTagPanel(ChatState state) {
+  Widget _addingTagPanel(ChatState state) {
     final inputtingTag = extractHashTags(_textFieldController.text).last;
     if (state.tags.isNotEmpty) {
       final existingTags =
           state.tags.where((String tag) => tag.contains(inputtingTag));
       if (existingTags.isNotEmpty) {
-        return _createExistingTagPanel(existingTags, inputtingTag);
+        return _existingTagPanel(existingTags, inputtingTag);
       }
     }
-    return _createNewTagPanel(inputtingTag);
+    return _newTagPanel(inputtingTag);
   }
 
-  Widget _createCameraButtonBottomBar() {
+  Widget _cameraButtonBottomBar() {
     return IconButton(
       onPressed: () {
         context.read<ChatCubit>().toggleShowingImageOptions();
@@ -507,7 +544,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createSendButton() {
+  Widget _sendButton() {
     return IconButton(
       onPressed: () {
         context.read<ChatCubit>().onEnterSubmitted(_textFieldController.text);
@@ -521,7 +558,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createBottomBar(ChatState state) {
+  Widget _bottomBar(ChatState state) {
     return SingleChildScrollView(
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -534,9 +571,9 @@ class _ChatPageState extends State<ChatPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               state.isChoosingCategory
-                  ? _createCategoriesChoice()
+                  ? _categoriesChoice()
                   : state.isAddingTag
-                      ? _createNewTagPanel(state)
+                      ? _addingTagPanel(state)
                       : Container(),
               Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -549,16 +586,16 @@ class _ChatPageState extends State<ChatPage> {
                             );
                       },
                       icon: Icon(
-                        categoryIcons[state.categoryIconIndex],
+                        allCategoryIcons[state.categoryIconIndex],
                         color: Theme.of(context).primaryColorDark,
                       ),
                     ),
                     Expanded(
-                      child: _createTextField(state),
+                      child: _textField(state),
                     ),
                     state.categoryIconIndex == 0 && state.isInputEmpty
-                        ? _createCameraButtonBottomBar()
-                        : _createSendButton(),
+                        ? _cameraButtonBottomBar()
+                        : _sendButton(),
                   ],
                 ),
               ),
@@ -569,7 +606,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createTextField(ChatState state) {
+  Widget _textField(ChatState state) {
     return HashTagTextField(
       controller: _textFieldController,
       focusNode: _focusNode,
@@ -603,7 +640,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Container _createCameraButton() {
+  Container _cameraButton() {
     return Container(
       width: 160,
       height: 64,
@@ -628,7 +665,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Container _createGalleryButton() {
+  Container _galleryButton() {
     return Container(
       width: 160,
       height: 64,
@@ -653,7 +690,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _createImageOptions() {
+  Widget _imageOptions() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 8,
@@ -662,8 +699,8 @@ class _ChatPageState extends State<ChatPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _createCameraButton(),
-          _createGalleryButton(),
+          _cameraButton(),
+          _galleryButton(),
         ],
       ),
     );
@@ -681,37 +718,35 @@ class _ChatPageState extends State<ChatPage> {
             chat.isShowingFavourites && favourites.isEmpty;
 
         return Scaffold(
-          appBar: _createAppBar(
+          appBar: _appBar(
               context, chat, context.read<HomeCubit>().state, chatState),
           body: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-              return Container(
-                decoration: state.backgroundImage != ''
-                    ? BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(
-                            File(
-                              state.backgroundImage,
-                            ),
+            builder: (context, state) => Container(
+              decoration: state.backgroundImage != ''
+                  ? BoxDecoration(
+                      image: DecorationImage(
+                        image: FileImage(
+                          File(
+                            state.backgroundImage,
                           ),
-                          fit: BoxFit.cover,
                         ),
-                      )
-                    : null,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    shouldShowMessage
-                        ? _returnHintMessage(chat, chatState)
-                        : _returnEvents(chatState),
-                    chatState.isChoosingImageOptions
-                        ? _createImageOptions()
-                        : Container(),
-                    _createBottomBar(chatState),
-                  ],
-                ),
-              );
-            },
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : null,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  shouldShowMessage
+                      ? _hintMessage(chat, chatState)
+                      : _events(chatState),
+                  chatState.isChoosingImageOptions
+                      ? _imageOptions()
+                      : Container(),
+                  _bottomBar(chatState),
+                ],
+              ),
+            ),
           ),
         );
       },

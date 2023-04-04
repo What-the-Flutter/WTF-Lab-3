@@ -8,12 +8,12 @@ import '../pages/chat/chat_page.dart';
 import '../pages/home/home_cubit.dart';
 import '../pages/managing_page/managing_page.dart';
 
-class EventListTile extends StatelessWidget {
+class ChatListTile extends StatelessWidget {
   final dynamic _chatId;
 
-  const EventListTile({super.key, required chatId}) : _chatId = chatId;
+  const ChatListTile({super.key, required chatId}) : _chatId = chatId;
 
-  ListTile _createInfoOption(BuildContext context, Chat chat) {
+  ListTile _infoOption(BuildContext context, Chat chat) {
     return ListTile(
       leading: const Icon(
         Icons.info,
@@ -31,19 +31,19 @@ class EventListTile extends StatelessWidget {
         showDialog(
           context: context,
           builder: (context) {
-            return _createAlertDialog(context, chat);
+            return _alertDialog(context, chat);
           },
         );
       },
     );
   }
 
-  AlertDialog _createAlertDialog(BuildContext context, Chat chat) {
+  AlertDialog _alertDialog(BuildContext context, Chat chat) {
     return AlertDialog(
       title: Center(
-        child: _createAlertDialogTitle(chat, context),
+        child: _alertDialogTitle(chat, context),
       ),
-      content: _createAlertDialogContent(chat, context),
+      content: _alertDialogContent(chat, context),
       actions: [
         TextButton(
           onPressed: () {
@@ -52,7 +52,8 @@ class EventListTile extends StatelessWidget {
           child: Text(
             'OK',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.normal,
                 ),
           ),
         ),
@@ -60,7 +61,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  Widget _createAlertDialogTitle(Chat chat, BuildContext context) {
+  Widget _alertDialogTitle(Chat chat, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -87,62 +88,77 @@ class EventListTile extends StatelessWidget {
         const SizedBox(
           width: 16,
         ),
-        Text(chat.title),
+        Text(
+          chat.title,
+          style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+        ),
       ],
     );
   }
 
-  Widget _createAlertDialogContent(Chat chat, BuildContext context) {
+  Widget _alertDialogContent(Chat chat, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Created',
-          style: Theme.of(context).textTheme.headlineLarge!,
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.w500,
+              ),
         ),
         Text(
           DateFormat('dd.MM.yyyy').format(chat.date!),
-          style: Theme.of(context).textTheme.titleLarge!,
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
         const SizedBox(
           height: 16,
         ),
         Text(
           'Last event',
-          style: Theme.of(context).textTheme.headlineLarge!,
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.w500,
+              ),
         ),
         Text(
           chat.lastEventTime != null
               ? '${DateFormat('dd.MM.yyyy').format(chat.lastEventTime!)} at ${DateFormat('hh:mm a').format(chat.lastEventTime!)}'
               : 'No events yet.',
-          style: Theme.of(context).textTheme.titleLarge!,
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal,
+              ),
         ),
       ],
     );
   }
 
-  ListTile _createPinOption(BuildContext context, Chat chat) {
-    return ListTile(
-      leading: const Icon(
-        Icons.attach_file,
-        color: Colors.greenAccent,
-        size: 24,
-      ),
-      title: Text(
-        'Pin/Unpin Page',
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: Colors.white,
-            ),
-      ),
-      onTap: () {
-        Navigator.pop(context);
-        context.read<HomeCubit>().togglePinState(chat.id);
-      },
-    );
-  }
+  ListTile _pinOption(BuildContext context, Chat chat) => ListTile(
+        leading: const Icon(
+          Icons.attach_file,
+          color: Colors.greenAccent,
+          size: 24,
+        ),
+        title: Text(
+          'Pin/Unpin Page',
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Colors.white,
+              ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          context.read<HomeCubit>().togglePinState(chat.id);
+        },
+      );
 
-  ListTile _createEditOption(BuildContext context) {
+  ListTile _editOption(BuildContext context) {
     return ListTile(
       leading: const Icon(
         Icons.edit,
@@ -159,19 +175,16 @@ class EventListTile extends StatelessWidget {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) {
-              return BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  final chat = state.chats
-                      .where((Chat chat) => chat.id == _chatId)
-                      .first;
-                  return ManagingPage(
-                    editingPage: chat,
-                    context: context,
-                  );
-                },
-              );
-            },
+            builder: (context) => BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                final chat =
+                    state.chats.where((Chat chat) => chat.id == _chatId).first;
+                return ManagingPage(
+                  editingPage: chat,
+                  context: context,
+                );
+              },
+            ),
           ),
         );
         Navigator.pop(context);
@@ -179,7 +192,7 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  ListTile _createDeleteOption(BuildContext context) {
+  ListTile _deleteOption(BuildContext context) {
     return ListTile(
       leading: const Icon(
         Icons.delete,
@@ -199,14 +212,12 @@ class EventListTile extends StatelessWidget {
     );
   }
 
-  List<ListTile> _createOptions(BuildContext context, Chat chat) {
-    return [
-      _createInfoOption(context, chat),
-      _createPinOption(context, chat),
-      _createEditOption(context),
-      _createDeleteOption(context),
-    ];
-  }
+  List<ListTile> _options(BuildContext context, Chat chat) => [
+        _infoOption(context, chat),
+        _pinOption(context, chat),
+        _editOption(context),
+        _deleteOption(context),
+      ];
 
   void _onLongPress(BuildContext context, Chat chat) {
     showModalBottomSheet(
@@ -219,13 +230,13 @@ class EventListTile extends StatelessWidget {
       context: context,
       builder: (context) {
         return ListView(
-          children: _createOptions(context, chat),
+          children: _options(context, chat),
         );
       },
     );
   }
 
-  Widget? _createTrailing(Chat chat, BuildContext context) {
+  Widget? _chatTileTrailing(Chat chat, BuildContext context) {
     if (chat.lastEventTime != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -317,7 +328,7 @@ class EventListTile extends StatelessWidget {
                 ),
           ),
           hoverColor: Colors.deepPurple.shade100,
-          trailing: _createTrailing(chat, context),
+          trailing: _chatTileTrailing(chat, context),
           onTap: () async {
             await Navigator.push(
               context,
