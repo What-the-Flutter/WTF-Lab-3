@@ -19,7 +19,6 @@ class PagesTab extends StatelessWidget {
     required this.cubit,
   });
 
-
   String _welcomeMessage() {
     if (selectedChats.isNotEmpty) {
       return '${selectedChats.length} page(s) '
@@ -29,9 +28,9 @@ class PagesTab extends StatelessWidget {
           'All pages are included by default';
     }
   }
-  
+
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return _CustomTab(
       welcomeMessage: _welcomeMessage(),
       switchWidget: Row(
@@ -85,7 +84,6 @@ class TagsTab extends StatelessWidget {
     required this.cubit,
   });
 
-
   String _welcomeMessage() {
     if (selectedTags.isNotEmpty) {
       return '${selectedTags.length} tags(s) selected';
@@ -94,9 +92,9 @@ class TagsTab extends StatelessWidget {
           'All tags are included by default';
     }
   }
-  
+
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return _CustomTab(
       welcomeMessage: _welcomeMessage(),
       child: ListView.builder(
@@ -132,7 +130,6 @@ class CategoriesTab extends StatelessWidget {
     required this.cubit,
   });
 
-
   String _welcomeMessage() {
     if (selectedCategories.isNotEmpty) {
       return '${selectedCategories.length} label(s) selected';
@@ -141,9 +138,9 @@ class CategoriesTab extends StatelessWidget {
           'All labels are included by default';
     }
   }
-  
+
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return _CustomTab(
       welcomeMessage: _welcomeMessage(),
       child: ListView.builder(
@@ -153,7 +150,8 @@ class CategoriesTab extends StatelessWidget {
           return ElevatedButton(
             child: Row(
               children: [
-                if (selectedCategories.contains(category)) const Icon(Icons.done),
+                if (selectedCategories.contains(category))
+                  const Icon(Icons.done),
                 Icon(
                   IconData(
                     category.icon,
@@ -184,9 +182,9 @@ class _CustomTab extends StatelessWidget {
     this.switchWidget,
     required this.child,
   });
-  
+
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return Column(
       children: [
         if (welcomeMessage != null)
@@ -202,7 +200,6 @@ class _CustomTab extends StatelessWidget {
               ),
             ),
           ),
-
         if (switchWidget != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -212,7 +209,7 @@ class _CustomTab extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 20.0,
-              vertical: 5.0,  
+              vertical: 5.0,
             ),
             child: child,
           ),

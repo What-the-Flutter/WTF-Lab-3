@@ -28,14 +28,14 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage>  
-  with SingleTickerProviderStateMixin {
-  final _cubit = GetIt.I<ChatCubit>(); 
+class _ChatPageState extends State<ChatPage>
+    with SingleTickerProviderStateMixin {
+  static final reverseDoubleTween = Tween<double>(begin: 1.0, end: 0.0);
+
+  final _cubit = GetIt.I<ChatCubit>();
 
   late AnimationController _arrowAnimationController;
 
-  late VoidCallback _unsubscribeEventsStream;
-  
   void _onSearchEvents({
     required BuildContext context,
     required List<Event> events,
@@ -64,8 +64,7 @@ class _ChatPageState extends State<ChatPage>
 
           final Category? category;
           if (event.categoryId != null) {
-            category = categories
-                .firstWhere((e) => e.id == event.categoryId);
+            category = categories.firstWhere((e) => e.id == event.categoryId);
           } else {
             category = null;
           }
@@ -83,10 +82,12 @@ class _ChatPageState extends State<ChatPage>
             ),
             key: ValueKey<int>(viewIndex),
             child: EventView(
-              chatName: widget.chatId == null 
-                  ? widget.chats.firstWhere(
-                    (chat) => chat.id == event.chatId,
-                  ).name
+              chatName: widget.chatId == null
+                  ? widget.chats
+                      .firstWhere(
+                        (chat) => chat.id == event.chatId,
+                      )
+                      .name
                   : null,
               event: event,
               category: category,
@@ -106,7 +107,7 @@ class _ChatPageState extends State<ChatPage>
               } else {
                 _cubit.switchSelectStatus(event);
                 _cubit.addEditedEvent(event);
-                
+
                 return false;
               }
             },
@@ -150,8 +151,6 @@ class _ChatPageState extends State<ChatPage>
     super.initState();
 
     _cubit.loadChat(widget.chatId);
-    _cubit.subscribeStreams();
-    _unsubscribeEventsStream = _cubit.unsubscribeStreams;
 
     _arrowAnimationController = AnimationController(
       vsync: this,
@@ -161,7 +160,6 @@ class _ChatPageState extends State<ChatPage>
 
   @override
   void dispose() {
-    _unsubscribeEventsStream();
     _arrowAnimationController.dispose();
     super.dispose();
   }
@@ -184,12 +182,12 @@ class _ChatPageState extends State<ChatPage>
 
         if (widget.chatId == null) {
           return TimelineModeScaffold(
-            cubit: _cubit,
             events: events,
             chats: widget.chats,
             categories: state.categories,
             isFavoriteMode: state.isFavoriteMode,
             chatDecoration: _chatDecoration(context: context),
+            switchEventFavorite: _cubit.switchEventFavorite,
             onSearch: () => _onSearchEvents(
               context: context,
               events: events,
@@ -198,30 +196,36 @@ class _ChatPageState extends State<ChatPage>
           );
         } else if (state.editedEvent != null) {
           return EditModeScaffold(
-            cubit: _cubit,
             events: events,
             editedEvent: state.editedEvent!,
             chatId: widget.chatId!,
             chats: widget.chats,
             categories: state.categories,
             chatDecoration: _chatDecoration(context: context),
+            removeEditedEvent: _cubit.removeEditedEvent,
+            resetSelection: _cubit.resetSelection,
           );
         } else if (state.selectedEvents.isNotEmpty) {
           return SelectedModeScaffold(
-            cubit: _cubit,
             events: events,
             selectedEvents: state.selectedEvents,
             chatId: widget.chatId!,
             chats: widget.chats,
             categories: state.categories,
             chatDecoration: _chatDecoration(context: context),
+            resetSelection: _cubit.resetSelection,
+            deleteSelectedEvents: _cubit.deleteSelectedEvents,
+            copySelectedEvents: _cubit.copySelectedEvents,
+            switchSelectedEventsFavorite: _cubit.switchSelectedEventsFavorite,
+            transferSelectedEvents: _cubit.transferSelectedEvents,
+            addEditedEvent: _cubit.addEditedEvent,
+            switchSelectStatus: _cubit.switchSelectStatus,
           );
         }
 
         final Icon bookmarkIcon;
         if (state.isFavoriteMode) {
-          bookmarkIcon = 
-              const Icon(Icons.bookmark, color: Colors.deepOrange);
+          bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
         } else {
           bookmarkIcon = const Icon(Icons.bookmark_border);
         }
@@ -232,8 +236,7 @@ class _ChatPageState extends State<ChatPage>
               onPressed: () => Navigator.pop(context),
               icon: AnimatedIcon(
                 icon: AnimatedIcons.arrow_menu,
-                progress: Tween<double>(begin: 1.0, end: 0.0)
-                    .animate(_arrowAnimationController),
+                progress: reverseDoubleTween.animate(_arrowAnimationController),
               ),
             ),
             title: Text(widget.chatName!),

@@ -5,7 +5,6 @@ import 'package:hashtagable/functions.dart';
 import '../../../data/models/models.dart';
 import '../../filters_page/filters_cubit.dart';
 import '../../filters_page/filters_page.dart';
-import '../chat_cubit.dart';
 import 'widgets.dart';
 
 class TimelineModeScaffold extends StatelessWidget {
@@ -14,9 +13,9 @@ class TimelineModeScaffold extends StatelessWidget {
   final List<Category> categories;
   final BoxDecoration? chatDecoration;
   final bool isFavoriteMode;
-  final ChatCubit cubit;
-  final VoidCallback? onShowFavorites;
-  final VoidCallback? onSearch;
+  final Function(String) switchEventFavorite;
+  final Function()? onShowFavorites;
+  final Function()? onSearch;
 
   const TimelineModeScaffold({
     super.key,
@@ -24,40 +23,38 @@ class TimelineModeScaffold extends StatelessWidget {
     required this.chats,
     required this.categories,
     required this.isFavoriteMode,
-    required this.cubit,
+    required this.switchEventFavorite,
     this.chatDecoration,
     this.onShowFavorites,
     this.onSearch,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final Icon bookmarkIcon;
     if (isFavoriteMode) {
-      bookmarkIcon = 
-          const Icon(Icons.bookmark, color: Colors.deepOrange);
+      bookmarkIcon = const Icon(Icons.bookmark, color: Colors.deepOrange);
     } else {
       bookmarkIcon = const Icon(Icons.bookmark_border);
     }
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Timeline'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: onSearch?.call,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
           ),
-          IconButton(
-            icon: bookmarkIcon,
-            onPressed: onShowFavorites?.call,
-          ),
-        ]
-      ),
+          title: const Text('Timeline'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: onSearch?.call,
+            ),
+            IconButton(
+              icon: bookmarkIcon,
+              onPressed: onShowFavorites?.call,
+            ),
+          ]),
       body: Container(
         decoration: chatDecoration,
         child: Column(
@@ -67,7 +64,7 @@ class TimelineModeScaffold extends StatelessWidget {
                 events: events,
                 chats: chats,
                 categories: categories,
-                cubit: cubit,
+                switchEventFavorite: switchEventFavorite,
               ),
             ),
           ],
@@ -76,11 +73,11 @@ class TimelineModeScaffold extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.filter_list),
         onPressed: () => Navigator.push(
-          context, 
+          context,
           MaterialPageRoute(
             builder: (_) => const FiltersPage(),
           ),
-        ),   
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
@@ -97,7 +94,7 @@ class TimelineModeScaffold extends StatelessWidget {
         onTap: (value) {
           if (value == 0) {
             Navigator.pop(context);
-          } 
+          }
         },
       ),
     );
@@ -108,14 +105,14 @@ class _EventsView extends StatelessWidget {
   final List<Event> events;
   final List<Chat> chats;
   final List<Category> categories;
-  final ChatCubit cubit;
+  final Function(String) switchEventFavorite;
 
   const _EventsView({
     super.key,
     required this.events,
     required this.chats,
     required this.categories,
-    required this.cubit,
+    required this.switchEventFavorite,
   });
 
   List<Event> _chatsFilteredEvents({
@@ -130,7 +127,7 @@ class _EventsView extends StatelessWidget {
     } else {
       return events.where((e) => chatsId.contains(e.chatId)).toList();
     }
-    } 
+  }
 
   List<Event> _categoriesFilteredEvents({
     required List<Event> events,
@@ -139,7 +136,7 @@ class _EventsView extends StatelessWidget {
     return categoriesId.isNotEmpty
         ? events.where((e) => categoriesId.contains(e.categoryId)).toList()
         : events;
-  } 
+  }
 
   List<Event> _tagsFilteredEvents({
     required List<Event> events,
@@ -150,7 +147,7 @@ class _EventsView extends StatelessWidget {
         : events.where(
             (e) {
               if (e.content == null) return false;
-              
+
               final eventTags = extractHashTags(e.content!);
 
               for (final tag in tags) {
@@ -163,8 +160,8 @@ class _EventsView extends StatelessWidget {
   }
 
   List<String> _filter({
-    required Iterable<String> elements,
-    required Iterable<String> selected,
+    required List<String> elements,
+    required List<String> selected,
     bool? ignoreSelected,
   }) {
     if (elements.isEmpty) return [];
@@ -181,32 +178,32 @@ class _EventsView extends StatelessWidget {
     return BlocBuilder<FiltersCubit, FiltersState>(
       builder: (_, state) {
         final chatFilter = _filter(
-          elements: state.chats.map((chat) => chat.id),
-          selected: state.selectedChats.map((chat) => chat.id),
+          elements: state.chats.map((chat) => chat.id).toList(),
+          selected: state.selectedChats.map((chat) => chat.id).toList(),
           ignoreSelected: state.ignoreSelected,
         );
 
         final tagFilter = _filter(
-          elements: state.tags.map((tag) => tag.id),
-          selected: state.selectedTags.map((tag) => tag.id),
+          elements: state.tags.map((tag) => tag.id).toList(),
+          selected: state.selectedTags.map((tag) => tag.id).toList(),
         );
 
         final categoryFilter = _filter(
-          elements: state.categories.map((category) => category.id),
-          selected: state.selectedCategories.map((category) => category.id),
+          elements: state.categories.map((category) => category.id).toList(),
+          selected:
+              state.selectedCategories.map((category) => category.id).toList(),
         );
 
         final filteredEvents = _tagsFilteredEvents(
-          tags: tagFilter,
-          events: _categoriesFilteredEvents(
-            categoriesId: categoryFilter,
-            events: _chatsFilteredEvents(
-              events: events,
-              chatsId: chatFilter,
-              ignoreChats: state.ignoreSelected,
-            ),
-          )
-        );
+            tags: tagFilter,
+            events: _categoriesFilteredEvents(
+              categoriesId: categoryFilter,
+              events: _chatsFilteredEvents(
+                events: events,
+                chatsId: chatFilter,
+                ignoreChats: state.ignoreSelected,
+              ),
+            ));
 
         if (filteredEvents.isEmpty) {
           return const Align(
@@ -220,34 +217,33 @@ class _EventsView extends StatelessWidget {
                 ),
               ),
             ),
-          ); 
+          );
         }
 
         return ListView.builder(
-          reverse: true,
-          itemCount: filteredEvents.length,
-          itemBuilder: (_, index) {
-            final viewIndex = filteredEvents.length - index - 1;
-            final event = filteredEvents[viewIndex];
+            reverse: true,
+            itemCount: filteredEvents.length,
+            itemBuilder: (_, index) {
+              final viewIndex = filteredEvents.length - index - 1;
+              final event = filteredEvents[viewIndex];
 
-            final Category? category;
-            if (event.categoryId != null) {
-              category = categories
-                  .firstWhere((e) => e.id == event.categoryId);
-            } else {
-              category = null;
-            }
+              final Category? category;
+              if (event.categoryId != null) {
+                category =
+                    categories.firstWhere((e) => e.id == event.categoryId);
+              } else {
+                category = null;
+              }
 
-            return EventView(
-              chatName: 
-                chats.firstWhere((chat) => chat.id == event.chatId).name,
-              event: event,
-              category: category,
-              onTap: () => cubit.switchEventFavorite(event.id),
-            );
-          }
-        );
+              return EventView(
+                chatName:
+                    chats.firstWhere((chat) => chat.id == event.chatId).name,
+                event: event,
+                category: category,
+                onTap: () => switchEventFavorite(event.id),
+              );
+            });
       },
-    ); 
+    );
   }
 }

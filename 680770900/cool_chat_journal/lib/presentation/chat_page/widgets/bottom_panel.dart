@@ -159,9 +159,9 @@ class _BottomPanelState extends State<BottomPanel> {
     required bool isEditMode,
   }) {
     return AnimatedCrossFade(
-      crossFadeState: _textController.text.isNotEmpty 
-        ? CrossFadeState.showFirst
-        : CrossFadeState.showSecond,
+      crossFadeState: _textController.text.isNotEmpty
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
       firstChild: IconButton(
         icon: const Icon(Icons.send_rounded),
         onPressed: () => _onEnterText(
@@ -293,7 +293,7 @@ class _CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<_CategoriesList> {
   final _cubit = GetIt.I<ChatCubit>();
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(

@@ -3,7 +3,7 @@ part of 'filters_cubit.dart';
 class FiltersState extends Equatable {
   final List<Chat> chats;
   final List<Chat> selectedChats;
-  
+
   final List<Tag> tags;
   final List<Tag> selectedTags;
 
@@ -32,23 +32,22 @@ class FiltersState extends Equatable {
     bool? ignoreSelected,
   }) =>
       FiltersState(
-        chats: chats ?? this.chats,
-        selectedChats: selectedChats ?? this.selectedChats,
-        tags: tags ?? this.tags,
-        selectedTags: selectedTags ?? this.selectedTags,
-        categories: categories ?? this.categories,
-        selectedCategories: selectedCategories ?? this.selectedCategories,
-        ignoreSelected: ignoreSelected ?? this.ignoreSelected
-      );
+          chats: chats ?? this.chats,
+          selectedChats: selectedChats ?? this.selectedChats,
+          tags: tags ?? this.tags,
+          selectedTags: selectedTags ?? this.selectedTags,
+          categories: categories ?? this.categories,
+          selectedCategories: selectedCategories ?? this.selectedCategories,
+          ignoreSelected: ignoreSelected ?? this.ignoreSelected);
 
   @override
   List<Object> get props => [
-    chats,
-    selectedChats,
-    tags,
-    selectedTags,
-    categories,
-    selectedCategories,
-    ignoreSelected,
-  ];
+        chats,
+        selectedChats,
+        tags,
+        selectedTags,
+        categories,
+        selectedCategories,
+        ignoreSelected,
+      ];
 }

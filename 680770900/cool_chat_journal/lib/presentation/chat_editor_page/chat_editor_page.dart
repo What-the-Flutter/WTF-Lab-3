@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../data/models/chat.dart';
 import '../../utils/custom_theme.dart';
+import '../home_page/home_cubit.dart';
 import 'chat_editor_cubit.dart';
 import 'widgets/chat_icons.dart';
 
@@ -21,6 +22,7 @@ class ChatEditorPage extends StatefulWidget {
 
 class _ChatEditorPageState extends State<ChatEditorPage> {
   final _cubit = GetIt.I<ChatEditorCubit>();
+  final _homeCubit = GetIt.I<HomeCubit>();
 
   void _saveChat({
     required BuildContext context,
@@ -37,9 +39,9 @@ class _ChatEditorPageState extends State<ChatEditorPage> {
       );
 
       if (widget.sourceChat != null) {
-        _cubit.editChat(chat);
+        _homeCubit.editChat(chat);
       } else {
-        _cubit.addChat(chat);
+        _homeCubit.addChat(chat);
       }
     }
 

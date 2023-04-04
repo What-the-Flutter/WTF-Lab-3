@@ -19,46 +19,41 @@ void initGetIt({required User user}) {
 
   // Repositories.
   GetIt.I.registerSingleton<CategoriesRepository>(CategoriesRepository(
-    databaseProvider: GetIt.I<DatabaseProvider>(),
+    GetIt.I<DatabaseProvider>(),
   ));
   GetIt.I.registerSingleton<ChatsRepository>(ChatsRepository(
-    databaseProvider: GetIt.I<DatabaseProvider>(), 
+    GetIt.I<DatabaseProvider>(),
   ));
   GetIt.I.registerSingleton<TagsRepository>(TagsRepository(
-    databaseProvider: GetIt.I<DatabaseProvider>(),
+    GetIt.I<DatabaseProvider>(),
   ));
   GetIt.I.registerSingleton<EventsRepository>(EventsRepository(
-    databaseProvider: GetIt.I<DatabaseProvider>(),
-    storageProvider: GetIt.I<StorageProvider>(),
-    tagsRepository: GetIt.I<TagsRepository>(),
+    GetIt.I<DatabaseProvider>(),
+    GetIt.I<StorageProvider>(),
+    GetIt.I<TagsRepository>(),
   ));
   GetIt.I.registerSingleton<SettingsRepository>(SettingsRepository(
-    settingsProvider: GetIt.I<SettingsProvider>(),
-    storageProvider: GetIt.I<StorageProvider>(),
+    GetIt.I<SettingsProvider>(),
+    GetIt.I<StorageProvider>(),
   ));
-  
 
   // Cubits.
   GetIt.I.registerSingleton<SettingsCubit>(SettingsCubit(
-    settingsRepository: GetIt.I<SettingsRepository>(),
+    GetIt.I<SettingsRepository>(),
   ));
   GetIt.I.registerSingleton<HomeCubit>(HomeCubit(
-    chatsRepository: GetIt.I<ChatsRepository>(), 
-    eventsRepository: GetIt.I<EventsRepository>(),
-    settingsCubit: GetIt.I<SettingsCubit>(),
+    GetIt.I<ChatsRepository>(),
+    GetIt.I<EventsRepository>(),
   ));
   GetIt.I.registerSingleton<ChatCubit>(ChatCubit(
-    categoriesRepository: GetIt.I<CategoriesRepository>(),
-    eventsRepository: GetIt.I<EventsRepository>(),
-    tagsRepository: GetIt.I<TagsRepository>(),
-    homeCubit: GetIt.I<HomeCubit>(),
+    GetIt.I<EventsRepository>(),
+    GetIt.I<CategoriesRepository>(),
+    GetIt.I<TagsRepository>(),
   ));
-  GetIt.I.registerSingleton<ChatEditorCubit>(ChatEditorCubit(
-    homeCubit: GetIt.I<HomeCubit>(),
-  ));
+  GetIt.I.registerSingleton<ChatEditorCubit>(ChatEditorCubit());
   GetIt.I.registerSingleton<FiltersCubit>(FiltersCubit(
-    chatsRepository: GetIt.I<ChatsRepository>(), 
-    tagsRepository: GetIt.I<TagsRepository>(),
-    categoriesRepository: GetIt.I<CategoriesRepository>(),
+    GetIt.I<ChatsRepository>(),
+    GetIt.I<TagsRepository>(),
+    GetIt.I<CategoriesRepository>(),
   ));
 }

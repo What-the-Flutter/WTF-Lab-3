@@ -118,9 +118,7 @@ class _EventViewState extends State<EventView> {
             if (widget.chatName != null)
               Text(
                 widget.chatName!,
-                style: const TextStyle(
-                  color: Colors.grey
-                ),
+                style: const TextStyle(color: Colors.grey),
               ),
             if (widget.category != null)
               Padding(

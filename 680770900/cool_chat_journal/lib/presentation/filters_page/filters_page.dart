@@ -16,20 +16,6 @@ class _FiltersPageState extends State<FiltersPage> {
   final _cubit = GetIt.I<FiltersCubit>();
 
   @override
-  void initState() {
-    super.initState();
-
-    _cubit.subscribeFiltersStreams();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _cubit.unsubscribeFiltersStreams();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<FiltersCubit, FiltersState>(
       builder: (context, state) {
@@ -50,9 +36,7 @@ class _FiltersPageState extends State<FiltersPage> {
               ],
               bottom: const TabBar(
                 tabs: [
-                  Tab(
-                    child: Text('Pages')
-                  ),
+                  Tab(child: Text('Pages')),
                   Tab(
                     child: Text('Tags'),
                   ),

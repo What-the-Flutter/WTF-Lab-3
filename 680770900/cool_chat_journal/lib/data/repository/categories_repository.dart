@@ -2,24 +2,22 @@ import '../models/category.dart';
 import '../provider/database_provider.dart';
 
 class CategoriesRepository {
-  final DatabaseProvider databaseProvider;
+  final DatabaseProvider _databaseProvider;
 
-  const CategoriesRepository({
-    required this.databaseProvider,
-  });
+  const CategoriesRepository(this._databaseProvider);
 
   Future<void> addCategory(Category category) async =>
-      await databaseProvider.add(
+      await _databaseProvider.add(
         json: category.toJson(),
         tableName: DatabaseProvider.categoriesRoot,
       );
 
   Future<void> deleteCategory(String categoryId) async =>
-      await databaseProvider.delete(
+      await _databaseProvider.delete(
         id: categoryId,
         tableName: DatabaseProvider.categoriesRoot,
       );
 
   Stream<List<Category>> get categoriesStream =>
-      databaseProvider.categoriesStream;
+      _databaseProvider.categoriesStream;
 }

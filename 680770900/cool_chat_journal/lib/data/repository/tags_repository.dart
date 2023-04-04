@@ -2,11 +2,9 @@ import '../models/tag.dart';
 import '../provider/database_provider.dart';
 
 class TagsRepository {
-  final DatabaseProvider databaseProvider;
+  final DatabaseProvider _databaseProvider;
 
-  const TagsRepository({
-    required this.databaseProvider,
-  });
+  const TagsRepository(this._databaseProvider);
 
   Future<void> addTag(String rawValue) async {
     final String value;
@@ -16,14 +14,14 @@ class TagsRepository {
       value = rawValue;
     }
 
-    final json = await databaseProvider.read<Tag>(
+    final json = await _databaseProvider.read<Tag>(
       tableName: '${DatabaseProvider.tagsRoot}',
     );
 
     final tags = json.map(Tag.fromJson).where((t) => t.id == value).toList();
 
     if (tags.isEmpty) {
-      await databaseProvider.add(
+      await _databaseProvider.add(
         json: Tag(
           id: value,
           count: 1,
@@ -31,14 +29,14 @@ class TagsRepository {
         tableName: DatabaseProvider.tagsRoot,
       );
     } else {
-      await databaseProvider.delete(
+      await _databaseProvider.delete(
         id: value,
         tableName: DatabaseProvider.tagsRoot,
       );
 
       final newTag = tags.first.copyWith(count: tags.first.count + 1);
 
-      await databaseProvider.add(
+      await _databaseProvider.add(
         json: newTag.toJson(),
         tableName: DatabaseProvider.tagsRoot,
       );
@@ -46,11 +44,11 @@ class TagsRepository {
   }
 
   Future<void> deleteLink(String tagId) async {
-    final json = await databaseProvider.read<Tag>(
+    final json = await _databaseProvider.read<Tag>(
       tableName: DatabaseProvider.tagsRoot,
     );
 
-    await databaseProvider.delete(
+    await _databaseProvider.delete(
       id: tagId,
       tableName: DatabaseProvider.tagsRoot,
     );
@@ -63,5 +61,5 @@ class TagsRepository {
     }
   }
 
-  Stream<List<Tag>> get tagsStream => databaseProvider.tagsStream;
+  Stream<List<Tag>> get tagsStream => _databaseProvider.tagsStream;
 }

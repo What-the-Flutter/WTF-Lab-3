@@ -9,36 +9,32 @@ import '../../data/repository/repository.dart';
 part 'filters_state.dart';
 
 class FiltersCubit extends Cubit<FiltersState> {
-  StreamSubscription<List<Chat>>? _chatsSubscription;
-  StreamSubscription<List<Tag>>? _tagsSubscription;
-  StreamSubscription<List<Category>>? _categoriesSubscription;
+  final ChatsRepository _chatsRepository;
+  final TagsRepository _tagsRepository;
+  final CategoriesRepository _categoriesRepository;
+  
+  late final StreamSubscription<List<Chat>> _chatsSubscription;
+  late final StreamSubscription<List<Tag>> _tagsSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  final ChatsRepository chatsRepository;
-  final TagsRepository tagsRepository;
-  final CategoriesRepository categoriesRepository;
-
-  FiltersCubit({
-    required this.chatsRepository,
-    required this.tagsRepository,
-    required this.categoriesRepository,
-  }) : super(const FiltersState());
-
-  void subscribeFiltersStreams() {
-    _chatsSubscription =
-        chatsRepository.chatsStream.listen(_setChats);
-
-    _tagsSubscription =
-        tagsRepository.tagsStream.listen(_setTags);
-
+  FiltersCubit(
+    this._chatsRepository,
+    this._tagsRepository,
+    this._categoriesRepository,
+  ) : super(const FiltersState()) {
+    _chatsSubscription = _chatsRepository.chatsStream.listen(_setChats);
+    _tagsSubscription = _tagsRepository.tagsStream.listen(_setTags);
     _categoriesSubscription =
-        categoriesRepository.categoriesStream.listen(_setCategories);      
+        _categoriesRepository.categoriesStream.listen(_setCategories);
   }
 
-  void unsubscribeFiltersStreams() {
-    _chatsSubscription?.cancel(); 
-    _tagsSubscription?.cancel(); 
-    _categoriesSubscription?.cancel(); 
-  } 
+  @override
+  Future<void> close() {
+    _chatsSubscription.cancel();
+    _tagsSubscription.cancel();
+    _categoriesSubscription.cancel();
+    return super.close();
+  }
 
   void resetFilter() {
     emit(state.copyWith(
@@ -77,8 +73,8 @@ class FiltersCubit extends Cubit<FiltersState> {
       selectedCategories =
           state.selectedCategories.where((e) => e != category).toList();
     } else {
-      selectedCategories = 
-          List<Category>.from(state.selectedCategories)..add(category);
+      selectedCategories = List<Category>.from(state.selectedCategories)
+        ..add(category);
     }
 
     emit(state.copyWith(selectedCategories: selectedCategories));

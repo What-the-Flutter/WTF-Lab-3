@@ -9,6 +9,7 @@ import '../../../data/models/chat.dart';
 import '../../utils/custom_theme.dart';
 import '../chat_editor_page/chat_editor_page.dart';
 import '../chat_page/chat_page.dart';
+import '../settings_page/settings_cubit.dart';
 import '../settings_page/settings_page.dart';
 import 'home_cubit.dart';
 import 'widgets/manage_panel_dialog.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _cubit = GetIt.I<HomeCubit>();
+  final _settingsCubit = GetIt.I<SettingsCubit>();
 
   void _onOpenManagePanel({
     required BuildContext context,
@@ -129,10 +131,8 @@ class _HomePageState extends State<HomePage> {
             Container(
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                color:
-                    CustomTheme.of(context).themeData.backgroundColor,
-                borderRadius:
-                    const BorderRadius.all(Radius.circular(10.0)),
+                color: CustomTheme.of(context).themeData.backgroundColor,
+                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -159,14 +159,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _cubit.subscribeChatsStream();
-    _cubit.initSettings();
-  }
-
-  @override
-  void dispose() {
-    _cubit.unsubscribeChatsStream();
-    super.dispose();
+    _settingsCubit.initSettings();
   }
 
   @override
@@ -180,7 +173,7 @@ class _HomePageState extends State<HomePage> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.color_lens_outlined),
-                onPressed: _cubit.switchThemeType,
+                onPressed: _settingsCubit.switchThemeType,
               ),
             ],
           ),

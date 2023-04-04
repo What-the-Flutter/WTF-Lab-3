@@ -16,11 +16,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   static final defaultFontSizeType = FontSizeType.medium;
   static final defaultBubbleAlignmentType = BubbleAlignmentType.left;
 
-  final SettingsRepository settingsRepository;
+  final SettingsRepository _settingsRepository;
 
-  SettingsCubit({
-    required this.settingsRepository,
-  }) : super(const SettingsState());
+  SettingsCubit(this._settingsRepository) : super(const SettingsState());
 
   Future<void> initSettings() async {
     await initTheme();
@@ -43,7 +41,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       defaultValue: defaultBubbleAlignmentType,
     );
 
-    final themeInfo = await settingsRepository.updateThemeInfo();
+    final themeInfo = await _settingsRepository.updateThemeInfo();
 
     emit(
       state.copyWith(
@@ -58,7 +56,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> switchBubbleAlignmentType() async {
     final bubbleAlignmentType = state.bubbleAlignmentType.next;
 
-    await settingsRepository.saveThemeInfo(ThemeInfo(
+    await _settingsRepository.saveThemeInfo(ThemeInfo(
       themeType: state.themeType.name,
       fontSize: state.fontSizeType.name,
       bubbleAlignment: bubbleAlignmentType.name,
@@ -70,7 +68,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> switchThemeType() async {
     final themeType = state.themeType.next;
 
-    await settingsRepository.saveThemeInfo(
+    await _settingsRepository.saveThemeInfo(
       ThemeInfo(
         themeType: themeType.name,
         fontSize: state.fontSizeType.name,
@@ -82,7 +80,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> switchFontSizeType(FontSizeType fontSizeType) async {
-    await settingsRepository.saveThemeInfo(
+    await _settingsRepository.saveThemeInfo(
       ThemeInfo(
         themeType: state.themeType.name,
         fontSize: fontSizeType.name,
@@ -95,8 +93,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> uploadBackgroundImage() async {
     try {
-      final image =
-          await settingsRepository.downloadBackgroundImage();
+      final image = await _settingsRepository.downloadBackgroundImage();
 
       emit(
         state.copyWith(
@@ -107,7 +104,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> resetBackgroundImage() async {
-    await settingsRepository.deleteBackgroundImage();
+    await _settingsRepository.deleteBackgroundImage();
 
     emit(
       state.copyWith(
@@ -117,7 +114,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> saveBackgroundImage(Uint8List backgroundImage) async {
-    await settingsRepository.saveBackgroundImage(backgroundImage);
+    await _settingsRepository.saveBackgroundImage(backgroundImage);
 
     emit(
       state.copyWith(
@@ -127,7 +124,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> restoreSettings() async {
-    await settingsRepository.saveThemeInfo(
+    await _settingsRepository.saveThemeInfo(
       ThemeInfo(
         themeType: defaultThemeType.name,
         fontSize: defaultFontSizeType.name,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/json_kit.dart';
 import '../data/models/category.dart';
 
-class DefaultCategories {
+abstract class DefaultCategories {
   static List<JsonMap> get jsonList => list.map((e) => e.toJson()).toList();
 
   static List<Category> get list => [

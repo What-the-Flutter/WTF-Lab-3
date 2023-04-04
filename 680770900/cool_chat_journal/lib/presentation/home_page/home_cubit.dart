@@ -6,60 +6,46 @@ import 'package:equatable/equatable.dart';
 import '../../../data/models/chat.dart';
 import '../../../data/repository/chats_repository.dart';
 import '../../../data/repository/events_repository.dart';
-import '../presentation.dart';
 
 part 'home_state.dart';
 
 typedef ChatsSubscription = StreamSubscription<List<Chat>>;
 
 class HomeCubit extends Cubit<HomeState> {
-  StreamSubscription<List<Chat>>? _chatsSubscription;
+  final ChatsRepository _chatsRepository;
+  final EventsRepository _eventsRepository;
+  
+  late final StreamSubscription<List<Chat>> _chatsSubscription;
 
-  final ChatsRepository chatsRepository;
-  final EventsRepository eventsRepository;
-
-  final SettingsCubit settingsCubit;
-
-  HomeCubit({
-    required this.chatsRepository,
-    required this.eventsRepository,
-    required this.settingsCubit,
-  }) : super(const HomeState());
-
-  void subscribeChatsStream() {
-    _chatsSubscription =
-        chatsRepository.chatsStream.listen(_setChats);
+  HomeCubit(
+    this._chatsRepository,
+    this._eventsRepository,
+  ) : super(const HomeState()) {
+    _chatsSubscription = _chatsRepository.chatsStream.listen(_setChats);
   }
 
-  void unsubscribeChatsStream() {
-    _chatsSubscription?.cancel(); 
+  @override
+  Future<void> close() {
+    _chatsSubscription.cancel();
+    return super.close();
   }
 
   void addChat(Chat chat) async {
-    await chatsRepository.addChat(chat);
+    await _chatsRepository.addChat(chat);
   }
 
   void deleteChat(String chatId) async {
-    await chatsRepository.deleteChat(chatId);
-    await eventsRepository.deleteEventsFromChat(chatId);
+    await _chatsRepository.deleteChat(chatId);
+    await _eventsRepository.deleteEventsFromChat(chatId);
   }
 
   void editChat(Chat chat) async {
-    await chatsRepository.updateChat(chat);
+    await _chatsRepository.updateChat(chat);
   }
 
   void switchChatPinning(Chat chat) async {
-    await chatsRepository
-        .updateChat(chat.copyWith(isPinned: !chat.isPinned));
+    await _chatsRepository.updateChat(chat.copyWith(isPinned: !chat.isPinned));
   }
-
-  void changeCurrentTab(int tab) {
-    emit(state.copyWith(currentTab: tab));
-  }
-
-  void switchThemeType() => settingsCubit.switchThemeType();
-
-  void initSettings() => settingsCubit.initSettings();
 
   void _sortChats(List<Chat> chats) {
     chats.sort((a, b) {

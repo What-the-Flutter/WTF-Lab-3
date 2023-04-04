@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/models/models.dart';
-import '../../presentation.dart';
 import 'dialogs.dart';
 import 'event_view.dart';
 
@@ -12,8 +11,14 @@ class SelectedModeScaffold extends StatelessWidget {
   final List<Chat> chats;
   final List<Category> categories;
   final BoxDecoration? chatDecoration;
-  final ChatCubit cubit;
-  
+  final Function() resetSelection;
+  final Function() deleteSelectedEvents;
+  final Function() copySelectedEvents;
+  final Function() switchSelectedEventsFavorite;
+  final Function(String) transferSelectedEvents;
+  final Function(Event) addEditedEvent;
+  final Function(Event) switchSelectStatus;
+
   const SelectedModeScaffold({
     super.key,
     required this.events,
@@ -21,7 +26,13 @@ class SelectedModeScaffold extends StatelessWidget {
     required this.chatId,
     required this.chats,
     required this.categories,
-    required this.cubit,
+    required this.resetSelection,
+    required this.deleteSelectedEvents,
+    required this.copySelectedEvents,
+    required this.switchSelectedEventsFavorite,
+    required this.transferSelectedEvents,
+    required this.addEditedEvent,
+    required this.switchSelectStatus,
     this.chatDecoration,
   });
 
@@ -30,17 +41,16 @@ class SelectedModeScaffold extends StatelessWidget {
   }) async {
     final destinationChat = await showDialog<String>(
       context: context,
-      builder: (_) => 
-        TransferDialog(
-          chats: chats.where((chat) => chat.id != chatId).toList(),
-        ),
+      builder: (_) => TransferDialog(
+        chats: chats.where((chat) => chat.id != chatId).toList(),
+      ),
     );
 
     if (destinationChat != null) {
-      cubit.transferSelectedEvents(destinationChat);
+      transferSelectedEvents(destinationChat);
     }
 
-    cubit.resetSelection();
+    resetSelection();
   }
 
   void _onDeleteEvents({
@@ -52,12 +62,12 @@ class SelectedModeScaffold extends StatelessWidget {
     );
 
     if (value == true) {
-      cubit.deleteSelectedEvents();
+      deleteSelectedEvents();
     }
 
-    cubit.resetSelection();
+    resetSelection();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final hasImage = selectedEvents.where((e) => e.image != null).isNotEmpty;
@@ -65,7 +75,7 @@ class SelectedModeScaffold extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: cubit.resetSelection,
+          onPressed: resetSelection,
         ),
         title: Text(selectedEvents.length.toString()),
         actions: [
@@ -76,21 +86,21 @@ class SelectedModeScaffold extends StatelessWidget {
           if (!hasImage && selectedEvents.length == 1)
             IconButton(
               icon: const Icon(Icons.edit),
-              onPressed: () => cubit.addEditedEvent(selectedEvents.first),
+              onPressed: () => addEditedEvent(selectedEvents.first),
             ),
           if (!hasImage)
             IconButton(
               icon: const Icon(Icons.copy),
               onPressed: () {
-                cubit.copySelectedEvents();
-                cubit.resetSelection();
+                copySelectedEvents();
+                resetSelection();
               },
             ),
           IconButton(
             icon: const Icon(Icons.bookmark_border),
             onPressed: () {
-              cubit.switchSelectedEventsFavorite();
-              cubit.resetSelection();
+              switchSelectedEventsFavorite();
+              resetSelection();
             },
           ),
           IconButton(
@@ -102,11 +112,11 @@ class SelectedModeScaffold extends StatelessWidget {
       body: Container(
         decoration: chatDecoration,
         child: _EventsView(
-          cubit: cubit,
           events: events,
           selectedEvents: selectedEvents,
           chats: chats,
           categories: categories,
+          switchSelectStatus: switchSelectStatus,
         ),
       ),
     );
@@ -118,7 +128,7 @@ class _EventsView extends StatelessWidget {
   final List<Event> selectedEvents;
   final List<Chat> chats;
   final List<Category> categories;
-  final ChatCubit cubit;
+  final Function(Event) switchSelectStatus;
 
   const _EventsView({
     super.key,
@@ -126,35 +136,32 @@ class _EventsView extends StatelessWidget {
     required this.selectedEvents,
     required this.chats,
     required this.categories,
-    required this.cubit,
+    required this.switchSelectStatus,
   });
 
   @override
   Widget build(BuildContext context) {
-    
     return ListView.builder(
-      reverse: true,
-      itemCount: events.length,
-      itemBuilder: (_, index) {
-        final viewIndex = events.length - index - 1;
-        final event = events[viewIndex];
+        reverse: true,
+        itemCount: events.length,
+        itemBuilder: (_, index) {
+          final viewIndex = events.length - index - 1;
+          final event = events[viewIndex];
 
-        final Category? category;
-        if (event.categoryId != null) {
-          category = categories
-              .firstWhere((e) => e.id == event.categoryId);
-        } else {
-          category = null;
-        }
+          final Category? category;
+          if (event.categoryId != null) {
+            category = categories.firstWhere((e) => e.id == event.categoryId);
+          } else {
+            category = null;
+          }
 
-        return EventView(
-          event: event,
-          category: category,
-          isSelected: selectedEvents.contains(event),
-          onTap: () => cubit.switchSelectStatus(event),
-          onLongPress: () => cubit.switchSelectStatus(event),
-        );
-      }
-    );
+          return EventView(
+            event: event,
+            category: category,
+            isSelected: selectedEvents.contains(event),
+            onTap: () => switchSelectStatus(event),
+            onLongPress: () => switchSelectStatus(event),
+          );
+        });
   }
 }

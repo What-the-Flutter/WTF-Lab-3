@@ -3,13 +3,13 @@ part of 'chat_cubit.dart';
 class ChatState extends Equatable {
   final String? chatId;
   final Map<String, Uint8List>? images;
+  final Event? editedEvent;
 
   final List<Event> events;
   final List<Event> selectedEvents;
   final List<Category> categories;
   final List<Tag> tags;
 
-  final Event? editedEvent;
   final bool isFavoriteMode;
   final bool showTags;
   final bool showCategories;
@@ -60,9 +60,7 @@ class ChatState extends Equatable {
         selectedCategoryId: selectedCategoryId != null
             ? selectedCategoryId.value
             : this.selectedCategoryId,
-        editedEvent: editedEvent != null 
-            ? editedEvent.value 
-            : this.editedEvent,
+        editedEvent: editedEvent != null ? editedEvent.value : this.editedEvent,
       );
 
   @override
