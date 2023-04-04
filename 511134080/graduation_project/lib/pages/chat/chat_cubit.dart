@@ -14,15 +14,17 @@ import '../../repositories/event_repository.dart';
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final EventRepository eventsRepository;
-  late final StreamSubscription<List<Event>> eventsSubscription;
+  final EventRepository _eventsRepository;
+  late final StreamSubscription<List<Event>> _eventsSubscription;
 
-  ChatCubit({required this.eventsRepository}) : super(ChatState()) {
-    initSubscription();
+  ChatCubit({required EventRepository eventsRepository})
+      : _eventsRepository = eventsRepository,
+        super(ChatState()) {
+    _initSubscription();
   }
 
-  void initSubscription() {
-    eventsSubscription = eventsRepository.eventsStream.listen(
+  void _initSubscription() {
+    _eventsSubscription = _eventsRepository.eventsStream.listen(
       (events) async {
         if (state.chat.id != '') {
           final chatEvents = List<Event>.from(
@@ -46,7 +48,7 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> init(Chat chat) async {
-    final events = await eventsRepository.receiveAllChatEvents(chat.id);
+    final events = await _eventsRepository.receiveAllChatEvents(chat.id);
     emit(
       state.copyWith(
         newChat: chat,
@@ -84,6 +86,7 @@ class ChatCubit extends Cubit<ChatState> {
           time: DateTime.now(),
           id: '',
           chatId: state.chat.id,
+          chatTitle: state.chat.title,
           imagePath: pickedFile.path,
         );
         addEvent(event);
@@ -146,6 +149,7 @@ class ChatCubit extends Cubit<ChatState> {
       if (title.isNotEmpty || state.categoryIconIndex != 0) {
         final event = Event(
           chatId: state.chat.id,
+          chatTitle: state.chat.title,
           title: title,
           time: DateTime.now(),
           id: '',
@@ -169,9 +173,8 @@ class ChatCubit extends Cubit<ChatState> {
     changeCategoryIcon(0);
   }
 
-  Future<void> addEvent(Event event) async {
-    await eventsRepository.insertEvent(event);
-  }
+  Future<void> addEvent(Event event) async =>
+      await _eventsRepository.insertEvent(event);
 
   Null Function()? onEditButtonPressed(
       TextEditingController textFieldController, FocusNode focusNode) {
@@ -198,7 +201,7 @@ class ChatCubit extends Cubit<ChatState> {
     final selectedEvent =
         state.chatEvents.where((Event event) => event.isSelected).first;
 
-    await eventsRepository.updateEvent(
+    await _eventsRepository.updateEvent(
       selectedEvent.copyWith(
         newTitle: newTitle,
         newCategory: newCategory,
@@ -209,7 +212,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> cancelSelectionMode() async {
     for (final event in state.chatEvents) {
-      await eventsRepository.updateEvent(
+      await _eventsRepository.updateEvent(
         event.copyWith(
           isSelected: false,
         ),
@@ -247,7 +250,7 @@ class ChatCubit extends Cubit<ChatState> {
         state.chatEvents.where((Event event) => event.isSelected);
 
     for (final event in selectedEvents) {
-      await eventsRepository.deleteEvent(event);
+      await _eventsRepository.deleteEvent(event);
     }
 
     cancelSelectionMode();
@@ -262,9 +265,8 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> manageFavouriteEvent(Event event) async {
-    final index = state.chatEvents.indexOf(event);
-    await eventsRepository.updateEvent(
-      state.chatEvents[index].copyWith(
+    await _eventsRepository.updateEvent(
+      event.copyWith(
         isFavourite: !event.isFavourite,
       ),
     );
@@ -277,7 +279,7 @@ class ChatCubit extends Cubit<ChatState> {
     if (selectedLength == 1 && event.isSelected) {
       cancelSelectionMode();
     } else {
-      await eventsRepository.updateEvent(
+      await _eventsRepository.updateEvent(
         event.copyWith(
           isSelected: !event.isSelected,
         ),
@@ -288,14 +290,14 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> manageFavouritesFromSelectionMode() async {
     for (final event in state.chatEvents) {
       if (event.isSelected) {
-        await eventsRepository.updateEvent(
+        await _eventsRepository.updateEvent(
           event.copyWith(
             isFavourite: !event.isFavourite,
             isSelected: false,
           ),
         );
       } else {
-        await eventsRepository.updateEvent(
+        await _eventsRepository.updateEvent(
           event.copyWith(
             isSelected: false,
           ),
@@ -316,7 +318,7 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> turnOnSelectionMode(Event selectedEvent) async {
-    await eventsRepository.updateEvent(
+    await _eventsRepository.updateEvent(
       selectedEvent.copyWith(
         isSelected: true,
       ),
@@ -333,9 +335,10 @@ class ChatCubit extends Cubit<ChatState> {
     final selectedEvents = state.chatEvents.where((Event e) => e.isSelected);
 
     for (final event in selectedEvents) {
-      await eventsRepository.updateEvent(
+      await _eventsRepository.updateEvent(
         event.copyWith(
           newChatId: destinationChat.id,
+          newChatTitle: destinationChat.title,
           isSelected: false,
         ),
       );
@@ -358,8 +361,11 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  void onExistingTagTap(String inputtingTag, String existingTag,
-      TextEditingController inputController) {
+  void onExistingTagTap({
+    required String inputtingTag,
+    required String existingTag,
+    required TextEditingController inputController,
+  }) {
     final input = inputController.text;
     inputController.text = input.replaceFirst(
         inputtingTag, existingTag, input.length - inputtingTag.length);

@@ -7,6 +7,7 @@ class Event {
   final String? textData;
   final String? imageData;
   final IconData? category;
+  final List<String>? tags;
   final bool isDone;
   final bool isFavorite;
 
@@ -16,23 +17,33 @@ class Event {
     this.imageData,
     this.category,
     this.id,
+    tags,
     createTime,
     isDone,
     isFavorite,
   })  : isDone = isDone ?? false,
-        isFavorite = isFavorite ?? false,createTime = (createTime != null) ? createTime : DateTime.now();
+        isFavorite = isFavorite ?? false,
+        tags = tags ?? <String>[],
+        createTime = (createTime != null) ? createTime : DateTime.now();
 
-
-  Event copyWith({String? id,String? textMessage, bool? isDone, bool? isFavorite}) {
+  Event copyWith({
+    String? id,
+    String? textMessage,
+    bool? isDone,
+    bool? isFavorite,
+    IconData? category,
+    List<String>? tags,
+  }) {
     return Event(
       id: id ?? this.id,
       chatId: chatId,
       textData: textMessage ?? textData,
       imageData: imageData,
-      category: category,
+      category: category ?? this.category,
       createTime: createTime,
       isDone: isDone ?? this.isDone,
       isFavorite: isFavorite ?? this.isFavorite,
+      tags: tags ?? this.tags,
     );
   }
 

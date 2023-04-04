@@ -7,11 +7,13 @@ import '../../providers/database_provider.dart';
 import '../../repositories/chat_repository.dart';
 import '../../repositories/event_repository.dart';
 import '../chat/chat_cubit.dart';
+import '../filter_page/filter_page_cubit.dart';
 import '../home/home_cubit.dart';
-import '../home/home_page.dart';
 import '../managing_page/managing_page_cubit.dart';
 import '../searching_page/searching_page_cubit.dart';
 import '../settings/settings_cubit.dart';
+import '../timeline/timeline_page_cubit.dart';
+import '../welcome/welcome_page.dart';
 
 class ChatJournal extends StatefulWidget {
   const ChatJournal();
@@ -48,35 +50,42 @@ class _ChatJournalState extends State<ChatJournal> {
           ),
         ),
         BlocProvider(
-          create: (context) => ChatCubit(
+          create: (_) => ChatCubit(
             eventsRepository: eventRepository,
           ),
         ),
         BlocProvider(
-          create: (context) => ManagingPageCubit(
+          create: (_) => ManagingPageCubit(
             chatsRepository: chatRepository,
             initState: ManagingPageState(),
           ),
         ),
         BlocProvider(
-          create: (_) => SettingsCubit(),
+          create: (_) => SearchingPageCubit(),
         ),
         BlocProvider(
-          create: (_) => SearchingPageCubit(),
+          create: (_) => TimelinePageCubit(
+            eventsRepository: eventRepository,
+            chatsRepository: chatRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => FilterPageCubit(
+            eventsRepository: eventRepository,
+            chatsRepository: chatRepository,
+          ),
         ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return MaterialApp(
-            title: 'Chat Journal',
-            theme: state.currentTheme,
-            debugShowCheckedModeBanner: false,
-            initialRoute: '/',
-            routes: {
-              '/': (_) => const HomePage(),
-            },
-          );
-        },
+        builder: (_, state) => MaterialApp(
+          title: 'Chat Journal',
+          theme: state.currentTheme,
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          routes: {
+            '/': (_) => const WelcomePage(),
+          },
+        ),
       ),
     );
   }

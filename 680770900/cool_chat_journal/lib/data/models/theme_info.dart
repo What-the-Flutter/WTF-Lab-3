@@ -11,7 +11,7 @@ class ThemeInfo {
     'font_size',
     'bubble_alignment',
   ];
-  
+
   final String themeType;
   final String fontSize;
   final String bubbleAlignment;
@@ -30,9 +30,10 @@ class ThemeInfo {
     String? themeType,
     String? fontSize,
     String? bubbleAlignment,
-  }) => ThemeInfo(
-    themeType: themeType ?? this.themeType,
-    fontSize: fontSize ?? this.fontSize,
-    bubbleAlignment: bubbleAlignment ?? this.bubbleAlignment,
-  );
+  }) =>
+      ThemeInfo(
+        themeType: themeType ?? this.themeType,
+        fontSize: fontSize ?? this.fontSize,
+        bubbleAlignment: bubbleAlignment ?? this.bubbleAlignment,
+      );
 }

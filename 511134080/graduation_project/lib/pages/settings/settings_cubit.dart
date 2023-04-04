@@ -9,19 +9,22 @@ import '../../theme/theme.dart';
 part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
-  final SettingsProvider settingsProvider;
-  SettingsCubit()
-      : settingsProvider = SettingsProvider(),
+  final SettingsProvider _settingsProvider;
+
+  SettingsCubit({
+    required SettingsProvider provider,
+  })  : _settingsProvider = provider,
         super(SettingsState()) {
     init();
   }
 
   Future<void> init() async {
-    final isLight = await settingsProvider.theme ?? true;
-    final fontSize = await settingsProvider.fontSize ?? 0;
-    final bubbleAlignment = await settingsProvider.bubbleAlignment ?? false;
-    final centerDate = await settingsProvider.dateAlignment ?? false;
-    final backgroundImage = await settingsProvider.backgroundImage ?? '';
+    final isLight = await _settingsProvider.theme ?? true;
+    final fontSize = await _settingsProvider.fontSize ?? 0;
+    final bubbleAlignment = await _settingsProvider.bubbleAlignment ?? false;
+    final centerDate = await _settingsProvider.dateAlignment ?? false;
+    final backgroundImage = await _settingsProvider.backgroundImage ?? '';
+    final useFingerprint = await _settingsProvider.useFingerprint ?? false;
     emit(
       state.copyWith(
         light: isLight,
@@ -29,25 +32,26 @@ class SettingsCubit extends Cubit<SettingsState> {
         rightToLeft: bubbleAlignment,
         centerDate: centerDate,
         newBackgroundImage: backgroundImage,
+        useFingerprint: useFingerprint,
       ),
     );
   }
 
   Future<void> toggleTheme() async {
-    await settingsProvider.saveTheme(!state.isLight);
+    await _settingsProvider.saveTheme(!state.isLight);
     emit(state.copyWith(light: !state.isLight));
   }
 
   Future<void> toggleFontSize() async {
     if (state.fontSize == 1) {
-      await settingsProvider.saveFontSize(-1);
+      await _settingsProvider.saveFontSize(-1);
       emit(
         state.copyWith(
           newFontSize: -1,
         ),
       );
     } else {
-      await settingsProvider.saveFontSize(state.fontSize + 1);
+      await _settingsProvider.saveFontSize(state.fontSize + 1);
       emit(
         state.copyWith(
           newFontSize: state.fontSize + 1,
@@ -57,7 +61,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> toggleBubbleAlignment(bool value) async {
-    await settingsProvider.saveBubbleAlignment(value);
+    await _settingsProvider.saveBubbleAlignment(value);
     emit(
       state.copyWith(
         rightToLeft: value,
@@ -66,7 +70,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> toggleCenterDate(bool value) async {
-    await settingsProvider.saveDateAlignment(value);
+    await _settingsProvider.saveDateAlignment(value);
     emit(
       state.copyWith(
         centerDate: value,
@@ -75,7 +79,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> resetAllPreferences() async {
-    await settingsProvider.saveDefaultPreferences();
+    await _settingsProvider.saveDefaultPreferences();
     emit(
       state.copyWith(
         newFontSize: 0,
@@ -95,7 +99,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           await imagePicker.pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
-        settingsProvider.saveBackgroundImage(pickedFile.path);
+        _settingsProvider.saveBackgroundImage(pickedFile.path);
         emit(
           state.copyWith(
             newBackgroundImage: pickedFile.path,
@@ -106,10 +110,38 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void unsetBackgroundImage() {
-    settingsProvider.saveBackgroundImage('');
+    _settingsProvider.saveBackgroundImage('');
     emit(
       state.copyWith(
         newBackgroundImage: '',
+      ),
+    );
+  }
+
+  Future<void> toggleUsingFingerprint(bool value) async {
+    await _settingsProvider.saveUsingFingerprint(value);
+    emit(
+      state.copyWith(
+        useFingerprint: value,
+      ),
+    );
+  }
+
+  void startLoading() {
+    emit(
+      state.copyWith(
+        loaded: true,
+      ),
+    );
+    Future.delayed(
+      const Duration(
+        milliseconds: 3000,
+      ),
+    ).then(
+      (_) => emit(
+        state.copyWith(
+          loaded: false,
+        ),
       ),
     );
   }

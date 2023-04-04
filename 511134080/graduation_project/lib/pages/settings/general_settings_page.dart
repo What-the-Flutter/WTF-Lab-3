@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../widgets/settings_animation.dart';
 import 'choosing_background_image.dart';
 import 'settings_cubit.dart';
 
 class GeneralSettingsPage extends StatelessWidget {
   const GeneralSettingsPage({Key? key}) : super(key: key);
 
-  ListTile _createThemeTile(BuildContext context) {
+  ListTile _themeTile(BuildContext context) {
     return ListTile(
       iconColor: Theme.of(context).disabledColor,
       leading: const Padding(
@@ -36,7 +37,7 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
-  ListTile _createFontSizeTile(BuildContext context) {
+  ListTile _fontSizeTile(BuildContext context) {
     return ListTile(
       iconColor: Theme.of(context).disabledColor,
       leading: const Padding(
@@ -65,7 +66,7 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
-  ListTile _createResetTile(BuildContext context) {
+  ListTile _resetTile(BuildContext context) {
     return ListTile(
       iconColor: Theme.of(context).disabledColor,
       leading: const Padding(
@@ -94,63 +95,64 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
-  ListTile _createBubbleAlignmentTile(
-      BuildContext context, SettingsState state) {
+  ListTile _bubbleAlignmentTile(BuildContext context, SettingsState state) {
     return ListTile(
-        iconColor: Theme.of(context).disabledColor,
-        leading: Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: Icon(
-            state.isRightToLeft
-                ? Icons.format_align_right
-                : Icons.format_align_left,
-          ),
+      iconColor: Theme.of(context).disabledColor,
+      leading: Padding(
+        padding: const EdgeInsets.only(right: 16.0),
+        child: Icon(
+          state.isRightToLeft
+              ? Icons.format_align_right
+              : Icons.format_align_left,
         ),
-        title: Text(
-          'Bubble Alignment',
-          style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-        ),
-        subtitle: Text(
-          'Force right-to-left bubble alignment',
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
-              ),
-        ),
-        trailing: Switch(
-          value: state.isRightToLeft,
-          onChanged: context.read<SettingsCubit>().toggleBubbleAlignment,
-          activeColor: Theme.of(context).primaryColorLight,
-        ));
+      ),
+      title: Text(
+        'Bubble Alignment',
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      subtitle: Text(
+        'Force right-to-left bubble alignment',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
+            ),
+      ),
+      trailing: Switch(
+        value: state.isRightToLeft,
+        onChanged: context.read<SettingsCubit>().toggleBubbleAlignment,
+        activeColor: Theme.of(context).primaryColorLight,
+      ),
+    );
   }
 
-  ListTile _createCenterDateTile(BuildContext context, SettingsState state) {
+  ListTile _centerDateTile(BuildContext context, SettingsState state) {
     return ListTile(
-        iconColor: Theme.of(context).disabledColor,
-        leading: const Padding(
-          padding: EdgeInsets.only(right: 16.0),
-          child: Icon(
-            Icons.flourescent,
-          ),
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Padding(
+        padding: EdgeInsets.only(right: 16.0),
+        child: Icon(
+          Icons.flourescent,
         ),
-        title: Text(
-          'Center Date Bubble',
-          style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-        ),
-        trailing: Switch(
-          value: state.isCenterDate,
-          onChanged: context.read<SettingsCubit>().toggleCenterDate,
-          activeColor: Theme.of(context).primaryColorLight,
-        ));
+      ),
+      title: Text(
+        'Center Date Bubble',
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      trailing: Switch(
+        value: state.isCenterDate,
+        onChanged: context.read<SettingsCubit>().toggleCenterDate,
+        activeColor: Theme.of(context).primaryColorLight,
+      ),
+    );
   }
 
-  ListTile _createBackgroundImageTile(BuildContext context) {
+  ListTile _backgroundImageTile(BuildContext context) {
     return ListTile(
       iconColor: Theme.of(context).disabledColor,
       leading: const Padding(
@@ -184,7 +186,7 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
-  AppBar _createAppBar(BuildContext context) {
+  AppBar _appBar(BuildContext context) {
     return AppBar(
       iconTheme: Theme.of(context).iconTheme,
       title: Text(
@@ -198,7 +200,7 @@ class GeneralSettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _createBody(BuildContext context, SettingsState state) {
+  Widget _body(BuildContext context, SettingsState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16.0,
@@ -212,11 +214,11 @@ class GeneralSettingsPage extends StatelessWidget {
                   color: Theme.of(context).disabledColor,
                 ),
           ),
-          _createThemeTile(context),
+          _themeTile(context),
           const Divider(),
-          _createFontSizeTile(context),
+          _fontSizeTile(context),
           const Divider(),
-          _createResetTile(context),
+          _resetTile(context),
           const Divider(),
           Padding(
             padding: const EdgeInsets.only(top: 24.0),
@@ -227,25 +229,22 @@ class GeneralSettingsPage extends StatelessWidget {
                   ),
             ),
           ),
-          _createBubbleAlignmentTile(context, state),
+          _bubbleAlignmentTile(context, state),
           const Divider(),
-          _createCenterDateTile(context, state),
+          _centerDateTile(context, state),
           const Divider(),
-          _createBackgroundImageTile(context),
+          _backgroundImageTile(context),
         ],
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: _createAppBar(context),
-          body: _createBody(context, state),
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) =>
+      BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) => Scaffold(
+          appBar: _appBar(context),
+          body: state.isLoaded ? settingsAnimation : _body(context, state),
+        ),
+      );
 }

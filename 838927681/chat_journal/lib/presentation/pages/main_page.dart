@@ -13,6 +13,7 @@ import 'main_page/app_state.dart';
 import 'settings_page/settings.dart';
 import 'settings_page/settings_cubit.dart';
 import 'settings_page/settings_state.dart';
+import 'statistics/statistics.dart';
 import 'timeline_page/timeline_page.dart';
 
 class ChatJournal extends StatelessWidget {
@@ -74,9 +75,7 @@ class ChatJournal extends StatelessWidget {
       case 0:
         {
           context.read<AppCubit>().changeTitle(homeTitle);
-          return HomePage(
-            settingsState: settingsState,
-          );
+          return HomePage();
         }
       case 2:
         {
@@ -86,9 +85,7 @@ class ChatJournal extends StatelessWidget {
       default:
         {
           context.read<AppCubit>().changeTitle(homeTitle);
-          return HomePage(
-            settingsState: settingsState,
-          );
+          return HomePage();
         }
     }
   }
@@ -177,6 +174,11 @@ class ChatJournal extends StatelessWidget {
           ListTile(
             title: Text('Statistics', style: textTheme(context).bodyText1!),
             leading: const Icon(Icons.analytics),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const Statistics(),
+              ),
+            ),
           ),
           ListTile(
             title: Text('Settings', style: textTheme(context).bodyText1!),

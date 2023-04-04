@@ -5,54 +5,88 @@ import 'package:intl/intl.dart';
 import '../../models/event.dart';
 import '../../widgets/date_card.dart';
 import '../../widgets/event_card.dart';
+import '../../widgets/search_animation.dart';
+import '../settings/settings_cubit.dart';
 import 'searching_page_cubit.dart';
 
-class SearchingPage extends StatelessWidget {
+class SearchingPage extends StatefulWidget {
   final List<Event> _cards;
-  final String chatTitle;
-  final Set<String> tags;
-  final _focusNode = FocusNode();
-  final _controller = TextEditingController();
+  final String _chatTitle;
+  final Set<String> _tags;
 
   SearchingPage({
     required cards,
-    required this.chatTitle,
-    required this.tags,
+    required String chatTitle,
+    required Set<String> tags,
     required BuildContext context,
     Key? key,
-  })  : _cards = cards,
-        super(key: key) {
-    context.read<SearchingPageCubit>().init(tags, cards);
+  })  : _tags = tags,
+        _chatTitle = chatTitle,
+        _cards = cards,
+        super(key: key);
+
+  @override
+  State<SearchingPage> createState() => _SearchingPageState();
+}
+
+class _SearchingPageState extends State<SearchingPage> {
+  late final FocusNode _focusNode;
+
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.requestFocus();
+    _controller = TextEditingController();
+    context.read<SearchingPageCubit>().init(widget._tags, widget._cards);
   }
 
-  Widget _createListViewItem(index, cards) {
+  Widget _listViewItem(index, cards) {
     final current = cards.elementAt(index);
 
     if (cards.length == 1 || index == cards.length - 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateCard(date: current.time),
-          EventCard(cardModel: current, key: UniqueKey()),
-        ],
+      return BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DateCard(date: current.time),
+            EventCard(
+              shouldShowChatTitle: true,
+              cardModel: current,
+              key: UniqueKey(),
+            )
+          ],
+        ),
       );
     } else {
       final next = cards.elementAt(index + 1);
       if (DateFormat('dd-MM-yyyy').format(current.time) !=
           DateFormat('dd-MM-yyyy').format(next.time)) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DateCard(date: current.time),
-            EventCard(cardModel: current, key: UniqueKey()),
-          ],
+        return BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DateCard(date: current.time),
+              EventCard(
+                shouldShowChatTitle: true,
+                cardModel: current,
+                key: UniqueKey(),
+              ),
+            ],
+          ),
         );
       }
-      return EventCard(cardModel: current, key: UniqueKey());
+      return EventCard(
+        shouldShowChatTitle: true,
+        cardModel: current,
+        key: UniqueKey(),
+      );
     }
   }
 
-  Widget _createTextField(BuildContext context) {
+  Widget _textField() {
     return TextField(
       style: Theme.of(context).textTheme.displayMedium!.copyWith(
             color: Colors.white,
@@ -61,24 +95,36 @@ class SearchingPage extends StatelessWidget {
       controller: _controller,
       focusNode: _focusNode,
       decoration: InputDecoration(
-        hintText: 'Search in \'$chatTitle\'',
+        hintText: 'Search in ${widget._chatTitle}',
         hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
             ),
         filled: true,
-        fillColor: Theme.of(context).primaryColorLight,
+        fillColor: context.read<SettingsCubit>().state.isLight
+            ? Theme.of(context).primaryColorLight
+            : Colors.grey[850],
       ),
-      onChanged: (value) {
-        context.read<SearchingPageCubit>().updateInput(value);
+      onChanged: context.read<SearchingPageCubit>().updateInput,
+      onSubmitted: (_) {
+        context.read<SearchingPageCubit>().startLoading();
       },
     );
   }
 
-  AppBar _createAppBar(BuildContext context, SearchingPageState state) {
+  AppBar _appBar(SearchingPageState state) {
     return AppBar(
       iconTheme: Theme.of(context).iconTheme,
       backgroundColor: Theme.of(context).primaryColor,
-      title: _createTextField(context),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back,
+        ),
+        onPressed: () {
+          context.read<SearchingPageCubit>().clearFoundedEvents();
+          Navigator.pop(context);
+        },
+      ),
+      title: _textField(),
       actions: state.input != ''
           ? [
               IconButton(
@@ -95,12 +141,13 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
-  Widget _createAddingSearchQueryHintMessage(BuildContext context) {
+  Widget _addingSearchQueryHintMessage() {
     return Container(
       padding: const EdgeInsets.all(24),
       margin: const EdgeInsets.all(16),
-      color: Theme.of(context).primaryColorDark.withAlpha(30),
+      color: Theme.of(context).primaryColorLight,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.search,
@@ -123,11 +170,11 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
-  Widget _createNoFoundHintMessage(BuildContext context) {
+  Widget _noFoundHintMessage() {
     return Container(
       padding: const EdgeInsets.all(24),
       margin: const EdgeInsets.all(16),
-      color: Theme.of(context).primaryColorDark.withAlpha(30),
+      color: Theme.of(context).primaryColorLight,
       child: Column(
         children: [
           Text(
@@ -153,83 +200,82 @@ class SearchingPage extends StatelessWidget {
     );
   }
 
-  Widget _createHintMessage(BuildContext context, SearchingPageState state) {
-    return state.input == ''
-        ? _createAddingSearchQueryHintMessage(context)
-        : _createNoFoundHintMessage(context);
-  }
+  Widget _hintMessage(SearchingPageState state) =>
+      state.input == '' && !state.selectedTags.contains(true)
+          ? _addingSearchQueryHintMessage()
+          : _noFoundHintMessage();
 
-  Widget _createListViewBuilder(List<Event> cards) {
-    return ListView.builder(
-      reverse: true,
-      itemCount: cards.length,
-      itemBuilder: (_, index) => _createListViewItem(index, cards),
+  Widget _listViewBuilder(List<Event> cards) => ListView.builder(
+        reverse: true,
+        itemCount: cards.length,
+        itemBuilder: (_, index) => _listViewItem(index, cards),
+      );
+
+  Widget _tagCard(int index, SearchingPageState state) {
+    return SingleChildScrollView(
+      child: Container(
+        height: 32,
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).highlightColor,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              8,
+            ),
+          ),
+        ),
+        child: GestureDetector(
+          child: Row(
+            children: [
+              Container(
+                child: state.selectedTags.elementAt(index)
+                    ? const Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.black,
+                          size: 16,
+                        ),
+                      )
+                    : null,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  '${widget._tags.elementAt(index)}',
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            context.read<SearchingPageCubit>().toggleTag(index);
+          },
+        ),
+      ),
     );
   }
 
-  Widget _createBody(BuildContext context, SearchingPageState state) {
+  Widget _body(SearchingPageState state) {
     final foundCards = state.foundedEvents;
-
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        Container(
+          height: 54,
           child: ListView.builder(
-            itemCount: tags.length,
+            itemCount: widget._tags.length,
             scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).highlightColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(
-                      8,
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  child: Row(
-                    children: [
-                      Container(
-                        child: state.selectedTags.elementAt(index)
-                            ? const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Icon(
-                                  Icons.check,
-                                  color: Colors.black,
-                                  size: 16,
-                                ),
-                              )
-                            : null,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          '${tags.elementAt(index)}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelMedium!
-                              .copyWith(
-                                color: Theme.of(context).secondaryHeaderColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    context.read<SearchingPageCubit>().toggleTag(index);
-                  },
-                ),
-              );
-            },
+            itemBuilder: (context, index) => _tagCard(index, state),
           ),
         ),
         foundCards.isEmpty
-            ? Expanded(flex: 10, child: _createHintMessage(context, state))
+            ? _hintMessage(state)
             : Expanded(
-                flex: 10,
-                child: _createListViewBuilder(foundCards),
+                child: _listViewBuilder(foundCards),
               ),
       ],
     );
@@ -237,14 +283,11 @@ class SearchingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _focusNode.requestFocus();
     return BlocBuilder<SearchingPageCubit, SearchingPageState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: _createAppBar(context, state),
-          body: _createBody(context, state),
-        );
-      },
+      builder: (_, state) => Scaffold(
+        appBar: _appBar(state),
+        body: state.isLoaded ? searchingAnimation : _body(state),
+      ),
     );
   }
 }

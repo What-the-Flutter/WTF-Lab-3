@@ -6,12 +6,13 @@ import '../../repositories/chat_repository.dart';
 part 'managing_page_state.dart';
 
 class ManagingPageCubit extends Cubit<ManagingPageState> {
-  final ChatRepository chatsRepository;
+  final ChatRepository _chatsRepository;
 
   ManagingPageCubit({
     required ManagingPageState initState,
-    required this.chatsRepository,
-  }) : super(initState);
+    required ChatRepository chatsRepository,
+  })  : _chatsRepository = chatsRepository,
+        super(initState);
 
   void initState(Chat? chat) {
     if (chat == null) {
@@ -64,17 +65,17 @@ class ManagingPageCubit extends Cubit<ManagingPageState> {
       date: DateTime.now(),
     );
 
-    await chatsRepository.insertChat(chat);
+    await _chatsRepository.insertChat(chat);
   }
 
-  Future<void> editChat(dynamic chatId, String newTitle) async {
-    final chats = await chatsRepository.receiveAllChats();
+  Future<void> editChat(String chatId, String newTitle) async {
+    final chats = await _chatsRepository.receiveAllChats();
     final chat = chats.where((chatModel) => chatModel.id == chatId).first;
 
     final editedChat = chat.copyWith(
       newIconId: state.selectedIndex,
       newTitle: newTitle,
     );
-    await chatsRepository.updateChat(editedChat);
+    await _chatsRepository.updateChat(editedChat);
   }
 }

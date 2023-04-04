@@ -9,11 +9,6 @@ class DataBaseService {
   final FirebaseAuth fireBaseAuth = FirebaseAuth.instance;
   final Reference storageRef = FirebaseStorage.instance.ref();
 
-  // final User? user;
-
-  // DataBaseService({required this.user});
-
-
   Future<void> insertChat(Map<String, dynamic> row) async {
     databaseRef
         .child(fireBaseAuth.currentUser!.uid)
@@ -65,8 +60,10 @@ class DataBaseService {
   }
 
   Future<String> loadImage(File imageFile) async {
-    final uploadTask = await storageRef.child(fireBaseAuth.currentUser!.uid).putFile(imageFile);
-    final  downloadUrl = await uploadTask.ref.getDownloadURL();
+    final uploadTask = await storageRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .putFile(imageFile);
+    final downloadUrl = await uploadTask.ref.getDownloadURL();
     return downloadUrl;
   }
 
@@ -104,6 +101,36 @@ class DataBaseService {
       final map = Map<String, dynamic>.from(eventElement.value as Map);
       listData.add(map);
       keys.add(eventElement.key.toString());
+    }
+    return listData;
+  }
+
+  Future<void> insertTag(Map<String, dynamic> row) async {
+    databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('tags')
+        .push()
+        .set(row);
+  }
+
+  Future<void> deleteTag(String id) async {
+    databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('tags')
+        .child(id)
+        .remove();
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllTags(List<String> keys) async {
+    final rawData = await databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('tags')
+        .get();
+    final listData = <Map<String, dynamic>>[];
+    for (final tagElement in rawData.children) {
+      final map = Map<String, dynamic>.from(tagElement.value as Map);
+      listData.add(map);
+      keys.add(tagElement.key.toString());
     }
     return listData;
   }

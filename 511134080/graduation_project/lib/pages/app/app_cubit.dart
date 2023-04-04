@@ -5,14 +5,15 @@ import '../../services/firebase_authentication.dart';
 part 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
-  final FirebaseAuthentication firebaseAuthentication;
+  final FirebaseAuthentication _firebaseAuthentication;
+
   AppCubit()
-      : firebaseAuthentication = FirebaseAuthentication(),
+      : _firebaseAuthentication = FirebaseAuthentication(),
         super(AppState()) {
     init();
   }
 
   Future<void> init() async {
-    await firebaseAuthentication.authenticateAnonymously();
+    await _firebaseAuthentication.authenticateAnonymously();
   }
 }

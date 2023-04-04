@@ -11,14 +11,11 @@ import '../chat_page/chat_page.dart';
 import '../create_chat_page/create_chat_cubit.dart';
 import '../create_chat_page/create_chat_page.dart';
 import '../settings_page/settings_cubit.dart';
-import '../settings_page/settings_state.dart';
 import 'home_page_cubit.dart';
 import 'home_page_state.dart';
 
 class HomePage extends StatelessWidget {
-  final SettingsState settingsState;
-
-  const HomePage({required this.settingsState, super.key});
+  const HomePage({super.key});
 
   TextTheme textTheme(BuildContext context) {
     final fontSize = context.read<SettingsCubit>().state.fontSize;

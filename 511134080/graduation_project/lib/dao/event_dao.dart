@@ -42,15 +42,10 @@ class EventDao {
     }
   }
 
-  Future<void> createEvent(Event event) async {
-    return await _dbProvider.insertEvent(event);
-  }
+  Future<void> createEvent(Event event) async => _dbProvider.insertEvent(event);
 
-  Future<void> updateEvent(Event event) async {
-    return await _dbProvider.updateEvent(event.toDatabaseMap());
-  }
+  Future<void> updateEvent(Event event) async =>
+      _dbProvider.updateEvent(event.toDatabaseMap());
 
-  Future<void> deleteEvent(Event event) async {
-    return await _dbProvider.deleteEvent(event);
-  }
+  Future<void> deleteEvent(Event event) async => _dbProvider.deleteEvent(event);
 }
