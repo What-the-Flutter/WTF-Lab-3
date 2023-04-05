@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/chat.dart';
 import '../../widgets/chat_list_title.dart';
-import '../../widgets/drawer.dart';
+import '../../widgets/custom_drawer.dart';
 import '../managing_page/managing_page.dart';
 import '../settings/settings_cubit.dart';
 import 'home_cubit.dart';

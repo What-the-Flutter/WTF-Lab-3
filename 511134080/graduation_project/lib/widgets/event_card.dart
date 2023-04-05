@@ -9,30 +9,30 @@ import '../pages/chat/image_page.dart';
 import '../pages/settings/settings_cubit.dart';
 
 class EventCard extends StatelessWidget {
-  final Event _cardModel;
+  final Event _event;
   final void Function()? onTap;
   final void Function()? onLongPress;
   final bool _shouldShowChatTitle;
 
   const EventCard({
-    required Event cardModel,
+    required Event event,
     bool shouldShowChatTitle = false,
     this.onTap,
     this.onLongPress,
     required Key key,
   })  : _shouldShowChatTitle = shouldShowChatTitle,
-        _cardModel = cardModel,
+        _event = event,
         super(key: key);
 
   Container _category(BuildContext context) {
     return Container(
-      child: _cardModel.categoryIndex != 0
+      child: _event.categoryIndex != 0
           ? Row(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(
-                    allCategoryIcons[_cardModel.categoryIndex],
+                    allCategoryIcons[_event.categoryIndex],
                     size: 32,
                     color: Colors.grey[
                         context.read<SettingsCubit>().state.isLight
@@ -43,7 +43,7 @@ class EventCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    allCategoryTitles[_cardModel.categoryIndex],
+                    allCategoryTitles[_event.categoryIndex],
                     style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color: Colors.grey[
                               context.read<SettingsCubit>().state.isLight
@@ -63,9 +63,9 @@ class EventCard extends StatelessWidget {
       constraints: const BoxConstraints(
         maxWidth: 240,
       ),
-      child: _cardModel.title.isNotEmpty
+      child: _event.title.isNotEmpty
           ? HashTagText(
-              text: _cardModel.title,
+              text: _event.title,
               basicStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: Theme.of(context).secondaryHeaderColor,
                     fontWeight: FontWeight.normal,
@@ -83,14 +83,14 @@ class EventCard extends StatelessWidget {
 
   Widget _eventImage(BuildContext context) {
     return Container(
-      child: _cardModel.imagePath != null
+      child: _event.imagePath != null
           ? GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ImagePage(
-                      imageSource: _cardModel.imagePath!,
+                      imageSource: _event.imagePath!,
                     ),
                   ),
                 );
@@ -100,7 +100,7 @@ class EventCard extends StatelessWidget {
                   maxWidth: 240,
                 ),
                 child: Image.network(
-                  _cardModel.imagePath!,
+                  _event.imagePath!,
                 ),
               ),
             )
@@ -111,13 +111,13 @@ class EventCard extends StatelessWidget {
   Widget _checkIconButton(BuildContext context) => Icon(
         Icons.check_circle,
         size: 16,
-        color: _cardModel.isSelected
+        color: _event.isSelected
             ? Colors.black38
             : Theme.of(context).primaryColor.withAlpha(0),
       );
 
   Widget _eventTime(BuildContext context) => Text(
-        DateFormat('hh:mm a').format(_cardModel.time),
+        DateFormat('hh:mm a').format(_event.time),
         style: Theme.of(context).textTheme.labelMedium!.copyWith(
               fontWeight: FontWeight.w400,
               color: Theme.of(context).secondaryHeaderColor.withOpacity(0.8),
@@ -127,7 +127,7 @@ class EventCard extends StatelessWidget {
   Widget _bookmarkIconButton(BuildContext context) => Icon(
         Icons.bookmark,
         size: 16,
-        color: _cardModel.isFavourite
+        color: _event.isFavourite
             ? Colors.black38
             : Theme.of(context).primaryColor.withAlpha(0),
       );
@@ -163,7 +163,7 @@ class EventCard extends StatelessWidget {
     return Container(
       child: _shouldShowChatTitle
           ? Text(
-              _cardModel.chatTitle,
+              _event.chatTitle,
               style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: Colors.grey[
                         context.read<SettingsCubit>().state.isLight
@@ -191,7 +191,7 @@ class EventCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _cardModel.isSelected
+                color: _event.isSelected
                     ? Theme.of(context).focusColor
                     : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.only(

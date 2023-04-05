@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../widgets/custom_drawer.dart';
 import '../../widgets/date_card.dart';
-import '../../widgets/drawer.dart';
 import '../../widgets/event_card.dart';
 import '../filter_page/filter_page.dart';
 import '../searching_page/searching_page.dart';
@@ -109,7 +109,7 @@ class _TimelinePageState extends State<TimelinePage> {
             DateCard(date: current.time),
             EventCard(
               shouldShowChatTitle: true,
-              cardModel: current,
+              event: current,
               key: UniqueKey(),
             )
           ],
@@ -126,7 +126,7 @@ class _TimelinePageState extends State<TimelinePage> {
               DateCard(date: current.time),
               EventCard(
                 shouldShowChatTitle: true,
-                cardModel: current,
+                event: current,
                 key: UniqueKey(),
               ),
             ],
@@ -135,7 +135,7 @@ class _TimelinePageState extends State<TimelinePage> {
       }
       return EventCard(
         shouldShowChatTitle: true,
-        cardModel: current,
+        event: current,
         key: UniqueKey(),
       );
     }

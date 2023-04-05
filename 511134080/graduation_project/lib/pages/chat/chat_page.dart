@@ -66,7 +66,7 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             DateCard(date: current.time),
             EventCard(
-              cardModel: current,
+              event: current,
               onTap: () {
                 context.read<ChatCubit>().manageTapEvent(current);
               },
@@ -88,7 +88,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               DateCard(date: current.time),
               EventCard(
-                cardModel: current,
+                event: current,
                 onTap: () {
                   context.read<ChatCubit>().manageTapEvent(current);
                 },
@@ -102,7 +102,7 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
       return EventCard(
-        cardModel: current,
+        event: current,
         onTap: () {
           context.read<ChatCubit>().manageTapEvent(current);
         },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../widgets/drawer.dart';
+import '../../widgets/custom_drawer.dart';
 import '../home/home_page.dart';
 import '../timeline/timeline_page.dart';
 import 'main_page_cubit.dart';
