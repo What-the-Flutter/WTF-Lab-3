@@ -3,20 +3,22 @@ import 'package:flutter/material.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/chat.dart';
 import '../../../data/models/tag.dart';
-import '../filters_cubit.dart';
 
 class PagesTab extends StatelessWidget {
   final List<Chat> chats;
   final List<Chat> selectedChats;
   final bool ignoreSelected;
-  final FiltersCubit cubit;
+
+  final Function(bool) changeIgnoreSelected;
+  final Function(Chat) changeChatSelection;
 
   const PagesTab({
     super.key,
     required this.chats,
     required this.selectedChats,
     required this.ignoreSelected,
-    required this.cubit,
+    required this.changeIgnoreSelected,
+    required this.changeChatSelection,
   });
 
   String _welcomeMessage() {
@@ -24,7 +26,7 @@ class PagesTab extends StatelessWidget {
       return '${selectedChats.length} page(s) '
           '${ignoreSelected ? 'Ignored' : 'Included'}';
     } else {
-      return 'Tap to select a page you want to include to the filter.'
+      return 'Tap to select a page you want to include to the filter. '
           'All pages are included by default';
     }
   }
@@ -41,7 +43,7 @@ class PagesTab extends StatelessWidget {
           ),
           Switch(
             value: ignoreSelected,
-            onChanged: cubit.changeIgnoreSelected,
+            onChanged: changeIgnoreSelected,
           ),
         ],
       ),
@@ -64,7 +66,7 @@ class PagesTab extends StatelessWidget {
                 ),
               ],
             ),
-            onPressed: () => cubit.changeChatSelection(chat),
+            onPressed: () => changeChatSelection(chat),
           );
         },
       ),
@@ -75,13 +77,14 @@ class PagesTab extends StatelessWidget {
 class TagsTab extends StatelessWidget {
   final List<Tag> tags;
   final List<Tag> selectedTags;
-  final FiltersCubit cubit;
+  
+  final Function(Tag) changeTagSelection;
 
   const TagsTab({
     super.key,
     required this.tags,
     required this.selectedTags,
-    required this.cubit,
+    required this.changeTagSelection,
   });
 
   String _welcomeMessage() {
@@ -110,7 +113,7 @@ class TagsTab extends StatelessWidget {
                 ),
               ],
             ),
-            onPressed: () => cubit.changeTagSelection(tag),
+            onPressed: () => changeTagSelection(tag),
           );
         },
       ),
@@ -121,13 +124,13 @@ class TagsTab extends StatelessWidget {
 class CategoriesTab extends StatelessWidget {
   final List<Category> categories;
   final List<Category> selectedCategories;
-  final FiltersCubit cubit;
+  final Function(Category) changeCategorySelection;
 
   const CategoriesTab({
     super.key,
     required this.categories,
     required this.selectedCategories,
-    required this.cubit,
+    required this.changeCategorySelection,
   });
 
   String _welcomeMessage() {
@@ -163,7 +166,7 @@ class CategoriesTab extends StatelessWidget {
                 ),
               ],
             ),
-            onPressed: () => cubit.changeCategorySelection(category),
+            onPressed: () => changeCategorySelection(category),
           );
         },
       ),

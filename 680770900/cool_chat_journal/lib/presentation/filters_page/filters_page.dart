@@ -49,20 +49,21 @@ class _FiltersPageState extends State<FiltersPage> {
             body: TabBarView(
               children: [
                 PagesTab(
-                  cubit: _cubit,
                   chats: state.chats,
                   selectedChats: state.selectedChats,
                   ignoreSelected: state.ignoreSelected,
+                  changeChatSelection: _cubit.changeChatSelection,
+                  changeIgnoreSelected: _cubit.changeIgnoreSelected,
                 ),
                 TagsTab(
-                  cubit: _cubit,
                   tags: state.tags,
                   selectedTags: state.selectedTags,
+                  changeTagSelection: _cubit.changeTagSelection,
                 ),
                 CategoriesTab(
-                  cubit: _cubit,
                   categories: state.categories,
                   selectedCategories: state.selectedCategories,
+                  changeCategorySelection: _cubit.changeCategorySelection,
                 ),
               ],
             ),

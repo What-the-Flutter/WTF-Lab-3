@@ -43,6 +43,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   json_serializable: ^6.6.1
+  integration_test: ^0.8.1
 
 
 flutter:
