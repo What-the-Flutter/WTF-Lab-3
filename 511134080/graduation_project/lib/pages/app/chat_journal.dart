@@ -97,10 +97,7 @@ class _ChatJournalState extends State<ChatJournal> {
           title: 'Chat Journal',
           theme: state.currentTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
-          routes: {
-            '/': (_) => const WelcomePage(),
-          },
+          home: const WelcomePage(),
         ),
       ),
     );

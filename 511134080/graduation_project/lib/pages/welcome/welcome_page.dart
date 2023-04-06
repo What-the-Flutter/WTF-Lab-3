@@ -18,7 +18,9 @@ class WelcomePage extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const MainPage(),
+            builder: (context) => MainPage(
+              context: context,
+            ),
           ),
         );
       },
