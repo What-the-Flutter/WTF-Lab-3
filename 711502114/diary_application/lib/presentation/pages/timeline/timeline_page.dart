@@ -1,9 +1,9 @@
 import 'package:diary_application/domain/utils/utils.dart';
 import 'package:diary_application/presentation/pages/chat/event_cubit.dart';
 import 'package:diary_application/presentation/pages/chat/event_state.dart';
-import 'package:diary_application/presentation/pages/filter/filter_page.dart';
 import 'package:diary_application/presentation/pages/search/search_cubit.dart';
 import 'package:diary_application/presentation/pages/search/search_page.dart';
+import 'package:diary_application/presentation/pages/timeline/filter/filter_page.dart';
 import 'package:diary_application/presentation/widgets/event_page/event_box.dart';
 import 'package:diary_application/presentation/widgets/event_page/info_box.dart';
 import 'package:diary_application/presentation/widgets/event_page/tool_menu_icon.dart';
@@ -23,9 +23,14 @@ class _TimelinePageState extends State<TimelinePage> {
   final _bookMark = Icons.bookmark_border_outlined;
 
   @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<EventCubit>(context).initAll();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context);
-    BlocProvider.of<EventCubit>(context).initAll();
     final query = MediaQuery.of(context);
     final size = query.size;
 

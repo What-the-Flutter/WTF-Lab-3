@@ -1,5 +1,5 @@
 import 'package:diary_application/data/repository/tag_repository.dart';
-import 'package:diary_application/presentation/pages/filter/filter_cubit.dart';
+import 'package:diary_application/presentation/pages/timeline/filter/filter_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
