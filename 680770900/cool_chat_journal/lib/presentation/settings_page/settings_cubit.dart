@@ -55,18 +55,18 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> switchBubbleAlignmentType() async {
     final bubbleAlignmentType = state.bubbleAlignmentType.next;
+    emit(state.copyWith(bubbleAlignmentType: bubbleAlignmentType));
 
     await _settingsRepository.saveThemeInfo(ThemeInfo(
       themeType: state.themeType.name,
       fontSize: state.fontSizeType.name,
       bubbleAlignment: bubbleAlignmentType.name,
     ));
-
-    emit(state.copyWith(bubbleAlignmentType: bubbleAlignmentType));
   }
 
   Future<void> switchThemeType() async {
     final themeType = state.themeType.next;
+    emit(state.copyWith(themeType: themeType));
 
     await _settingsRepository.saveThemeInfo(
       ThemeInfo(
@@ -75,11 +75,11 @@ class SettingsCubit extends Cubit<SettingsState> {
         bubbleAlignment: state.bubbleAlignmentType.name,
       ),
     );
-
-    emit(state.copyWith(themeType: themeType));
   }
 
   Future<void> switchFontSizeType(FontSizeType fontSizeType) async {
+    emit(state.copyWith(fontSizeType: fontSizeType));
+
     await _settingsRepository.saveThemeInfo(
       ThemeInfo(
         themeType: state.themeType.name,
@@ -87,8 +87,6 @@ class SettingsCubit extends Cubit<SettingsState> {
         bubbleAlignment: state.bubbleAlignmentType.name,
       ),
     );
-
-    emit(state.copyWith(fontSizeType: fontSizeType));
   }
 
   Future<void> uploadBackgroundImage() async {
@@ -104,39 +102,39 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> resetBackgroundImage() async {
-    await _settingsRepository.deleteBackgroundImage();
-
     emit(
       state.copyWith(
         backgroundImage: const NullWrapper(null),
       ),
     );
+
+    await _settingsRepository.deleteBackgroundImage();
   }
 
   Future<void> saveBackgroundImage(Uint8List backgroundImage) async {
-    await _settingsRepository.saveBackgroundImage(backgroundImage);
-
     emit(
       state.copyWith(
         backgroundImage: NullWrapper(backgroundImage),
       ),
     );
+
+    await _settingsRepository.saveBackgroundImage(backgroundImage);
   }
 
   Future<void> restoreSettings() async {
-    await _settingsRepository.saveThemeInfo(
-      ThemeInfo(
-        themeType: defaultThemeType.name,
-        fontSize: defaultFontSizeType.name,
-        bubbleAlignment: defaultBubbleAlignmentType.name,
-      ),
-    );
-
     emit(
       state.copyWith(
         themeType: defaultThemeType,
         fontSizeType: defaultFontSizeType,
         bubbleAlignmentType: defaultBubbleAlignmentType,
+      ),
+    );
+    
+    await _settingsRepository.saveThemeInfo(
+      ThemeInfo(
+        themeType: defaultThemeType.name,
+        fontSize: defaultFontSizeType.name,
+        bubbleAlignment: defaultBubbleAlignmentType.name,
       ),
     );
   }

@@ -55,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
 
                     if (fontSizeType != null) {
-                      _cubit.switchFontSizeType(fontSizeType);
+                      await _cubit.switchFontSizeType(fontSizeType);
                     }
                   },
                 ),

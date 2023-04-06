@@ -179,6 +179,7 @@ class _HomePageState extends State<HomePage> {
           ),
           body: _chatsList(chats: state.chats),
           floatingActionButton: FloatingActionButton(
+            tooltip: 'FloatingActionButton',
             child: const Icon(Icons.add),
             onPressed: () => Navigator.push(
               context,
