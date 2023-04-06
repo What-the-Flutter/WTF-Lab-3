@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../constants.dart';
 import '../../../models/event.dart';
 import '../../../repositories/event_repository.dart';
+import '../../../services/statistics_helper.dart';
 
 part 'summary_statistics_state.dart';
 
@@ -30,4 +31,10 @@ class SummaryStatisticsCubit extends Cubit<SummaryStatisticsState> {
       },
     );
   }
+
+  void updateEvents(List<Event> filteredEvents) => emit(
+        state.copyWith(
+          newEvents: filteredEvents,
+        ),
+      );
 }

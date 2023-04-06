@@ -6,7 +6,9 @@ import '../settings/settings_cubit.dart';
 import 'filter_page_cubit.dart';
 
 class FilterPage extends StatefulWidget {
+  final bool isOnlyPagesFiltered;
   const FilterPage({
+    this.isOnlyPagesFiltered = false,
     Key? key,
   }) : super(key: key);
 
@@ -550,21 +552,32 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
+  Widget _body(FilterPageState state) {
+    if (!widget.isOnlyPagesFiltered) {
+      return DefaultTabController(
+        length: 4,
+        child: Column(
+          children: [
+            _search(state),
+            _tabBar(),
+            _tabBarView(state),
+          ],
+        ),
+      );
+    }
+    return Column(
+      children: [
+        _pagesTabView(state),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FilterPageCubit, FilterPageState>(
       builder: (_, state) => Scaffold(
         appBar: _appBar(state),
-        body: DefaultTabController(
-          length: 4,
-          child: Column(
-            children: [
-              _search(state),
-              _tabBar(),
-              _tabBarView(state),
-            ],
-          ),
-        ),
+        body: _body(state),
         floatingActionButton: _applyButton(state),
       ),
     );

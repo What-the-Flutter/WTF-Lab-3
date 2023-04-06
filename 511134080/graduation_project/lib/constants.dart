@@ -217,3 +217,10 @@ final List<String> timeOptions = [
   'Past 30 days',
   'This year',
 ];
+
+final List<String> titleAxis = [
+  'Hours',
+  'Days',
+  'Days',
+  'Months',
+];

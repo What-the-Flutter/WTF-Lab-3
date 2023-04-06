@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants.dart';
 import 'summary_statistics_cubit.dart';
 
 class SummaryStatistics extends StatelessWidget {
@@ -132,11 +133,15 @@ class SummaryStatistics extends StatelessWidget {
 
   FlGridData _gridData(BuildContext context, List<List<int>> charts) {
     return FlGridData(
-      show: true,
-      drawHorizontalLine: true,
       drawVerticalLine: false,
+      horizontalInterval: 1,
+      getDrawingHorizontalLine: (value) => FlLine(
+        color: Theme.of(context).disabledColor.withAlpha(80),
+        dashArray: [5, 5],
+      ),
       checkToShowHorizontalLine: (value) => charts
-          .map((dayStat) => dayStat.getRange(0, dayStat.length).contains(value))
+          .map((dayStat) =>
+              dayStat.getRange(1, dayStat.length).contains(value.toInt()))
           .contains(true),
     );
   }
@@ -168,6 +173,10 @@ class SummaryStatistics extends StatelessWidget {
     ];
   }
 
+  bool _shouldDisplay(List<List<int>> charts, double value) => charts
+      .map((dayStat) => dayStat.getRange(1, dayStat.length).contains(value))
+      .contains(true);
+
   FlTitlesData _titlesData(BuildContext context, List<List<int>> charts) {
     return FlTitlesData(
       leftTitles: AxisTitles(
@@ -175,7 +184,7 @@ class SummaryStatistics extends StatelessWidget {
           showTitles: true,
           getTitlesWidget: (value, _) {
             return Text(
-              '${charts.map((dayStat) => dayStat.getRange(0, dayStat.length).contains(value)).contains(true) ? value.toInt() : ''}',
+              '${_shouldDisplay(charts, value) ? value.toInt() : ''}',
               style: TextStyle(
                 color: Theme.of(context).secondaryHeaderColor,
               ),
@@ -214,9 +223,9 @@ class SummaryStatistics extends StatelessWidget {
           width: 400,
           child: BarChart(
             BarChartData(
+              maxY: state.maxY(timeOption).toDouble(),
               borderData: _borderData(context),
               gridData: _gridData(context, charts),
-              // add bars
               barGroups: _barGroups(context, charts),
               titlesData: _titlesData(context, charts),
             ),
@@ -236,7 +245,7 @@ class SummaryStatistics extends StatelessWidget {
             _summaryStatistics(context, state),
             _barCharts(context, state, charts),
             Text(
-              'Days',
+              titleAxis[timeOptions.indexOf(timeOption)],
               style: TextStyle(
                 color: Theme.of(context).secondaryHeaderColor,
               ),

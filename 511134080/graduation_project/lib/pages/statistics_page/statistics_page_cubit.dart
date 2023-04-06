@@ -8,7 +8,6 @@ class StatisticsPageCubit extends Cubit<StatisticsPageState> {
   void changeSelectedIndex(int value) => emit(
         state.copyWith(
           changedSelectedIndex: value,
-          newTimeOption: 'Past 30 days',
         ),
       );
 

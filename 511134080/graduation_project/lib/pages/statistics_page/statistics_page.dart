@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants.dart';
+import '../filter_page/filter_page.dart';
 import 'label_statistics/label_statistics.dart';
+import 'label_statistics/label_statistics_cubit.dart';
 import 'statistics_page_cubit.dart';
 import 'summary_statistics/summary_statistics.dart';
+import 'summary_statistics/summary_statistics_cubit.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({Key? key}) : super(key: key);
@@ -67,7 +70,18 @@ class StatisticsPage extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              final events = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FilterPage(
+                    isOnlyPagesFiltered: true,
+                  ),
+                ),
+              );
+              context.read<LabelStatisticsCubit>().updateEvents(events);
+              context.read<SummaryStatisticsCubit>().updateEvents(events);
+            },
             icon: const Icon(
               Icons.filter_list,
               color: Colors.deepPurple,

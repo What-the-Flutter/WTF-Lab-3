@@ -10,43 +10,7 @@ class LabelStatisticsState {
   List<int> labelStatistics(String timeOption) {
     final labelStat = [0, 0, 0, 0, 0, 0];
 
-    late final DateTime date;
-
-    if (timeOption == timeOptions[0]) {
-      date = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      );
-    } else if (timeOption == timeOptions[1]) {
-      date = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ).subtract(
-        const Duration(
-          days: 7,
-        ),
-      );
-    } else if (timeOption == timeOptions[2]) {
-      date = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ).subtract(
-        const Duration(
-          days: 30,
-        ),
-      );
-    } else if (timeOption == timeOptions[3]) {
-      date = DateTime(
-        DateTime.now().year,
-        1,
-        1,
-      );
-    } else {
-      throw Exception('Invalid time option!');
-    }
+    final date = StatisticsHelper.calculateFilteredDate(timeOption);
 
     for (final event in events) {
       if (event.time.isAfter(date)) {
