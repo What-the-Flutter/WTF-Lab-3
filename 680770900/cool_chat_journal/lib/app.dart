@@ -95,6 +95,9 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
         BlocProvider<FiltersCubit>(
           create: (_) => GetIt.I<FiltersCubit>(),
         ),
+        BlocProvider<StatisticsCubit>(
+          create: (_) => GetIt.I<StatisticsCubit>(),
+        ),
       ],
       child: Builder(
         builder: (_) => BlocBuilder<SettingsCubit, SettingsState>(

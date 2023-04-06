@@ -56,4 +56,7 @@ void initGetIt({required User user}) {
     GetIt.I<TagsRepository>(),
     GetIt.I<CategoriesRepository>(),
   ));
+  GetIt.I.registerSingleton<StatisticsCubit>(StatisticsCubit(
+    GetIt.I<EventsRepository>(),
+  ));
 }

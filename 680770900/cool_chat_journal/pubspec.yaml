@@ -35,6 +35,7 @@ dependencies:
   hashtagable: ^2.1.0
   lottie: ^2.3.1
   mockito: ^5.4.0
+  fl_chart: ^0.61.0
 
 dev_dependencies:
   flutter_test:

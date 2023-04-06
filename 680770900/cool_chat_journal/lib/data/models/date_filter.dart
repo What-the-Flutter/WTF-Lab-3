@@ -1,0 +1,1 @@
+enum DateFilter { today, days7, days30, thisYear }

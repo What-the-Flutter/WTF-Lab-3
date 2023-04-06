@@ -9,6 +9,7 @@ import '../../../data/models/chat.dart';
 import '../../utils/custom_theme.dart';
 import '../chat_editor_page/chat_editor_page.dart';
 import '../chat_page/chat_page.dart';
+import '../presentation.dart';
 import '../settings_page/settings_cubit.dart';
 import '../settings_page/settings_page.dart';
 import 'home_cubit.dart';
@@ -261,19 +262,35 @@ class _CustomDrawerState extends State<_CustomDrawer> {
             },
           ),
           InkWell(
-              child: const ListTile(
-                leading: Icon(Icons.settings_outlined),
-                title: Text('Settings'),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const SettingsPage(),
-                  ),
-                );
-              }),
+            child: const ListTile(
+              leading: Icon(Icons.settings_outlined),
+              title: Text('Settings'),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SettingsPage(),
+                ),
+              );
+            },
+          ),
+          InkWell(
+            child: const ListTile(
+              leading: Icon(Icons.trending_up),
+              title: Text('Statistics'),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const StatisticsPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
