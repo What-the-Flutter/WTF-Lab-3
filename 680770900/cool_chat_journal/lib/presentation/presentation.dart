@@ -6,3 +6,5 @@ export 'home_page/home_cubit.dart';
 export 'home_page/home_page.dart';
 export 'settings_page/settings_cubit.dart';
 export 'settings_page/settings_page.dart';
+export 'statistics_page/statistics_cubit.dart';
+export 'statistics_page/statistics_page.dart';

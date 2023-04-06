@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import 'data/data.dart';
+import 'data/models/theme_enums.dart';
+import 'presentation/filters_page/filters_cubit.dart';
 import 'presentation/presentation.dart';
+import 'utils/custom_theme.dart';
 
 class CoolChatJournalApp extends StatefulWidget {
   final User user;
@@ -62,45 +64,16 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
       case ThemeType.light:
         return FlexThemeData.light(
           useMaterial3: true,
-          surface: const Color(0xffff7373),
-          scheme: FlexScheme.mandyRed,
+          scheme: FlexScheme.blue,
           textTheme: _generateTextTheme(state),
         );
       case ThemeType.dark:
         return FlexThemeData.dark(
           useMaterial3: true,
-          scheme: FlexScheme.mandyRed,
+          scheme: FlexScheme.blue,
           textTheme: _generateTextTheme(state),
         );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    GetIt.I.registerSingleton<User>(widget.user);
-
-    // Providers.
-    GetIt.I.registerSingleton<DatabaseProvider>(DatabaseProvider(
-      defaultJsonCategories: _DefaultCategories.jsonList,
-    ));
-    GetIt.I.registerSingleton<SettingsProvider>(SettingsProvider());
-    GetIt.I.registerSingleton<StorageProvider>(StorageProvider());
-
-    // Repositories.
-    GetIt.I
-        .registerSingleton<CategoriesRepository>(const CategoriesRepository());
-    GetIt.I.registerSingleton<ChatsRepository>(const ChatsRepository());
-    GetIt.I.registerSingleton<EventsRepository>(EventsRepository());
-    GetIt.I.registerSingleton<SettingsRepository>(const SettingsRepository());
-    GetIt.I.registerSingleton<TagsRepository>(const TagsRepository());
-
-    // Cubits.
-    GetIt.I.registerSingleton<SettingsCubit>(SettingsCubit());
-    GetIt.I.registerSingleton<HomeCubit>(HomeCubit());
-    GetIt.I.registerSingleton<ChatCubit>(ChatCubit());
-    GetIt.I.registerSingleton<ChatEditorCubit>(ChatEditorCubit());
   }
 
   @override
@@ -119,30 +92,32 @@ class _CoolChatJournalAppState extends State<CoolChatJournalApp> {
         BlocProvider<ChatEditorCubit>(
           create: (_) => GetIt.I<ChatEditorCubit>(),
         ),
+        BlocProvider<FiltersCubit>(
+          create: (_) => GetIt.I<FiltersCubit>(),
+        ),
+        BlocProvider<StatisticsCubit>(
+          create: (_) => GetIt.I<StatisticsCubit>(),
+        ),
       ],
       child: Builder(
         builder: (_) => BlocBuilder<SettingsCubit, SettingsState>(
           builder: (_, state) {
-            return MaterialApp(
-              title: 'Cool Chat Journal',
-              theme: _generateTheme(state),
-              home: HomePage(user: widget.user),
+            final themeData = _generateTheme(state);
+            return CustomTheme(
+              themeData: themeData,
+              themeType: state.themeType,
+              bubbleAlignmentType: state.bubbleAlignmentType,
+              fontSizeType: state.fontSizeType,
+              backgroundImage: state.backgroundImage,
+              child: MaterialApp(
+                title: 'Cool Chat Journal',
+                theme: themeData,
+                home: const HomePage(),
+              ),
             );
           },
         ),
       ),
     );
   }
-}
-
-class _DefaultCategories {
-  static List<JsonMap> get jsonList => list.map((e) => e.toJson()).toList();
-
-  static List<Category> get list => [
-        Category(
-          title: 'test',
-          icon: Icons.fitness_center.codePoint,
-          isCustom: false,
-        ),
-      ];
 }

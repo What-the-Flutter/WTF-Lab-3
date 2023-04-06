@@ -5,6 +5,8 @@ import 'package:hashtagable/functions.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../data/models/models.dart';
+import '../../../utils/custom_theme.dart';
+import '../../../utils/null_wrapper.dart';
 import '../chat_cubit.dart';
 
 class BottomPanel extends StatefulWidget {
@@ -23,6 +25,7 @@ class BottomPanel extends StatefulWidget {
 class _BottomPanelState extends State<BottomPanel> {
   final _textFocusNode = FocusNode();
   final _textController = TextEditingController();
+  final _cubit = GetIt.I<ChatCubit>();
 
   Future<ImageSource?> _showImageDialog() {
     return showDialog<ImageSource>(
@@ -41,7 +44,9 @@ class _BottomPanelState extends State<BottomPanel> {
     );
   }
 
-  void _onAddImage() async {
+  void _onAddImage({
+    required String? selectedCategoryId,
+  }) async {
     final source = await _showImageDialog();
 
     if (source != null) {
@@ -55,36 +60,40 @@ class _BottomPanelState extends State<BottomPanel> {
           image: imageBytes,
           isFavorite: false,
           changeTime: DateTime.now(),
-          categoryId: GetIt.I<ChatCubit>().state.selectedCategoryId,
+          categoryId: selectedCategoryId,
         );
 
-        GetIt.I<ChatCubit>().addNewEvent(event);
+        _cubit.addNewEvent(event);
       }
     }
   }
 
-  void _onAddText() {
-    GetIt.I<ChatCubit>().addNewEvent(
+  void _onAddText({
+    required String? selectedCategoryId,
+  }) {
+    _cubit.addNewEvent(
       Event(
         chatId: widget.chatId,
         content: _textController.text,
         isFavorite: false,
         changeTime: DateTime.now(),
-        categoryId: GetIt.I<ChatCubit>().state.selectedCategoryId,
+        categoryId: selectedCategoryId,
       ),
     );
   }
 
-  void _onEditText(Event sourceEvent) {
+  void _onEditText({
+    required Event sourceEvent,
+    required String? selectedCategoryId,
+  }) {
     final NullWrapper<String?>? selectedCategory;
-    if (GetIt.I<ChatCubit>().state.selectedCategoryId != null) {
-      selectedCategory =
-          NullWrapper<String?>(GetIt.I<ChatCubit>().state.selectedCategoryId);
+    if (selectedCategoryId != null) {
+      selectedCategory = NullWrapper<String?>(selectedCategoryId);
     } else {
       selectedCategory = null;
     }
 
-    GetIt.I<ChatCubit>().editEvent(
+    _cubit.editEvent(
       sourceEvent.copyWith(
         content: NullWrapper<String?>(_textController.text),
         categoryId: selectedCategory,
@@ -92,63 +101,92 @@ class _BottomPanelState extends State<BottomPanel> {
     );
   }
 
-  void _clearView() {
-    if (GetIt.I<ChatCubit>().state.isEditMode) {
-      GetIt.I<ChatCubit>().toggleEditMode();
+  void _clearView({
+    required bool isEditMode,
+  }) {
+    if (isEditMode) {
+      _cubit.removeEditedEvent();
     }
 
-    GetIt.I<ChatCubit>().changeShowCategories(false);
-    GetIt.I<ChatCubit>().selectCategory(null);
-    GetIt.I<ChatCubit>().resetSelection();
+    _cubit.changeShowCategories(false);
+    _cubit.selectCategory(null);
+    _cubit.resetSelection();
 
     _textController.clear();
     _textFocusNode.unfocus();
   }
 
-  void _onEnterText() {
+  void _onEnterText({
+    required String? selectedCategoryId,
+    required bool isEditMode,
+  }) {
     final sourceEvent = widget.sourceEvent;
 
     if (sourceEvent == null) {
-      _onAddText();
+      _onAddText(
+        selectedCategoryId: selectedCategoryId,
+      );
     } else {
-      _onEditText(sourceEvent);
+      _onEditText(
+        sourceEvent: sourceEvent,
+        selectedCategoryId: selectedCategoryId,
+      );
     }
 
-    _clearView();
+    _clearView(
+      isEditMode: isEditMode,
+    );
   }
 
-  Widget _createTextField() {
+  Widget _textField({
+    required String? selectedCategoryId,
+    required bool isEditMode,
+  }) {
     return Expanded(
       child: _EventField(
         focusNode: _textFocusNode,
         controller: _textController,
-        onSubmitted: (_) => _onEnterText(),
+        onSubmitted: (_) => _onEnterText(
+          selectedCategoryId: selectedCategoryId,
+          isEditMode: isEditMode,
+        ),
       ),
     );
   }
 
-  Widget _createSendButton() {
-    if (_textController.text.isNotEmpty) {
-      return IconButton(
+  Widget _sendButton({
+    required String? selectedCategoryId,
+    required bool isEditMode,
+  }) {
+    return AnimatedCrossFade(
+      crossFadeState: _textController.text.isNotEmpty
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      firstChild: IconButton(
         icon: const Icon(Icons.send_rounded),
-        onPressed: _onEnterText,
-      );
-    } else {
-      return IconButton(
+        onPressed: () => _onEnterText(
+          selectedCategoryId: selectedCategoryId,
+          isEditMode: isEditMode,
+        ),
+      ),
+      secondChild: IconButton(
         icon: const Icon(Icons.add_a_photo_outlined),
-        onPressed: _onAddImage,
-      );
-    }
+        onPressed: () => _onAddImage(
+          selectedCategoryId: selectedCategoryId,
+        ),
+      ),
+      duration: const Duration(milliseconds: 200),
+    );
   }
 
   void _onChangeText() {
     final text = _textController.text;
-    GetIt.I<ChatCubit>().changeText(text);
+    _cubit.changeText(text);
 
     if (text.endsWith('#')) {
-      GetIt.I<ChatCubit>().changeShowTags(true);
+      _cubit.changeShowTags(true);
     } else if (text.endsWith(' ')) {
-      GetIt.I<ChatCubit>().changeShowTags(false);
+      _cubit.changeShowTags(false);
     }
   }
 
@@ -170,7 +208,7 @@ class _BottomPanelState extends State<BottomPanel> {
         }
 
         return Container(
-          color: Theme.of(context).backgroundColor,
+          color: CustomTheme.of(context).themeData.backgroundColor,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -180,8 +218,14 @@ class _BottomPanelState extends State<BottomPanel> {
               Row(
                 children: [
                   const _CategoriesButton(),
-                  _createTextField(),
-                  _createSendButton(),
+                  _textField(
+                    selectedCategoryId: state.selectedCategoryId,
+                    isEditMode: state.editedEvent != null,
+                  ),
+                  _sendButton(
+                    selectedCategoryId: state.selectedCategoryId,
+                    isEditMode: state.editedEvent != null,
+                  ),
                 ],
               ),
             ],
@@ -192,10 +236,16 @@ class _BottomPanelState extends State<BottomPanel> {
   }
 }
 
-class _CategoriesButton extends StatelessWidget {
+class _CategoriesButton extends StatefulWidget {
   const _CategoriesButton({super.key});
 
-  IconData _createIcon({
+  @override
+  State<_CategoriesButton> createState() => _CategoriesButtonState();
+}
+
+class _CategoriesButtonState extends State<_CategoriesButton> {
+  final _cubit = GetIt.I<ChatCubit>();
+  IconData _icon({
     String? selectedCategory,
     required List<Category> categories,
   }) {
@@ -215,10 +265,10 @@ class _CategoriesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
+      builder: (_, state) {
         final selectedCategory = state.selectedCategoryId;
 
-        final icon = _createIcon(
+        final icon = _icon(
           selectedCategory: selectedCategory,
           categories: state.categories,
         );
@@ -227,121 +277,146 @@ class _CategoriesButton extends StatelessWidget {
 
         return IconButton(
           icon: Icon(icon),
-          onPressed: () =>
-              GetIt.I<ChatCubit>().changeShowCategories(!showCategories),
+          onPressed: () => _cubit.changeShowCategories(!showCategories),
         );
       },
     );
   }
 }
 
-class _CategoriesList extends StatelessWidget {
+class _CategoriesList extends StatefulWidget {
   const _CategoriesList({super.key});
 
   @override
+  State<_CategoriesList> createState() => _CategoriesListState();
+}
+
+class _CategoriesListState extends State<_CategoriesList> {
+  final _cubit = GetIt.I<ChatCubit>();
+
+  @override
   Widget build(BuildContext context) {
-    final categories = GetIt.I<ChatCubit>().state.categories;
-    return SizedBox(
-      height: 70,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () {
-              GetIt.I<ChatCubit>().selectCategory(null);
-              GetIt.I<ChatCubit>().changeShowCategories(false);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.cancel),
-                  const Text('Cancel'),
-                ],
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (_, state) => SizedBox(
+        height: 70,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () {
+                _cubit.selectCategory(null);
+                _cubit.changeShowCategories(false);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.cancel),
+                    const Text('Cancel'),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              itemBuilder: (context, index) => InkWell(
-                onTap: () {
-                  GetIt.I<ChatCubit>().changeShowCategories(false);
-                  GetIt.I<ChatCubit>().selectCategory(categories[index].id);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        IconData(
-                          categories[index].icon,
-                          fontFamily: 'MaterialIcons',
+            Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.categories.length,
+                itemBuilder: (_, index) => InkWell(
+                  onTap: () {
+                    _cubit.changeShowCategories(false);
+                    _cubit.selectCategory(state.categories[index].id);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          IconData(
+                            state.categories[index].icon,
+                            fontFamily: 'MaterialIcons',
+                          ),
                         ),
-                      ),
-                      Text(categories[index].title),
-                    ],
+                        Text(state.categories[index].title),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _TagsList extends StatelessWidget {
+class _TagsList extends StatefulWidget {
   final String text;
+
   const _TagsList({
     super.key,
     required this.text,
   });
 
-  List<Tag> _generateTags() {
-    final inputTag = extractHashTags(text).last;
+  @override
+  State<_TagsList> createState() => _TagsListState();
+}
 
-    return GetIt.I<ChatCubit>()
-        .state
-        .tags
+class _TagsListState extends State<_TagsList> {
+  final _cubit = GetIt.I<ChatCubit>();
+
+  List<Tag> _generateTags({
+    required List<Tag> availableTags,
+  }) {
+    final inputTag = extractHashTags(widget.text).last;
+
+    return availableTags
         .where((tag) => '#${tag.id}'.startsWith(inputTag))
         .toList();
   }
 
-  void _insertTag(Tag tag) {
-    final text = GetIt.I<ChatCubit>().state.text!;
+  void _insertTag({
+    required Tag tag,
+    required String text,
+  }) {
     final hashtagIndex = text.lastIndexOf('#');
-
     final substring = text.substring(0, hashtagIndex);
-    GetIt.I<ChatCubit>().changeText('$substring#${tag.id}');
+    _cubit.changeText('$substring#${tag.id}');
   }
 
   @override
   Widget build(BuildContext context) {
-    final tags = _generateTags();
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (_, state) {
+        final tags = _generateTags(
+          availableTags: state.tags,
+        );
 
-    if (tags.isNotEmpty) {
-      return SizedBox(
-        height: 70,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: tags.length,
-          itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              child: Text(tags[index].id),
-              onPressed: () => _insertTag(tags[index]),
+        if (tags.isNotEmpty) {
+          return SizedBox(
+            height: 70,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: tags.length,
+              itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  child: Text(tags[index].id),
+                  onPressed: () => _insertTag(
+                    tag: tags[index],
+                    text: state.text!,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    } else {
-      return const SizedBox();
-    }
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
   }
 }
 

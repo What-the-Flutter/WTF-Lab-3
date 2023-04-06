@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../data/models/theme_enums.dart';
+import '../../utils/custom_theme.dart';
 import 'settings_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -13,6 +15,8 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final _cubit = GetIt.I<SettingsCubit>();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
@@ -35,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Theme'),
                     subtitle: Text('Light / Dark'),
                   ),
-                  onTap: GetIt.I<SettingsCubit>().switchThemeType,
+                  onTap: _cubit.switchThemeType,
                 ),
                 const Divider(),
                 InkWell(
@@ -51,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
 
                     if (fontSizeType != null) {
-                      GetIt.I<SettingsCubit>().switchFontSizeType(fontSizeType);
+                      await _cubit.switchFontSizeType(fontSizeType);
                     }
                   },
                 ),
@@ -62,7 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Bubble Alignment'),
                     subtitle: Text('Force right-to-left bubble alignment'),
                   ),
-                  onTap: GetIt.I<SettingsCubit>().switchBubbleAlignmentType,
+                  onTap: _cubit.switchBubbleAlignmentType,
                 ),
                 const Divider(),
                 InkWell(
@@ -75,7 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const _BackgroundImagePicker(),
+                        builder: (_) => const _BackgroundImagePicker(),
                       ),
                     );
                   },
@@ -87,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Reset All Preferences'),
                     subtitle: Text('Reset all Visual Customizations'),
                   ),
-                  onTap: GetIt.I<SettingsCubit>().restoreSettings,
+                  onTap: _cubit.restoreSettings,
                 ),
               ],
             ),
@@ -98,69 +102,22 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class _BackgroundImagePicker extends StatelessWidget {
+class _BackgroundImagePicker extends StatefulWidget {
   const _BackgroundImagePicker({super.key});
 
-  void _onPickImage(BuildContext context) async {
+  @override
+  State<_BackgroundImagePicker> createState() => _BackgroundImagePickerState();
+}
+
+class _BackgroundImagePickerState extends State<_BackgroundImagePicker> {
+  final _cubit = GetIt.I<SettingsCubit>();
+
+  void _onPickImage() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       final imageBytes = await image.readAsBytes();
-      context.read<SettingsCubit>().saveBackgroundImage(imageBytes);
-    }
-  }
-
-  Widget _createBody(BuildContext context) {
-    final cubit = context.read<SettingsCubit>();
-    if (cubit.state.backgroundImage == null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 50.0,
-                vertical: 10.0,
-              ),
-              alignment: Alignment.center,
-              child: const Text(
-                'Click the button below to set the Background Image',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            ElevatedButton(
-              child: const Text('Pick an Image'),
-              onPressed: () => _onPickImage(context),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 10.0,
-              horizontal: 60.0,
-            ),
-            child: Image.memory(cubit.state.backgroundImage!),
-          ),
-          InkWell(
-            child: const ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Unset image'),
-            ),
-            onTap: cubit.resetBackgroundImage,
-          ),
-          InkWell(
-            child: const ListTile(
-              leading: Icon(Icons.image),
-              title: Text('Pick a new Image'),
-            ),
-            onTap: () => _onPickImage(context),
-          ),
-        ],
-      );
+      _cubit.saveBackgroundImage(imageBytes);
     }
   }
 
@@ -175,8 +132,57 @@ class _BackgroundImagePicker extends StatelessWidget {
         title: const Text('Background Image'),
       ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return _createBody(context);
+        builder: (_, state) {
+          if (state.backgroundImage == null) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 50.0,
+                      vertical: 10.0,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Click the button below to set the Background Image',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: const Text('Pick an Image'),
+                    onPressed: _onPickImage,
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 60.0,
+                  ),
+                  child: Image.memory(state.backgroundImage!),
+                ),
+                InkWell(
+                  child: const ListTile(
+                    leading: Icon(Icons.delete),
+                    title: Text('Unset image'),
+                  ),
+                  onTap: _cubit.resetBackgroundImage,
+                ),
+                InkWell(
+                  child: const ListTile(
+                    leading: Icon(Icons.image),
+                    title: Text('Pick a new Image'),
+                  ),
+                  onTap: _onPickImage,
+                ),
+              ],
+            );
+          }
         },
       ),
     );
@@ -188,7 +194,6 @@ class _FontPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Container(
         margin: const EdgeInsets.all(40.0),
@@ -196,7 +201,7 @@ class _FontPicker extends StatelessWidget {
           horizontal: 30.0,
           vertical: 20.0,
         ),
-        color: theme.backgroundColor,
+        color: CustomTheme.of(context).themeData.backgroundColor,
         child: Material(
           type: MaterialType.transparency,
           child: Column(

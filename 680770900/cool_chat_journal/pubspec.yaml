@@ -33,15 +33,22 @@ dependencies:
   rxdart: ^0.27.7
   get_it: ^7.2.0
   hashtagable: ^2.1.0
+  lottie: ^2.3.1
+  mockito: ^5.4.0
+  fl_chart: ^0.61.0
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   json_serializable: ^6.6.1
 
-
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/animations/pencil.json

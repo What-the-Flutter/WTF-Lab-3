@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'app.dart';
 import 'firebase_options.dart';
+import 'utils/get_it_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +14,10 @@ void main() async {
   );
 
   final userCredential = await FirebaseAuth.instance.signInAnonymously();
+  final user = userCredential.user;
 
-  if (userCredential.user != null) {
-    runApp(CoolChatJournalApp(user: userCredential.user!));
+  if (user != null) {
+    initGetIt(user: user);
+    runApp(CoolChatJournalApp(user: user));
   }
 }

@@ -3,56 +3,41 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../data/models/models.dart';
 import '../../data/repository/categories_repository.dart';
 import '../../data/repository/events_repository.dart';
 import '../../data/repository/tags_repository.dart';
+import '../../utils/null_wrapper.dart';
 
 part 'chat_state.dart';
 
-typedef EventsSubscription = StreamSubscription<List<Event>>;
-typedef CategoriesSubscription = StreamSubscription<List<Category>>;
-typedef TagsSubscription = StreamSubscription<List<Tag>>;
-
 class ChatCubit extends Cubit<ChatState> {
-  ChatCubit() : super(const ChatState(chatId: '-'));
+  final EventsRepository _eventsRepository;
+  final CategoriesRepository _categoriesRepository;
+  final TagsRepository _tagsRepository;
+  
+  late final StreamSubscription<List<Event>> _eventsSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  late final StreamSubscription<List<Tag>> _tagsSubscription;
 
-  void subscribeStreams() {
-    final eventsSubscription =
-        GetIt.I<EventsRepository>().eventsStream.listen(_setEvents);
-
-    final categoriesSubscription =
-        GetIt.I<CategoriesRepository>().categoriesStream.listen(_setCategories);
-
-    final tagsSubscription =
-        GetIt.I<TagsRepository>().tagsStream.listen(_setTags);
-
-    emit(
-      state.copyWith(
-        eventsSubscription:
-            _NullWrapper<EventsSubscription?>(eventsSubscription),
-        categoriesSubscription:
-            _NullWrapper<CategoriesSubscription?>(categoriesSubscription),
-        tagsSubscription: _NullWrapper<TagsSubscription?>(tagsSubscription),
-      ),
-    );
+  ChatCubit(
+    this._eventsRepository,
+    this._categoriesRepository,
+    this._tagsRepository,
+  ) : super(const ChatState(chatId: '-')) {
+    _eventsSubscription = _eventsRepository.eventsStream.listen(_setEvents);
+    _tagsSubscription = _tagsRepository.tagsStream.listen(_setTags);
+    _categoriesSubscription =
+        _categoriesRepository.categoriesStream.listen(_setCategories);
   }
 
-  void unsubscribeStreams() {
-    state.eventsSubscription?.cancel();
-    state.categoriesSubscription?.cancel();
-    state.tagsSubscription?.cancel();
-
-    emit(
-      state.copyWith(
-        eventsSubscription: const _NullWrapper<EventsSubscription?>(null),
-        tagsSubscription: const _NullWrapper<TagsSubscription?>(null),
-        categoriesSubscription:
-            const _NullWrapper<CategoriesSubscription?>(null),
-      ),
-    );
+  @override
+  Future<void> close() {
+    _eventsSubscription.cancel();
+    _categoriesSubscription.cancel();
+    _tagsSubscription.cancel();
+    return super.close();
   }
 
   Future<void> readImage(Event event) async {
@@ -61,7 +46,7 @@ class ChatCubit extends Cubit<ChatState> {
       if (state.images?[event.id] != null) {
         image = state.images![event.id]!;
       } else {
-        image = await GetIt.I<EventsRepository>().readImage(event);
+        image = await _eventsRepository.readImage(event);
       }
 
       final events = state.events.where((e) => e.id != event.id).toList()
@@ -81,14 +66,14 @@ class ChatCubit extends Cubit<ChatState> {
     final events = List<Event>.from(state.events)..add(event);
     _sortEvents(events);
 
-    final _NullWrapper<Map<String, Uint8List>?>? imagesWrapper;
+    final NullWrapper<Map<String, Uint8List>?>? imagesWrapper;
     if (event.image != null) {
       final images = Map<String, Uint8List>.from(
         state.images ?? <String, Uint8List>{},
       );
       images[event.id] = event.image!;
 
-      imagesWrapper = _NullWrapper<Map<String, Uint8List>>(images);
+      imagesWrapper = NullWrapper<Map<String, Uint8List>>(images);
     } else {
       imagesWrapper = null;
     }
@@ -98,7 +83,7 @@ class ChatCubit extends Cubit<ChatState> {
       images: imagesWrapper,
     ));
 
-    await GetIt.I<EventsRepository>().addEvent(event);
+    await _eventsRepository.addEvent(event);
   }
 
   void deleteEvent(Event event) async {
@@ -106,7 +91,7 @@ class ChatCubit extends Cubit<ChatState> {
     _sortEvents(events);
     emit(state.copyWith(events: events));
 
-    await GetIt.I<EventsRepository>().deleteEvent(event);
+    await _eventsRepository.deleteEvent(event);
   }
 
   void editEvent(Event event) async {
@@ -115,18 +100,18 @@ class ChatCubit extends Cubit<ChatState> {
     _sortEvents(events);
     emit(state.copyWith(events: events));
 
-    await GetIt.I<EventsRepository>().updateEvent(event);
+    await _eventsRepository.updateEvent(event);
   }
 
   void deleteSelectedEvents() {
-    for (final eventId in state.selectedEventsIds) {
-      deleteEvent(state.events.firstWhere((e) => e.id == eventId));
+    for (final event in state.selectedEvents) {
+      deleteEvent(state.events.firstWhere((e) => e == event));
     }
   }
 
   void transferSelectedEvents(String destinationChat) async {
     final events = state.events
-        .where((event) => state.selectedEventsIds.contains(event.id))
+        .where((event) => state.selectedEvents.contains(event))
         .map(
           (event) => event.copyWith(
             chatId: destinationChat,
@@ -134,7 +119,7 @@ class ChatCubit extends Cubit<ChatState> {
         )
         .toList();
 
-    await GetIt.I<EventsRepository>().updateEvents(events);
+    await _eventsRepository.updateEvents(events);
 
     emit(state.copyWith(events: events));
   }
@@ -143,8 +128,7 @@ class ChatCubit extends Cubit<ChatState> {
     var copiedText = '';
 
     final selectedEvents = state.events.where(
-      (event) =>
-          state.selectedEventsIds.contains(event.id) && event.image == null,
+      (event) => state.selectedEvents.contains(event) && event.image == null,
     );
 
     for (final event in selectedEvents) {
@@ -168,7 +152,7 @@ class ChatCubit extends Cubit<ChatState> {
   void switchSelectedEventsFavorite() {
     final events = state.events
         .map(
-          (event) => state.selectedEventsIds.contains(event.id)
+          (event) => state.selectedEvents.contains(event)
               ? event.copyWith(isFavorite: !event.isFavorite)
               : event,
         )
@@ -178,27 +162,31 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void addNewTag(String tag) async {
-    await GetIt.I<TagsRepository>().addTag(tag);
+    await _tagsRepository.addTag(tag);
   }
 
   void deleteTag(Tag tag) async {
-    await GetIt.I<TagsRepository>().deleteLink(tag.id);
+    await _tagsRepository.deleteLink(tag.id);
   }
 
-  void switchSelectStatus(String eventId) {
-    final selectedEventsIds = List<String>.from(state.selectedEventsIds);
+  void switchSelectStatus(Event event) {
+    final selectedEvents = List<Event>.from(state.selectedEvents);
 
-    if (selectedEventsIds.contains(eventId)) {
-      selectedEventsIds.remove(eventId);
+    if (selectedEvents.contains(event)) {
+      selectedEvents.remove(event);
     } else {
-      selectedEventsIds.add(eventId);
+      selectedEvents.add(event);
     }
 
-    emit(state.copyWith(selectedEventsIds: selectedEventsIds));
+    emit(state.copyWith(selectedEvents: selectedEvents));
   }
 
-  void toggleEditMode() {
-    emit(state.copyWith(isEditMode: !state.isEditMode));
+  void addEditedEvent(Event event) {
+    emit(state.copyWith(editedEvent: NullWrapper(event)));
+  }
+
+  void removeEditedEvent() {
+    emit(state.copyWith(editedEvent: const NullWrapper(null)));
   }
 
   void toggleFavoriteMode() {
@@ -220,17 +208,17 @@ class ChatCubit extends Cubit<ChatState> {
   void selectCategory(String? categoryId) {
     emit(
       state.copyWith(
-        selectedCategoryId: _NullWrapper<String?>(categoryId),
+        selectedCategoryId: NullWrapper<String?>(categoryId),
       ),
     );
   }
 
-  void loadChat(String chatId) {
-    emit(state.copyWith(chatId: chatId));
+  void loadChat(String? chatId) {
+    emit(state.copyWith(chatId: NullWrapper(chatId)));
   }
 
   void resetSelection() {
-    emit(state.copyWith(selectedEventsIds: const []));
+    emit(state.copyWith(selectedEvents: const []));
   }
 
   void _sortEvents(List<Event> events) {
@@ -248,12 +236,9 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void _setEvents(List<Event> events) async {
-    final chatsEvents =
-        events.where((event) => event.chatId == state.chatId).toList();
-    _sortEvents(chatsEvents);
-
-    if (_isUpdate(chatsEvents)) {
-      emit(state.copyWith(events: chatsEvents));
+    _sortEvents(events);
+    if (_isUpdate(events)) {
+      emit(state.copyWith(events: events));
     }
   }
 

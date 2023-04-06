@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../json_kit.dart';
 import '../models/models.dart';
 
 class DatabaseProvider {
@@ -18,9 +18,10 @@ class DatabaseProvider {
   final _categoriesSubject = BehaviorSubject<List<Category>>();
   final _tagsSubject = BehaviorSubject<List<Tag>>();
 
-  User get user => GetIt.I<User>();
+  final User user;
 
   DatabaseProvider({
+    required this.user,
     List<JsonMap>? defaultJsonCategories,
   }) {
     _initConnection<Chat>(
