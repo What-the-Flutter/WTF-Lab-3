@@ -282,6 +282,61 @@ class ChatListTile extends StatelessWidget {
         : null;
   }
 
+  Widget _chatListTile(BuildContext context, Chat chat) {
+    return ListTile(
+      leading: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColorLight,
+          borderRadius: BorderRadius.all(
+            Radius.circular(
+              Theme.of(context).textTheme.headlineLarge!.fontSize!,
+            ),
+          ),
+        ),
+        child: chat.iconId == 0
+            ? Center(
+                child: Text(
+                  chat.title[0].toUpperCase(),
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              )
+            : icons[chat.iconId],
+      ),
+      title: Text(
+        chat.title,
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      ),
+      subtitle: Text(
+        chat.lastEventTitle != '' ? chat.lastEventTitle : 'Label Entry',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+      hoverColor: Colors.deepPurple.shade100,
+      trailing: _chatTileTrailing(chat, context),
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              chatId: _chatId,
+            ),
+          ),
+        );
+      },
+      onLongPress: () {
+        _onLongPress(context, chat);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
@@ -289,60 +344,7 @@ class ChatListTile extends StatelessWidget {
         final index =
             state.chats.indexWhere((element) => element.id == _chatId);
         final chat = state.chats[index];
-
-        return ListTile(
-          leading: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColorLight,
-              borderRadius: BorderRadius.all(
-                Radius.circular(
-                  Theme.of(context).textTheme.headlineLarge!.fontSize!,
-                ),
-              ),
-            ),
-            child: chat.iconId == 0
-                ? Center(
-                    child: Text(
-                      chat.title[0].toUpperCase(),
-                      style:
-                          Theme.of(context).textTheme.headlineLarge!.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                    ),
-                  )
-                : icons[chat.iconId],
-          ),
-          title: Text(
-            chat.title,
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-          ),
-          subtitle: Text(
-            chat.lastEventTitle != '' ? chat.lastEventTitle : 'Label Entry',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).disabledColor,
-                ),
-          ),
-          hoverColor: Colors.deepPurple.shade100,
-          trailing: _chatTileTrailing(chat, context),
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatPage(
-                  chatId: _chatId,
-                ),
-              ),
-            );
-          },
-          onLongPress: () {
-            _onLongPress(context, chat);
-          },
-        );
+        return _chatListTile(context, chat);
       },
     );
   }

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../constants.dart';
 import '../models/event.dart';
 
-class StatisticsHelper {
+class StatisticsUtil {
   static DateTime calculateFilteredDate(String timeOption) {
     if (timeOption == timeOptions[0]) {
       return DateTime(
@@ -44,7 +44,13 @@ class StatisticsHelper {
 
   static List<List<int>> calculateChartsStatistics(
       List<Event> events, String timeOption) {
-    final filteredDate = StatisticsHelper.calculateFilteredDate(timeOption);
+    final filteredDate = calculateFilteredDate(timeOption);
+
+    if (timeOption == timeOptions[3]) {
+      return _calculateForThisYear(events, filteredDate);
+    } else if (timeOption == timeOptions[0]) {
+      return _calculateForToday(events, filteredDate);
+    }
 
     var chartsStat = <List<int>>[];
     if (events.isNotEmpty) {
@@ -77,7 +83,7 @@ class StatisticsHelper {
     return chartsStat;
   }
 
-  List<List<int>> _calculateForThisYear(
+  static List<List<int>> _calculateForThisYear(
     List<Event> events,
     DateTime filteredDate,
   ) {
@@ -112,7 +118,7 @@ class StatisticsHelper {
     return chartsStat;
   }
 
-  List<List<int>> _calculateForToday(
+  static List<List<int>> _calculateForToday(
     List<Event> events,
     DateTime filteredDate,
   ) {

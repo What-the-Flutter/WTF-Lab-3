@@ -75,7 +75,7 @@ class SummaryStatisticsState {
   List<List<int>> chartsStatistics(String timeOption) {
     final sortedEvents = List<Event>.from(events)
       ..sort((event_1, event_2) => event_1.time.compareTo(event_2.time));
-    return StatisticsHelper.calculateChartsStatistics(sortedEvents, timeOption);
+    return StatisticsUtil.calculateChartsStatistics(sortedEvents, timeOption);
   }
 
   SummaryStatisticsState copyWith({

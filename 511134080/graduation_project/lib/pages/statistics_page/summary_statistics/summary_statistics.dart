@@ -131,6 +131,11 @@ class SummaryStatistics extends StatelessWidget {
     );
   }
 
+  bool _shouldShowHorizontalLine(double value, List<List<int>> charts) => charts
+      .map((dayStat) =>
+          dayStat.getRange(1, dayStat.length).contains(value.toInt()))
+      .contains(true);
+
   FlGridData _gridData(BuildContext context, List<List<int>> charts) {
     return FlGridData(
       drawVerticalLine: false,
@@ -139,10 +144,8 @@ class SummaryStatistics extends StatelessWidget {
         color: Theme.of(context).disabledColor.withAlpha(80),
         dashArray: [5, 5],
       ),
-      checkToShowHorizontalLine: (value) => charts
-          .map((dayStat) =>
-              dayStat.getRange(1, dayStat.length).contains(value.toInt()))
-          .contains(true),
+      checkToShowHorizontalLine: (value) =>
+          _shouldShowHorizontalLine(value, charts),
     );
   }
 
@@ -174,7 +177,8 @@ class SummaryStatistics extends StatelessWidget {
   }
 
   bool _shouldDisplay(List<List<int>> charts, double value) => charts
-      .map((dayStat) => dayStat.getRange(1, dayStat.length).contains(value))
+      .map((dayStat) =>
+          dayStat.getRange(1, dayStat.length).contains(value.toInt()))
       .contains(true);
 
   FlTitlesData _titlesData(BuildContext context, List<List<int>> charts) {
@@ -244,10 +248,12 @@ class SummaryStatistics extends StatelessWidget {
           children: [
             _summaryStatistics(context, state),
             _barCharts(context, state, charts),
-            Text(
-              titleAxis[timeOptions.indexOf(timeOption)],
-              style: TextStyle(
-                color: Theme.of(context).secondaryHeaderColor,
+            Expanded(
+              child: Text(
+                titleAxis[timeOptions.indexOf(timeOption)],
+                style: TextStyle(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
               ),
             ),
           ],

@@ -10,7 +10,7 @@ class LabelStatisticsState {
   List<int> labelStatistics(String timeOption) {
     final labelStat = [0, 0, 0, 0, 0, 0];
 
-    final date = StatisticsHelper.calculateFilteredDate(timeOption);
+    final date = StatisticsUtil.calculateFilteredDate(timeOption);
 
     for (final event in events) {
       if (event.time.isAfter(date)) {
