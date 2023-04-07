@@ -7,8 +7,6 @@ import 'settings_background_chat_page.dart';
 import 'settings_cubit.dart';
 import 'settings_state.dart';
 
-enum FontSize { small, medium, big }
-
 class Settings extends StatelessWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -74,6 +72,7 @@ class Settings extends StatelessWidget {
                   ? Icons.format_align_right
                   : Icons.format_align_left,
               trailing: Switch(
+                key: const Key('bubble switch'),
                 value: state.alignment,
                 onChanged: (_) {
                   context.read<SettingsCubit>().setBubbleAlignment(_);
