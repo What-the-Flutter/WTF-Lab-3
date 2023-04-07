@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../pages/home/home_cubit.dart';
 import '../pages/settings/settings_page.dart';
+import '../pages/statistics_page/statistics_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({Key? key}) : super(key: key);
@@ -69,6 +70,29 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
+  Widget _drawerStatisticsTile(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const StatisticsPage(),
+          ),
+        );
+      },
+      iconColor: Theme.of(context).disabledColor,
+      leading: const Icon(
+        Icons.multiline_chart,
+      ),
+      title: Text(
+        'Statistics',
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).disabledColor,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Drawer(
         child: ListView(
@@ -77,6 +101,7 @@ class CustomDrawer extends StatelessWidget {
             _drawerHeader(context),
             _drawerSpreadingTile(context),
             _drawerSettingTile(context),
+            _drawerStatisticsTile(context),
           ],
         ),
       );

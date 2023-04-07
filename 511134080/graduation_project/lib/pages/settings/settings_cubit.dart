@@ -19,12 +19,12 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
-    final isLight = await _settingsProvider.theme ?? true;
-    final fontSize = await _settingsProvider.fontSize ?? 0;
-    final bubbleAlignment = await _settingsProvider.bubbleAlignment ?? false;
-    final centerDate = await _settingsProvider.dateAlignment ?? false;
-    final backgroundImage = await _settingsProvider.backgroundImage ?? '';
-    final useFingerprint = await _settingsProvider.useFingerprint ?? false;
+    final isLight = await _settingsProvider.theme;
+    final fontSize = await _settingsProvider.fontSize;
+    final bubbleAlignment = await _settingsProvider.bubbleAlignment;
+    final centerDate = await _settingsProvider.dateAlignment;
+    final backgroundImage = await _settingsProvider.backgroundImage;
+    final useFingerprint = await _settingsProvider.useFingerprint;
     emit(
       state.copyWith(
         light: isLight,
@@ -79,7 +79,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> resetAllPreferences() async {
-    await _settingsProvider.saveDefaultPreferences();
+    await _settingsProvider.saveDefaultThemeAndFontPreferences();
     emit(
       state.copyWith(
         newFontSize: 0,

@@ -25,7 +25,7 @@ class MainPageCubit extends Cubit<MainPageState> {
 
   Future<void> authenticateLocal() async {
     final bool didAuthenticate;
-    final useFingerprint = await _settingsProvider.useFingerprint ?? false;
+    final useFingerprint = await _settingsProvider.useFingerprint;
     if (!state.isAuthenticated && useFingerprint) {
       didAuthenticate = await _fingerprintAuthentication.authenticate();
     } else {

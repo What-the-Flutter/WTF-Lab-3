@@ -1,32 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../widgets/drawer.dart';
+import '../../widgets/custom_drawer.dart';
 import '../home/home_page.dart';
 import '../timeline/timeline_page.dart';
 import 'main_page_cubit.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  MainPage({required BuildContext context, Key? key}) : super(key: key) {
+    context.read<MainPageCubit>().authenticateLocal();
+  }
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<MainPageCubit>().authenticateLocal();
-  }
-
-  @override
-  void dispose() {
-    context.read<MainPageCubit>().logout();
-    super.dispose();
-  }
-
-  Widget _body(BuildContext context, int index) {
+  Widget _body(int index) {
     switch (index) {
       case 0:
         return const HomePage();
@@ -37,10 +27,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  BottomNavigationBar _bottomNavigationBar(
-    BuildContext context,
-    MainPageState state,
-  ) {
+  BottomNavigationBar _bottomNavigationBar(MainPageState state) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       items: const [
@@ -73,14 +60,13 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _authenticatedScaffold(BuildContext context, MainPageState state) =>
-      Scaffold(
+  Widget _authenticatedScaffold(MainPageState state) => Scaffold(
         drawer: const CustomDrawer(),
-        body: _body(context, state.selectedIndex),
-        bottomNavigationBar: _bottomNavigationBar(context, state),
+        body: _body(state.selectedIndex),
+        bottomNavigationBar: _bottomNavigationBar(state),
       );
 
-  Widget _nonAuthenticatedScaffold(BuildContext context) {
+  Widget _nonAuthenticatedScaffold() {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -120,7 +106,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) =>
       BlocBuilder<MainPageCubit, MainPageState>(
         builder: (_, state) => state.isAuthenticated
-            ? _authenticatedScaffold(context, state)
-            : _nonAuthenticatedScaffold(context),
+            ? _authenticatedScaffold(state)
+            : _nonAuthenticatedScaffold(),
       );
 }

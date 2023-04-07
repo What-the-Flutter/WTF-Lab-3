@@ -54,7 +54,7 @@ class _SearchingPageState extends State<SearchingPage> {
             DateCard(date: current.time),
             EventCard(
               shouldShowChatTitle: true,
-              cardModel: current,
+              event: current,
               key: UniqueKey(),
             )
           ],
@@ -71,7 +71,7 @@ class _SearchingPageState extends State<SearchingPage> {
               DateCard(date: current.time),
               EventCard(
                 shouldShowChatTitle: true,
-                cardModel: current,
+                event: current,
                 key: UniqueKey(),
               ),
             ],
@@ -80,7 +80,7 @@ class _SearchingPageState extends State<SearchingPage> {
       }
       return EventCard(
         shouldShowChatTitle: true,
-        cardModel: current,
+        event: current,
         key: UniqueKey(),
       );
     }

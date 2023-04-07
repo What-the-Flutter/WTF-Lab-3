@@ -31,7 +31,7 @@ class SettingsProvider {
     await prefs.setBool(_isCenterDate, isCenterDate);
   }
 
-  Future<void> saveDefaultPreferences() async {
+  Future<void> saveDefaultThemeAndFontPreferences() async {
     final prefs = await sharedPreferencesInstance;
     await prefs.setBool(_isLight, true);
     await prefs.setInt(_fontSize, 0);
@@ -47,33 +47,33 @@ class SettingsProvider {
     await prefs.setBool(_useFingerPrint, useFingerprint);
   }
 
-  Future<bool?> get theme async {
+  Future<bool> get theme async {
     final prefs = await sharedPreferencesInstance;
-    return await prefs.getBool(_isLight);
+    return await prefs.getBool(_isLight) ?? true;
   }
 
-  Future<int?> get fontSize async {
+  Future<int> get fontSize async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getInt(_fontSize);
+    return await prefs.getInt(_fontSize) ?? 0;
   }
 
-  Future<bool?> get bubbleAlignment async {
+  Future<bool> get bubbleAlignment async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(_isRightToLeft);
+    return await prefs.getBool(_isRightToLeft) ?? false;
   }
 
-  Future<bool?> get dateAlignment async {
+  Future<bool> get dateAlignment async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(_isCenterDate);
+    return await prefs.getBool(_isCenterDate) ?? false;
   }
 
-  Future<String?> get backgroundImage async {
+  Future<String> get backgroundImage async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getString(_backgroundImage);
+    return await prefs.getString(_backgroundImage) ?? '';
   }
 
-  Future<bool?> get useFingerprint async {
+  Future<bool> get useFingerprint async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(_useFingerPrint);
+    return await prefs.getBool(_useFingerPrint) ?? false;
   }
 }

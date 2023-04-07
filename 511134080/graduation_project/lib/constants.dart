@@ -210,3 +210,17 @@ const searchingAnimationLottie = 'assets/lottie/search_animation.json';
 const settingsAnimationLottie = 'assets/lottie/settings_animation.json';
 
 const homeAnimationLottie = 'assets/lottie/dancing_book.json';
+
+final List<String> timeOptions = [
+  'Today',
+  'Past 7 days',
+  'Past 30 days',
+  'This year',
+];
+
+final List<String> titleAxis = [
+  'Hours',
+  'Days',
+  'Days',
+  'Months',
+];
