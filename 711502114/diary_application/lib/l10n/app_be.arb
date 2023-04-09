@@ -84,5 +84,11 @@
   "other": "Іншае",
   "included": "уключаны",
   "ignored": "ігнаруецца",
-  "includingText": "старонкі(ы)"
+  "includingText": "старонкі(-і)",
+  "summary": "Рэзюмэ",
+  "thisWeek": "Апошнія 7 дзён",
+  "thisMonth": "Апошнія 30 дзён",
+  "thisYear": "У гэтым годзе",
+  "total": "Усяго",
+  "favorites": "Выбранае"
 }

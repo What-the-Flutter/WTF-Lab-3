@@ -4,7 +4,7 @@ const _mainColor = Color.fromRGBO(49, 162, 225, 1);
 const _elementsColor = Color.fromRGBO(94, 163, 222, 1);
 
 const _mainDarkColor = Color.fromRGBO(33, 45, 59, 1);
-const _elementsDarkColor = Color.fromRGBO(23, 34, 44, 1);
+const elementsDarkColor = Color.fromRGBO(23, 34, 44, 1);
 
 const botBackgroundColor = Color.fromRGBO(49, 162, 225, 0.3);
 
@@ -75,7 +75,7 @@ class CustomTheme {
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: _mainDarkColor,
-      scaffoldBackgroundColor: _elementsDarkColor,
+      scaffoldBackgroundColor: elementsDarkColor,
       appBarTheme: const AppBarTheme(color: _mainDarkColor),
       hoverColor: hoverElementColor,
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -83,13 +83,13 @@ class CustomTheme {
         foregroundColor: Colors.white,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: _elementsDarkColor,
+        backgroundColor: elementsDarkColor,
         selectedItemColor: _mainColor,
         elevation: 0.0,
       ),
       fontFamily: 'Roboto-Bold',
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: _elementsDarkColor,
+        backgroundColor: elementsDarkColor,
       ),
     );
   }

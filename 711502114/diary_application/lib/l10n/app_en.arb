@@ -84,5 +84,11 @@
   "other": "Other",
   "included": "included",
   "ignored": "ignored",
-  "includingText": "page(s)"
+  "includingText": "page(s)",
+  "summary": "Summary",
+  "thisWeek": "Past 7 days",
+  "thisMonth": "Past 30 days",
+  "thisYear": "This Year",
+  "total": "Total",
+  "favorites": "Favorites"
 }

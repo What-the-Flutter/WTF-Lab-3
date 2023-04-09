@@ -163,6 +163,11 @@ class _AddChatPageState extends State<AddChatPage>
             ),
             onTap: () {
               cubit.changeIndex(index);
+
+              if (_controller.isCompleted) {
+                _controller.reset();
+                _controller.forward();
+              }
             },
           );
         },

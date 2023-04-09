@@ -1,4 +1,5 @@
 import 'package:diary_application/data/repository/tag_repository.dart';
+import 'package:diary_application/presentation/pages/statistics/statistics_cubit.dart';
 import 'package:diary_application/presentation/pages/timeline/filter/filter_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -98,6 +99,11 @@ class ChatJournalApplication extends StatelessWidget {
             create: (context) => FilterCubit(
               chatRepositoryApi: context.read<ChatRepository>(),
               eventRepositoryApi: context.read<EventRepository>(),
+            ),
+          ),
+          BlocProvider<StatisticsCubit>(
+            create: (context) => StatisticsCubit(
+              context.read<EventRepository>(),
             ),
           ),
         ],

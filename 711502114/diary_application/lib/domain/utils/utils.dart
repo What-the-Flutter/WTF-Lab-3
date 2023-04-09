@@ -19,13 +19,14 @@ String formatDate(BuildContext context, String date,
 
   final dateTimeNow = DateTime.now();
   final nowYear = dateTimeNow.year;
+  final nowMonth = dateTimeNow.month;
 
-  if (year == nowYear && day == dateTimeNow.day) {
+  if (year == nowYear && month == nowMonth && day == dateTimeNow.day) {
     return includeTime ? formatTime(date, includeSec: false) : local.today;
   } else if (year == nowYear) {
-    return '${_getMonthName(local, month)} $day';
+    return '${_getMonthName(local, month - 1)} $day';
   } else {
-    return '${_getMonthName(local, month)} $day, $year';
+    return '${_getMonthName(local, month - 1)} $day, $year';
   }
 }
 
@@ -129,4 +130,8 @@ TextTheme textTheme(BuildContext context) {
   } else {
     return CustomTheme.defaultTextTheme;
   }
+}
+
+extension Datetime on String {
+  DateTime get toDT => DateTime.parse(this);
 }

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:diary_application/domain/models/category.dart';
 import 'package:diary_application/theme/colors.dart';
+import 'package:flutter/material.dart';
 
 class CategoryBox extends StatelessWidget {
   final Function(Category? category) setCategory;

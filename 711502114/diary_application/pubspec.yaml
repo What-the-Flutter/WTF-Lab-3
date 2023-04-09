@@ -35,6 +35,7 @@ dependencies:
   hashtager: ^1.0.4
   get: ^4.3.8
   bloc_test: ^9.1.1
+  syncfusion_flutter_charts: any
 
 dev_dependencies:
   flutter_test:
