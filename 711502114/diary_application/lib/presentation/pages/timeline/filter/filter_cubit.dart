@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:diary_application/domain/models/event.dart';
 import 'package:diary_application/domain/repository/chat_repository_api.dart';
 import 'package:diary_application/domain/repository/event_repository_api.dart';
-import 'package:diary_application/presentation/pages/filter/filter_state.dart';
+import 'package:diary_application/presentation/pages/timeline/filter/filter_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterCubit extends Cubit<FilterState> {

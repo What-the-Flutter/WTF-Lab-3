@@ -1,9 +1,12 @@
 import 'package:diary_application/domain/models/event.dart';
 import 'package:diary_application/domain/utils/icons.dart';
 import 'package:diary_application/domain/utils/utils.dart';
-import 'package:diary_application/presentation/pages/filter/filter_cubit.dart';
-import 'package:diary_application/presentation/pages/filter/filter_state.dart';
 import 'package:diary_application/presentation/pages/settings/settings_cubit.dart';
+import 'package:diary_application/presentation/pages/timeline/filter/filter_cubit.dart';
+import 'package:diary_application/presentation/pages/timeline/filter/filter_state.dart';
+import 'package:diary_application/presentation/pages/timeline/labels/labels_page.dart';
+import 'package:diary_application/presentation/pages/timeline/other/other_page.dart';
+import 'package:diary_application/presentation/pages/timeline/tags/tags_page.dart';
 import 'package:diary_application/presentation/widgets/filter/select_info_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +51,12 @@ class FilterPage extends StatelessWidget {
               ),
             ),
             body: TabBarView(
-              children: [_pages(state, context), _tags(), _labels(), _other()],
+              children: [
+                _pages(state, context),
+                const TagsPage(),
+                const LabelsPage(),
+                const OtherPage(),
+              ],
             ),
             floatingActionButton: _applyFilterFAB(context),
           ),
@@ -145,65 +153,51 @@ class FilterPage extends StatelessWidget {
 
   Widget _chatScrollView(FilterState state, BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        child: Wrap(
-          spacing: 5,
-          runSpacing: 10,
-          children: [
-            for (final chat in state.chats)
-              GestureDetector(
-                onTap: () => context
-                    .read<FilterCubit>()
-                    .addOrDeleteFilterSettings(chat.id),
-                child: UnconstrainedBox(
-                  child: AnimatedContainer(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0,
-                      vertical: 8.0,
+      child: Wrap(
+        spacing: 5,
+        runSpacing: 10,
+        children: [
+          for (final chat in state.chats)
+            GestureDetector(
+              onTap: () => context
+                  .read<FilterCubit>()
+                  .addOrDeleteFilterSettings(chat.id),
+              child: UnconstrainedBox(
+                child: AnimatedContainer(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                    vertical: 8.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: state.chatTitles.contains(chat.id)
+                        ? const Color.fromRGBO(77, 157, 206, 0.7)
+                        : const Color.fromRGBO(37, 47, 57, 1),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20.0),
                     ),
-                    decoration: BoxDecoration(
-                      color: state.chatTitles.contains(chat.id)
-                          ? const Color.fromRGBO(77, 157, 206, 0.7)
-                          : const Color.fromRGBO(37, 47, 57, 1),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(20.0),
-                      ),
-                    ),
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeInOutQuint,
-                    child: Row(
-                      children: [
-                        if (state.chatTitles.contains(chat.id)) ...[
-                          const Icon(Icons.done),
-                          const SizedBox(width: 5),
-                        ],
-                        Icon(IconMap.data[chat.iconNumber]),
-                        const SizedBox(width: 3),
-                        Text(
-                          chat.title,
-                          style: textTheme(context).bodyText1,
-                        ),
+                  ),
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeInOutQuint,
+                  child: Row(
+                    children: [
+                      if (state.chatTitles.contains(chat.id)) ...[
+                        const Icon(Icons.done),
+                        const SizedBox(width: 5),
                       ],
-                    ),
+                      Icon(IconMap.data[chat.iconNumber]),
+                      const SizedBox(width: 3),
+                      Text(
+                        chat.title,
+                        style: textTheme(context).bodyText1,
+                      ),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
-  }
-
-  Widget _tags() {
-    return const Center(child: Text(':-)'));
-  }
-
-  Widget _labels() {
-    return const Center(child: Text(':-)'));
-  }
-
-  Widget _other() {
-    return const Center(child: Text(':-)'));
   }
 
   Widget _applyFilterFAB(BuildContext context) {

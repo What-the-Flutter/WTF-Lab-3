@@ -50,7 +50,7 @@ class SettingsProvider extends SettingsProviderApi {
   @override
   Future<String> get fontSize async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(fontSizeKey) ?? 'default';
+    return prefs.getString(fontSizeKey) ?? 'medium';
   }
 
   @override
@@ -88,7 +88,7 @@ class SettingsProvider extends SettingsProviderApi {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(themeKey, true);
     prefs.setBool(lockKey, false);
-    prefs.setInt(fontSizeKey, 0);
+    prefs.setString(fontSizeKey, 'medium');
     prefs.setString(backgroundImageKey, '');
     prefs.setBool(bubbleAlignmentKey, false);
     prefs.setBool(centerDateKey, false);

@@ -41,7 +41,7 @@ class _AddChatPageState extends State<AddChatPage>
     _controller = AnimationController(
       duration: const Duration(seconds: 4),
       vsync: this,
-    )..repeat();
+    )..forward();
 
     if (widget.editChat != null) {
       _title = widget.editChat?.title ?? '';
@@ -163,6 +163,11 @@ class _AddChatPageState extends State<AddChatPage>
             ),
             onTap: () {
               cubit.changeIndex(index);
+
+              if (_controller.isCompleted) {
+                _controller.reset();
+                _controller.forward();
+              }
             },
           );
         },

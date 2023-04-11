@@ -40,11 +40,11 @@ class _MessengerPageState extends State<MessengerPage> {
   void initState() {
     super.initState();
     _fieldText = TextEditingController();
+    BlocProvider.of<EventCubit>(context).init(widget.chat.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<EventCubit>(context).init(widget.chat.id);
     _local = AppLocalizations.of(context);
     final query = MediaQuery.of(context);
     final size = query.size;

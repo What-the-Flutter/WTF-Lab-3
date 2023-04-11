@@ -34,9 +34,14 @@ dependencies:
   lottie: ^2.2.0
   hashtager: ^1.0.4
   get: ^4.3.8
+  bloc_test: ^9.1.1
+  syncfusion_flutter_charts: any
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  test: ^1.20.0
+  integration_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0

@@ -1,6 +1,8 @@
 import 'package:diary_application/domain/utils/utils.dart';
 import 'package:diary_application/presentation/pages/creation/add_chat_page.dart';
 import 'package:diary_application/presentation/pages/settings/settings_page.dart';
+import 'package:diary_application/presentation/pages/statistics/statistics_page.dart';
+import 'package:diary_application/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +16,7 @@ class MenuDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: elementsDarkColor,
       child: ListView(
         children: [
           DrawerHeader(
@@ -56,6 +59,9 @@ class MenuDrawer extends StatelessWidget {
               style: textTheme(context).bodyText1!,
             ),
             leading: const Icon(Icons.analytics),
+            onTap: () {
+              openNewPageWithAnim(const StatisticsPage(), AnimationType.fadeIn);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
