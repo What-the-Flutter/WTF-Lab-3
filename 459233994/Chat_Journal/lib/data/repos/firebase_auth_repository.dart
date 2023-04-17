@@ -3,13 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firebase_authentication_service.dart';
 
 class FireBaseAuthRepository {
-  final FireBaseAuthService fireBaseAuthService;
+  final FireBaseAuthService _fireBaseAuthService;
 
-  FireBaseAuthRepository({required this.fireBaseAuthService});
+  FireBaseAuthRepository({required fireBaseAuthService})
+      : _fireBaseAuthService = fireBaseAuthService;
 
   Future sinInAnon() async {
-   fireBaseAuthService.signInAnon();
+    _fireBaseAuthService.signInAnon();
   }
 
-  User? getUser() => fireBaseAuthService.getUser();
+  User? getUser() => _fireBaseAuthService.getUser();
 }

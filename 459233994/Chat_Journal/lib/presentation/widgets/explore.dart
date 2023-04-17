@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main_screen_section.dart';
-
-class Explore extends MainScreenSection {
-  @override
+class Explore extends StatefulWidget {
   final String title = 'Explore';
 
   @override

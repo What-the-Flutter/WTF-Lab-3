@@ -5,25 +5,25 @@ import 'package:intl/intl.dart';
 import '../../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
 import '../../screens/settings/settings_cubit.dart';
-import '../app_theme/app_theme_cubit.dart';
+import '../app_theme/inherited_theme.dart';
 
-class EventWidget extends StatefulWidget {
+class EventBubble extends StatefulWidget {
   final Event _event;
   final DateTime _previousEventSendTime;
 
-  EventWidget({
+  EventBubble({
     required event,
     required previousEventSendTime,
   })  : _event = event,
         _previousEventSendTime = previousEventSendTime;
 
   @override
-  State<EventWidget> createState() => _EventWidgetState(
+  State<EventBubble> createState() => _EventBubbleState(
         event: _event,
       );
 }
 
-class _EventWidgetState extends State<EventWidget> {
+class _EventBubbleState extends State<EventBubble> {
   Event _event;
   double _leftPositionValue = 10;
   double _rightPositionValue = 10;
@@ -33,7 +33,7 @@ class _EventWidgetState extends State<EventWidget> {
   final GlobalKey _widgetKey = GlobalKey();
   late BuildContext _buildContext; //TODO check context
 
-  _EventWidgetState({
+  _EventBubbleState({
     required event,
   }) : _event = event;
 
@@ -111,11 +111,7 @@ class _EventWidgetState extends State<EventWidget> {
         constraints: const BoxConstraints(maxWidth: 300),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: ReadContext(context)
-              .read<AppThemeCubit>()
-              .state
-              .customTheme
-              .auxiliaryColor,
+          color: InheritedAppTheme.of(context)!.themeData.auxiliaryColor,
         ),
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: Column(
@@ -127,11 +123,7 @@ class _EventWidgetState extends State<EventWidget> {
               _event.textData!,
               softWrap: true,
               style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor,
+                color: InheritedAppTheme.of(context)!.themeData.textColor,
                 fontSize: ReadContext(context)
                     .read<SettingsCubit>()
                     .state
@@ -147,11 +139,7 @@ class _EventWidgetState extends State<EventWidget> {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: ReadContext(context)
-              .read<AppThemeCubit>()
-              .state
-              .customTheme
-              .auxiliaryColor,
+          color: InheritedAppTheme.of(context)!.themeData.auxiliaryColor,
         ),
         padding: const EdgeInsets.fromLTRB(5, 5, 5, 10),
         child: Column(
@@ -198,11 +186,7 @@ class _EventWidgetState extends State<EventWidget> {
             Text(
               eventFormatter.format(_event.createTime),
               style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor,
+                color: InheritedAppTheme.of(context)!.themeData.textColor,
                 fontSize: 12,
               ),
             ),
@@ -214,11 +198,7 @@ class _EventWidgetState extends State<EventWidget> {
                   if (_event.isDone) {
                     return Icon(
                       Icons.check,
-                      color: ReadContext(context)
-                          .read<AppThemeCubit>()
-                          .state
-                          .customTheme
-                          .iconColor,
+                      color: InheritedAppTheme.of(context)!.themeData.iconColor,
                       size: 14,
                     );
                   } else {
@@ -233,11 +213,7 @@ class _EventWidgetState extends State<EventWidget> {
                 if (_event.isFavorite) {
                   return Icon(
                     Icons.bookmark,
-                    color: ReadContext(context)
-                        .read<AppThemeCubit>()
-                        .state
-                        .customTheme
-                        .iconColor,
+                    color: InheritedAppTheme.of(context)!.themeData.iconColor,
                     size: 14,
                   );
                 }
@@ -256,11 +232,7 @@ class _EventWidgetState extends State<EventWidget> {
         tags,
         softWrap: true,
         style: TextStyle(
-          color: ReadContext(context)
-              .read<AppThemeCubit>()
-              .state
-              .customTheme
-              .contrastColor,
+          color: InheritedAppTheme.of(context)!.themeData.contrastColor,
           fontSize: 16,
         ),
       );
@@ -275,11 +247,7 @@ class _EventWidgetState extends State<EventWidget> {
     if (_event.category != null) {
       return Icon(
         _event.category,
-        color: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .iconColor,
+        color: InheritedAppTheme.of(context)!.themeData.iconColor,
       );
     } else {
       return Container(
@@ -297,11 +265,7 @@ class _EventWidgetState extends State<EventWidget> {
           padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .actionColor,
+            color: InheritedAppTheme.of(context)!.themeData.actionColor,
           ),
           child: Text(
             dateBubbleFormatter.format(_event.createTime),

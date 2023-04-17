@@ -7,7 +7,7 @@ import '../../screens/add_chat.dart';
 import '../../screens/chat/chat.dart';
 import '../../screens/home/home_cubit.dart';
 import '../../screens/home/home_state.dart';
-import '../app_theme/app_theme_cubit.dart';
+import '../app_theme/inherited_theme.dart';
 
 class ChatList extends StatefulWidget {
   final List<Chat> _pages;
@@ -55,20 +55,12 @@ class _ChatListState extends State<ChatList> {
             title: Text(
               pages[index].name,
               style: TextStyle(
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .textColor),
+                  color: InheritedAppTheme.of(context)!.themeData.textColor),
             ),
             subtitle: Text(
               'No events',
               style: TextStyle(
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .textColor),
+                  color: InheritedAppTheme.of(context)!.themeData.textColor),
             ),
             leading: _setPinableIcon(pages[index]),
             onTap: () => _tapHandler(
@@ -104,11 +96,7 @@ class _ChatListState extends State<ChatList> {
           title: Text(
             'Info',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           onTap: () {
             _showDialog(page);
@@ -122,11 +110,7 @@ class _ChatListState extends State<ChatList> {
             title: Text(
               'Pin/Unpin Page',
               style: TextStyle(
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .textColor),
+                  color: InheritedAppTheme.of(context)!.themeData.textColor),
             ),
             onTap: () {
               _pin(context, page);
@@ -139,11 +123,7 @@ class _ChatListState extends State<ChatList> {
           title: Text(
             'Archive Page',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
         ),
         ListTile(
@@ -154,11 +134,7 @@ class _ChatListState extends State<ChatList> {
           title: Text(
             'Edit',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           onTap: () {
             _edit(context, page);
@@ -172,11 +148,7 @@ class _ChatListState extends State<ChatList> {
           title: Text(
             'Delete',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           onTap: () {
             _delete(context, page);
@@ -195,21 +167,13 @@ class _ChatListState extends State<ChatList> {
           children: <Widget>[
             Center(
               child: Icon(page.pageIcon,
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .iconColor),
+                  color: InheritedAppTheme.of(context)!.themeData.iconColor),
             ),
             Align(
               alignment: Alignment.bottomRight,
               child: Icon(
                 Icons.push_pin,
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .iconColor,
+                color: InheritedAppTheme.of(context)!.themeData.iconColor,
                 size: 15,
               ),
             ),
@@ -222,11 +186,7 @@ class _ChatListState extends State<ChatList> {
         height: 40,
         child: Center(
           child: Icon(page.pageIcon,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .iconColor),
+              color: InheritedAppTheme.of(context)!.themeData.iconColor),
         ),
       );
     }
@@ -238,11 +198,8 @@ class _ChatListState extends State<ChatList> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          backgroundColor: ReadContext(context)
-              .read<AppThemeCubit>()
-              .state
-              .customTheme
-              .backgroundColor,
+          backgroundColor:
+              InheritedAppTheme.of(context)!.themeData.backgroundColor,
           children: <Widget>[
             Column(
               children: <Widget>[
@@ -254,19 +211,14 @@ class _ChatListState extends State<ChatList> {
                     children: <Widget>[
                       Icon(
                         page.pageIcon,
-                        color: ReadContext(context)
-                            .read<AppThemeCubit>()
-                            .state
-                            .customTheme
-                            .iconColor,
+                        color:
+                            InheritedAppTheme.of(context)!.themeData.iconColor,
                       ),
                       Text(
                         page.name,
                         style: TextStyle(
-                          color: ReadContext(context)
-                              .read<AppThemeCubit>()
-                              .state
-                              .customTheme
+                          color: InheritedAppTheme.of(context)!
+                              .themeData
                               .textColor,
                         ),
                       ),
@@ -281,10 +233,8 @@ class _ChatListState extends State<ChatList> {
                       Text(
                         'Created',
                         style: TextStyle(
-                          color: ReadContext(context)
-                              .read<AppThemeCubit>()
-                              .state
-                              .customTheme
+                          color: InheritedAppTheme.of(context)!
+                              .themeData
                               .textColor,
                         ),
                       ),
@@ -293,10 +243,8 @@ class _ChatListState extends State<ChatList> {
                         child: Text(
                           formatter.format(page.createTime),
                           style: TextStyle(
-                            color: ReadContext(context)
-                                .read<AppThemeCubit>()
-                                .state
-                                .customTheme
+                            color: InheritedAppTheme.of(context)!
+                                .themeData
                                 .textColor,
                           ),
                         ),
@@ -310,11 +258,7 @@ class _ChatListState extends State<ChatList> {
                   child: Text(
                     'latest event',
                     style: TextStyle(
-                      color: ReadContext(context)
-                          .read<AppThemeCubit>()
-                          .state
-                          .customTheme
-                          .textColor,
+                      color: InheritedAppTheme.of(context)!.themeData.textColor,
                     ),
                   ),
                 ),
@@ -328,11 +272,8 @@ class _ChatListState extends State<ChatList> {
                     child: Text(
                       'ok',
                       style: TextStyle(
-                        color: ReadContext(context)
-                            .read<AppThemeCubit>()
-                            .state
-                            .customTheme
-                            .textColor,
+                        color:
+                            InheritedAppTheme.of(context)!.themeData.textColor,
                       ),
                     ),
                   ),
@@ -400,11 +341,7 @@ class _ChatListState extends State<ChatList> {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
-        color: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .backgroundColor,
+        color: InheritedAppTheme.of(context)!.themeData.backgroundColor,
         child: _bottomShield(
           context,
           page,

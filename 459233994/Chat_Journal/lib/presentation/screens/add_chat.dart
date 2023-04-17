@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/chat.dart';
-import '../widgets/app_theme/app_theme_cubit.dart';
+import '../widgets/app_theme/inherited_theme.dart';
 
 class AddChatScreen extends StatefulWidget {
   @override
@@ -39,11 +38,11 @@ class _AddChatScreenState extends State<AddChatScreen> {
     _actionIcon = _isPicked
         ? Icon(
             Icons.done,
-            color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
+            color: InheritedAppTheme.of(context)!.themeData.iconColor,
           )
         : Icon(
             Icons.clear,
-            color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
+            color: InheritedAppTheme.of(context)!.themeData.iconColor,
           );
   }
 
@@ -55,7 +54,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
             alignment: Alignment.center,
             child: Icon(
               _icons[index],
-              color:ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
+              color: InheritedAppTheme.of(context)!.themeData.iconColor,
               size: 36,
             ),
           ),
@@ -90,7 +89,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
   Widget build(BuildContext context) {
     _setActionButtonIcon();
     return Scaffold(
-      backgroundColor: ReadContext(context).read<AppThemeCubit>().state.customTheme.backgroundColor,
+      backgroundColor: InheritedAppTheme.of(context)!.themeData.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -100,7 +99,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
               child: Text(
                 'Create a new page',
                 style: TextStyle(
-                  color: ReadContext(context).read<AppThemeCubit>().state.customTheme.textColor,
+                  color: InheritedAppTheme.of(context)!.themeData.textColor,
                   fontSize: 24,
                 ),
               ),
@@ -109,7 +108,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 style: TextStyle(
-                  color: ReadContext(context).read<AppThemeCubit>().state.customTheme.textColor,
+                  color: InheritedAppTheme.of(context)!.themeData.textColor,
                 ),
                 controller: _textController,
                 decoration: InputDecoration(
@@ -118,7 +117,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
                   ),
                   filled: true,
                   fillColor:
-                  ReadContext(context).read<AppThemeCubit>().state.customTheme.auxiliaryColor,
+                      InheritedAppTheme.of(context)!.themeData.auxiliaryColor,
                 ),
                 onChanged: (text) {
                   setState(() {
@@ -160,7 +159,7 @@ class _AddChatScreenState extends State<AddChatScreen> {
             Navigator.pop(context);
           }
         },
-        backgroundColor: ReadContext(context).read<AppThemeCubit>().state.customTheme.actionColor,
+        backgroundColor: InheritedAppTheme.of(context)!.themeData.actionColor,
         child: _actionIcon,
       ),
     );

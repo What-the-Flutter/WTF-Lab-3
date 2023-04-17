@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/app_theme/app_theme_cubit.dart';
+import '../../widgets/app_theme/inherited_theme.dart';
 import 'settings_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -25,19 +26,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .themeColor,
+        backgroundColor: InheritedAppTheme.of(context)!.themeData.themeColor,
         leading: InkWell(
           child: Icon(
             Icons.arrow_back,
-            color: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .keyColor,
+            color: InheritedAppTheme.of(context)!.themeData.keyColor,
           ),
           onTap: () {
             Navigator.pop(context);
@@ -49,20 +42,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text(
               'Settings',
               style: TextStyle(
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .keyColor),
+                  color: InheritedAppTheme.of(context)!.themeData.keyColor),
             ),
           ),
         ),
       ),
-      backgroundColor: ReadContext(context)
-          .read<AppThemeCubit>()
-          .state
-          .customTheme
-          .backgroundColor,
+      backgroundColor: InheritedAppTheme.of(context)!.themeData.backgroundColor,
       body: Column(
         children: <Widget>[
           _themeChoice(),
@@ -85,11 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Black Theme',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           Switch(
             value: switchTheme,
@@ -114,11 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Left/Right bubble',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           Switch(
             value: switchBubbleAlignment,
@@ -147,11 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Center date bubble',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           Switch(
             value: switchDateBubble,
@@ -178,11 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Font Size',
             style: TextStyle(
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .textColor,
+              color: InheritedAppTheme.of(context)!.themeData.textColor,
             ),
           ),
           Expanded(
@@ -196,10 +165,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: Text(
                       'Small',
                       style: TextStyle(
-                          color: ReadContext(context)
-                              .read<AppThemeCubit>()
-                              .state
-                              .customTheme
+                          color: InheritedAppTheme.of(context)!
+                              .themeData
                               .textColor),
                     ),
                     value: value[0],
@@ -217,10 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: Text(
                       'Medium',
                       style: TextStyle(
-                          color: ReadContext(context)
-                              .read<AppThemeCubit>()
-                              .state
-                              .customTheme
+                          color: InheritedAppTheme.of(context)!
+                              .themeData
                               .textColor),
                     ),
                     value: value[1],
@@ -238,10 +203,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: Text(
                       'Large',
                       style: TextStyle(
-                          color: ReadContext(context)
-                              .read<AppThemeCubit>()
-                              .state
-                              .customTheme
+                          color: InheritedAppTheme.of(context)!
+                              .themeData
                               .textColor),
                     ),
                     value: value[2],
@@ -273,15 +236,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Chat background image',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {_getFromGallery(context);});
+              setState(() {
+                _getFromGallery(context);
+              });
             },
             child: const Text('Pick image'),
           ),
@@ -299,11 +260,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             'Reset to default',
             style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor),
+                color: InheritedAppTheme.of(context)!.themeData.textColor),
           ),
           ElevatedButton(
             onPressed: () {

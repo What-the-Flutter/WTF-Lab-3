@@ -1,47 +1,48 @@
 import '../services/shared_preferences.dart';
 
 class SharedPreferencesRepository {
-  final SharedPreferencesService sharedPreferencesService;
+  final SharedPreferencesService _sharedPreferencesService;
 
-  SharedPreferencesRepository({required this.sharedPreferencesService});
+  SharedPreferencesRepository({required sharedPreferencesService})
+      : _sharedPreferencesService = sharedPreferencesService;
 
   Future<bool> loadThemePreferences() async {
-    return sharedPreferencesService.loadThemePreferences();
+    return _sharedPreferencesService.loadThemePreferences();
   }
 
   Future<int> loadFontPreferences() async {
-    return sharedPreferencesService.loadFontPreferences();
+    return _sharedPreferencesService.loadFontPreferences();
   }
 
   Future<bool> loadBubbleAlignmentPreferences() async {
-    return sharedPreferencesService.loadBubbleAlignmentPreferences();
+    return _sharedPreferencesService.loadBubbleAlignmentPreferences();
   }
 
   Future<bool> loadDateBubblePreferences() async {
-    return sharedPreferencesService.loadDateBubblePreferences();
+    return _sharedPreferencesService.loadDateBubblePreferences();
   }
 
   Future<String?> loadBackgroundImage() async {
-    return sharedPreferencesService.loadBackgroundImage();
+    return _sharedPreferencesService.loadBackgroundImage();
   }
 
   Future<void> updateTheme(bool isDefaultTheme) async {
-    sharedPreferencesService.updateTheme(isDefaultTheme);
+    _sharedPreferencesService.updateTheme(isDefaultTheme);
   }
 
   Future<void> updateFont(int fontSize) async {
-    sharedPreferencesService.updateFont(fontSize);
+    _sharedPreferencesService.updateFont(fontSize);
   }
 
   Future<void> updateBubbleAlignment(bool isRightSide) async {
-    sharedPreferencesService.updateBubbleAlignment(isRightSide);
+    _sharedPreferencesService.updateBubbleAlignment(isRightSide);
   }
 
   Future<void> updateDateBubble(bool isCenterBubble) async {
-    sharedPreferencesService.updateDateBubble(isCenterBubble);
+    _sharedPreferencesService.updateDateBubble(isCenterBubble);
   }
 
   Future<void> updateBackgroundImage(String? backgroundImage) async {
-    sharedPreferencesService.updateBackgroundImage(backgroundImage);
+    _sharedPreferencesService.updateBackgroundImage(backgroundImage);
   }
 }

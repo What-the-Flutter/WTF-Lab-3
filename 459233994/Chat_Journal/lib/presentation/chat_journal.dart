@@ -16,7 +16,11 @@ import 'screens/chat/chat_search_cubit..dart';
 import 'screens/home/home_cubit.dart';
 import 'screens/main_screen.dart';
 import 'screens/settings/settings_cubit.dart';
+import 'screens/time_line/time_line_cubit.dart';
 import 'widgets/app_theme/app_theme_cubit.dart';
+import 'widgets/app_theme/app_theme_state.dart';
+import 'widgets/app_theme/inherited_theme.dart';
+import 'widgets/app_theme/theme.dart';
 import 'widgets/events/event_dialog_cubit.dart';
 
 class ChatJournal extends StatefulWidget {
@@ -25,26 +29,27 @@ class ChatJournal extends StatefulWidget {
 }
 
 class _ChatJournalState extends State<ChatJournal> {
-  final FireBaseAuthService fireBaseAuthService = FireBaseAuthService();
-  final SharedPreferencesService sharedPreferencesService =
+  final FireBaseAuthService _fireBaseAuthService = FireBaseAuthService();
+  final SharedPreferencesService _sharedPreferencesService =
       SharedPreferencesService();
-  final DataBaseService dataBaseService = DataBaseService();
-  late final FireBaseAuthRepository fireBaseAuthRepository;
-  late final ChatRepositoryImpl chatRepository;
-  late final EventRepositoryImpl eventRepository;
-  late final TagRepositoryImpl tagRepository;
-  late final SharedPreferencesRepository sharedPreferencesRepository;
-  bool isBiometricAuthorized = false;
+  final DataBaseService _dataBaseService = DataBaseService();
+  late final FireBaseAuthRepository _fireBaseAuthRepository;
+  late final ChatRepositoryImpl _chatRepository;
+  late final EventRepositoryImpl _eventRepository;
+  late final TagRepositoryImpl _tagRepository;
+  late final SharedPreferencesRepository _sharedPreferencesRepository;
+  bool _isBiometricAuthorized = false;
 
   @override
   void initState() {
     super.initState();
-    fireBaseAuthRepository = FireBaseAuthRepository(fireBaseAuthService: fireBaseAuthService);
-    chatRepository = ChatRepositoryImpl(dataBaseService: dataBaseService);
-    eventRepository = EventRepositoryImpl(dataBaseService: dataBaseService);
-    tagRepository = TagRepositoryImpl(dataBaseService: dataBaseService);
-    sharedPreferencesRepository = SharedPreferencesRepository(
-        sharedPreferencesService: sharedPreferencesService);
+    _fireBaseAuthRepository =
+        FireBaseAuthRepository(fireBaseAuthService: _fireBaseAuthService);
+    _chatRepository = ChatRepositoryImpl(dataBaseService: _dataBaseService);
+    _eventRepository = EventRepositoryImpl(dataBaseService: _dataBaseService);
+    _tagRepository = TagRepositoryImpl(dataBaseService: _dataBaseService);
+    _sharedPreferencesRepository = SharedPreferencesRepository(
+        sharedPreferencesService: _sharedPreferencesService);
     isStatus();
   }
 
@@ -52,14 +57,14 @@ class _ChatJournalState extends State<ChatJournal> {
     final statusAuth = await BiometricAuthRepository.authenticateUser();
     setState(
       () {
-        isBiometricAuthorized = statusAuth;
+        _isBiometricAuthorized = statusAuth;
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    fireBaseAuthService.signInAnon();
+    _fireBaseAuthService.signInAnon();
     SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     );
@@ -67,13 +72,13 @@ class _ChatJournalState extends State<ChatJournal> {
       providers: [
         BlocProvider<HomeCubit>(
           create: (_) => HomeCubit(
-            chatRepository: chatRepository,
+            chatRepository: _chatRepository,
           ),
         ),
         BlocProvider<ChatCubit>(
           create: (_) => ChatCubit(
-            eventRepository: eventRepository,
-            tagRepository: tagRepository,
+            eventRepository: _eventRepository,
+            tagRepository: _tagRepository,
           ),
         ),
         BlocProvider<ChatSearchCubit>(
@@ -82,27 +87,41 @@ class _ChatJournalState extends State<ChatJournal> {
         BlocProvider<EventDialogCubit>(
           create: (_) => EventDialogCubit(),
         ),
+        BlocProvider<TimeLineCubit>(
+          create: (_) => TimeLineCubit(
+            eventRepository: _eventRepository,
+          ),
+        ),
         BlocProvider<AppThemeCubit>(
           create: (_) => AppThemeCubit(
-            sharedPreferencesService: sharedPreferencesService,
+            sharedPreferencesRepository: _sharedPreferencesRepository,
           ),
         ),
         BlocProvider<SettingsCubit>(
           create: (_) => SettingsCubit(
-            sharedPreferencesRepository: sharedPreferencesRepository,
+            sharedPreferencesRepository: _sharedPreferencesRepository,
           ),
         )
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.grey,
-        ),
-        home: !isBiometricAuthorized
-            ? const MainScreen()
-            : const Center(
-                child: CircularProgressIndicator(),
+      child: BlocBuilder<AppThemeCubit, AppThemeState>(
+        builder: (context, state) {
+          return InheritedAppTheme(
+            themeData: ReadContext(context).read<AppThemeCubit>().state.theme == Themes.light
+                ? CustomTheme.lightTheme
+                : CustomTheme.darkTheme,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                primarySwatch: Colors.grey,
               ),
+              home: !_isBiometricAuthorized
+                  ? const MainScreen()
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ),
+          );
+        },
       ),
     );
   }

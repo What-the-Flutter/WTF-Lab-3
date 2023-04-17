@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main_screen_section.dart';
-
-class Daily extends MainScreenSection {
-  @override
+class Daily extends StatefulWidget {
   final String title = 'Daily';
 
   @override

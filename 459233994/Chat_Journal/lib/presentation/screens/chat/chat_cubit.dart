@@ -18,18 +18,29 @@ class ChatCubit extends Cubit<ChatState> {
         _tagRepository = tagRepository,
         super(ChatState(isLoaded: false)) {
     loadTags();
-    _initListener();
+    _initTagListener();
   }
 
-  void _initListener() {
-    _eventRepository.initListener(updateChat);
+  void initChatListener(String chatId) async {
+    emit(
+      state.copyWith(
+        streamSubscription:
+            await _eventRepository.initListener(updateChat, chatId),
+      ),
+    );
+  }
+
+  void disposeChatListener() async {
+    state.streamSubscription?.cancel();
+  }
+
+  void _initTagListener() async {
     _tagRepository.initListener(updateTags);
   }
 
   void loadChat(Chat chat) async {
     final events = await _eventRepository.getEvents(chat.id!);
-    chat.events.clear();
-    chat.events.addAll(events);
+    chat = chat.copyWith(events: events);
     emit(
       state.copyWith(
         chat: chat,
@@ -39,6 +50,12 @@ class ChatCubit extends Cubit<ChatState> {
         isInputFilled: false,
         isFilledTag: false,
       ),
+    );
+  }
+
+  void closeChat() async {
+    emit(
+      ChatState(isLoaded: false),
     );
   }
 
@@ -96,10 +113,6 @@ class ChatCubit extends Cubit<ChatState> {
 
   Event getEventById(String id) {
     return state.chat!.events.firstWhere((element) => element.id == id);
-  }
-
-  Event getEventByIndex(int index) {
-    return state.chat!.events[index];
   }
 
   void loadTags() async {

@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/entities/event.dart';
 import '../../screens/chat/chat_cubit.dart';
 import '../../screens/home/home_cubit.dart';
-import '../app_theme/app_theme_cubit.dart';
+import '../app_theme/inherited_theme.dart';
 import 'event_dialog_cubit.dart';
 import 'event_dialog_state.dart';
 
@@ -14,7 +14,7 @@ class EventDialog extends StatefulWidget {
 
   EventDialog({
     required event,
-  })  : _event = event;
+  }) : _event = event;
 
   @override
   State<EventDialog> createState() => _EventDialogState(
@@ -27,7 +27,7 @@ class _EventDialogState extends State<EventDialog> {
 
   _EventDialogState({
     required event,
-  })  : _event = event;
+  }) : _event = event;
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +58,7 @@ class _EventDialogState extends State<EventDialog> {
                       ),
                     ),
                     onTap: () {
-                      ReadContext(context)
-                          .read<EventDialogCubit>()
-                          .setEdit();
+                      ReadContext(context).read<EventDialogCubit>().setEdit();
                     },
                   ),
                   _editTextField(),
@@ -75,7 +73,9 @@ class _EventDialogState extends State<EventDialog> {
                       ),
                     ),
                     onTap: () {
-                      ReadContext(context).read<ChatCubit>().deleteEvent(event: _event);
+                      ReadContext(context)
+                          .read<ChatCubit>()
+                          .deleteEvent(event: _event);
                       ReadContext(context).read<ChatCubit>().updateChat();
                       Navigator.of(context, rootNavigator: true).pop(true);
                     },
@@ -109,9 +109,7 @@ class _EventDialogState extends State<EventDialog> {
                       ),
                     ),
                     onTap: () {
-                      ReadContext(context)
-                          .read<EventDialogCubit>()
-                          .setMove();
+                      ReadContext(context).read<EventDialogCubit>().setMove();
                     },
                   ),
                 ],
@@ -141,7 +139,9 @@ class _EventDialogState extends State<EventDialog> {
               hintText: 'Edit event',
             ),
             onSubmitted: (text) {
-              ReadContext(context).read<ChatCubit>().editEvent(editedEvent: _event.copyWith(textMessage: text));
+              ReadContext(context)
+                  .read<ChatCubit>()
+                  .editEvent(editedEvent: _event.copyWith(textMessage: text));
               ReadContext(context).read<ChatCubit>().updateChat();
               Navigator.of(context, rootNavigator: true).pop(true);
             },
@@ -168,17 +168,19 @@ class _EventDialogState extends State<EventDialog> {
                 return ListTile(
                   leading: Icon(
                     chats[index].pageIcon,
-                    color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
+                    color: InheritedAppTheme.of(context)!.themeData.iconColor,
                   ),
                   title: Text(
                     chats[index].name,
                     style: TextStyle(
-                      color: ReadContext(context).read<AppThemeCubit>().state.customTheme.iconColor,
+                      color: InheritedAppTheme.of(context)!.themeData.iconColor,
                     ),
                   ),
                   onTap: () {
                     chats[index].events.add(_event);
-                    ReadContext(context).read<ChatCubit>().deleteEvent(event: _event);
+                    ReadContext(context)
+                        .read<ChatCubit>()
+                        .deleteEvent(event: _event);
                     ReadContext(context).read<ChatCubit>().updateChat();
                     Navigator.of(context, rootNavigator: true).pop(true);
                   },
