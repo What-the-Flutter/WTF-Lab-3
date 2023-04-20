@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../domain/entities/chat.dart';
-import '../../widgets/app_theme/app_theme_cubit.dart';
+import '../../widgets/app_theme/inherited_theme.dart';
 import '../../widgets/chat/chat_bottom_bar.dart';
 import '../../widgets/events/event_list.dart';
 import '../settings/settings_cubit.dart';
@@ -26,12 +27,11 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final GlobalKey _scaffoldKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
     ReadContext(context).read<ChatCubit>().loadChat(widget.chat);
+    ReadContext(context).read<ChatCubit>().initChatListener(widget.chat.id!);
   }
 
   @override
@@ -39,113 +39,140 @@ class _ChatScreenState extends State<ChatScreen> {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, chatState) {
         return Scaffold(
-          key: _scaffoldKey,
           appBar: AppBar(
             leading: InkWell(
               child: Icon(
                 Icons.arrow_back,
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .keyColor,
+                color: InheritedAppTheme.of(context)!.themeData.keyColor,
               ),
               onTap: () {
                 Navigator.pop(context);
+                ReadContext(context).read<ChatCubit>().disposeChatListener();
+                ReadContext(context).read<ChatCubit>().closeChat();
               },
             ),
             title: Center(
-              child: Builder(
-                builder: (context) {
-                  if (chatState.isSearched == true) {
-                    return _textField();
-                  } else {
-                    return Text(
-                      widget.chat.name,
-                      style: TextStyle(
-                        color: ReadContext(context)
-                            .read<AppThemeCubit>()
-                            .state
-                            .customTheme
-                            .keyColor,
-                      ),
-                    );
-                  }
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                transitionBuilder: (child, animation) {
+                  return SizeTransition(
+                    sizeFactor: animation,
+                    child: child,
+                  );
                 },
+                child: chatState.isSearched == true
+                    ? _textField()
+                    : Center(
+                        child: Text(
+                          widget.chat.name,
+                          style: TextStyle(
+                            color: InheritedAppTheme.of(context)!
+                                .themeData
+                                .keyColor,
+                          ),
+                        ),
+                      ),
               ),
             ),
             actions: _actionAppbarButtons(),
-            backgroundColor: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .themeColor,
+            backgroundColor:
+                InheritedAppTheme.of(context)!.themeData.themeColor,
           ),
           body: Builder(
             builder: (context) {
-              if (chatState.isLoaded) {
-                return SizedBox.expand(
-                  child: Container(
-                    decoration: ReadContext(context)
-                                .read<SettingsCubit>()
-                                .state
-                                .backgroundImage !=
-                            null
-                        ? BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: FileImage(
-                                File(
-                                  ReadContext(context)
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 225),
+                transitionBuilder: (child, animation) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(1.0, 0.0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+                child: chatState.isLoaded
+                    ? SizedBox.expand(
+                        child: Container(
+                          decoration: ReadContext(context)
                                       .read<SettingsCubit>()
                                       .state
-                                      .backgroundImage!,
+                                      .backgroundImage !=
+                                  null
+                              ? BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(
+                                      File(
+                                        ReadContext(context)
+                                            .read<SettingsCubit>()
+                                            .state
+                                            .backgroundImage!,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : BoxDecoration(
+                                  color: InheritedAppTheme.of(context)!
+                                      .themeData
+                                      .backgroundColor,
+                                ),
+                          child: Column(
+                            children: <Widget>[
+                              BlocBuilder<ChatSearchCubit, ChatSearchState>(
+                                builder: (context, searchState) {
+                                  if (searchState.isSearched == false) {
+                                    return EventList(
+                                      events: ReadContext(context)
+                                          .read<ChatCubit>()
+                                          .getEvents(),
+                                      isFavoritesMode: chatState.isFavorite,
+                                    );
+                                  } else if (searchState.isSearched == true) {
+                                    return searchState.events!.isNotEmpty
+                                        ? EventList(
+                                            events: searchState.events,
+                                            isFavoritesMode:
+                                                chatState.isFavorite,
+                                          )
+                                        : Expanded(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Lottie.asset(
+                                                  'assets/empty_box.json',
+                                                  fit: BoxFit.cover,
+                                                  width: 300,
+                                                  height: 300,
+                                                ),
+                                                const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text('No such events'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                  }
+                                  return Expanded(
+                                    child: Container(),
+                                  );
+                                },
+                              ),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: ChatBottomBar(
+                                  chatId: widget.chat.id!,
                                 ),
                               ),
-                            ),
-                          )
-                        : BoxDecoration(
-                            color: ReadContext(context)
-                                .read<AppThemeCubit>()
-                                .state
-                                .customTheme
-                                .backgroundColor,
-                          ),
-                    child: Column(
-                      children: <Widget>[
-                        BlocBuilder<ChatSearchCubit, ChatSearchState>(
-                          builder: (context, searchState) {
-                            if (searchState.isSearched == false) {
-                              return EventList(
-                                events: ReadContext(context)
-                                    .read<ChatCubit>()
-                                    .getEvents(),
-                                isFavoritesMode: chatState.isFavorite,
-                              );
-                            } else if (searchState.isSearched == true) {
-                              return EventList(
-                                events: searchState.events,
-                                isFavoritesMode: chatState.isFavorite,
-                              );
-                            }
-                            return Expanded(
-                              child: Container(),
-                            );
-                          },
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: ChatBottomBar(
-                            chatId: widget.chat.id!,
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              } else {
-                return const CircularProgressIndicator();
-              }
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+              );
             },
           ),
         );
@@ -157,11 +184,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        color: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .backgroundColor,
+        color: InheritedAppTheme.of(context)!.themeData.backgroundColor,
       ),
       child: TextField(
         decoration: InputDecoration(
@@ -170,23 +193,15 @@ class _ChatScreenState extends State<ChatScreen> {
               Radius.circular(15),
             ),
             borderSide: BorderSide(
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .textColor,
+              color: InheritedAppTheme.of(context)!.themeData.textColor,
             ),
           ),
           hintText: 'Search',
         ),
         onSubmitted: (value) => {
-          ReadContext(_scaffoldKey.currentContext!)
-              .read<ChatSearchCubit>()
-              .searchEvents(
+          ReadContext(context).read<ChatSearchCubit>().searchEvents(
                 value,
-                ReadContext(_scaffoldKey.currentContext!)
-                    .read<ChatCubit>()
-                    .getEvents(),
+                ReadContext(context).read<ChatCubit>().getEvents(),
               ),
         },
       ),
@@ -200,15 +215,15 @@ class _ChatScreenState extends State<ChatScreen> {
         child: InkWell(
           child: Icon(
             Icons.search,
-            color: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .keyColor,
+            color: InheritedAppTheme.of(context)!.themeData.keyColor,
           ),
-          onTap: () => ReadContext(_scaffoldKey.currentContext!)
-              .read<ChatCubit>()
-              .changeSearchedState(),
+          onTap: () {
+            ReadContext(context).read<ChatCubit>().changeSearchedState();
+            if (ReadContext(context).read<ChatSearchCubit>().state.isSearched ==
+                true) {
+              ReadContext(context).read<ChatSearchCubit>().closeSearch();
+            }
+          },
         ),
       ),
       Padding(
@@ -216,15 +231,10 @@ class _ChatScreenState extends State<ChatScreen> {
         child: InkWell(
           child: Icon(
             Icons.bookmark_border_outlined,
-            color: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .keyColor,
+            color: InheritedAppTheme.of(context)!.themeData.keyColor,
           ),
-          onTap: () => ReadContext(_scaffoldKey.currentContext!)
-              .read<ChatCubit>()
-              .changeFavoriteState(),
+          onTap: () =>
+              ReadContext(context).read<ChatCubit>().changeFavoriteState(),
         ),
       ),
     ];

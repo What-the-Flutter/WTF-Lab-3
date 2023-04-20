@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class DataBaseService {
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   final FirebaseAuth fireBaseAuth = FirebaseAuth.instance;
-  final Reference storageRef = FirebaseStorage.instance.ref();
+  final Reference _storageRef = FirebaseStorage.instance.ref();
 
   Future<void> insertChat(Map<String, dynamic> row) async {
     databaseRef
@@ -60,7 +61,7 @@ class DataBaseService {
   }
 
   Future<String> loadImage(File imageFile) async {
-    final uploadTask = await storageRef
+    final uploadTask = await _storageRef
         .child(fireBaseAuth.currentUser!.uid)
         .putFile(imageFile);
     final downloadUrl = await uploadTask.ref.getDownloadURL();
@@ -105,6 +106,21 @@ class DataBaseService {
     return listData;
   }
 
+  Future<List<Map<String, dynamic>>> queryAllEventsForTimeLine(
+      List<String> keys) async {
+    final rawData = await databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('events')
+        .get();
+    final listData = <Map<String, dynamic>>[];
+    for (final eventElement in rawData.children) {
+      final map = Map<String, dynamic>.from(eventElement.value as Map);
+      listData.add(map);
+      keys.add(eventElement.key.toString());
+    }
+    return listData;
+  }
+
   Future<void> insertTag(Map<String, dynamic> row) async {
     databaseRef
         .child(fireBaseAuth.currentUser!.uid)
@@ -133,5 +149,45 @@ class DataBaseService {
       keys.add(tagElement.key.toString());
     }
     return listData;
+  }
+
+  Future<StreamSubscription> initListenerEvents(
+      Function updateChat, String chatId) async {
+    return databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('events')
+        .orderByChild('chat_id')
+        .equalTo(chatId)
+        .onValue
+        .listen(
+      (event) {
+        print(1);
+        updateChat();
+      },
+    );
+  }
+
+  Future<StreamSubscription> initListenerChats(Function updateChats) async {
+    return databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('chats')
+        .onValue
+        .listen(
+      (event) {
+        updateChats();
+      },
+    );
+  }
+
+  Future<StreamSubscription> initListenerTags(Function updateTags) async {
+    return databaseRef
+        .child(fireBaseAuth.currentUser!.uid)
+        .child('tags')
+        .onValue
+        .listen(
+      (tag) {
+        updateTags();
+      },
+    );
   }
 }

@@ -1,30 +1,26 @@
+import 'dart:async';
+
 import '../../domain/entities/chat.dart';
 import '../../domain/repos/chat_repository.dart';
 import '../entities/chat_dto.dart';
 import '../services/database_service.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
-  final DataBaseService dataBaseService;
+  final DataBaseService _dataBaseService;
+  late final StreamSubscription _streamSubscription;
 
-  ChatRepositoryImpl({required this.dataBaseService});
+  ChatRepositoryImpl({required dataBaseService})
+      : _dataBaseService = dataBaseService;
 
   @override
-  void initListener(Function updateChats) {
-    dataBaseService.databaseRef
-        .child(dataBaseService.fireBaseAuth.currentUser!.uid)
-        .child('chats')
-        .onValue
-        .listen(
-      (event) {
-        updateChats();
-      },
-    );
+  void initListener(Function updateChats) async {
+    _streamSubscription = await _dataBaseService.initListenerChats(updateChats);
   }
 
   @override
   Future<List<Chat>> getChats() async {
     final keys = <String>[];
-    final raw = await dataBaseService.queryAllChats(keys);
+    final raw = await _dataBaseService.queryAllChats(keys);
     final chats = raw.map((chat) => ChatDTO.fromJSON(chat).toModel()).toList();
     for (var i = 0; i < chats.length; i++) {
       chats[i] = chats[i].copyWith(id: keys[i]);
@@ -40,7 +36,7 @@ class ChatRepositoryImpl extends ChatRepository {
       pageIcon: chat.pageIcon,
       isPinned: chat.isPinned,
     );
-    dataBaseService.insertChat(chatDTO.toJson());
+    _dataBaseService.insertChat(chatDTO.toJson());
   }
 
   @override
@@ -52,7 +48,7 @@ class ChatRepositoryImpl extends ChatRepository {
       pageIcon: chat.pageIcon,
       isPinned: chat.isPinned,
     );
-    dataBaseService.updateChat(
+    _dataBaseService.updateChat(
       chat.id!,
       chatDTO.toJson(),
     );
@@ -60,6 +56,11 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<void> deleteChat(Chat chat) async {
-    dataBaseService.deleteChat(chat.id!);
+    _dataBaseService.deleteChat(chat.id!);
+  }
+
+  @override
+  void disposeListener() {
+    _streamSubscription.cancel();
   }
 }

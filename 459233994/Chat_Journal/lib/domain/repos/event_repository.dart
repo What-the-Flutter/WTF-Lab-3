@@ -9,5 +9,7 @@ abstract class EventRepository{
 
   Future<void> deleteEvent(Event event);
 
-  void initListener(Function updateChat);
+  void initListener(Function updateChat, String chatId);
+
+  Future<List<Event>> getEventsForTimeLine();
 }

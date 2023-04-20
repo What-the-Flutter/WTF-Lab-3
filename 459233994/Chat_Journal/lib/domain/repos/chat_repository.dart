@@ -10,4 +10,6 @@ abstract class ChatRepository{
   Future<void> deleteChat(Chat chat);
 
   void initListener(Function updateChats);
+
+  void disposeListener();
 }

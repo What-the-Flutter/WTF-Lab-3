@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../app_theme/app_theme_cubit.dart';
+import '../app_theme/inherited_theme.dart';
 
 class QuestionnaireButton extends StatelessWidget {
   const QuestionnaireButton({
@@ -12,16 +11,9 @@ class QuestionnaireButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        shadowColor: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .backgroundColor,
-        backgroundColor: ReadContext(context)
-            .read<AppThemeCubit>()
-            .state
-            .customTheme
-            .auxiliaryColor,
+        shadowColor: InheritedAppTheme.of(context)!.themeData.backgroundColor,
+        backgroundColor:
+            InheritedAppTheme.of(context)!.themeData.auxiliaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
@@ -35,20 +27,12 @@ class QuestionnaireButton extends StatelessWidget {
           children: <Widget>[
             Icon(
               Icons.psychology,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .iconColor,
+              color: InheritedAppTheme.of(context)!.themeData.iconColor,
             ),
             Text(
               'Questionnaire Bot',
               style: TextStyle(
-                color: ReadContext(context)
-                    .read<AppThemeCubit>()
-                    .state
-                    .customTheme
-                    .textColor,
+                color: InheritedAppTheme.of(context)!.themeData.textColor,
               ),
             ),
           ],

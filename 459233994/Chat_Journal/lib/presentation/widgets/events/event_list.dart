@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../domain/entities/event.dart';
-import '../../screens/chat/chat_cubit.dart';
 import 'event_dialog.dart';
-import 'event_widget.dart';
+import 'event_bubble.dart';
 
 class EventList extends StatelessWidget {
   final List<Event> _events;
@@ -23,39 +21,32 @@ class EventList extends StatelessWidget {
       key: _globalKey,
       child: ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: ReadContext(context).read<ChatCubit>().getEvents().length,
+        itemCount: _events.length,
         itemBuilder: (context, index) {
           final previousMessageSendTime = index != 0
-              ? ReadContext(context)
-                  .read<ChatCubit>()
-                  .getEventByIndex(index - 1).createTime
+              ? _events[index - 1].createTime
               : DateTime(0, 0, 0, 0, 0, 0, 0, 0);
           return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: InkWell(
               onLongPress: () => _longPressHandler(
-                  context,
-                  ReadContext(context)
-                      .read<ChatCubit>()
-                      .getEventByIndex(index)),
+                context,
+                _events[index],
+              ),
               child: (() {
                 if (_isFavoritesMode) {
-                  if (ReadContext(context)
-                      .read<ChatCubit>()
-                      .getEventByIndex(index)
-                      .isFavorite) {
-                    return EventWidget(
-                      event: ReadContext(context)
-                          .read<ChatCubit>()
-                          .getEventByIndex(index),
+                  if (_events[index].isFavorite) {
+                    return EventBubble(
+                      event: _events[index],
                       previousEventSendTime: previousMessageSendTime,
                     );
                   }
+                  else {
+                    return Container();
+                  }
                 } else {
-                  return EventWidget(
-                    event: ReadContext(context)
-                        .read<ChatCubit>()
-                        .getEventByIndex(index),
+                  return EventBubble(
+                    event: _events[index],
                     previousEventSendTime: previousMessageSendTime,
                   );
                 }

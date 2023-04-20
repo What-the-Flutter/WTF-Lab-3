@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../domain/entities/chat.dart';
 import '../../../domain/entities/tag.dart';
 
@@ -9,6 +11,7 @@ class ChatState {
   final bool? isSearched;
   final bool? isInputFilled;
   final bool? isFilledTag;
+  final StreamSubscription? streamSubscription;
 
   ChatState({
     this.chat,
@@ -17,6 +20,7 @@ class ChatState {
     this.isSearched,
     this.isInputFilled,
     this.isFilledTag,
+    this.streamSubscription,
     required this.isLoaded,
   });
 
@@ -28,6 +32,7 @@ class ChatState {
     bool? isLoaded,
     bool? isInputFilled,
     bool? isFilledTag,
+    StreamSubscription? streamSubscription,
   }) {
     return ChatState(
       isLoaded: isLoaded ?? this.isLoaded,
@@ -37,6 +42,7 @@ class ChatState {
       isSearched: isSearched ?? this.isSearched,
       isInputFilled: isInputFilled ?? this.isInputFilled,
       isFilledTag: isFilledTag ?? this.isFilledTag,
+      streamSubscription: streamSubscription ?? this.streamSubscription,
     );
   }
 }

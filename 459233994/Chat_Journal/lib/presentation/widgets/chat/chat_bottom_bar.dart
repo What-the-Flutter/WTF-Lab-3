@@ -6,7 +6,7 @@ import '../../../domain/entities/event.dart';
 import '../../../domain/entities/tag.dart';
 import '../../screens/chat/chat_cubit.dart';
 import '../../screens/chat/chat_state.dart';
-import '../app_theme/app_theme_cubit.dart';
+import '../app_theme/inherited_theme.dart';
 import 'tags_selection_bar.dart';
 
 class ChatBottomBar extends StatefulWidget {
@@ -66,11 +66,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           children: <Widget>[
             Icon(
               Icons.label,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .iconColor,
+              color: InheritedAppTheme.of(context)!.themeData.iconColor,
             ),
             Container(
               width: 300,
@@ -109,11 +105,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
             Radius.circular(15),
           ),
           borderSide: BorderSide(
-            color: ReadContext(context)
-                .read<AppThemeCubit>()
-                .state
-                .customTheme
-                .textColor,
+            color: InheritedAppTheme.of(context)!.themeData.textColor,
           ),
         ),
         hintText: 'Enter event',
@@ -139,11 +131,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           return InkWell(
             child: Icon(
               Icons.send,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .iconColor,
+              color: InheritedAppTheme.of(context)!.themeData.iconColor,
             ),
             onTap: sentEvent,
           );
@@ -151,11 +139,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           return InkWell(
             child: Icon(
               Icons.add_a_photo,
-              color: ReadContext(context)
-                  .read<AppThemeCubit>()
-                  .state
-                  .customTheme
-                  .iconColor,
+              color: InheritedAppTheme.of(context)!.themeData.iconColor,
             ),
             onTap: () => _getFromGallery(context),
           );
@@ -167,22 +151,32 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
   Widget _selectableCategory() {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        if (state.isInputFilled == true) {
-          return SizedBox(
-            height: 40,
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: _icons.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return _selectableIcon(index);
-              },
-            ),
-          );
-        } else {
-          return Container();
-        }
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+          child: state.isInputFilled == true
+              ? SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: _icons.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return _selectableIcon(index);
+                    },
+                  ),
+                )
+              : Container(),
+        );
       },
     );
   }
@@ -210,11 +204,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                 alignment: Alignment.center,
                 child: Icon(
                   _icons[index],
-                  color: ReadContext(context)
-                      .read<AppThemeCubit>()
-                      .state
-                      .customTheme
-                      .iconColor,
+                  color: InheritedAppTheme.of(context)!.themeData.iconColor,
                   size: 36,
                 ),
               ),

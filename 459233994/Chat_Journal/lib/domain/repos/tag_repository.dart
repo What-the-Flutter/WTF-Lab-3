@@ -8,4 +8,6 @@ abstract class TagRepository{
   Future<void> deleteTag(Tag tag);
 
   void initListener(Function updateTags);
+
+  void disposeListener();
 }
