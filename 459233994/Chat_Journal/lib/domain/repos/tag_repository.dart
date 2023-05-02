@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../entities/tag.dart';
 
 abstract class TagRepository{
@@ -7,7 +9,5 @@ abstract class TagRepository{
 
   Future<void> deleteTag(Tag tag);
 
-  void initListener(Function updateTags);
-
-  void disposeListener();
+  Future<StreamSubscription> initListener();
 }
