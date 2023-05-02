@@ -151,8 +151,7 @@ class DataBaseService {
     return listData;
   }
 
-  Future<StreamSubscription> initListenerEvents(
-      Function updateChat, String chatId) async {
+  Future<StreamSubscription> initListenerEvents(String chatId) async {
     return databaseRef
         .child(fireBaseAuth.currentUser!.uid)
         .child('events')
@@ -160,34 +159,27 @@ class DataBaseService {
         .equalTo(chatId)
         .onValue
         .listen(
-      (event) {
-        print(1);
-        updateChat();
-      },
-    );
+          (event) {},
+        );
   }
 
-  Future<StreamSubscription> initListenerChats(Function updateChats) async {
+  Future<StreamSubscription> initListenerChats() async {
     return databaseRef
         .child(fireBaseAuth.currentUser!.uid)
         .child('chats')
         .onValue
         .listen(
-      (event) {
-        updateChats();
-      },
-    );
+          (event) {},
+        );
   }
 
-  Future<StreamSubscription> initListenerTags(Function updateTags) async {
+  Future<StreamSubscription> initListenerTags() async {
     return databaseRef
         .child(fireBaseAuth.currentUser!.uid)
         .child('tags')
         .onValue
         .listen(
-      (tag) {
-        updateTags();
-      },
-    );
+          (tag) {},
+        );
   }
 }

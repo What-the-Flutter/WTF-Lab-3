@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repos/event_repository.dart';
@@ -10,6 +12,8 @@ import 'chat_state.dart';
 class ChatCubit extends Cubit<ChatState> {
   final EventRepositoryImpl _eventRepository;
   final TagRepository _tagRepository;
+  late StreamSubscription _eventStreamSubscription;
+  late final StreamSubscription _tagStreamSubscription;
 
   ChatCubit({
     required eventRepository,
@@ -22,20 +26,29 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void initChatListener(String chatId) async {
-    emit(
-      state.copyWith(
-        streamSubscription:
-            await _eventRepository.initListener(updateChat, chatId),
-      ),
+    _eventStreamSubscription = await _eventRepository.initListener(chatId);
+    _eventStreamSubscription.onData(
+      (data) {
+        updateChat();
+      },
     );
   }
 
   void disposeChatListener() async {
-    state.streamSubscription?.cancel();
+    _eventStreamSubscription.cancel();
   }
 
   void _initTagListener() async {
-    _tagRepository.initListener(updateTags);
+    _tagStreamSubscription = await _tagRepository.initListener();
+    _tagStreamSubscription.onData(
+      (data) {
+        updateTags();
+      },
+    );
+  }
+
+  void disposeTagListener() async {
+    _tagStreamSubscription.cancel();
   }
 
   void loadChat(Chat chat) async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../entities/chat.dart';
 
 abstract class ChatRepository{
@@ -9,7 +11,5 @@ abstract class ChatRepository{
 
   Future<void> deleteChat(Chat chat);
 
-  void initListener(Function updateChats);
-
-  void disposeListener();
+  Future<StreamSubscription> initListener();
 }
