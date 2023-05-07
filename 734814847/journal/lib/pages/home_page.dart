@@ -29,6 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Chat> chats = [];
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -85,13 +86,25 @@ class _HomePageState extends State<HomePage> {
               Chat chat;
               switch (index) {
                 case 0:
-                  chat = Chat(name: 'Travel', icon: Icons.airplanemode_active);
+                  chat = Chat(
+                    name: 'Travel',
+                    icon: Icons.airplanemode_active,
+                    events: [],
+                  );
                   break;
                 case 1:
-                  chat = Chat(name: 'Family', icon: Icons.chair);
+                  chat = Chat(
+                    name: 'Family',
+                    icon: Icons.chair,
+                    events: [],
+                  );
                   break;
                 default:
-                  chat = Chat(name: 'Sports', icon: Icons.fitness_center);
+                  chat = Chat(
+                    name: 'Sports',
+                    icon: Icons.fitness_center,
+                    events: [],
+                  );
                   break;
               }
               chats.add(chat);
@@ -109,9 +122,11 @@ class _HomePageState extends State<HomePage> {
                 subtitle: const Text('No events. Click to create one'),
                 onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EventsPage(chat: chat,))
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EventsPage(
+                                chat: chat,
+                              )));
                 },
               );
             },
