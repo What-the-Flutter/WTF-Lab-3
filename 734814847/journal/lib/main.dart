@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/home_page.dart';
+import 'journal.dart';
 
 void main() {
   runApp(const Journal());

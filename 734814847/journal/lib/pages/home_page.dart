@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../EventNotifier.dart';
 import '../models/chat.dart';
 import 'events_page.dart';
-
-class Journal extends StatelessWidget {
-  const Journal({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Journal project',
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-      ),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -89,21 +76,18 @@ class _HomePageState extends State<HomePage> {
                   chat = Chat(
                     name: 'Travel',
                     icon: Icons.airplanemode_active,
-                    events: [],
                   );
                   break;
                 case 1:
                   chat = Chat(
                     name: 'Family',
                     icon: Icons.chair,
-                    events: [],
                   );
                   break;
                 default:
                   chat = Chat(
                     name: 'Sports',
                     icon: Icons.fitness_center,
-                    events: [],
                   );
                   break;
               }
@@ -121,6 +105,7 @@ class _HomePageState extends State<HomePage> {
                 title: Text(chat.name),
                 subtitle: const Text('No events. Click to create one'),
                 onTap: () {
+                  context.read<EventsNotifier>().addChat(chat);
                   Navigator.push(
                       context,
                       MaterialPageRoute(
