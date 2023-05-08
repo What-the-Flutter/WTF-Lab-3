@@ -6,9 +6,7 @@ import '../models/chat.dart';
 import 'events_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
+  const HomePage({Key? key}): super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -16,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Chat> chats = [];
+
+  @override
+  void initState() {
+    super.initState();
+    chats = Provider.of<EventsNotifier>(context, listen: false).chats;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,58 +72,45 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-              child: ListView.separated(
-            itemBuilder: (context, index) {
-              Chat chat;
-              switch (index) {
-                case 0:
-                  chat = Chat(
-                    name: 'Travel',
-                    icon: Icons.airplanemode_active,
-                  );
-                  break;
-                case 1:
-                  chat = Chat(
-                    name: 'Family',
-                    icon: Icons.chair,
-                  );
-                  break;
-                default:
-                  chat = Chat(
-                    name: 'Sports',
-                    icon: Icons.fitness_center,
-                  );
-                  break;
-              }
-              chats.add(chat);
-              return ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(250, 168, 105, 98),
-                    shape: BoxShape.circle,
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                Chat chat;
+                switch (index) {
+                  case 0:
+                    chat = Chat(
+                      name: 'Travel',
+                      key: UniqueKey(),
+                      icon: const Icon(Icons.airplanemode_active, color: Colors.white,),
+                    );
+                    break;
+                  case 1:
+                    chat = Chat(
+                      name: 'Family',
+                      key: UniqueKey(),
+                      icon: const Icon(Icons.chair, color: Colors.white,),
+                    );
+                    break;
+                  default:
+                    chat = Chat(
+                      name: 'Sports',
+                      key: UniqueKey(),
+                      icon: const Icon(Icons.fitness_center, color: Colors.white,),
+                    );
+                    break;
+                }
+                chats.add(chat);
+                return Consumer<EventsNotifier>(
+                  builder: (context, provider, child) => Material(
+                      child: buildListTile(chat, context)
                   ),
-                  child: Icon(chat.icon, color: Colors.white),
-                ),
-                title: Text(chat.name),
-                subtitle: const Text('No events. Click to create one'),
-                onTap: () {
-                  context.read<EventsNotifier>().addChat(chat);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EventsPage(
-                                chat: chat,
-                              )));
-                },
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const Divider(height: 5);
-            },
-            itemCount: numOfElements,
-          ))
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider(height: 5);
+              },
+              itemCount: numOfElements,
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -137,5 +128,32 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  ListTile buildListTile(Chat chat, BuildContext context) {
+    return ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: Color.fromRGBO(250, 168, 105, 98),
+                    shape: BoxShape.circle,
+                  ),
+                  child: chat.icon,
+                ),
+                title: Text(chat.name),
+                subtitle: const Text('No events. Click to create one'),
+                onTap: () {
+                  context.read<EventsNotifier>().addChat(chat);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventsPage(
+                        chat: chat,
+                      ),
+                    ),
+                  );
+                },
+              );
   }
 }

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class Date extends StatelessWidget {
   final DateTime date;
 
-  Date({required this.date});
+  Date({required this.date, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

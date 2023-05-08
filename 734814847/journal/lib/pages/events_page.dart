@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../EventNotifier.dart';
 import '../models/chat.dart';
+import '../models/event.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/event_widget.dart';
 
 class EventsPage extends StatefulWidget {
   EventsPage({super.key, required this.chat});
 
-  Chat chat;
-  bool selection = false;
+  final Chat chat;
 
   @override
   State<EventsPage> createState() => _EventsPageState();
@@ -20,21 +20,60 @@ class EventsPage extends StatefulWidget {
 class _EventsPageState extends State<EventsPage> {
   final _textEditingController = TextEditingController();
   FocusNode focusNode = FocusNode();
+  var _edit = false;
 
   Widget _showMessages(BuildContext context) {
-    var events = widget.chat.events;
-    if (events.isEmpty) {
-      return _getHint(context);
-    } else {
+    if (widget.chat.events.isNotEmpty) {
       return Expanded(
         flex: 8,
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return events.reversed.elementAt(index);
+            return Consumer<EventsNotifier>(
+              builder: (context, provider, child) => _eventTile(index),
+            );
           },
           reverse: true,
           itemCount: widget.chat.events.length,
         ),
+      );
+    } else {
+      return _getHint(context);
+    }
+  }
+
+  Widget _eventTile(index) {
+    var events = widget.chat.events.reversed;
+    var current = events.elementAt(index);
+
+    if (events.length == 1 || index == events.length - 1) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Date(date: current.date),
+          EventWidget(
+            event: current,
+            key: current.key,
+          ),
+        ],
+      );
+    } else {
+      var next = events.elementAt(index + 1);
+      if (DateFormat.yMMMMd('en_US').format(current.date) !=
+          DateFormat.yMMMMd('en_US').format(next.date)) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Date(date: current.date),
+            EventWidget(
+              event: current,
+              key: current.key,
+            ),
+          ],
+        );
+      }
+      return EventWidget(
+        event: current,
+        key: current.key,
       );
     }
   }
@@ -69,22 +108,17 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   void _addMessage(BuildContext context, String text) {
-    setState(() {
-      var prevEvent = widget.chat.events.isEmpty
-          ? null
-          : widget.chat.events.last as EventWidget;
-      if (prevEvent == null ||
-          DateFormat.yMMMMd('en_US').format(prevEvent.event.date) !=
-              DateFormat.yMMMMd('en_US').format(DateTime.now())) {
-        widget.chat.events.add(Date(date: DateTime.now()));
-      }
-      widget.chat.events.add(EventWidget(text: text, date: DateTime.now()));
-      _textEditingController.clear();
-    });
-  }
-
-  void _deleteMessage (BuildContext context) {
-    Provider.of<EventsNotifier>(context, listen: false).deleteEvents(widget.chat);
+    if (!_edit) {
+      widget.chat.events.add(Event(
+        text: text,
+        key: UniqueKey(),
+        date: DateTime.now(),
+      ));
+    } else {
+      _edit = false;
+      focusNode.unfocus();
+    }
+    _textEditingController.clear();
   }
 
   @override
@@ -97,83 +131,132 @@ class _EventsPageState extends State<EventsPage> {
     );
     final bgColor = theme.colorScheme.onPrimary;
 
-    var selectionInterface = widget.selection ? Icons.delete : Icons.search;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.chat.name),
-        centerTitle: true,
-        actions: [
-          Consumer<EventsNotifier>(
-            builder: (context, provider, child) {
-              var selection = provider.selectionChatHandler(widget.chat);
-              var selectionInterface = selection ? Icons.delete : Icons.search;
-              return IconButton(
-                  onPressed: () {
-                    if (selection) {
-                      _deleteMessage(context);
-                      setState(() {});
-                    }
-                  },
-                  icon: Icon(selectionInterface),
-                  color: bgColor);
-            },
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.bookmark_border),
-              color: bgColor)
-        ],
-      ),
-      body: Column(
-        children: [
-          _showMessages(context),
-          Expanded(
-            flex: 1,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.bubble_chart),
-                      color: bgColor,
-                    ),
-                    Expanded(
-                        child: TextField(
-                      autofocus: true,
-                      focusNode: focusNode,
-                      controller: _textEditingController,
-                      decoration: InputDecoration(
-                        hintStyle: style,
-                        hintText: 'Enter event',
+    return Consumer<EventsNotifier>( builder: (context, provider, child) {
+      return Scaffold(
+        //consumer
+        appBar: _getAppBar(bgColor),
+        body: Column(
+          children: [
+            _showMessages(context),
+            Expanded(
+              flex: 1,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.background,
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.bubble_chart),
+                        color: bgColor,
                       ),
-                      style: style,
-                      onSubmitted: (input) {
-                        if (input != '') {
-                          _addMessage(context, input);
-                        }
-                      },
-                    )),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.camera_enhance_outlined),
-                      color: bgColor,
-                    ),
-                  ],
+                      Expanded(
+                        child: TextField(
+                          autofocus: true,
+                          focusNode: focusNode,
+                          controller: _textEditingController,
+                          decoration: InputDecoration(
+                            hintStyle: style,
+                            hintText: 'Enter event',
+                          ),
+                          style: style,
+                          onSubmitted: (input) {
+                            if (input != '') {
+                              _addMessage(context, input);
+                            }
+                          },
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.camera_enhance_outlined),
+                        color: bgColor,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      );
+    });
+  }
+
+  AppBar _getAppBar(Color bgColor) {
+    return AppBar(
+      title: Text(widget.chat.name),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () {
+          //cancel editing
+          _edit = false;
+          _textEditingController.clear();
+          focusNode.unfocus();
+        },
       ),
+      actions: [
+        Consumer<EventsNotifier>(
+          builder: (context, provider, child) {
+            var selectedEvents = provider.selectionChatHandler(widget.chat);
+            var selection = selectedEvents.isNotEmpty;
+            var listIcons = <Widget>[];
+            var selectionInterface = selection ? Icons.delete : Icons.search;
+            if (selection) {
+              listIcons.add(
+                IconButton(
+                  onPressed: () {
+                    Provider.of<EventsNotifier>(context, listen: false)
+                        .deleteEvents(widget.chat);
+                  },
+                  icon: Icon(selectionInterface),
+                  color: bgColor,
+                ),
+              );
+              listIcons.add(
+                IconButton(
+                  onPressed: () {
+                    Provider.of<EventsNotifier>(context, listen: false)
+                        .copySelected(widget.chat);
+                  },
+                  icon: const Icon(Icons.copy),
+                  color: bgColor,
+                ),
+              );
+              if (selectedEvents.length == 1) {
+                listIcons.add(
+                  IconButton(
+                    onPressed: () {
+                      _textEditingController.text =
+                          widget.chat.selectedEvents.first.text;
+                      focusNode.requestFocus();
+                      _edit = true;
+                    },
+                    icon: const Icon(Icons.edit),
+                    color: bgColor,
+                  ),
+                );
+              }
+            }
+
+            return Row(
+              children: listIcons,
+            );
+          },
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.bookmark_border),
+          color: bgColor,
+        )
+      ],
     );
   }
 }

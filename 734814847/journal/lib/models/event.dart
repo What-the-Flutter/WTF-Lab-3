@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class Event {
   String text;
-  final IconData? icon;
-  final DateTime date;
+  DateTime date;
   bool isSelected;
-  bool selectionProcess;
+  bool isSelectionProcess;
+  Key key;
 
   Event(
       {required this.text,
       required this.date,
-      this.icon,
+      required this.key,
       this.isSelected = false,
-      this.selectionProcess = false});
+      this.isSelectionProcess = false});
 }

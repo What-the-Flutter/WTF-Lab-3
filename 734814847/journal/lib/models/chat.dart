@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/event_widget.dart';
+import '../models/event.dart';
 
 class Chat {
+  Key key;
   String name;
-  final IconData icon;
-  List<Widget> events = <Widget>[];
-  List<EventWidget> selectedEvents = <EventWidget>[];
+  Icon icon;
+  List<Event> events = <Event>[];
+  List<Event> selectedEvents = <Event>[];
 
-  Chat({required this.name, required this.icon});
+  Chat({required this.name, required this.icon, required this.key});
 }

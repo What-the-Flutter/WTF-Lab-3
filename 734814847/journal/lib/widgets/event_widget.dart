@@ -5,33 +5,26 @@ import '../EventNotifier.dart';
 import '../models/event.dart';
 
 class EventWidget extends StatelessWidget {
-  Event event;
+  final Event event;
 
-  EventWidget(
-      {required String text,
-      required DateTime date,
-      IconData? icon,
-      bool isSelected = false})
-      : event = Event(
-          text: text,
-          date: date,
-          icon: icon,
-          isSelected: isSelected,
-        );
+  EventWidget({
+    required this.event,
+    required Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (event.selectionProcess) {
+        if (event.isSelectionProcess) {
           Provider.of<EventsNotifier>(context, listen: false)
-              .selectedEvent(this);
+              .selectedEvent(event);
         }
       },
       onLongPress: () {
-        if (!event.selectionProcess) {
+        if (!event.isSelectionProcess) {
           Provider.of<EventsNotifier>(context, listen: false)
-              .selectionProcessHandler(this);
+              .selectionProcessHandler(event);
         }
       },
       child: Row(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'models/chat.dart';
+import 'models/event.dart';
 import 'widgets/event_widget.dart';
 
 class EventsNotifier with ChangeNotifier {
@@ -12,59 +14,70 @@ class EventsNotifier with ChangeNotifier {
   }
 
   void deleteEvents (Chat chat) {
-    for (var chat_ in chats) {
-      if (chat_.name == chat.name) {
-        for (var event in chat_.selectedEvents){
-          chat_.events.remove(event);
-        }
-        chat_.selectedEvents.clear();
-        return;
-      }
+    for (var event in chat.selectedEvents){
+      chat.events.remove(event);
     }
+    for (var event in chat.events) {
+      event.isSelectionProcess = false;
+    }
+    chat.selectedEvents.clear();
+    notifyListeners();
   }
 
-  bool selectionChatHandler(Chat chat){
-    for (var chat_ in chats) {
-      if (chat_.name == chat.name) {
-        return chat_.selectedEvents.isNotEmpty;
-      }
+  Future copySelected (Chat chat) async {
+    var result = '';
+    for (var event in chat.selectedEvents){
+      result += '${event.text}\n';
+      event.isSelected = false;
     }
-    return false;
+    for (var event in chat.events) {
+      event.isSelectionProcess = false;
+    }
+    chat.selectedEvents.clear();
+    notifyListeners();
+    await Clipboard.setData(ClipboardData(text: result));
   }
 
-  void selectionProcessHandler(EventWidget eventWidget) {
+  List<Event> selectionChatHandler(Chat chat){
+    for (var chat_ in chats) {
+      if (chat_.name == chat.name) {
+        return chat_.selectedEvents;
+      }
+    }
+    return [];
+  }
+
+  void selectionProcessHandler(Event event_) {
     for (var chat in chats) {
-      if (chat.events.contains(eventWidget)) {
+      if (chat.events.contains(event_)) {
         for (var event in chat.events) {
-          if (event is EventWidget) {
-            event.event.selectionProcess = true;
-          }
+          event.isSelectionProcess = true;
         }
       }
-      eventWidget.event.isSelected = true;
-      chat.selectedEvents.add(eventWidget);
+      event_.isSelected = true;
+      chat.selectedEvents.add(event_);
       notifyListeners();
+      return;
     }
   }
 
-  void selectedEvent(EventWidget eventWidget) {
+  void selectedEvent(Event event_) {
     for (var chat in chats) {
-      if (chat.events.contains(eventWidget)) {
-        if (eventWidget.event.isSelected) {
-          chat.selectedEvents.remove(eventWidget);
+      if (chat.events.contains(event_)) {
+        if (event_.isSelected) {
+          chat.selectedEvents.remove(event_);
           if (chat.selectedEvents.isEmpty) {
             for (var event in chat.events) {
-              if (event is EventWidget) {
-                event.event.selectionProcess = false;
-              }
+              event.isSelectionProcess = false;
             }
           }
         } else {
-          chat.selectedEvents.add(eventWidget);
+          chat.selectedEvents.add(event_);
         }
       }
     }
-    eventWidget.event.isSelected = !eventWidget.event.isSelected;
+    event_.isSelected = !event_.isSelected;
     notifyListeners();
+    return;
   }
 }
