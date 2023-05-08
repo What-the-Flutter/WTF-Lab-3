@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'EventNotifier.dart';
+import 'event_notifier.dart';
 import 'pages/home_page.dart';
 
 class Journal extends StatelessWidget {

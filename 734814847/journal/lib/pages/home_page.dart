@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../EventNotifier.dart';
+import '../event_notifier.dart';
 import '../models/chat.dart';
 import 'events_page.dart';
 

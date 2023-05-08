@@ -80,4 +80,27 @@ class EventsNotifier with ChangeNotifier {
     notifyListeners();
     return;
   }
+
+  void changeEvent(Chat chat, String text) {
+    var index = chat.events.indexOf(chat.selectedEvents.first);
+    chat.events[index].text = text;
+    chat.events[index].isSelected = false;
+    for (var event in chat.events) {
+      event.isSelectionProcess = false;
+    }
+    chat.selectedEvents.clear();
+    notifyListeners();
+    return;
+  }
+
+  void errorChangeEvent (Chat chat){
+    var index = chat.events.indexOf(chat.selectedEvents.first);
+    chat.events[index].isSelected = false;
+    for (var event in chat.events) {
+      event.isSelectionProcess = false;
+    }
+    chat.selectedEvents.clear();
+    notifyListeners();
+    return;
+  }
 }

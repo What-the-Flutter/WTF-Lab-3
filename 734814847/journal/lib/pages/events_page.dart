@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../EventNotifier.dart';
+import '../event_notifier.dart';
 import '../models/chat.dart';
 import '../models/event.dart';
 import '../widgets/date_widget.dart';
@@ -116,6 +116,7 @@ class _EventsPageState extends State<EventsPage> {
       ));
     } else {
       _edit = false;
+      Provider.of<EventsNotifier>(context, listen: false).changeEvent(widget.chat, text);
       focusNode.unfocus();
     }
     _textEditingController.clear();
@@ -131,10 +132,10 @@ class _EventsPageState extends State<EventsPage> {
     );
     final bgColor = theme.colorScheme.onPrimary;
 
-    return Consumer<EventsNotifier>( builder: (context, provider, child) {
+    return Consumer<EventsNotifier>(builder: (context, provider, child) {
       return Scaffold(
         //consumer
-        appBar: _getAppBar(bgColor),
+        appBar: _getAppBar(context, bgColor),
         body: Column(
           children: [
             _showMessages(context),
@@ -186,17 +187,21 @@ class _EventsPageState extends State<EventsPage> {
     });
   }
 
-  AppBar _getAppBar(Color bgColor) {
+  AppBar _getAppBar(BuildContext context, Color bgColor) {
     return AppBar(
       title: Text(widget.chat.name),
       centerTitle: true,
       leading: IconButton(
         icon: const Icon(Icons.close),
         onPressed: () {
-          //cancel editing
-          _edit = false;
-          _textEditingController.clear();
-          focusNode.unfocus();
+          if (_edit){
+            Provider.of<EventsNotifier>(context, listen: false).errorChangeEvent(widget.chat);
+            _edit = false;
+            _textEditingController.clear();
+            focusNode.unfocus();
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
       actions: [
@@ -205,7 +210,6 @@ class _EventsPageState extends State<EventsPage> {
             var selectedEvents = provider.selectionChatHandler(widget.chat);
             var selection = selectedEvents.isNotEmpty;
             var listIcons = <Widget>[];
-            var selectionInterface = selection ? Icons.delete : Icons.search;
             if (selection) {
               listIcons.add(
                 IconButton(
@@ -213,7 +217,7 @@ class _EventsPageState extends State<EventsPage> {
                     Provider.of<EventsNotifier>(context, listen: false)
                         .deleteEvents(widget.chat);
                   },
-                  icon: Icon(selectionInterface),
+                  icon: Icon(selection ? Icons.delete : Icons.search),
                   color: bgColor,
                 ),
               );
