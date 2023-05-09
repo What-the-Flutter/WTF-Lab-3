@@ -21,9 +21,12 @@ class _EventsPageState extends State<EventsPage> {
   final _textEditingController = TextEditingController();
   FocusNode focusNode = FocusNode();
   var _edit = false;
+  var _favourites = false;
 
   Widget _showMessages(BuildContext context) {
-    if (widget.chat.events.isNotEmpty) {
+    var listOfEvents =
+        _favourites ? widget.chat.favouriteEvents : widget.chat.events;
+    if (listOfEvents.isNotEmpty) {
       return Expanded(
         flex: 8,
         child: ListView.builder(
@@ -33,7 +36,7 @@ class _EventsPageState extends State<EventsPage> {
             );
           },
           reverse: true,
-          itemCount: widget.chat.events.length,
+          itemCount: listOfEvents.length,
         ),
       );
     } else {
@@ -42,7 +45,9 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget _eventTile(index) {
-    var events = widget.chat.events.reversed;
+    var events = _favourites
+        ? widget.chat.favouriteEvents.reversed
+        : widget.chat.events.reversed;
     var current = events.elementAt(index);
 
     if (events.length == 1 || index == events.length - 1) {
@@ -79,6 +84,14 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Container _getHint(BuildContext context) {
+    var text = _favourites
+        ? 'You don\'t seem to have any bookmarked events '
+            'yet. You can bookmark an event by single tapping the event.'
+        : 'Add your first event to "${widget.chat.name}" page by entering'
+            ' some text in the box below and hitting the send button.'
+            'Long tap the send button to align the event in the opposite'
+            ' direction. Tap on the bookmark icon on the top right corner'
+            ' to show the bookmarked events only.';
     return Container(
       color: Theme.of(context).colorScheme.background,
       alignment: Alignment.center,
@@ -94,11 +107,7 @@ class _EventsPageState extends State<EventsPage> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Add your first event to "${widget.chat.name}" page by entering'
-            ' some text in the box below and hitting the send button.'
-            'Long tap the send button to align the event in the opposite'
-            ' direction. Tap on the bookmark icon on the top right corner'
-            ' to show the bookmarked events only.',
+            text,
             style: const TextStyle(fontSize: 14),
             textAlign: TextAlign.center,
           ),
@@ -116,7 +125,8 @@ class _EventsPageState extends State<EventsPage> {
       ));
     } else {
       _edit = false;
-      Provider.of<EventsNotifier>(context, listen: false).changeEvent(widget.chat, text);
+      Provider.of<EventsNotifier>(context, listen: false)
+          .changeEvent(widget.chat, text);
       focusNode.unfocus();
     }
     _textEditingController.clear();
@@ -188,14 +198,16 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   AppBar _getAppBar(BuildContext context, Color bgColor) {
+    var favouritesColor = _favourites ? Colors.amber : bgColor;
     return AppBar(
       title: Text(widget.chat.name),
       centerTitle: true,
       leading: IconButton(
         icon: const Icon(Icons.close),
         onPressed: () {
-          if (_edit){
-            Provider.of<EventsNotifier>(context, listen: false).errorChangeEvent(widget.chat);
+          if (_edit) {
+            Provider.of<EventsNotifier>(context, listen: false)
+                .errorChangeEvent(widget.chat);
             _edit = false;
             _textEditingController.clear();
             focusNode.unfocus();
@@ -256,9 +268,12 @@ class _EventsPageState extends State<EventsPage> {
           width: 10,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            _favourites = !_favourites;
+            setState(() {});
+          },
           icon: const Icon(Icons.bookmark_border),
-          color: bgColor,
+          color: favouritesColor,
         )
       ],
     );

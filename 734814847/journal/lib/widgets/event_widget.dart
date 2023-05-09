@@ -14,11 +14,15 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var icon = event.isFavourite ? Icons.bookmark_outlined : null;
     return GestureDetector(
       onTap: () {
         if (event.isSelectionProcess) {
           Provider.of<EventsNotifier>(context, listen: false)
               .selectedEvent(event);
+        } else {
+          Provider.of<EventsNotifier>(context, listen: false)
+              .favouriteEvent(event);
         }
       },
       onLongPress: () {
@@ -30,19 +34,25 @@ class EventWidget extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Consumer<EventsNotifier>(
-            builder: (context, provider, child) => Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(5)),
-                color: event.isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.background,
-              ),
-              child: Text(event.text),
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              color: event.isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.background,
             ),
-          )
+            child: Row(
+              children: [
+                Text(event.text),
+              ],
+            ),
+          ),
+          Icon(
+            icon,
+            color: Colors.amber,
+          ),
         ],
       ),
     );

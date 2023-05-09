@@ -8,6 +8,7 @@ class Chat {
   Icon icon;
   List<Event> events = <Event>[];
   List<Event> selectedEvents = <Event>[];
+  List<Event> favouriteEvents = <Event>[];
 
   Chat({required this.name, required this.icon, required this.key});
 }

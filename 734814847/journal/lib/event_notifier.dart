@@ -3,18 +3,15 @@ import 'package:flutter/services.dart';
 
 import 'models/chat.dart';
 import 'models/event.dart';
-import 'widgets/event_widget.dart';
 
 class EventsNotifier with ChangeNotifier {
   List<Chat> chats = <Chat>[];
 
-  void addChat(Chat chat) {
-    chats.add(chat);
-    notifyListeners();
-  }
-
-  void deleteEvents (Chat chat) {
-    for (var event in chat.selectedEvents){
+  void deleteEvents(Chat chat) {
+    for (var event in chat.selectedEvents) {
+      if (event.isFavourite) {
+        chat.favouriteEvents.remove(event);
+      }
       chat.events.remove(event);
     }
     for (var event in chat.events) {
@@ -24,9 +21,9 @@ class EventsNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  Future copySelected (Chat chat) async {
+  Future copySelected(Chat chat) async {
     var result = '';
-    for (var event in chat.selectedEvents){
+    for (var event in chat.selectedEvents) {
       result += '${event.text}\n';
       event.isSelected = false;
     }
@@ -38,7 +35,7 @@ class EventsNotifier with ChangeNotifier {
     await Clipboard.setData(ClipboardData(text: result));
   }
 
-  List<Event> selectionChatHandler(Chat chat){
+  List<Event> selectionChatHandler(Chat chat) {
     for (var chat_ in chats) {
       if (chat_.name == chat.name) {
         return chat_.selectedEvents;
@@ -93,7 +90,7 @@ class EventsNotifier with ChangeNotifier {
     return;
   }
 
-  void errorChangeEvent (Chat chat){
+  void errorChangeEvent(Chat chat) {
     var index = chat.events.indexOf(chat.selectedEvents.first);
     chat.events[index].isSelected = false;
     for (var event in chat.events) {
@@ -102,5 +99,20 @@ class EventsNotifier with ChangeNotifier {
     chat.selectedEvents.clear();
     notifyListeners();
     return;
+  }
+
+  void favouriteEvent(Event event_) {
+    for (var chat in chats) {
+      if (chat.events.contains(event_)) {
+        if (event_.isFavourite) {
+          chat.favouriteEvents.remove(event_);
+        } else {
+          chat.favouriteEvents.add(event_);
+        }
+        event_.isFavourite = !event_.isFavourite;
+        notifyListeners();
+        return;
+      }
+    }
   }
 }

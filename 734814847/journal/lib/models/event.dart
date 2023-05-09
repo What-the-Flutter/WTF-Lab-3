@@ -5,6 +5,7 @@ class Event {
   DateTime date;
   bool isSelected;
   bool isSelectionProcess;
+  bool isFavourite;
   Key key;
 
   Event(
@@ -12,5 +13,6 @@ class Event {
       required this.date,
       required this.key,
       this.isSelected = false,
-      this.isSelectionProcess = false});
+      this.isSelectionProcess = false,
+      this.isFavourite = false});
 }

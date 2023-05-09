@@ -6,7 +6,7 @@ import '../models/chat.dart';
 import 'events_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}): super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -80,29 +80,37 @@ class _HomePageState extends State<HomePage> {
                     chat = Chat(
                       name: 'Travel',
                       key: UniqueKey(),
-                      icon: const Icon(Icons.airplanemode_active, color: Colors.white,),
+                      icon: const Icon(
+                        Icons.airplanemode_active,
+                        color: Colors.white,
+                      ),
                     );
                     break;
                   case 1:
                     chat = Chat(
                       name: 'Family',
                       key: UniqueKey(),
-                      icon: const Icon(Icons.chair, color: Colors.white,),
+                      icon: const Icon(
+                        Icons.chair,
+                        color: Colors.white,
+                      ),
                     );
                     break;
                   default:
                     chat = Chat(
                       name: 'Sports',
                       key: UniqueKey(),
-                      icon: const Icon(Icons.fitness_center, color: Colors.white,),
+                      icon: const Icon(
+                        Icons.fitness_center,
+                        color: Colors.white,
+                      ),
                     );
                     break;
                 }
                 chats.add(chat);
                 return Consumer<EventsNotifier>(
-                  builder: (context, provider, child) => Material(
-                      child: buildListTile(chat, context)
-                  ),
+                  builder: (context, provider, child) =>
+                      Material(child: buildListTile(chat, context)),
                 );
               },
               separatorBuilder: (context, index) {
@@ -132,28 +140,27 @@ class _HomePageState extends State<HomePage> {
 
   ListTile buildListTile(Chat chat, BuildContext context) {
     return ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(250, 168, 105, 98),
-                    shape: BoxShape.circle,
-                  ),
-                  child: chat.icon,
-                ),
-                title: Text(chat.name),
-                subtitle: const Text('No events. Click to create one'),
-                onTap: () {
-                  context.read<EventsNotifier>().addChat(chat);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventsPage(
-                        chat: chat,
-                      ),
-                    ),
-                  );
-                },
-              );
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(
+          color: Color.fromRGBO(250, 168, 105, 98),
+          shape: BoxShape.circle,
+        ),
+        child: chat.icon,
+      ),
+      title: Text(chat.name),
+      subtitle: const Text('No events. Click to create one'),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventsPage(
+              chat: chat,
+            ),
+          ),
+        );
+      },
+    );
   }
 }
