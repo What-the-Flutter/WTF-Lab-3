@@ -80,8 +80,8 @@ class EventRepositoryImpl extends EventRepository {
   }
 
   @override
-  Future<StreamSubscription> initListener(Function updateChat, String chatId) async {
-    return await _dataBaseService.initListenerEvents(updateChat, chatId);
+  Future<StreamSubscription> initListener(String chatId) async {
+    return await _dataBaseService.initListenerEvents(chatId);
   }
 
 }

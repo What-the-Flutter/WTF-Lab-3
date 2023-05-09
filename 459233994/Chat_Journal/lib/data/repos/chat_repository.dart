@@ -13,8 +13,9 @@ class ChatRepositoryImpl extends ChatRepository {
       : _dataBaseService = dataBaseService;
 
   @override
-  void initListener(Function updateChats) async {
-    _streamSubscription = await _dataBaseService.initListenerChats(updateChats);
+  Future<StreamSubscription> initListener() async {
+    final streamSubscription = await _dataBaseService.initListenerChats();
+    return streamSubscription;
   }
 
   @override
@@ -57,10 +58,5 @@ class ChatRepositoryImpl extends ChatRepository {
   @override
   Future<void> deleteChat(Chat chat) async {
     _dataBaseService.deleteChat(chat.id!);
-  }
-
-  @override
-  void disposeListener() {
-    _streamSubscription.cancel();
   }
 }

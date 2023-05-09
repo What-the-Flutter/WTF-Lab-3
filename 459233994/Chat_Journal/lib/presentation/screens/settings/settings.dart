@@ -48,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       backgroundColor: InheritedAppTheme.of(context)!.themeData.backgroundColor,
-      body: Column(
+      body: ListView(
         children: <Widget>[
           _themeChoice(),
           _sideBubbleChoice(),

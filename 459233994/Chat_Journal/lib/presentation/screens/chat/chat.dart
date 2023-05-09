@@ -94,29 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: chatState.isLoaded
                     ? SizedBox.expand(
                         child: Container(
-                          decoration: ReadContext(context)
-                                      .read<SettingsCubit>()
-                                      .state
-                                      .backgroundImage !=
-                                  null
-                              ? BoxDecoration(
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: FileImage(
-                                      File(
-                                        ReadContext(context)
-                                            .read<SettingsCubit>()
-                                            .state
-                                            .backgroundImage!,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : BoxDecoration(
-                                  color: InheritedAppTheme.of(context)!
-                                      .themeData
-                                      .backgroundColor,
-                                ),
+                          decoration: _background(),
                           child: Column(
                             children: <Widget>[
                               BlocBuilder<ChatSearchCubit, ChatSearchState>(
@@ -135,24 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             isFavoritesMode:
                                                 chatState.isFavorite,
                                           )
-                                        : Expanded(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Lottie.asset(
-                                                  'assets/empty_box.json',
-                                                  fit: BoxFit.cover,
-                                                  width: 300,
-                                                  height: 300,
-                                                ),
-                                                const Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Text('No such events'),
-                                                ),
-                                              ],
-                                            ),
-                                          );
+                                        : _noSearchedEvents();
                                   }
                                   return Expanded(
                                     child: Container(),
@@ -238,5 +199,46 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     ];
+  }
+
+  BoxDecoration _background() {
+    final imageDecoration = BoxDecoration(
+      image: DecorationImage(
+        fit: BoxFit.cover,
+        image: FileImage(
+          File(
+            ReadContext(context).read<SettingsCubit>().state.backgroundImage!,
+          ),
+        ),
+      ),
+    );
+    final themeDecoration = BoxDecoration(
+      color: InheritedAppTheme.of(context)!.themeData.backgroundColor,
+    );
+    final background =
+        ReadContext(context).read<SettingsCubit>().state.backgroundImage != null
+            ? imageDecoration
+            : themeDecoration;
+    return background;
+  }
+
+  Widget _noSearchedEvents() {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset(
+            'assets/empty_box.json',
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('No such events'),
+          ),
+        ],
+      ),
+    );
   }
 }
