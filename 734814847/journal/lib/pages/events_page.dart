@@ -199,6 +199,8 @@ class _EventsPageState extends State<EventsPage> {
 
   AppBar _getAppBar(BuildContext context, Color bgColor) {
     var favouritesColor = _favourites ? Colors.amber : bgColor;
+    var favouritesIcon =
+        _favourites ? Icons.bookmark_outlined : Icons.bookmark_border;
     return AppBar(
       title: Text(widget.chat.name),
       centerTitle: true,
@@ -272,7 +274,7 @@ class _EventsPageState extends State<EventsPage> {
             _favourites = !_favourites;
             setState(() {});
           },
-          icon: const Icon(Icons.bookmark_border),
+          icon: Icon(favouritesIcon),
           color: favouritesColor,
         )
       ],

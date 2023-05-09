@@ -14,7 +14,7 @@ class Journal extends StatelessWidget {
       child: MaterialApp(
         title: 'Journal project',
         theme: ThemeData(
-          primarySwatch: Colors.deepOrange,
+          primarySwatch: Colors.green,
         ),
         home: const HomePage(),
       ),

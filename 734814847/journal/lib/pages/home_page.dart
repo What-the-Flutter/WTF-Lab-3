@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           Container(
             alignment: Alignment.center,
-            color: Theme.of(context).colorScheme.background,
+            color: theme.colorScheme.background,
             margin: const EdgeInsets.symmetric(
               vertical: 15.0,
               horizontal: 30,
@@ -143,8 +143,8 @@ class _HomePageState extends State<HomePage> {
       leading: Container(
         width: 40,
         height: 40,
-        decoration: const BoxDecoration(
-          color: Color.fromRGBO(250, 168, 105, 98),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
           shape: BoxShape.circle,
         ),
         child: chat.icon,
