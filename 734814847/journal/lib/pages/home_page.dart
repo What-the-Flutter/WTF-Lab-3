@@ -124,8 +124,8 @@ class _HomePageState extends State<HomePage> {
   ListTile buildListTile(Chat chat, BuildContext context) {
     return ListTile(
       leading: Container(
-        width: 40,
-        height: 40,
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.background,
           shape: BoxShape.circle,
@@ -148,106 +148,115 @@ class _HomePageState extends State<HomePage> {
         showModalBottomSheet(
           context: context,
           builder: (context) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ListTile(
-                  leading: Icon(
-                    Icons.info,
-                    color: Colors.teal,
-                  ),
-                  title: Text('Info'),
-                ),
-                const ListTile(
-                  leading: Icon(
-                    Icons.attach_file,
-                    color: Colors.green,
-                  ),
-                  title: Text('Pin/Unpin Page'),
-                ),
-                const ListTile(
-                  leading: Icon(
-                    Icons.archive,
-                    color: Colors.yellow,
-                  ),
-                  title: Text('Archive Page'),
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.edit,
-                    color: Colors.blue,
-                  ),
-                  title: const Text('Edit Page'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  title: const Text('Delete Page'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Delete Page?',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              const Text(
-                                'Are you sure you want to delete this '
-                                'page? Entries of this page will still be '
-                                'accessible in the timeline',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                title: const Text('Delete'),
-                                onTap: () {
-                                  Provider.of<EventsNotifier>(context, listen: false).deleteChat(chat);
-                                  Navigator.pop(context);
-                                  setState(() {});
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.cancel,
-                                  color: Colors.blue,
-                                ),
-                                title: const Text('Cancel'),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            );
+            return _longPressMenu(context, chat);
           },
         );
       },
+    );
+  }
+
+  Column _longPressMenu(BuildContext context, Chat chat) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const ListTile(
+          leading: Icon(
+            Icons.info,
+            color: Colors.teal,
+          ),
+          title: Text('Info'),
+        ),
+        const ListTile(
+          leading: Icon(
+            Icons.attach_file,
+            color: Colors.green,
+          ),
+          title: Text('Pin/Unpin Page'),
+        ),
+        const ListTile(
+          leading: Icon(
+            Icons.archive,
+            color: Colors.yellow,
+          ),
+          title: Text('Archive Page'),
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.edit,
+            color: Colors.blue,
+          ),
+          title: const Text('Edit Page'),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          title: const Text('Delete Page'),
+          onTap: () {
+            Navigator.pop(context);
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return _deletionMenu(context, chat);
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Padding _deletionMenu(BuildContext context, Chat chat) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Delete Page?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Are you sure you want to delete this '
+            'page? Entries of this page will still be '
+            'accessible in the timeline',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            leading: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+            title: const Text('Delete'),
+            onTap: () {
+              Provider.of<EventsNotifier>(context, listen: false)
+                  .deleteChat(chat);
+              Navigator.pop(context);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.cancel,
+              color: Colors.blue,
+            ),
+            title: const Text('Cancel'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

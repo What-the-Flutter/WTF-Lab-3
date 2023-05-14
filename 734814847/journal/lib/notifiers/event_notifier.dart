@@ -12,6 +12,7 @@ class EventsNotifier with ChangeNotifier {
       icon: const Icon(
         Icons.airplanemode_active,
         color: Colors.white,
+        size: 30,
       ),
     ),
     Chat(
@@ -20,6 +21,7 @@ class EventsNotifier with ChangeNotifier {
       icon: const Icon(
         Icons.chair,
         color: Colors.white,
+        size: 30,
       ),
     ),
     Chat(
@@ -28,6 +30,7 @@ class EventsNotifier with ChangeNotifier {
       icon: const Icon(
         Icons.fitness_center,
         color: Colors.white,
+        size: 30,
       ),
     )
   ];
@@ -36,7 +39,7 @@ class EventsNotifier with ChangeNotifier {
     chats.add(chat);
   }
 
-  void deleteChat(Chat chat){
+  void deleteChat(Chat chat) {
     chats.remove(chat);
   }
 
