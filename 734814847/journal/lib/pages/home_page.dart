@@ -23,14 +23,19 @@ class _HomePageState extends State<HomePage> {
     chats = Provider.of<EventsNotifier>(context, listen: false).chats;
   }
 
-  Future<void> _navigateAndDisplay(BuildContext context) async {
-    final chat = await Navigator.push(
+  Future<void> _navigateAndDisplay(BuildContext context, {Chat? chat}) async {
+    final _chat = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddChatPage(),
+        builder: (context) => AddChatPage(chat: chat),
       ),
     );
-    chats.add(chat);
+    if (chat == null) {
+      chats.add(_chat);
+    } else {
+      chat.name = _chat.name;
+      chat.icon = _chat.icon;
+    }
     setState(() {});
   }
 
@@ -188,6 +193,7 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Edit Page'),
           onTap: () {
             Navigator.pop(context);
+            _navigateAndDisplay(context, chat: chat);
           },
         ),
         ListTile(

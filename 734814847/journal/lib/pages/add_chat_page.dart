@@ -6,6 +6,10 @@ import '../models/chat.dart';
 import '../notifiers/event_notifier.dart';
 
 class AddChatPage extends StatefulWidget {
+  AddChatPage({super.key, required this.chat});
+
+  final Chat? chat;
+
   @override
   State<AddChatPage> createState() => _AddChatPageState();
 }
@@ -13,6 +17,22 @@ class AddChatPage extends StatefulWidget {
 class _AddChatPageState extends State<AddChatPage> {
   final _textEditingController = TextEditingController();
   int selectedIndex = -1;
+
+  int findIcon() {
+    for (var i = 0; i < icons.length; ++i) {
+      if (icons[i] == widget.chat!.icon) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController.text = widget.chat?.name ?? '';
+    selectedIndex = widget.chat != null ? findIcon() : -1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +47,7 @@ class _AddChatPageState extends State<AddChatPage> {
         child: Column(
           children: [
             Text(
-              'Create a new Page',
+              widget.chat == null ? 'Create a new Page' : 'Edit Page',
               style: style,
             ),
             const SizedBox(height: 38),

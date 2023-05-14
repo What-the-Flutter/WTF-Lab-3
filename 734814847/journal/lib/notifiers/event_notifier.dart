@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../constants.dart';
 import '../models/chat.dart';
 import '../models/event.dart';
 
@@ -9,29 +10,17 @@ class EventsNotifier with ChangeNotifier {
     Chat(
       name: 'Travel',
       key: UniqueKey(),
-      icon: const Icon(
-        Icons.airplanemode_active,
-        color: Colors.white,
-        size: 30,
-      ),
+      icon: icons[1],
     ),
     Chat(
       name: 'Family',
       key: UniqueKey(),
-      icon: const Icon(
-        Icons.chair,
-        color: Colors.white,
-        size: 30,
-      ),
+      icon: icons[3],
     ),
     Chat(
       name: 'Sports',
       key: UniqueKey(),
-      icon: const Icon(
-        Icons.fitness_center,
-        color: Colors.white,
-        size: 30,
-      ),
+      icon: icons[2],
     )
   ];
 
