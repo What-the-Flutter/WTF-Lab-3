@@ -68,28 +68,10 @@ class _TimeLineState extends State<TimeLine> {
                         } else if (searchState.isSearched == true) {
                           return searchState.events!.isNotEmpty
                               ? EventList(
-                            events: searchState.events,
-                            isFavoritesMode:
-                            state.isFavorite,
-                          )
-                              : Expanded(
-                            child: Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  'assets/empty_box.json',
-                                  fit: BoxFit.cover,
-                                  width: 300,
-                                  height: 300,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text('No such events'),
-                                ),
-                              ],
-                            ),
-                          );
+                                  events: searchState.events,
+                                  isFavoritesMode: state.isFavorite,
+                                )
+                              : _noSearchedEvents();
                         }
                         return Expanded(
                           child: Container(),
@@ -103,6 +85,8 @@ class _TimeLineState extends State<TimeLine> {
               }
             },
           ),
+          backgroundColor:
+              InheritedAppTheme.of(context)!.themeData.backgroundColor,
           floatingActionButton: _floatingActionButton(),
         );
       },
@@ -180,6 +164,26 @@ class _TimeLineState extends State<TimeLine> {
       context,
       MaterialPageRoute(
         builder: (context) => AddSortScreen(),
+      ),
+    );
+  }
+
+  Widget _noSearchedEvents() {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset(
+            'assets/empty_box.json',
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('No such events'),
+          ),
+        ],
       ),
     );
   }

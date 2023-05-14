@@ -7,7 +7,6 @@ import '../services/database_service.dart';
 
 class TagRepositoryImpl extends TagRepository {
   final DataBaseService _dataBaseService;
-  late final StreamSubscription _streamSubscription;
 
 
   TagRepositoryImpl({required dataBaseService})
@@ -37,12 +36,8 @@ class TagRepositoryImpl extends TagRepository {
   }
 
   @override
-  void initListener(Function updateTags) async {
-    _streamSubscription = await _dataBaseService.initListenerTags(updateTags);
-  }
-
-  @override
-  void disposeListener() {
-    _streamSubscription.cancel();
+  Future<StreamSubscription> initListener() async {
+    final streamSubscription = await _dataBaseService.initListenerTags();
+    return streamSubscription;
   }
 }

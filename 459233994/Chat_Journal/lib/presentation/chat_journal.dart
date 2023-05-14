@@ -16,6 +16,7 @@ import 'screens/chat/chat_search_cubit..dart';
 import 'screens/home/home_cubit.dart';
 import 'screens/main_screen.dart';
 import 'screens/settings/settings_cubit.dart';
+import 'screens/statistics/statistics_cubit.dart';
 import 'screens/time_line/time_line_cubit.dart';
 import 'widgets/app_theme/app_theme_cubit.dart';
 import 'widgets/app_theme/app_theme_state.dart';
@@ -92,6 +93,11 @@ class _ChatJournalState extends State<ChatJournal> {
             eventRepository: _eventRepository,
           ),
         ),
+        BlocProvider<StatisticsCubit>(
+          create: (_) => StatisticsCubit(
+            eventRepository: _eventRepository,
+          ),
+        ),
         BlocProvider<AppThemeCubit>(
           create: (_) => AppThemeCubit(
             sharedPreferencesRepository: _sharedPreferencesRepository,
@@ -106,7 +112,8 @@ class _ChatJournalState extends State<ChatJournal> {
       child: BlocBuilder<AppThemeCubit, AppThemeState>(
         builder: (context, state) {
           return InheritedAppTheme(
-            themeData: ReadContext(context).read<AppThemeCubit>().state.theme == Themes.light
+            themeData: ReadContext(context).read<AppThemeCubit>().state.theme ==
+                    Themes.light
                 ? CustomTheme.lightTheme
                 : CustomTheme.darkTheme,
             child: MaterialApp(
@@ -114,7 +121,7 @@ class _ChatJournalState extends State<ChatJournal> {
               theme: ThemeData(
                 primarySwatch: Colors.grey,
               ),
-              home: !_isBiometricAuthorized
+              home: _isBiometricAuthorized
                   ? const MainScreen()
                   : const Center(
                       child: CircularProgressIndicator(),

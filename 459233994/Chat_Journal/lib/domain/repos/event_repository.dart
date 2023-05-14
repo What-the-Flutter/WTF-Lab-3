@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../entities/event.dart';
 
 abstract class EventRepository{
@@ -9,7 +11,7 @@ abstract class EventRepository{
 
   Future<void> deleteEvent(Event event);
 
-  void initListener(Function updateChat, String chatId);
+  Future<StreamSubscription> initListener(String chatId);
 
   Future<List<Event>> getEventsForTimeLine();
 }

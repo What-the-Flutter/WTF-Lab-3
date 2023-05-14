@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/app_theme/inherited_theme.dart';
-import '../widgets/daily.dart';
-import '../widgets/explore.dart';
+import 'daily.dart';
 import 'home/home.dart';
+import 'statistics/statistics.dart';
 import 'time_line/time_line.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     Home(),
     Daily(),
     TimeLine(),
-    Explore(),
+    Statistics(),
   ];
 
   @override
@@ -68,11 +68,11 @@ class _MainScreenState extends State<MainScreen> {
         ),
         BottomNavigationBarItem(
             icon: const Icon(
-              Icons.explore,
+              Icons.stacked_bar_chart,
             ),
             backgroundColor:
                 InheritedAppTheme.of(context)!.themeData.backgroundColor,
-            label: 'Explore'),
+            label: 'Statistics'),
       ],
       onTap: (index) {
         setState(() => _index = index);
