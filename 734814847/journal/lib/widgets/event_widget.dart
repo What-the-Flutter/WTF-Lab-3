@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../event_notifier.dart';
 import '../models/event.dart';
+import '../notifiers/event_notifier.dart';
 
 class EventWidget extends StatelessWidget {
   final Event event;
@@ -14,7 +14,7 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var icon = event.isFavourite ? Icons.bookmark_outlined : null;
+    final icon = event.isFavourite ? Icons.bookmark_outlined : null;
     return GestureDetector(
       onTap: () {
         if (event.isSelectionProcess) {

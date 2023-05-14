@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../event_notifier.dart';
+import '../journal.dart';
 import '../models/chat.dart';
+import '../notifiers/event_notifier.dart';
+import 'add_chat_page.dart';
 import 'events_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,6 +23,17 @@ class _HomePageState extends State<HomePage> {
     chats = Provider.of<EventsNotifier>(context, listen: false).chats;
   }
 
+  Future<void> _navigateAndDisplay(BuildContext context) async{
+    final chat = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddChatPage(),
+      ),
+    );
+    chats.add(chat);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -28,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       color: theme.colorScheme.onPrimary,
       fontSize: 18,
     );
-    var numOfElements = 3;
+    final numOfElements = chats.length;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -38,7 +51,9 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Journal.of(context).changeTheme();
+            },
             icon: const Icon(Icons.invert_colors),
           ),
         ],
@@ -74,43 +89,9 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) {
-                Chat chat;
-                switch (index) {
-                  case 0:
-                    chat = Chat(
-                      name: 'Travel',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.airplanemode_active,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                  case 1:
-                    chat = Chat(
-                      name: 'Family',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.chair,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                  default:
-                    chat = Chat(
-                      name: 'Sports',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.fitness_center,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                }
-                chats.add(chat);
                 return Consumer<EventsNotifier>(
                   builder: (context, provider, child) =>
-                      Material(child: buildListTile(chat, context)),
+                      Material(child: buildListTile(chats[index], context)),
                 );
               },
               separatorBuilder: (context, index) {
@@ -122,7 +103,9 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _navigateAndDisplay(context);
+        },
         tooltip: 'Add',
         child: const Icon(Icons.add),
       ),

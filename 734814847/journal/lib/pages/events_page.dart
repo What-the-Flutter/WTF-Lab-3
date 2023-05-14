@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../event_notifier.dart';
 import '../models/chat.dart';
 import '../models/event.dart';
+import '../notifiers/event_notifier.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/event_widget.dart';
 
@@ -24,7 +24,7 @@ class _EventsPageState extends State<EventsPage> {
   var _favourites = false;
 
   Widget _showMessages(BuildContext context) {
-    var listOfEvents =
+    final listOfEvents =
         _favourites ? widget.chat.favouriteEvents : widget.chat.events;
     if (listOfEvents.isNotEmpty) {
       return Expanded(
@@ -45,10 +45,10 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget _eventTile(index) {
-    var events = _favourites
+    final events = _favourites
         ? widget.chat.favouriteEvents.reversed
         : widget.chat.events.reversed;
-    var current = events.elementAt(index);
+    final current = events.elementAt(index);
 
     if (events.length == 1 || index == events.length - 1) {
       return Column(
@@ -62,7 +62,7 @@ class _EventsPageState extends State<EventsPage> {
         ],
       );
     } else {
-      var next = events.elementAt(index + 1);
+      final next = events.elementAt(index + 1);
       if (DateFormat.yMMMMd('en_US').format(current.date) !=
           DateFormat.yMMMMd('en_US').format(next.date)) {
         return Column(
@@ -84,7 +84,7 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Container _getHint(BuildContext context) {
-    var text = _favourites
+    final text = _favourites
         ? 'You don\'t seem to have any bookmarked events '
             'yet. You can bookmark an event by single tapping the event.'
         : 'Add your first event to "${widget.chat.name}" page by entering'
@@ -198,8 +198,8 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   AppBar _getAppBar(BuildContext context, Color bgColor) {
-    var favouritesColor = _favourites ? Colors.amber : bgColor;
-    var favouritesIcon =
+    final favouritesColor = _favourites ? Colors.amber : bgColor;
+    final favouritesIcon =
         _favourites ? Icons.bookmark_outlined : Icons.bookmark_border;
     return AppBar(
       title: Text(widget.chat.name),
@@ -221,9 +221,9 @@ class _EventsPageState extends State<EventsPage> {
       actions: [
         Consumer<EventsNotifier>(
           builder: (context, provider, child) {
-            var selectedEvents = provider.selectionChatHandler(widget.chat);
-            var selection = selectedEvents.isNotEmpty;
-            var listIcons = <Widget>[];
+            final selectedEvents = provider.selectionChatHandler(widget.chat);
+            final selection = selectedEvents.isNotEmpty;
+            final listIcons = <Widget>[];
             if (selection) {
               listIcons.add(
                 IconButton(

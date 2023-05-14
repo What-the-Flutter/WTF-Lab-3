@@ -8,11 +8,12 @@ class Event {
   bool isFavourite;
   Key key;
 
-  Event(
-      {required this.text,
-      required this.date,
-      required this.key,
-      this.isSelected = false,
-      this.isSelectionProcess = false,
-      this.isFavourite = false});
+  Event({
+    required this.text,
+    required this.date,
+    required this.key,
+    this.isSelected = false,
+    this.isSelectionProcess = false,
+    this.isFavourite = false,
+  });
 }

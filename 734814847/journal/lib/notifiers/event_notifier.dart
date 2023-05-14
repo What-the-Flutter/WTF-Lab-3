@@ -1,11 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'models/chat.dart';
-import 'models/event.dart';
+import '../models/chat.dart';
+import '../models/event.dart';
 
 class EventsNotifier with ChangeNotifier {
-  List<Chat> chats = <Chat>[];
+  List<Chat> chats = <Chat>[
+    Chat(
+      name: 'Travel',
+      key: UniqueKey(),
+      icon: const Icon(
+        Icons.airplanemode_active,
+        color: Colors.white,
+      ),
+    ),
+    Chat(
+      name: 'Family',
+      key: UniqueKey(),
+      icon: const Icon(
+        Icons.chair,
+        color: Colors.white,
+      ),
+    ),
+    Chat(
+      name: 'Sports',
+      key: UniqueKey(),
+      icon: const Icon(
+        Icons.fitness_center,
+        color: Colors.white,
+      ),
+    )
+  ];
+
+  void addChat(Chat chat) {
+    chats.add(chat);
+  }
 
   void deleteEvents(Chat chat) {
     for (var event in chat.selectedEvents) {
