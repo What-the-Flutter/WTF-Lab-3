@@ -36,6 +36,10 @@ class EventsNotifier with ChangeNotifier {
     chats.add(chat);
   }
 
+  void deleteChat(Chat chat){
+    chats.remove(chat);
+  }
+
   void deleteEvents(Chat chat) {
     for (var event in chat.selectedEvents) {
       if (event.isFavourite) {
