@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../cubits/chat_cubit.dart';
+import '../cubits/chats_state.dart';
 import '../journal.dart';
 import '../models/chat.dart';
-import '../notifiers/event_notifier.dart';
 import 'add_chat_page.dart';
 import 'events_page.dart';
 
@@ -15,28 +16,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Chat> chats = [];
-
-  @override
-  void initState() {
-    super.initState();
-    chats = Provider.of<EventsNotifier>(context, listen: false).chats;
-  }
-
-  Future<void> _navigateAndDisplay(BuildContext context, {Chat? chat}) async {
-    final _chat = await Navigator.push(
+  void _navigateAndDisplay(BuildContext context, {Chat? chat}) async {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => AddChatPage(chat: chat),
       ),
     );
-    if (chat == null) {
-      chats.add(_chat);
-    } else {
-      chat.name = _chat.name;
-      chat.icon = _chat.icon;
-    }
-    setState(() {});
   }
 
   @override
@@ -46,7 +32,6 @@ class _HomePageState extends State<HomePage> {
       color: theme.colorScheme.onPrimary,
       fontSize: 18,
     );
-    final numOfElements = chats.length;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -92,18 +77,19 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                return Consumer<EventsNotifier>(
-                  builder: (context, provider, child) =>
-                      Material(child: buildListTile(chats[index], context)),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const Divider(height: 5);
-              },
-              itemCount: numOfElements,
-            ),
+            child: BlocBuilder<ChatsCubit, ChatsState>(builder: (_, state) {
+              return ListView.separated(
+                itemBuilder: (context, index) {
+                  return Material(
+                    child: buildListTile(state.chats[index], context),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const Divider(height: 5);
+                },
+                itemCount: state.chats.length,
+              );
+            }),
           ),
         ],
       ),
@@ -245,8 +231,7 @@ class _HomePageState extends State<HomePage> {
             ),
             title: const Text('Delete'),
             onTap: () {
-              Provider.of<EventsNotifier>(context, listen: false)
-                  .deleteChat(chat);
+              context.read<ChatsCubit>().delete(chat);
               Navigator.pop(context);
               setState(() {});
             },

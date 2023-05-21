@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
+import '../cubits/events_cubit.dart';
+import '../cubits/events_state.dart';
 import '../models/chat.dart';
 import '../models/event.dart';
-import '../notifiers/event_notifier.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/event_widget.dart';
 
@@ -24,17 +25,14 @@ class _EventsPageState extends State<EventsPage> {
   var _favourites = false;
 
   Widget _showMessages(BuildContext context) {
-    final listOfEvents =
-        _favourites ? widget.chat.events.where((element) => element.isFavourite) : widget.chat.events;
+    final listOfEvents = _favourites
+        ? widget.chat.events.where((element) => element.isFavourite)
+        : widget.chat.events;
     if (listOfEvents.isNotEmpty) {
       return Expanded(
         flex: 8,
         child: ListView.builder(
-          itemBuilder: (context, index) {
-            return Consumer<EventsNotifier>(
-              builder: (context, provider, child) => _eventTile(index),
-            );
-          },
+          itemBuilder: (context, index) => _eventTile(index),
           reverse: true,
           itemCount: listOfEvents.length,
         ),
@@ -45,10 +43,10 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget _eventTile(index) {
-    final favourites = widget.chat.events.where((element) => element.isFavourite).toList();
-    final events = _favourites
-        ? favourites.reversed
-        : widget.chat.events.reversed;
+    final favourites =
+        widget.chat.events.where((element) => element.isFavourite).toList();
+    final events =
+        _favourites ? favourites.reversed : widget.chat.events.reversed;
     final current = events.elementAt(index);
 
     if (events.length == 1 || index == events.length - 1) {
@@ -119,15 +117,16 @@ class _EventsPageState extends State<EventsPage> {
 
   void _addMessage(BuildContext context, String text) {
     if (!_edit) {
-      widget.chat.events.add(Event(
-        text: text,
-        key: UniqueKey(),
-        date: DateTime.now(),
-      ));
+      context.read<EventsCubit>().addEvent(
+            Event(
+              text: text,
+              key: UniqueKey(),
+              date: DateTime.now(),
+            ),
+          );
     } else {
       _edit = false;
-      Provider.of<EventsNotifier>(context, listen: false)
-          .changeEvent(widget.chat, text);
+      context.read<EventsCubit>().changeEvent(text);
       focusNode.unfocus();
     }
     _textEditingController.clear();
@@ -142,60 +141,62 @@ class _EventsPageState extends State<EventsPage> {
       fontSize: 18,
     );
     final bgColor = theme.colorScheme.onPrimary;
+    context.read<EventsCubit>().create(widget.chat);
 
-    return Consumer<EventsNotifier>(builder: (context, provider, child) {
-      return Scaffold(
-        //consumer
-        appBar: _getAppBar(context, bgColor),
-        body: Column(
-          children: [
-            _showMessages(context),
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.background,
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.bubble_chart),
-                        color: bgColor,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          autofocus: true,
-                          focusNode: focusNode,
-                          controller: _textEditingController,
-                          decoration: InputDecoration(
-                            hintStyle: style,
-                            hintText: 'Enter event',
-                          ),
-                          style: style,
-                          onSubmitted: (input) {
-                            if (input != '') {
-                              _addMessage(context, input);
-                            }
-                          },
+    return BlocBuilder<EventsCubit, EventsState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: _getAppBar(context, bgColor),
+          body: Column(
+            children: [
+              _showMessages(context),
+              Expanded(
+                flex: 1,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.bubble_chart),
+                          color: bgColor,
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.camera_enhance_outlined),
-                        color: bgColor,
-                      ),
-                    ],
+                        Expanded(
+                          child: TextField(
+                            autofocus: true,
+                            focusNode: focusNode,
+                            controller: _textEditingController,
+                            decoration: InputDecoration(
+                              hintStyle: style,
+                              hintText: 'Enter event',
+                            ),
+                            style: style,
+                            onSubmitted: (input) {
+                              if (input != '') {
+                                _addMessage(context, input);
+                              }
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.camera_enhance_outlined),
+                          color: bgColor,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 
   AppBar _getAppBar(BuildContext context, Color bgColor) {
@@ -209,8 +210,9 @@ class _EventsPageState extends State<EventsPage> {
         icon: const Icon(Icons.close),
         onPressed: () {
           if (_edit) {
-            Provider.of<EventsNotifier>(context, listen: false)
-                .errorChangeEvent(widget.chat);
+            context.read<EventsCubit>().errorChangeEvent();
+            // Provider.of<EventsNotifier>(context, listen: false)
+            //     .errorChangeEvent(widget.chat);
             _edit = false;
             _textEditingController.clear();
             focusNode.unfocus();
@@ -220,17 +222,17 @@ class _EventsPageState extends State<EventsPage> {
         },
       ),
       actions: [
-        Consumer<EventsNotifier>(
-          builder: (context, provider, child) {
-            final selectedEvents = widget.chat.events.where((element) => element.isSelected);
+        Builder(
+          builder: (context) {
+            final selectedEvents =
+                widget.chat.events.where((element) => element.isSelected);
             final selection = selectedEvents.isNotEmpty;
             final listIcons = <Widget>[];
             if (selection) {
               listIcons.add(
                 IconButton(
                   onPressed: () {
-                    Provider.of<EventsNotifier>(context, listen: false)
-                        .deleteEvents(widget.chat);
+                    context.read<EventsCubit>().deleteEvents();
                   },
                   icon: Icon(selection ? Icons.delete : Icons.search),
                   color: bgColor,
@@ -239,8 +241,7 @@ class _EventsPageState extends State<EventsPage> {
               listIcons.add(
                 IconButton(
                   onPressed: () {
-                    Provider.of<EventsNotifier>(context, listen: false)
-                        .copySelected(widget.chat);
+                    context.read<EventsCubit>().copySelected();
                   },
                   icon: const Icon(Icons.copy),
                   color: bgColor,
@@ -250,8 +251,10 @@ class _EventsPageState extends State<EventsPage> {
                 listIcons.add(
                   IconButton(
                     onPressed: () {
-                      _textEditingController.text =
-                          widget.chat.events.where((element) => element.isSelected).first.text;
+                      _textEditingController.text = widget.chat.events
+                          .where((element) => element.isSelected)
+                          .first
+                          .text;
                       focusNode.requestFocus();
                       _edit = true;
                     },

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants.dart';
+import '../cubits/chat_cubit.dart';
 import '../models/chat.dart';
-import '../notifiers/event_notifier.dart';
 
 class AddChatPage extends StatefulWidget {
   AddChatPage({super.key, required this.chat});
@@ -103,20 +103,23 @@ class _AddChatPageState extends State<AddChatPage> {
           ],
         ),
       ),
-      floatingActionButton: Consumer<EventsNotifier>(
-        builder: (context, provider, child) => FloatingActionButton(
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
           backgroundColor:
               (_selectedIndex == -1 || _textEditingController.text.isEmpty)
                   ? Colors.grey.shade700
                   : Colors.green,
           onPressed: () {
-            if (_selectedIndex != -1 && _textEditingController.text.isNotEmpty) {
+            if (_selectedIndex != -1 &&
+                _textEditingController.text.isNotEmpty) {
+              final chatKey = widget.chat?.key ?? UniqueKey();
               final chat = Chat(
                 name: _textEditingController.text,
                 icon: icons[_selectedIndex],
-                key: UniqueKey(),
+                key: chatKey,
               );
-              Navigator.pop(context, chat);
+              context.read<ChatsCubit>().update(chat);
+              Navigator.pop(context);
             }
           },
           tooltip: 'Add',

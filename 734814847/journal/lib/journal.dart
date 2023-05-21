@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import 'notifiers/event_notifier.dart';
+import 'constants.dart';
+import 'cubits/chat_cubit.dart';
+import 'cubits/chats_state.dart';
+import 'cubits/events_cubit.dart';
 import 'pages/home_page.dart';
 import 'themes/theme.dart';
 
@@ -27,8 +31,19 @@ class _JournalState extends State<Journal> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => EventsNotifier(),
+    return MultiProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => ChatsCubit(
+            chatsState: ChatsState(chats: chats),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => EventsCubit(
+            chatsCubit: context.read<ChatsCubit>(),
+          ),
+        ),
+      ],
       child: MaterialApp(
         title: 'Journal project',
         theme: lightTheme(),
