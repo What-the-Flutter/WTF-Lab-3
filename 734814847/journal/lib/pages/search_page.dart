@@ -18,18 +18,21 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final _textController = TextEditingController();
   FocusNode focusNode = FocusNode();
+  String input = '';
+
+  @override
+  void initState() {
+    focusNode.requestFocus();
+    super.initState();
+  }
 
   Widget _showMessages(BuildContext context) {
-    final findMessages = RegExp(_textController.text);
-    var isMatch = false;
-    var foundMessages = <Event>[];
-    for (var event in widget.chat.events) {
-      if (findMessages.hasMatch(event.text)) {
-        isMatch = true;
-        foundMessages.add(event);
-      }
-    }
-    if (isMatch && _textController.text.isNotEmpty) {
+    final foundMessages = input == ''
+        ? []
+        : List<Event>.from(widget.chat.events.reversed
+            .where((element) => element.text.contains(input)));
+
+    if (foundMessages.isNotEmpty) {
       return ListView.builder(
         itemBuilder: (context, index) => _eventTile(index, foundMessages),
         reverse: true,
@@ -138,18 +141,25 @@ class _SearchPageState extends State<SearchPage> {
           ),
           focusNode: focusNode,
           autofocus: true,
-          onChanged: (input) {
-            setState(() {});
+          onChanged: (value) {
+            setState(() {
+              input = value;
+            });
           },
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _textController.text = '';
-            },
-            icon: Icon(_textController.text.isEmpty ? null : Icons.cancel),
-          ),
-        ],
+        actions: input != ''
+            ? [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _textController.text = '';
+                      input = '';
+                    });
+                  },
+                  icon: const Icon(Icons.cancel),
+                ),
+              ]
+            : null,
       ),
       body: _showMessages(context),
     );
