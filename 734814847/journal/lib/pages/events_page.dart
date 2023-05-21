@@ -25,7 +25,7 @@ class _EventsPageState extends State<EventsPage> {
 
   Widget _showMessages(BuildContext context) {
     final listOfEvents =
-        _favourites ? widget.chat.favouriteEvents : widget.chat.events;
+        _favourites ? widget.chat.events.where((element) => element.isFavourite) : widget.chat.events;
     if (listOfEvents.isNotEmpty) {
       return Expanded(
         flex: 8,
@@ -45,8 +45,9 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget _eventTile(index) {
+    final favourites = widget.chat.events.where((element) => element.isFavourite).toList();
     final events = _favourites
-        ? widget.chat.favouriteEvents.reversed
+        ? favourites.reversed
         : widget.chat.events.reversed;
     final current = events.elementAt(index);
 
@@ -221,7 +222,7 @@ class _EventsPageState extends State<EventsPage> {
       actions: [
         Consumer<EventsNotifier>(
           builder: (context, provider, child) {
-            final selectedEvents = provider.selectionChatHandler(widget.chat);
+            final selectedEvents = widget.chat.events.where((element) => element.isSelected);
             final selection = selectedEvents.isNotEmpty;
             final listIcons = <Widget>[];
             if (selection) {
@@ -250,7 +251,7 @@ class _EventsPageState extends State<EventsPage> {
                   IconButton(
                     onPressed: () {
                       _textEditingController.text =
-                          widget.chat.selectedEvents.first.text;
+                          widget.chat.events.where((element) => element.isSelected).first.text;
                       focusNode.requestFocus();
                       _edit = true;
                     },

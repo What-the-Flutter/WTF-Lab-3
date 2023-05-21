@@ -33,95 +33,74 @@ class EventsNotifier with ChangeNotifier {
   }
 
   void deleteEvents(Chat chat) {
-    for (var event in chat.selectedEvents) {
-      if (event.isFavourite) {
-        chat.favouriteEvents.remove(event);
-      }
-      chat.events.remove(event);
-    }
+    chat.events.removeWhere((element) => element.isSelected);
     for (var event in chat.events) {
       event.isSelectionProcess = false;
     }
-    chat.selectedEvents.clear();
     notifyListeners();
   }
 
   Future copySelected(Chat chat) async {
     var result = '';
-    for (var event in chat.selectedEvents) {
+    for (var event in chat.events.where((element) => element.isSelected)) {
       result += '${event.text}\n';
       event.isSelected = false;
     }
     for (var event in chat.events) {
       event.isSelectionProcess = false;
     }
-    chat.selectedEvents.clear();
     notifyListeners();
     await Clipboard.setData(ClipboardData(text: result));
   }
 
-  List<Event> selectionChatHandler(Chat chat) {
-    for (var chat_ in chats) {
-      if (chat_.name == chat.name) {
-        return chat_.selectedEvents;
-      }
-    }
-    return [];
-  }
-
   void selectionProcessHandler(Event event_) {
     for (var chat in chats) {
-      if (chat.events.contains(event_)) {
+      if (chat.events.contains(event_)){
         for (var event in chat.events) {
           event.isSelectionProcess = true;
         }
+        event_.isSelected = true;
+        notifyListeners();
+        return;
       }
-      event_.isSelected = true;
-      chat.selectedEvents.add(event_);
-      notifyListeners();
-      return;
     }
   }
 
   void selectedEvent(Event event_) {
+    event_.isSelected = !event_.isSelected;
     for (var chat in chats) {
       if (chat.events.contains(event_)) {
-        if (event_.isSelected) {
-          chat.selectedEvents.remove(event_);
-          if (chat.selectedEvents.isEmpty) {
+        if (!event_.isSelected) {
+          if (chat.events.where((element) => element.isSelected).isEmpty) {
             for (var event in chat.events) {
               event.isSelectionProcess = false;
             }
           }
-        } else {
-          chat.selectedEvents.add(event_);
         }
       }
     }
-    event_.isSelected = !event_.isSelected;
+
     notifyListeners();
     return;
   }
 
   void changeEvent(Chat chat, String text) {
-    var index = chat.events.indexOf(chat.selectedEvents.first);
+    var index = chat.events.indexOf(chat.events.where((element) => element.isSelected).first);
     chat.events[index].text = text;
     chat.events[index].isSelected = false;
     for (var event in chat.events) {
       event.isSelectionProcess = false;
     }
-    chat.selectedEvents.clear();
     notifyListeners();
     return;
   }
 
   void errorChangeEvent(Chat chat) {
-    var index = chat.events.indexOf(chat.selectedEvents.first);
+    var index = chat.events.indexOf(chat.events.where((element) => element.isSelected).first);
     chat.events[index].isSelected = false;
     for (var event in chat.events) {
       event.isSelectionProcess = false;
     }
-    chat.selectedEvents.clear();
     notifyListeners();
     return;
   }
@@ -129,11 +108,6 @@ class EventsNotifier with ChangeNotifier {
   void favouriteEvent(Event event_) {
     for (var chat in chats) {
       if (chat.events.contains(event_)) {
-        if (event_.isFavourite) {
-          chat.favouriteEvents.remove(event_);
-        } else {
-          chat.favouriteEvents.add(event_);
-        }
         event_.isFavourite = !event_.isFavourite;
         notifyListeners();
         return;

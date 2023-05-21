@@ -16,9 +16,9 @@ class AddChatPage extends StatefulWidget {
 
 class _AddChatPageState extends State<AddChatPage> {
   final _textEditingController = TextEditingController();
-  int selectedIndex = -1;
+  int _selectedIndex = -1;
 
-  int findIcon() {
+  int _findIcon() {
     for (var i = 0; i < icons.length; ++i) {
       if (icons[i] == widget.chat!.icon) {
         return i;
@@ -31,7 +31,7 @@ class _AddChatPageState extends State<AddChatPage> {
   void initState() {
     super.initState();
     _textEditingController.text = widget.chat?.name ?? '';
-    selectedIndex = widget.chat != null ? findIcon() : -1;
+    _selectedIndex = widget.chat != null ? _findIcon() : -1;
   }
 
   @override
@@ -75,20 +75,20 @@ class _AddChatPageState extends State<AddChatPage> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.background,
+                            color: theme.colorScheme.background,
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                selectedIndex = index;
+                                _selectedIndex = index;
                               });
                             },
                             icon: icons[index],
                           ),
                         ),
                         Icon(
-                          selectedIndex == index ? Icons.check : null,
+                          _selectedIndex == index ? Icons.check : null,
                         )
                       ],
                     ),
@@ -106,14 +106,14 @@ class _AddChatPageState extends State<AddChatPage> {
       floatingActionButton: Consumer<EventsNotifier>(
         builder: (context, provider, child) => FloatingActionButton(
           backgroundColor:
-              (selectedIndex == -1 || _textEditingController.text.isEmpty)
+              (_selectedIndex == -1 || _textEditingController.text.isEmpty)
                   ? Colors.grey.shade700
                   : Colors.green,
           onPressed: () {
-            if (selectedIndex != -1 && _textEditingController.text.isNotEmpty) {
+            if (_selectedIndex != -1 && _textEditingController.text.isNotEmpty) {
               final chat = Chat(
                 name: _textEditingController.text,
-                icon: icons[selectedIndex],
+                icon: icons[_selectedIndex],
                 key: UniqueKey(),
               );
               Navigator.pop(context, chat);
