@@ -132,15 +132,24 @@ class _SearchPageState extends State<SearchPage> {
           },
         ),
         title: TextField(
-            controller: _textController,
-            decoration: InputDecoration(
-              hintText: "Search in '${widget.chat.name}'",
-            ),
-            focusNode: focusNode,
-            autofocus: true,
-            onChanged: (input) {
-              setState(() {});
-            }),
+          controller: _textController,
+          decoration: InputDecoration(
+            hintText: "Search in '${widget.chat.name}'",
+          ),
+          focusNode: focusNode,
+          autofocus: true,
+          onChanged: (input) {
+            setState(() {});
+          },
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _textController.text = '';
+            },
+            icon: Icon(_textController.text.isEmpty ? null : Icons.cancel),
+          ),
+        ],
       ),
       body: _showMessages(context),
     );
