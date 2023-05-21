@@ -8,6 +8,7 @@ import '../models/chat.dart';
 import '../models/event.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/event_widget.dart';
+import 'search_page.dart';
 
 class EventsPage extends StatefulWidget {
   EventsPage({super.key, required this.chat});
@@ -228,16 +229,23 @@ class _EventsPageState extends State<EventsPage> {
                 widget.chat.events.where((element) => element.isSelected);
             final selection = selectedEvents.isNotEmpty;
             final listIcons = <Widget>[];
+            listIcons.add(
+              IconButton(
+                onPressed: () {
+                  selection
+                      ? context.read<EventsCubit>().deleteEvents()
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SearchPage(chat: widget.chat),
+                          ),
+                        );
+                },
+                icon: Icon(selection ? Icons.delete : Icons.search),
+                color: bgColor,
+              ),
+            );
             if (selection) {
-              listIcons.add(
-                IconButton(
-                  onPressed: () {
-                    context.read<EventsCubit>().deleteEvents();
-                  },
-                  icon: Icon(selection ? Icons.delete : Icons.search),
-                  color: bgColor,
-                ),
-              );
               listIcons.add(
                 IconButton(
                   onPressed: () {
