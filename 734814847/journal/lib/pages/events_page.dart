@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../cubits/chat_cubit.dart';
 import '../cubits/events_cubit.dart';
 import '../cubits/events_state.dart';
 import '../models/chat.dart';
@@ -255,6 +256,15 @@ class _EventsPageState extends State<EventsPage> {
                   color: bgColor,
                 ),
               );
+              listIcons.add(
+                IconButton(
+                  onPressed: () {
+                    _replyDialog(context);
+                  },
+                  icon: const Icon(Icons.reply),
+                  color: bgColor,
+                ),
+              );
               if (selectedEvents.length == 1) {
                 listIcons.add(
                   IconButton(
@@ -292,4 +302,32 @@ class _EventsPageState extends State<EventsPage> {
       ],
     );
   }
+
+  Future _replyDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('Select the page you want to migrate the '
+              'selected event(s) to!'),
+          children: _getOptions(context),
+        );
+      },
+    );
+  }
+
+  List<SimpleDialogOption> _getOptions(BuildContext context){
+    return [
+      for (var chat in context.read<ChatsCubit>().state.chats)
+        if (chat.key != widget.chat.key)
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<EventsCubit>().changeChat(chat);
+            },
+            child: Text(chat.name),
+          ),
+    ];
+  }
+
 }

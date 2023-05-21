@@ -113,4 +113,29 @@ class EventsCubit extends Cubit<EventsState> {
     chat.events = List<Event>.from(chat.events)..add(event);
     update(chat);
   }
+
+  void changeChat(Chat newChat) {
+    final chat = state.chat;
+    final selected = List<Event>.from(
+      chat.events.where((card) => card.isSelected),
+    );
+    final movedChat = List<Event>.from(newChat.events..addAll(selected));
+    final updatedChat = List<Event>.from(
+      chat.events.where((card) => !card.isSelected),
+    );
+
+    for (var event in updatedChat) {
+      event.isSelectionProcess = false;
+      event.isSelected = false;
+    }
+    for (var event in movedChat) {
+      event.isSelectionProcess = false;
+      event.isSelected = false;
+    }
+    chat.events = updatedChat;
+    newChat.events = movedChat;
+
+    emit(state.copyWith(updated: chat));
+    chatsCubit.update(newChat);
+  }
 }
