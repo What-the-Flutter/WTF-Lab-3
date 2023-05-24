@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../event_notifier.dart';
+import '../cubits/chat_cubit.dart';
+import '../cubits/chats_state.dart';
+import '../journal.dart';
 import '../models/chat.dart';
+import 'add_chat_page.dart';
 import 'events_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,12 +16,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Chat> chats = [];
-
-  @override
-  void initState() {
-    super.initState();
-    chats = Provider.of<EventsNotifier>(context, listen: false).chats;
+  void _navigateAndDisplay(BuildContext context, {Chat? chat}) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddChatPage(chat: chat),
+      ),
+    );
   }
 
   @override
@@ -28,7 +32,6 @@ class _HomePageState extends State<HomePage> {
       color: theme.colorScheme.onPrimary,
       fontSize: 18,
     );
-    var numOfElements = 3;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -38,7 +41,9 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Journal.of(context).changeTheme();
+            },
             icon: const Icon(Icons.invert_colors),
           ),
         ],
@@ -72,57 +77,26 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                Chat chat;
-                switch (index) {
-                  case 0:
-                    chat = Chat(
-                      name: 'Travel',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.airplanemode_active,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                  case 1:
-                    chat = Chat(
-                      name: 'Family',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.chair,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                  default:
-                    chat = Chat(
-                      name: 'Sports',
-                      key: UniqueKey(),
-                      icon: const Icon(
-                        Icons.fitness_center,
-                        color: Colors.white,
-                      ),
-                    );
-                    break;
-                }
-                chats.add(chat);
-                return Consumer<EventsNotifier>(
-                  builder: (context, provider, child) =>
-                      Material(child: buildListTile(chat, context)),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const Divider(height: 5);
-              },
-              itemCount: numOfElements,
-            ),
+            child: BlocBuilder<ChatsCubit, ChatsState>(builder: (_, state) {
+              return ListView.separated(
+                itemBuilder: (context, index) {
+                  return Material(
+                    child: buildListTile(state.chats[index], context),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const Divider(height: 5);
+                },
+                itemCount: state.chats.length,
+              );
+            }),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _navigateAndDisplay(context);
+        },
         tooltip: 'Add',
         child: const Icon(Icons.add),
       ),
@@ -141,8 +115,8 @@ class _HomePageState extends State<HomePage> {
   ListTile buildListTile(Chat chat, BuildContext context) {
     return ListTile(
       leading: Container(
-        width: 40,
-        height: 40,
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.background,
           shape: BoxShape.circle,
@@ -161,6 +135,119 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+      onLongPress: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return _longPressMenu(context, chat);
+          },
+        );
+      },
+    );
+  }
+
+  Column _longPressMenu(BuildContext context, Chat chat) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const ListTile(
+          leading: Icon(
+            Icons.info,
+            color: Colors.teal,
+          ),
+          title: Text('Info'),
+        ),
+        const ListTile(
+          leading: Icon(
+            Icons.attach_file,
+            color: Colors.green,
+          ),
+          title: Text('Pin/Unpin Page'),
+        ),
+        const ListTile(
+          leading: Icon(
+            Icons.archive,
+            color: Colors.yellow,
+          ),
+          title: Text('Archive Page'),
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.edit,
+            color: Colors.blue,
+          ),
+          title: const Text('Edit Page'),
+          onTap: () {
+            Navigator.pop(context);
+            _navigateAndDisplay(context, chat: chat);
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          title: const Text('Delete Page'),
+          onTap: () {
+            Navigator.pop(context);
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return _deletionMenu(context, chat);
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Padding _deletionMenu(BuildContext context, Chat chat) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Delete Page?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Are you sure you want to delete this '
+            'page? Entries of this page will still be '
+            'accessible in the timeline',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            leading: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+            title: const Text('Delete'),
+            onTap: () {
+              context.read<ChatsCubit>().delete(chat);
+              Navigator.pop(context);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.cancel,
+              color: Colors.blue,
+            ),
+            title: const Text('Cancel'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

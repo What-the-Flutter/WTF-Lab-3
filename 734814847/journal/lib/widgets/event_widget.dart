@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../event_notifier.dart';
+import '../cubits/events_cubit.dart';
 import '../models/event.dart';
 
 class EventWidget extends StatelessWidget {
@@ -14,21 +14,18 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var icon = event.isFavourite ? Icons.bookmark_outlined : null;
+    final icon = event.isFavourite ? Icons.bookmark_outlined : null;
     return GestureDetector(
       onTap: () {
         if (event.isSelectionProcess) {
-          Provider.of<EventsNotifier>(context, listen: false)
-              .selectedEvent(event);
+          context.read<EventsCubit>().selectedEvent(event);
         } else {
-          Provider.of<EventsNotifier>(context, listen: false)
-              .favouriteEvent(event);
+          context.read<EventsCubit>().favouriteEvent(event);
         }
       },
       onLongPress: () {
         if (!event.isSelectionProcess) {
-          Provider.of<EventsNotifier>(context, listen: false)
-              .selectionProcessHandler(event);
+          context.read<EventsCubit>().selectionProcessHandler(event);
         }
       },
       child: Row(
