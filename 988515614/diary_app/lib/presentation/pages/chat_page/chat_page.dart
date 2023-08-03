@@ -1,24 +1,30 @@
-import 'dart:io';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:carbon_icons/carbon_icons.dart';
-import 'package:diary_app/data/temp_categories.dart';
-import 'package:diary_app/data/temp_chats.dart';
-import 'package:diary_app/domain/cubit/chat/chat_cubit.dart';
+import 'package:diary_app/data/all_icons.dart';
+import 'package:diary_app/domain/entities/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-import '../../domain/entities/event.dart';
+import 'package:diary_app/domain/entities/event.dart';
+import 'package:diary_app/domain/entities/event_category.dart';
+import 'package:diary_app/presentation/pages/chat_page/chat_cubit.dart';
+import 'package:diary_app/presentation/pages/chat_page/chat_state.dart';
 
 class ChatPage extends StatefulWidget {
+  final List<Chat> chats;
   final String title;
   final int chatId;
   const ChatPage({
-    super.key,
+    Key? key,
+    required this.chats,
     required this.title,
     required this.chatId,
-  });
+  }) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -35,7 +41,8 @@ class _ChatPageState extends State<ChatPage> {
   var _isSearchMode = false;
 
   var _messageIndex = 0;
-  var _chosenCategory = null;
+  var _messageId = 0;
+  EventCategory? _chosenCategory = null;
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +136,9 @@ class _ChatPageState extends State<ChatPage> {
             fillColor: Colors.grey.shade200,
           ),
           onChanged: (value) {
-            BlocProvider.of<ChatCubit>(context).getSearchResult(value);
+            setState(() {
+              BlocProvider.of<ChatCubit>(context).getSearchResult(value);
+            });
           },
         ),
       );
@@ -146,15 +155,15 @@ class _ChatPageState extends State<ChatPage> {
           ) as int?;
           if (!mounted || targetChatId == null) return;
 
-          BlocProvider.of<ChatCubit>(context).moveSelectedItems(targetChatId);
+          await BlocProvider.of<ChatCubit>(context).moveSelectedItems(targetChatId);
           _turnOffSelectionMode();
         },
       ),
       IconButton(
         splashRadius: 20,
         icon: const Icon(CarbonIcons.delete),
-        onPressed: () {
-          BlocProvider.of<ChatCubit>(context).removeSelectedItems();
+        onPressed: () async {
+          await BlocProvider.of<ChatCubit>(context).removeSelectedItems();
           _turnOffSelectionMode();
         },
       ),
@@ -163,11 +172,11 @@ class _ChatPageState extends State<ChatPage> {
         icon: _isBookmarkMode
             ? const Icon(CarbonIcons.favorite_half)
             : const Icon(CarbonIcons.favorite),
-        onPressed: () {
+        onPressed: () async {
           if (_isBookmarkMode) {
-            BlocProvider.of<ChatCubit>(context).changeFavoriteness(false);
+            await BlocProvider.of<ChatCubit>(context).changeFavoriteness(false);
           } else {
-            BlocProvider.of<ChatCubit>(context).changeFavoriteness(true);
+            await BlocProvider.of<ChatCubit>(context).changeFavoriteness(true);
           }
 
           _turnOffSelectionMode();
@@ -177,6 +186,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   AlertDialog _migrateDialog() {
+    final chats = widget.chats;
     return AlertDialog(
       title: const Text('Choose where to migrate'),
       content: SizedBox(
@@ -189,11 +199,11 @@ class _ChatPageState extends State<ChatPage> {
                 itemCount: chats.length,
                 itemBuilder: (context, index) {
                   final chat = chats[index];
-                  if (chat.chatId != widget.chatId) {
+                  if (chat.id != widget.chatId) {
                     return ListTile(
-                      title: Text(chat.title),
+                      title: Text(chat.title), // ! HERE
                       onTap: () {
-                        Navigator.of(context).pop(chat.chatId);
+                        Navigator.of(context).pop(chat.id);
                       },
                     );
                   } else {
@@ -238,13 +248,9 @@ class _ChatPageState extends State<ChatPage> {
     return Column(
       children: [
         Flexible(
-          child: BlocBuilder<ChatCubit, ChatState>(
+          child: BlocBuilder<ChatCubit, ChatEventsUpdated>(
             builder: (context, state) {
-              if (state is ChatEventsUpdated) {
-                return _eventsList();
-              } else {
-                return Container();
-              }
+              return _eventsList();
             },
           ),
         ),
@@ -292,8 +298,8 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           IconButton(
             splashRadius: 20,
-            icon: const Icon(
-              CarbonIcons.ai_status,
+            icon: Icon(
+              _chosenCategory?.icon ?? CarbonIcons.ai_results,
               size: 30,
             ),
             onPressed: () {
@@ -326,6 +332,12 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _categoriesPicker() {
+    final titles = ['Food', 'Weather', 'Emotions'];
+    final categories = List<EventCategory>.generate(
+      titles.length,
+      (index) => EventCategory(title: titles[index], icon: allIcons[index]),
+    );
+
     return SizedBox(
       height: 70,
       child: Row(
@@ -353,8 +365,14 @@ class _ChatPageState extends State<ChatPage> {
                   onPressed: () {
                     if (category.title == 'Close') {
                       ScaffoldMessenger.of(context).clearSnackBars();
+                      setState(() {
+                        _chosenCategory = null;
+                      });
+                      return;
                     }
-                    _chosenCategory = category;
+                    setState(() {
+                      _chosenCategory = category;
+                    });
                     ScaffoldMessenger.of(context).clearSnackBars();
                   },
                 );
@@ -376,15 +394,17 @@ class _ChatPageState extends State<ChatPage> {
         size: 30,
       ),
       color: Colors.teal,
-      onPressed: () {
+      onPressed: () async {
         if (_controller.text.isEmpty) return;
-        BlocProvider.of<ChatCubit>(context).editEvent(
+        await BlocProvider.of<ChatCubit>(context).editEvent(
           _messageIndex,
           Event(
-            _chosenCategory,
+            id: _messageId,
+            chatId: widget.chatId,
             isMessage: true,
             dateTime: DateTime.now(),
             message: _controller.text.toString(),
+            category: _chosenCategory,
           ),
         );
 
@@ -393,6 +413,7 @@ class _ChatPageState extends State<ChatPage> {
           _chosenCategory = null;
           _isMessageEditMode = false;
           _messageIndex = 0;
+          _messageId = 0;
         });
       },
     );
@@ -406,14 +427,16 @@ class _ChatPageState extends State<ChatPage> {
         size: 30,
       ),
       color: Colors.teal,
-      onPressed: () {
+      onPressed: () async {
         if (_controller.text.isEmpty) return;
-        BlocProvider.of<ChatCubit>(context).addEvent(
+        await BlocProvider.of<ChatCubit>(context).addEvent(
           Event(
-            _chosenCategory,
+            id: -1,
+            chatId: widget.chatId,
             isMessage: true,
             dateTime: DateTime.now(),
             message: _controller.text.toString(),
+            category: _chosenCategory,
           ),
         );
         setState(() {
@@ -471,24 +494,24 @@ class _ChatPageState extends State<ChatPage> {
             final pickedFile = await ImagePicker().pickImage(
               source: ImageSource.gallery,
             );
-            _createEventWithPicture(pickedFile);
+            await _createEventWithPicture(pickedFile);
           },
         ),
       ],
     );
   }
 
-  void _createEventWithPicture(XFile? pickedFile) {
+  Future<void> _createEventWithPicture(XFile? pickedFile) async {
     if (pickedFile != null) {
-      BlocProvider.of<ChatCubit>(context).addEvent(
+      await BlocProvider.of<ChatCubit>(context).addEvent(
         Event(
-          _chosenCategory,
+          id: -1,
+          chatId: widget.chatId,
           isMessage: true,
           dateTime: DateTime.now(),
           message: "",
-          image: Image.file(
-            File(pickedFile.path),
-          ),
+          image: base64Encode(await pickedFile.readAsBytes()),
+          category: _chosenCategory,
         ),
       );
     }
@@ -552,61 +575,53 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _bookmarkedEvents() {
-    return BlocBuilder<ChatCubit, ChatState>(
+    return BlocBuilder<ChatCubit, ChatEventsUpdated>(
       builder: (context, state) {
-        if (state is ChatEventsUpdated) {
-          final events = state.chatEvents;
+        final events = state.chatEvents;
 
-          return Flexible(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              reverse: true,
-              shrinkWrap: true,
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                // Display events in reverse order
-                return events[events.length - 1 - index].isFavorite &&
-                        events[events.length - 1 - index].isDisplayed
-                    ? _eventListItem(
-                        events[events.length - 1 - index],
-                        events.length - 1 - index,
-                      )
-                    : Container();
-              },
-            ),
-          );
-        } else {
-          return Container();
-        }
+        return Flexible(
+          child: ListView.builder(
+            padding: const EdgeInsets.only(top: 10),
+            reverse: true,
+            shrinkWrap: true,
+            itemCount: events.length,
+            itemBuilder: (context, index) {
+              // Display events in reverse order
+              return events[events.length - 1 - index].isFavorite &&
+                      events[events.length - 1 - index].isDisplayed
+                  ? _eventListItem(
+                      events[events.length - 1 - index],
+                      events.length - 1 - index,
+                    )
+                  : Container();
+            },
+          ),
+        );
       },
     );
   }
 
   Widget _allEvents() {
-    return BlocBuilder<ChatCubit, ChatState>(
+    return BlocBuilder<ChatCubit, ChatEventsUpdated>(
       builder: (context, state) {
-        if (state is ChatEventsUpdated) {
-          final events = state.chatEvents;
+        final events = state.chatEvents;
 
-          return Flexible(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              reverse: true,
-              shrinkWrap: true,
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                return events[events.length - 1 - index].isDisplayed
-                    ? _eventListItem(
-                        events[events.length - 1 - index],
-                        events.length - 1 - index,
-                      )
-                    : Container();
-              },
-            ),
-          );
-        } else {
-          return Container();
-        }
+        return Flexible(
+          child: ListView.builder(
+            padding: const EdgeInsets.only(top: 10),
+            reverse: true,
+            shrinkWrap: true,
+            itemCount: events.length,
+            itemBuilder: (context, index) {
+              return events[events.length - 1 - index].isDisplayed
+                  ? _eventListItem(
+                      events[events.length - 1 - index],
+                      events.length - 1 - index,
+                    )
+                  : Container();
+            },
+          ),
+        );
       },
     );
   }
@@ -615,7 +630,7 @@ class _ChatPageState extends State<ChatPage> {
     final timeMark = DateFormat('hh:mm a').format(event.dateTime);
 
     if (event.isMessage) {
-      return event.image == null
+      return event.image == 'null' || event.image == null
           ? _messageEvent(event, eventIndex, timeMark)
           : _pictureEvent(event, eventIndex, timeMark);
     } else {
@@ -702,7 +717,9 @@ class _ChatPageState extends State<ChatPage> {
               maxWidth: 300,
               maxHeight: 200,
             ),
-            child: event.image,
+            child: Image.memory(
+              base64Decode(event.image!),
+            ),
           ),
           const SizedBox(height: 3),
           Text(
@@ -733,7 +750,7 @@ class _ChatPageState extends State<ChatPage> {
         },
         onTap: () async {
           if (_isSelectionMode) {
-            BlocProvider.of<ChatCubit>(context).changeSelectionState(eventIndex);
+            setState(() => BlocProvider.of<ChatCubit>(context).changeSelectionState(eventIndex));
           } else {
             await Clipboard.setData(
               ClipboardData(
@@ -755,11 +772,16 @@ class _ChatPageState extends State<ChatPage> {
           setState(() {
             _isMessageEditMode = true;
             _messageIndex = eventIndex;
+            _messageId = event.id;
           });
           _controller.text = event.message;
         },
-        onHorizontalDragEnd: (_) {
-          BlocProvider.of<ChatCubit>(context).removeItemById(eventIndex);
+        onHorizontalDragEnd: (_) async {
+          await BlocProvider.of<ChatCubit>(context).removeItemById(
+            event.id,
+            eventIndex,
+          );
+          setState(() {});
         },
         child: _messageEventBody(event, timeMark),
       ),

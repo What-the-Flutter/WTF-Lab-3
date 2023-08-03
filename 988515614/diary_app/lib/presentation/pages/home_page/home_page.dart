@@ -1,16 +1,20 @@
 import 'package:carbon_icons/carbon_icons.dart';
-import 'package:diary_app/domain/cubit/chat/chat_cubit.dart';
-import 'package:diary_app/domain/cubit/chat_list/chat_list_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'create_chat.dart';
+import 'package:diary_app/data/all_icons.dart';
+import 'package:diary_app/data/repositories/local_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-import '../../custom_theme.dart';
-import '../../domain/entities/chat.dart';
-import '../widgets/question_button.dart';
-import 'chat_page.dart';
+import 'package:diary_app/custom_theme.dart';
+import 'package:diary_app/domain/entities/chat.dart';
+import 'package:diary_app/presentation/pages/chat_page/chat_cubit.dart';
+import 'package:diary_app/presentation/pages/chat_page/chat_page.dart';
+import 'package:diary_app/presentation/pages/create_chat/create_chat.dart';
+import 'package:diary_app/presentation/pages/home_page/chat_list_cubit.dart';
+import 'package:diary_app/presentation/pages/home_page/chat_list_state.dart';
+import 'package:diary_app/presentation/widgets/question_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -61,53 +65,53 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _chats() {
-    return BlocBuilder<ChatListCubit, ChatListState>(
+    return BlocBuilder<ChatListCubit, ChatListChanged>(
       builder: (context, state) {
-        if (state is ChatListChanged) {
-          final chats = state.chats;
+        final chats = state.chats;
 
-          return ListView.separated(
-            itemCount: chats.length,
-            itemBuilder: (context, index) {
-              final chatData = chats[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(0),
-                  ),
-                  onLongPress: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (_) => _bottomSheet(index, BlocProvider.of<ChatListCubit>(context)),
-                    );
-                  },
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        return BlocProvider(
-                          create: (context) => ChatCubit(chatData.chatId),
-                          child: ChatPage(
-                            title: chatData.title,
-                            chatId: chatData.chatId,
-                          ),
-                        );
-                      }),
-                    );
-                  },
-                  child: _chatContent(chatData),
+        return ListView.separated(
+          itemCount: chats.length,
+          itemBuilder: (context, index) {
+            final chatData = chats[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
                 ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const Divider(
-                color: Colors.black,
-              );
-            },
-          );
-        } else {
-          return Container();
-        }
+                onLongPress: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => _bottomSheet(index, BlocProvider.of<ChatListCubit>(context)),
+                  );
+                },
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return BlocProvider(
+                        create: (context) => ChatCubit(
+                          chatData.id,
+                          GetIt.I.get<LocalRepository>(),
+                        ),
+                        child: ChatPage(
+                          chats: state.chats,
+                          title: chatData.title,
+                          chatId: chatData.id,
+                        ),
+                      );
+                    }),
+                  );
+                },
+                child: _chatContent(chatData),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const Divider(
+              color: Colors.black,
+            );
+          },
+        );
       },
     );
   }
@@ -159,38 +163,34 @@ class _HomePageState extends State<HomePage> {
   Widget _infoButton(int index, ChatListCubit bloc) {
     return BlocProvider.value(
       value: bloc,
-      child: BlocBuilder<ChatListCubit, ChatListState>(
+      child: BlocBuilder<ChatListCubit, ChatListChanged>(
         builder: (context, state) {
-          if (state is ChatListChanged) {
-            return TextButton(
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.all(0),
-              ),
-              onPressed: () {
-                final chat = state.chats[index];
-                Navigator.of(context).pop();
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return _dialog(chat);
-                  },
-                );
-              },
-              child: ListTile(
-                leading: const Icon(CarbonIcons.information),
-                title: Text(
-                  'Info',
-                  style: TextStyle(
-                    color: CustomTheme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                  ),
+          return TextButton(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.all(0),
+            ),
+            onPressed: () {
+              final chat = state.chats[index];
+              Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return _dialog(chat);
+                },
+              );
+            },
+            child: ListTile(
+              leading: const Icon(CarbonIcons.information),
+              title: Text(
+                'Info',
+                style: TextStyle(
+                  color: CustomTheme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
-            );
-          } else {
-            return Container();
-          }
+            ),
+          );
         },
       ),
     );
@@ -256,9 +256,9 @@ class _HomePageState extends State<HomePage> {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
       ),
-      onPressed: () {
-        bloc.pinUnpinChat(index); //! HERE
-        Navigator.of(context).pop();
+      onPressed: () async {
+        await bloc.pinUnpinChat(index);
+        if (mounted) Navigator.of(context).pop();
       },
       child: ListTile(
         leading: const Icon(
@@ -315,8 +315,8 @@ class _HomePageState extends State<HomePage> {
 
         if (!mounted) return;
 
-        bloc.editChat(result, index); //! HERE
-        Navigator.of(context).pop();
+        await bloc.editChat(result, index);
+        if (mounted) Navigator.of(context).pop();
       },
       child: ListTile(
         leading: const Icon(
@@ -339,9 +339,9 @@ class _HomePageState extends State<HomePage> {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
       ),
-      onPressed: () {
-        bloc.removeChat(index);
-        Navigator.of(context).pop();
+      onPressed: () async {
+        await bloc.removeChat(index);
+        if (mounted) Navigator.of(context).pop();
       },
       child: ListTile(
         leading: const Icon(
@@ -370,14 +370,14 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.yellow.shade700,
         onPressed: () async {
           Chat? result = await Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => const CreateChat(
-                    prevChatIcon: Icons.abc,
+              builder: (_) => CreateChat(
+                    prevChatIcon: allIcons[0],
                     prevChatName: '',
                     title: 'Create new chat',
                   ))) as Chat?;
 
           if (!mounted) return;
-          BlocProvider.of<ChatListCubit>(context).addChat(result);
+          await BlocProvider.of<ChatListCubit>(context).addChat(result);
         },
         child: const Icon(
           Icons.add,

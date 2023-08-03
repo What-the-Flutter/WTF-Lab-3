@@ -1,11 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:diary_app/data/all_icons.dart';
+import 'package:diary_app/domain/entities/chat_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'package:diary_app/custom_theme.dart';
-import 'package:diary_app/data/temp_chat_events.dart';
-import 'package:diary_app/data/temp_icons.dart';
 import 'package:diary_app/domain/entities/chat.dart';
-import 'package:diary_app/domain/entities/chat_icon.dart';
 
 class CreateChat extends StatefulWidget {
   final String title;
@@ -25,22 +23,10 @@ class CreateChat extends StatefulWidget {
 
 class _CreateChatState extends State<CreateChat> {
   final _controller = TextEditingController();
-  final _iconTiles = List.from(icons).toList();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.text = widget.prevChatName;
-    final iconIndex = _iconTiles.indexWhere((element) => element.iconData == widget.prevChatIcon);
-    _deselectAll();
-    _iconTiles[iconIndex].isSelected = true;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  final _iconTiles = List.generate(
+    allIcons.length,
+    (index) => ChatIcon(iconData: allIcons[index], isSelected: false),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +39,21 @@ class _CreateChatState extends State<CreateChat> {
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.prevChatName;
+    final iconIndex = _iconTiles.indexWhere((element) => element.iconData == widget.prevChatIcon);
+    _deselectAll();
+    _iconTiles[iconIndex].isSelected = true;
+  }
+
   Widget _body() {
     return Column(
       children: [
@@ -61,6 +62,14 @@ class _CreateChatState extends State<CreateChat> {
         _icons(),
       ],
     );
+  }
+
+  void _deselectAll() {
+    setState(() {
+      for (var element in _iconTiles) {
+        element.isSelected = false;
+      }
+    });
   }
 
   Widget _fab() {
@@ -85,12 +94,9 @@ class _CreateChatState extends State<CreateChat> {
   Chat _getNewChatData() {
     final icon = _iconTiles.where((element) => element.isSelected).first.iconData;
     final title = _controller.text.toString();
-    final chatId = UniqueKey().hashCode;
-
-    chatEvents[chatId] = [];
 
     final newChat = Chat(
-      chatId: chatId,
+      id: 0,
       icon: icon,
       title: title,
       createdAt: DateTime.now(),
@@ -99,33 +105,52 @@ class _CreateChatState extends State<CreateChat> {
     return newChat;
   }
 
+  Widget _icon(IconData iconData, bool isSelected) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: CustomTheme.of(context).primaryColor,
+        ),
+        width: 30,
+        height: 30,
+        child: Icon(iconData,
+            size: 50, color: isSelected ? Colors.amber : CustomTheme.of(context).primaryColorLight),
+      ),
+    );
+  }
+
+  Widget _icons() {
+    return Expanded(
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+        ),
+        itemCount: _iconTiles.length,
+        itemBuilder: (context, index) {
+          var chatIcon = _iconTiles[index];
+          return GestureDetector(
+            onTap: () => setState(() {
+              _deselectAll();
+              _iconTiles[index].isSelected = true;
+            }),
+            child: _icon(
+              chatIcon.iconData,
+              chatIcon.isSelected,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void _showWarning() {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Empty title'),
         duration: Duration(milliseconds: 700),
-      ),
-    );
-  }
-
-  Widget _title() {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: CustomTheme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -159,50 +184,23 @@ class _CreateChatState extends State<CreateChat> {
     );
   }
 
-  Widget _icons() {
-    return Expanded(
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-        ),
-        itemCount: _iconTiles.length,
-        itemBuilder: (context, index) {
-          var chatIcon = _iconTiles[index];
-          return GestureDetector(
-            onTap: () => setState(() {
-              _deselectAll();
-              _iconTiles[index].isSelected = true;
-            }),
-            child: _icon(
-              chatIcon.iconData,
-              chatIcon.isSelected,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _deselectAll() {
-    setState(() {
-      for (var element in _iconTiles) {
-        element.isSelected = false;
-      }
-    });
-  }
-
-  Widget _icon(IconData iconData, bool isSelected) {
+  Widget _title() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: CustomTheme.of(context).primaryColor,
-        ),
-        width: 30,
-        height: 30,
-        child: Icon(iconData,
-            size: 50, color: isSelected ? Colors.amber : CustomTheme.of(context).primaryColorLight),
+      padding: const EdgeInsets.all(18.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            widget.title,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: CustomTheme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }

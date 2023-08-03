@@ -36,8 +36,11 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.1
   flutter_hooks: ^0.18.5+1
+  get_it: ^7.2.0
   image_picker: ^0.8.6
   intl: ^0.18.0
+  shared_preferences: ^2.0.16
+  sqflite: ^2.2.3
 
 dev_dependencies:
   flutter_lints: ^2.0.0
